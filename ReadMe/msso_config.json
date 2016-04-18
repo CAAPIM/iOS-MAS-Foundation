@@ -1,0 +1,93 @@
+{
+    "server":
+    {
+        "hostname": "mat-demo.l7tech.com",
+        "port": 8443,
+        "prefix": "",
+        "server_certs":
+        [
+            [
+                "-----BEGIN CERTIFICATE-----","MIIDADCCAeigAwIBAgIIW3j/9QFwgk8wDQYJKoZIhvcNAQEMBQAwHjEcMBoGA1UEAxMTbWF0LWRl","bW8ubDd0ZWNoLmNvbTAeFw0xNTA2MDkyMTQ1MzRaFw0yNTA2MDYyMTQ1MzRaMB4xHDAaBgNVBAMT","E21hdC1kZW1vLmw3dGVjaC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCNkI+a","7IUO1UOUCQiktVenQ8L5xHWwNIntEFBEGiMNcebjNiOr0DvOuNRO3YyIOST2zzYBFvpIYBGyfphy","pIAxIXSz9spRIVpnZtQT877vW/SkAvAs66p191Pwk/FdjjKRZrcpSTMKBvn4hrPjcAkC2WqhFCWY","ZsXPUwD9Ys9KcW8/8yGItzgc7xenqDHQhabzdSxhZPPC2KT03sCpV88uza3GxOob9ytuIK3YXybd","BWbnm6mR266iAGsf/aW9VNqY4IuQZcTTKT0D6x2bkIbApBYfhZzJBYtT1+M9GcEgSfNC8VJDEuXg","lu3cF5gUzXEJoL0/sdspJRhI93Q0k66zAgMBAAGjQjBAMB0GA1UdDgQWBBTKmoAs2euFYC4us9nv","AK9o+PB//TAfBgNVHSMEGDAWgBTKmoAs2euFYC4us9nvAK9o+PB//TANBgkqhkiG9w0BAQwFAAOC","AQEANXWKseYUSDEGGMoGSu9j79kc5BRiNbNBYYuccmVm5w5/I29EXFF7mN3YMcAj8YMQYi2IDKuU","3hcMYLkqSbNVZWnJJrw7nzxSwSG/eC5jRupwJKSUNz3X+skUVcM7Dyd/kGzH/YLYj/n8y6z5UoBU","48L/6XfQd1GcWHvsQi6SVT/FCN10DbVKZY96re4V0acKtQmRxd56MqnK1CkDaS59/k/G5XUAYAGW","w2PevHDo7Wu+C+7fMclZfxTyLozHdl15kT2kMYfEUnYndot8ir7mNrkRDSbs8A4yYK6XlXT3C6sR","fQuVkG1lDKJgMpsHMt/+M+WpF6NdYVq976Obenfqsw==","-----END CERTIFICATE-----"
+            ]
+        ]
+    },
+    
+    "mag":
+    {
+        "system_endpoints":
+        {
+            "device_register_endpoint_path": "/connect/device/register",
+            "device_remove_endpoint_path": "/connect/device/remove",
+            "client_credential_init_endpoint_path": "/connect/client/initialize"
+        },
+        
+        "oauth_protected_endpoints":
+        {
+            "enterprise_browser_endpoint_path": "/connect/enterprise/browser",
+            "device_list_endpoint_path": "/connect/device/list"
+        },
+        
+        "mobile_sdk":
+        {
+            "sso_enabled": true,
+            "location_enabled": true,
+            "location_provider": "network",
+            "msisdn_enabled": true,
+            "enable_public_key_pinning": false,
+            "trusted_public_pki":false,
+            "trusted_cert_pinned_public_key_hashes" :[],
+            "client_cert_rsa_keybits": 1024
+        },
+        
+        "ble":
+        {
+            "msso_ble_service_uuid":"980c2f36-bde3-11e4-8dfc-aa07a5b093db",
+            "msso_ble_characteristic_uuid":"980c34cc-bde3-11e4-8dfc-aa07a5b093db",
+            "msso_ble_rssi": -35
+        },
+    }
+    
+    "oauth":
+    {
+        "client":
+        {
+            "organization": "CA Technologies Inc.",
+            "description": "To Test Stuff",
+            "client_name": "CA7TestApp",
+            "client_type": "confidential",
+            "registered_by": "admin",
+            "client_ids":
+            [
+                {
+                    "client_id": "819455f6-9a7e-4ee0-b159-f85b25758170",
+                    "client_secret":"",
+                    "scope": "openid msso phone profile address email",
+                    "redirect_uri": "https://ios.ssosdk.ca.com/ios",
+                    "environment": "iOS",
+                    "status": "ENABLED",
+                    "registered_by": "admin"
+                }
+            ]
+        },
+        
+        "system_endpoints":
+        {
+            "authorization_endpoint_path": "/auth/oauth/v2/authorize",
+            "token_endpoint_path": "/auth/oauth/v2/token",
+            "token_revocation_endpoint_path": "/auth/oauth/v2/token/revoke",
+            "usersession_logout_endpoint_path": "/connect/session/logout",
+            "usersession_status_endpoint_path": "/connect/session/status"
+        },
+        
+        "oauth_protected_endpoints":
+        {
+            "userinfo_endpoint_path": "/openid/connect/v1/userinfo"
+        }
+    },
+
+    "custom":
+    {
+        "oauth_demo_protected_api_endpoint_path":"/oauth/v2/protectedapi/foo",
+        "mag_demo_products_endpoint_path":"/protected/resource/products"
+    }
+}
