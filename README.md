@@ -8,15 +8,17 @@ For more information about MAS and its features, see [the website][mas.ca.com] a
 
 The MASFoundation framework comes with the following features:
 
-- Authentication (oAuth/OIDC)
-- BLE
-- Dynamic Client ID & Client Secret
+- Authentication
+    + oAuth
+    + OIDC
+    + BLE
+    + Dynamic Client ID & Client Secret
+    + QR Code
+    + Social Login
+    + Single Sign On
 - Dynamic SDK Configuration
 - Enterprise Browser
 - Geo Location
-- QR Code
-- Single Sign On
-- Social Login
 
 ## Get Started
 
