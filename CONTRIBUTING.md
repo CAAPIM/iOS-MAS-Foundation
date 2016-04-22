@@ -50,6 +50,6 @@ By contributing to CA Mobile App Services SDK, you agree that your contributions
  [guidelines]: /GUIDELINES.md
  [community]: https://communities.ca.com/community/ca-api-management-community/content?filterID=contentstatus%5Bpublished%5D~category%5Bca-mobile-api-gateway%5D
  [license-link]: /LICENSE
- [cla]: https://www.clahub.com/agreements/CAAPIM/Sample
+ [cla]: https://www.clahub.com/agreements/CAAPIM/iOS-MAS-Foundation
  [casupport]: https://support.ca.com/irj/portal/implsvcnewcase
  
