@@ -11,6 +11,7 @@
 #import "MASHTTPSessionManager.h"
 
 #import "MASSecurityService.h"
+#import "MASURLRequest.h"
 
 
 @interface MASHTTPSessionManager () <NSURLSessionTaskDelegate>
@@ -42,7 +43,7 @@
     }
     
     self.requestSerializer = [MASIHTTPRequestSerializer serializer];
-    self.responseSerializer = [MASIJSONResponseSerializer serializer];
+    self.responseSerializer = [MASICompoundResponseSerializer compoundSerializerWithResponseSerializers:@[[MASURLRequest responseSerializerForType:MASRequestResponseTypeJson], [MASURLRequest responseSerializerForType:MASRequestResponseTypeTextPlain], [MASURLRequest responseSerializerForType:MASRequestResponseTypeXml]]];
     
     __block MASHTTPSessionManager *blockSelf = self;
     

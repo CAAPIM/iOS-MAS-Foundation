@@ -269,9 +269,15 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                                                                    responseType:(MASRequestResponseType)responseType
                                                                 completionBlock:(MASResponseInfoErrorBlock)completion
 {
+    
+    __block MASRequestResponseType blockResponseType = responseType;
+    
     MASSessionDataTaskCompletionBlock taskCompletionBlock = ^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error){
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        
+        MASIHTTPResponseSerializer *responseSerializer = [MASURLRequest responseSerializerForType:blockResponseType];
+        [responseSerializer validateResponse:httpResponse data:responseObject error:&error];
         
         //
         // Response header info
@@ -564,11 +570,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
              
              //
-             // set response serializer
-             //
-             [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
-             
-             //
              // create request
              //
              MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
@@ -593,11 +594,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         
         return;
     }
-    
-    //
-    // set response serializer
-    //
-    [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
     
     //
     // create request
@@ -725,11 +721,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
              
              //
-             // set response serializer
-             //
-             [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
-             
-             //
              // create request
              //
              MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
@@ -754,11 +745,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         
         return;
     }
-    
-    //
-    // set response serializer
-    //
-    [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
     
     //
     // Else just create the request
@@ -885,11 +871,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
              
              //
-             // set response serializer
-             //
-             [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
-             
-             //
              // create request
              //
              MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
@@ -914,11 +895,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         
         return;
     }
-    
-    //
-    // set response serializer
-    //
-    [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
     
     //
     // create request
@@ -1048,11 +1024,6 @@ withParameters:(NSDictionary *)parameterInfo
              mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
              
              //
-             // set response serializer
-             //
-             [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
-             
-             //
              // create request
              //
              MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
@@ -1078,11 +1049,6 @@ withParameters:(NSDictionary *)parameterInfo
         
         return;
     }
-    
-    //
-    // set response serializer
-    //
-    [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
     
     //
     // create request
@@ -1209,11 +1175,6 @@ withParameters:(NSDictionary *)parameterInfo
              mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
              
              //
-             // set response serializer
-             //
-             [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
-             
-             //
              // create request
              //
              MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
@@ -1238,11 +1199,6 @@ withParameters:(NSDictionary *)parameterInfo
         
         return;
     }
-    
-    //
-    // set response serializer
-    //
-    [_manager setResponseSerializer:[MASURLRequest responseSerializerForType:responseType]];
     
     //
     // create request
