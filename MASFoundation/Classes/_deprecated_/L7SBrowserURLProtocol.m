@@ -77,7 +77,7 @@
     {
         [self stopLoading];
         
-        [MAS setDeviceRegistrationType:MASDeviceRegistrationTypeUserCredentials];
+        [MAS setGrantFlow:MASGrantFlowPassword];
         
         [MAS start:^(BOOL completed, NSError *error) {
             if(error)

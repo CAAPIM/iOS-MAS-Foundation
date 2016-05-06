@@ -86,29 +86,29 @@ typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock ba
 # pragma mark - MAS Constants
 
 /**
- * The enumerated MASRegistrationTypes.
+ * The enumerated MASGrantFlow.
  */
-typedef NS_ENUM(NSInteger, MASDeviceRegistrationType)
+typedef NS_ENUM(NSInteger, MASGrantFlow)
 {
     /**
      * Unknown encoding type.
      */
-    MASDeviceRegistrationTypeUnknown = -1,
+    MASGrantFlowUnknown = -1,
     
     /**
-     * The client credentials registration type.
+     * The client credentials grant flow.
      */
-    MASDeviceRegistrationTypeClientCredentials,
+    MASGrantFlowClientCredentials,
     
     /**
-     * The user credentials registration type.
+     * The user credentials grant flow.
      */
-    MASDeviceRegistrationTypeUserCredentials,
+    MASGrantFlowPassword,
     
     /**
      * The total number of supported types.
      */
-    MASDeviceRegistrationTypeCount
+    MASGrantFlowCount
 };
 
 

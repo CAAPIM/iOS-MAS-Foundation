@@ -29,29 +29,22 @@ static NSString *const MASEnterpriseAppKey = @"app";
 
 @implementation MASModelService
 
-static MASDeviceRegistrationType _deviceRegistrationType_ = MASDeviceRegistrationTypeClientCredentials;
-static MASDeviceRegistrationWithUserCredentialsBlock _deviceRegistrationBlock_ = nil;
+static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 
 # pragma mark - Properties
 
 
-+ (MASDeviceRegistrationType)deviceRegistrationType
++ (MASGrantFlow)grantFlow
 {
-    return _deviceRegistrationType_;
+    return _grantFlow_;
 }
 
 
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType
++ (void)setGrantFlow:(MASGrantFlow)grantFlow
 {
-    _deviceRegistrationType_ = registrationType;
-}
-
-
-+ (void)setDeviceRegistrationBlock:(MASDeviceRegistrationWithUserCredentialsBlock)registration
-{
-    _deviceRegistrationBlock_ = [registration copy];
+    _grantFlow_ = grantFlow;
 }
 
 
@@ -357,7 +350,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // If the device registration type is client credentials, skip this
     //
-    if (_deviceRegistrationType_ == MASDeviceRegistrationTypeClientCredentials)
+    if (_grantFlow_ == MASGrantFlowClientCredentials)
     {
         //
         // Notify
@@ -533,19 +526,19 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 # pragma mark - Device
 
 // This will only be accurate after the configuration has been loaded
-+ (BOOL)isDeviceRegistrationTypeSupported:(MASDeviceRegistrationType)registrationType
++ (BOOL)isGrantFlowSupported:(MASGrantFlow)grantFlow
 {
     //DLog(@"\n\ncalled with registration type: %@\n\n", [self registrationTypeToString:registrationType]);
     
     //
     // Detect type and respond appropriately
     //
-    switch(registrationType)
+    switch(grantFlow)
     {
         //
         // Client Credentials
         //
-        case MASDeviceRegistrationTypeClientCredentials:
+        case MASGrantFlowClientCredentials:
         {
             return ([[MASApplication currentApplication] isScopeTypeMssoClientRegisterSupported]);
         }
@@ -553,7 +546,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         //
         // User Credentials
         //
-        case MASDeviceRegistrationTypeUserCredentials:
+        case MASGrantFlowPassword:
         {
             return ([[MASApplication currentApplication] isScopeTypeMssoSupported]);
         }
@@ -566,22 +559,22 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-+ (NSString *)deviceRegistrationTypeToString:(MASDeviceRegistrationType)registrationType
++ (NSString *)grantFlowToString:(MASGrantFlow)grantFlow
 {
     //
     // Detect the type and respond appropriately
     //
-    switch(registrationType)
+    switch(grantFlow)
     {
         //
         // Client Credentials Registration
         //
-        case MASDeviceRegistrationTypeClientCredentials: return @"Client credentials registration";
+        case MASGrantFlowClientCredentials: return @"Client credentials registration";
         
         //
         // User Credentials Registration
         //
-        case MASDeviceRegistrationTypeUserCredentials: return @"User credentials registration";
+        case MASGrantFlowPassword: return @"User credentials registration";
         
         //
         // Default
@@ -673,10 +666,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     }
     
     //
-    // Check if the current MASDeviceRegistrationType is NOT supported by the registered Scope for the
+    // Check if the current MASGrantFlow is NOT supported by the registered Scope for the
     // application record
     //
-    if(![MASModelService isDeviceRegistrationTypeSupported:_deviceRegistrationType_])
+    if(![MASModelService isGrantFlowSupported:_grantFlow_])
     {
         //
         // Notify
@@ -689,12 +682,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // Detect registration type and respond appropriately
     //
-    switch(_deviceRegistrationType_)
+    switch(_grantFlow_)
     {
         //
         // Client Credentials Registration
         //
-        case MASDeviceRegistrationTypeClientCredentials:
+        case MASGrantFlowClientCredentials:
         {
             [self registerDeviceForClientCredentialsCompletion:completion];
             break;
@@ -703,7 +696,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         //
         // User Credentials Registration
         //
-        case MASDeviceRegistrationTypeUserCredentials:
+        case MASGrantFlowPassword:
         {
             //
             // If UI handling framework is not present and handling it continue on with notifying the
@@ -891,7 +884,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             //
             // Else notify block if available
             //
-            if(_deviceRegistrationBlock_)
+            if(_userLoginBlock_)
             {
                 //
                 // Do this is the main queue since the reciever is almost certainly a UI component.
@@ -899,7 +892,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 dispatch_async(dispatch_get_main_queue(),^
                 {
-                    _deviceRegistrationBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
+                    _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
                 });
             }
             else {
@@ -922,7 +915,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         default:
         {
             DLog(@"\n\nError detecting unknown registration type: %@\n\n",
-                [MASModelService deviceRegistrationTypeToString:_deviceRegistrationType_]);
+                [MASModelService grantFlowToString:_grantFlow_]);
             
             break;
         }
@@ -1446,7 +1439,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
     
     // Logout_apps flag
-    parameterInfo[MASDeviceLogoutAppRequestResponseKey] = clearLocal ? @"true" : @"false";
+    parameterInfo[MASDeviceLogoutAppRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
     
     // IdToken
     NSString *idToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken];
@@ -1519,7 +1512,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
      ];
 }
 
-# pragma mark - Login & Logoff
+# pragma mark - Login & Logout
 
 - (void)loginWithCompletion:(MASCompletionErrorBlock)completion
 {
@@ -1533,7 +1526,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // Client credential flow
     //
-    if (_deviceRegistrationType_ == MASDeviceRegistrationTypeClientCredentials)
+    if (_grantFlow_ == MASGrantFlowClientCredentials)
     {
         //
         // Check whether current user exists, and check for authentication status.
@@ -1562,7 +1555,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // User credential flow
     //
-    else if (_deviceRegistrationType_ == MASDeviceRegistrationTypeUserCredentials)
+    else if (_grantFlow_ == MASGrantFlowPassword)
     {
         
         [self loginUsingUserCredentials:completion];
@@ -1654,7 +1647,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // If we fail to get the access token from id_token we check for the flow and clear the current user. Then fall back to CC
     // flow.
     //
-    if (_deviceRegistrationType_ == MASDeviceRegistrationTypeClientCredentials)
+    if (_grantFlow_ == MASGrantFlowClientCredentials)
     {
         //
         // Clear the current user.
@@ -2857,13 +2850,13 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 
 /**
- *  Logoff the current access credentials via asynchronous request.
+ *  Logout the current access credentials via asynchronous request.
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
  *
  *  @param completion The completion block that receives the results.
  */
-- (void)logoffWithCompletion:(MASCompletionErrorBlock)completion
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
 {
     //
     // The application must be registered else stop here
@@ -3111,6 +3104,79 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 
 # pragma mark - Authentication Validation
+
+- (void)validateCurrentUserAuthenticationWithUsername:(NSString *)username password:(NSString *)password completion:(MASCompletionErrorBlock)originalCompletion
+{
+    //
+    // Go through registeration, authentication logic
+    //
+    [self registerApplication:^(BOOL completed, NSError *error)
+     {
+         
+         if (!completed || error != nil)
+         {
+             if(originalCompletion)
+             {
+                 originalCompletion(NO, error);
+             }
+         }
+         else {
+             
+             //
+             // If already registered
+             //
+             if([[MASDevice currentDevice] isRegistered])
+             {
+                 if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+                 {
+                     if (originalCompletion)
+                     {
+                         originalCompletion(YES, nil);
+                     }
+                 }
+                 else {
+                     [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                 }
+             }
+             else {
+                 
+                 if ([MAS grantFlow] == MASGrantFlowPassword)
+                 {
+                     [[MASModelService sharedService] registerDeviceForUser:username password:password completion:^(BOOL completed, NSError *error) {
+                         
+                         if (!completed || error != nil)
+                         {
+                             if(originalCompletion)
+                             {
+                                 originalCompletion(NO, error);
+                             }
+                         }
+                         else {
+                             [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                         }
+                     }];
+                 }
+                 else {
+                     
+                     [[MASModelService sharedService] registerDeviceForClientCredentialsCompletion:^(BOOL completed, NSError *error) {
+                       
+                         if (!completed || error != nil)
+                         {
+                             if(originalCompletion)
+                             {
+                                 originalCompletion(NO, error);
+                             }
+                         }
+                         else {
+                             [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                         }
+                     }];
+                 }
+             }
+         }
+     }];
+}
+
 
 - (void)validateCurrentUserSession:(MASCompletionErrorBlock)originalCompletion
 {

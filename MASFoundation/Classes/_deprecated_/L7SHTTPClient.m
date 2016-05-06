@@ -242,7 +242,7 @@
         // if the grant type is username/password flow, set MAS framework
         // otherwise, it's defaulted to client credentials
         //
-        [MAS setDeviceRegistrationType:MASDeviceRegistrationTypeUserCredentials];
+        [MAS setGrantFlow:MASGrantFlowPassword];
     }
     else {
         
@@ -250,7 +250,7 @@
         // MAS framework is defaulted to client credentail by default,
         // but just to be clear
         //
-        [MAS setDeviceRegistrationType:MASDeviceRegistrationTypeClientCredentials];
+        [MAS setGrantFlow:MASGrantFlowClientCredentials];
     }
     
     //
@@ -312,15 +312,15 @@
 #
 # pragma mark - MAS Delegate
 #
-- (MASDeviceRegistrationType)masRequestsDeviceRegistrationType
+- (MASGrantFlow)masRequestsDeviceRegistrationType
 {
     if (_grantType == L7SGrantTypePassword)
     {
-        return MASDeviceRegistrationTypeUserCredentials;
+        return MASGrantFlowPassword;
     }
     else
     {
-        return MASDeviceRegistrationTypeClientCredentials;
+        return MASGrantFlowClientCredentials;
     }
 }
 

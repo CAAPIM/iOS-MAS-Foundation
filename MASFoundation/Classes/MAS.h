@@ -44,7 +44,7 @@
  *
  *  @param registrationType The MASDeviceRegistrationType.
  */
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType;
++ (void)setGrantFlow:(MASGrantFlow)grantFlow;
 
 
 
@@ -53,18 +53,7 @@
  *
  *  @return return MASDeviceRegistrationType of current type.
  */
-+ (MASDeviceRegistrationType)deviceRegistrationType;
-
-
-
-/**
- *  Set a device registration block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
- *
- *  @param registration The MASDeviceRegistrationWithUserCredentialsBlock to receive the request for user credentials.
- */
-+ (void)setDeviceRegistrationBlock:(MASDeviceRegistrationWithUserCredentialsBlock)registration;
++ (MASGrantFlow)grantFlow;
 
 
 

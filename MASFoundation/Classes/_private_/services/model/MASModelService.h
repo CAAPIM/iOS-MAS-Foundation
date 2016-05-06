@@ -53,7 +53,7 @@
  *
  *  @return MASDeviceRegistrationType is returned.
  */
-+ (MASDeviceRegistrationType)deviceRegistrationType;
++ (MASGrantFlow)grantFlow;
 
 
 /**
@@ -61,17 +61,7 @@
  *
  *  @param registrationType The MASDeviceRegistrationType.
  */
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType;
-
-
-/**
- *  Set a device registration block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
- *
- *  @param registration The MASDeviceRegistrationWithUserCredentialsBlock to receive the request for user credentials.
- */
-+ (void)setDeviceRegistrationBlock:(MASDeviceRegistrationWithUserCredentialsBlock)registration;
++ (void)setGrantFlow:(MASGrantFlow)grantFlow;
 
 
 /**
@@ -142,14 +132,31 @@
  *
  *  There are two forms of device registration:
  *
- *      MASDeviceRegistrationTypeClientCredentials
- *      MASDeviceRegistrationTypeUserCredentials
+ *      MASGrantFlowClientCredentials
+ *      MASGrantFlowPassword
  *
- *  @param registrationType The MASDeviceRegistrationType requested.
  *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that 
  *  receives the results.
  */
 - (void)registerDeviceWithCompletion:(MASCompletionErrorBlock)completion;
+
+
+/**
+ *  Register the device with grantFlowClientCredentials
+ *
+ *  @param completion MASCompletionErrorBlock that receives the results.
+ */
+- (void)registerDeviceForClientCredentialsCompletion:(MASCompletionErrorBlock)completion;
+
+
+/**
+ *  Register the device with grantFlowPassword with given username and password
+ *
+ *  @param userName   NSString of username.
+ *  @param password   NSString of password.
+ *  @param completion MASCompletionErrorBlock that receives the results.
+ */
+- (void)registerDeviceForUser:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion;
 
 
 /**
@@ -226,13 +233,13 @@
 
 
 /**
- *  Logoff the current access credentials via asynchronous request.
+ *  Logout the current access credentials via asynchronous request.
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
  *
  *  @param completion The completion block that receives the results.
  */
-- (void)logoffWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion;
 
 
 /**
@@ -246,6 +253,18 @@
 
 
 # pragma mark - Authentication Validation
+
+/**
+ *  Validate the current user's authentication session information.
+ *  This method will go through the validation process of application registration, device registration and user authentication.
+ *  For device registration, the method will register the device with specified MASGrantFlow.
+ *
+ *  @param username           NSString of username.
+ *  @param password           NSString of password.
+ *  @param originalCompletion completion The completion block that receives the results.
+ */
+- (void)validateCurrentUserAuthenticationWithUsername:(NSString *)username password:(NSString *)password completion:(MASCompletionErrorBlock)originalCompletion;
+
 
 /**
  *  Validate the current user's session information

@@ -10,6 +10,7 @@
 
 #import "MASUser.h"
 
+#import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 
@@ -76,7 +77,7 @@
         return;
     }
     
-    [[MASModelService sharedService] loginWithUserName:userName password:password completion:completion];
+    [[MASModelService sharedService] validateCurrentUserAuthenticationWithUsername:userName password:password completion:completion];
 }
 
 
@@ -86,9 +87,23 @@
 }
 
 
-- (void)logoffWithCompletion:(MASCompletionErrorBlock)completion
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
 {
-    [[MASModelService sharedService] logoffWithCompletion:completion];
+    MASAccessService *accessService = [MASAccessService sharedService];
+    
+    //
+    // Detect if there is id_token, and sso is enabled
+    //
+    if([accessService getAccessValueStringWithType:MASAccessValueTypeIdToken] && [MASConfiguration currentConfiguration].ssoEnabled)
+    {
+        [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES completion:completion];
+    }
+    //
+    // If the sso is disabled or id_token does not exist, revoke the access_token only
+    //
+    else {
+        [[MASModelService sharedService] logoutWithCompletion:completion];
+    }
 }
 
 @end

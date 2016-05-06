@@ -146,14 +146,14 @@
 
 
 /**
- *  Logoff an already authenticated user via asynchronous request.
+ *  Logout an already authenticated user via asynchronous request.
  *
  *  This will return YES upon a successful result.
  *
  *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user 
  *  available via [MASUser currentUser] has been updated with the new information.
  */
-- (void)logoffWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion;
 
 
 @end

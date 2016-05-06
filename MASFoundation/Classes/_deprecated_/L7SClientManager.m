@@ -119,7 +119,7 @@ static id<L7SClientProtocol> _delegate_;
 		        //
 		        //  Old SDK's default is set to user credentials.
 		        //
-		        [MAS setDeviceRegistrationType:MASDeviceRegistrationTypeUserCredentials];
+		        [MAS setGrantFlow:MASGrantFlowPassword];
 
 
 		        [MASDevice setSessionSharingDelegate:_sharedClientManager];
@@ -180,7 +180,7 @@ static id<L7SClientProtocol> _delegate_;
 - (void)logoffApp
 {
 	// Redirect to current user logoff
-	[[MASUser currentUser] logoffWithCompletion:^(BOOL completed, NSError *error)
+	[[MASUser currentUser] logoutWithCompletion:^(BOOL completed, NSError *error)
 	 {
 	         DLog(@"\n\n(L7SClientManager.logoffApp() did log off: %@ or error: %@\n\n",
 	              (completed ? @"Yes" : @"No"), [error localizedDescription]);
@@ -255,31 +255,6 @@ static id<L7SClientProtocol> _delegate_;
 	return [MASDevice currentDevice].isRegistered;
 }
 
-
-- (void)logoutDevice
-{
-	[[MASDevice currentDevice] logOutDeviceAndClearLocal:YES completion:^(BOOL completed, NSError *error)
-	 {
-	         DLog(@"\n\n(L7SClientManager.logoutDevice() did log off: %@ or error: %@\n\n",
-	              (completed ? @"Yes" : @"No"), [error localizedDescription]);
-
-	         if(error)
-	         {
-	                 if(_delegate_) [_delegate_ DidReceiveError:error];
-
-	                 return;
-		 }
-
-	         if(completed)
-	         {
-	                 //
-	                 // if the logoff was successful, send notification
-	                 //
-	                 NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:L7SDidLogout], L7SStatusUpdateKey, nil];
-	                 [[NSNotificationCenter defaultCenter] postNotificationName:L7SDidReceiveStatusUpdateNotification object:nil userInfo:userinfo];
-		 }
-	 }];
-}
 
 - (void) authorize: (NSString *) code failure: (void (^)(NSError *)) callback
 {

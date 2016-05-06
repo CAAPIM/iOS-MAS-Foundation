@@ -65,11 +65,11 @@
     // Authorization
     if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey])
     {
-        if ([MAS deviceRegistrationType] == MASDeviceRegistrationTypeClientCredentials && [MASApplication currentApplication].isAuthenticated)
+        if ([MAS grantFlow] == MASGrantFlowClientCredentials && [MASApplication currentApplication].isAuthenticated)
         {
             mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
         }
-        else if ([MAS deviceRegistrationType] == MASDeviceRegistrationTypeUserCredentials && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
+        else if ([MAS grantFlow] == MASGrantFlowPassword && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
         {
             mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
         }

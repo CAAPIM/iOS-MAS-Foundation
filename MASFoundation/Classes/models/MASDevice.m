@@ -121,12 +121,6 @@ static id<MASSessionSharingDelegate> _SessionSharingDelegate_;
 }
 
 
-- (void)logOutDeviceAndClearLocal:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion
-{
-    [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:clearLocal completion:completion];
-}
-
-
 - (void)resetLocallyWithCompletion:(MASCompletionErrorBlock)completion
 {
     //

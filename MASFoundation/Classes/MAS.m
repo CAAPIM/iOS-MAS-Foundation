@@ -33,21 +33,15 @@
 }
 
 
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType
++ (void)setGrantFlow:(MASGrantFlow)grantFlow
 {
-    [MASModelService setDeviceRegistrationType:registrationType];
+    [MASModelService setGrantFlow:grantFlow];
 }
 
 
-+ (MASDeviceRegistrationType)deviceRegistrationType
++ (MASGrantFlow)grantFlow
 {
-    return [MASModelService deviceRegistrationType];
-}
-
-
-+ (void)setDeviceRegistrationBlock:(MASDeviceRegistrationWithUserCredentialsBlock)registration
-{
-    [MASModelService setDeviceRegistrationBlock:registration];
+    return [MASModelService grantFlow];
 }
 
 
@@ -135,108 +129,15 @@
             return;
         }
         
-        //
-        // Register the application
-        //
-        MASModelService *modelService = [MASModelService sharedService];
-        [modelService registerApplication:^(BOOL completed, NSError *error)
-        {
-            //DLog(@"\n\n(MASModelService.registerApplication) completed: %@ or error: %@\n\n",
-            //    (completed ? @"Yes" : @"No"), [error localizedDescription]);
-            
-            //
-            // If error detected
-            //
-            if(error)
-            {
-                //
-                // Notify
-                //
-                if(completion) completion(NO, error);
-                
-                return;
-            }
-            
-            //
-            // Authentication Providers
-            //
-            [modelService retrieveAuthenticationProviders:^(NSArray *objects, NSError *error)
-            {
-                //
-                // If error detected
-                //
-                if(error)
-                {
-                    //
-                    // Notify
-                    //
-                    if(completion) completion(NO, error);
-                
-                    return;
-                }
-            
-                //
-                // Device
-                //
-                [modelService registerDeviceWithCompletion:^(BOOL completed, NSError *error)
-                {
-                    //DLog(@"\n\n(MASModelService.registerApplication) completed: %@ or error: %@\n\n",
-                    //    (completed ? @"Yes" : @"No"), [error localizedDescription]);
-            
-                    //
-                    // If error detected
-                    //
-                    if(error)
-                    {
-                        //
-                        // Notify
-                        //
-                        if(completion) completion(NO, error);
-                
-                        return;
-                    }
-                    
-                    //
-                    // Login user
-                    //
-                    [modelService loginWithCompletion:^(BOOL completed, NSError *error) {
-                        
-                        //DLog(@"\n\n(MASModelService.loginAnonymouslyWithCompletion) completed: %@ or error: %@\n\n",
-                        //    (completed ? @"Yes" : @"No"), [error localizedDescription]);
-                        
-                        //
-                        // If error detected
-                        //
-                        if(error)
-                        {
-                            //
-                            // Notify
-                            //
-                            if(completion) completion(NO, error);
-                            
-                            return;
-                        }
-                        
-                        //
-                        // Upon successful start of MAS, ensure to have all necessary files are generated
-                        //
-                        [[MASSecurityService sharedService] getClientCertificate];
-                        [[MASSecurityService sharedService] getPrivateKey];
-                        [[MASSecurityService sharedService] getSignedCertificate];
-                        
-                        //
-                        // Post the notification
-                        //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:self];
-                        
-                        //
-                        // Notify
-                        //
-                        if(completion) completion(YES, nil);
-                    }];
-                }];
-            }];
-        }];
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:self];
+         
+         //
+         // Notify
+         //
+         if(completion) completion(YES, nil);
     }];
 }
 
