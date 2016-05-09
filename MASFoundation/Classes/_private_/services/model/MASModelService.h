@@ -49,17 +49,17 @@
 
 
 /**
- *  The current device registration type
+ *  The current device grant flow
  *
- *  @return MASDeviceRegistrationType is returned.
+ *  @return MASGrantFlow is returned.
  */
 + (MASGrantFlow)grantFlow;
 
 
 /**
- *  Sets the MASDeviceRegistrationType property.  The default is MASDeviceRegistrationTypeClientCredentials.
+ *  Sets the MASGrantFlow property.  The default is MASGrantFlowClientCredentials.
  *
- *  @param registrationType The MASDeviceRegistrationType.
+ *  @param grantFlow The MASGrantFlow.
  */
 + (void)setGrantFlow:(MASGrantFlow)grantFlow;
 

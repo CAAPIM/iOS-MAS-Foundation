@@ -40,18 +40,18 @@
 
 
 /**
- *  Sets the MASDeviceRegistrationType property.  The default is MASDeviceRegistrationTypeClientCredentials.
+ *  Sets the MASGrantFlow property.  The default is MASGrantFlowClientCredentials.
  *
- *  @param registrationType The MASDeviceRegistrationType.
+ *  @param grantFlow The MASGrantFlow.
  */
 + (void)setGrantFlow:(MASGrantFlow)grantFlow;
 
 
 
 /**
- *  Returns current MASDeviceRegistrationType property.  The default is MASDeviceRegistrationTypeClientCredentials.
+ *  Returns current MASGrantFlow property.  The default is MASGrantFlowClientCredentials.
  *
- *  @return return MASDeviceRegistrationType of current type.
+ *  @return return MASGrantFlow of current type.
  */
 + (MASGrantFlow)grantFlow;
 
