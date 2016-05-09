@@ -592,23 +592,23 @@ static NSString *const MASUserDidAuthenticateNotification = @"MASUserDidAuthenti
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
- * will attempt to log off.
+ * will attempt to log out.
  */
-static NSString *const MASUserWillLogoffNotification = @"MASUserWillLogoffNotification";
+static NSString *const MASUserWillLogoutNotification = @"MASUserWillLogoutNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
- * has failed to log off.
+ * has failed to log out.
  */
-static NSString *const MASUserDidFailToLogoffNotification = @"MASUserDidFailToLogoffNotification";
+static NSString *const MASUserDidFailToLogoutNotification = @"MASUserDidFailToLogoutNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
- * has successfully logged off.
+ * has successfully logged out.
  */
-static NSString *const MASUserDidLogoffNotification = @"MASUserDidLogoffNotification";
+static NSString *const MASUserDidLogoutNotification = @"MASUserDidLogoutNotification";
 
 
 /**

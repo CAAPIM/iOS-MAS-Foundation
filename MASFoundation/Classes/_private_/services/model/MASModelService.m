@@ -2942,7 +2942,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 // Post the notification
                 //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoffNotification object:blockSelf];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
             
                 //
                 // Notify
@@ -2960,7 +2960,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             //
             // Post the notification
             //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoffNotification object:blockSelf];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
         
             //
             // Notify
