@@ -175,6 +175,15 @@ typedef NS_ENUM(NSInteger, L7SBLESessionSharingState)
 - (BOOL)isDeviceLogin DEPRECATED_ATTRIBUTE;
 
 
+/**
+ * Logout the device.
+ *
+ * The method removes access credentials of all apps within the same access group on
+ * the device.
+ */
+- (void)logoutDevice DEPRECATED_MSG_ATTRIBUTE("Use [[MASUser currentUser] logoutWithCompletion:] instead.");
+
+
 # pragma mark - BLE
 
 /**

@@ -70,14 +70,7 @@
     // Authorization
     if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey])
     {
-        if ([MAS grantFlow] == MASGrantFlowClientCredentials && [MASApplication currentApplication].isAuthenticated)
-        {
-            mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
-        }
-        else if ([MAS grantFlow] == MASGrantFlowPassword && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
-        {
-            mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
-        }
+        mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
     }
     
     //

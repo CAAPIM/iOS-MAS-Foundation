@@ -3110,6 +3110,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // Go through registeration, authentication logic
     //
+    
+    //
+    // Registering client application
+    //
     [self registerApplication:^(BOOL completed, NSError *error)
      {
          
@@ -3123,10 +3127,13 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          else {
              
              //
-             // If already registered
+             // Check device registration status
              //
              if([[MASDevice currentDevice] isRegistered])
              {
+                 //
+                 // If user already authenticated, proceeds
+                 //
                  if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
                  {
                      if (originalCompletion)
@@ -3134,14 +3141,26 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                          originalCompletion(YES, nil);
                      }
                  }
+                 //
+                 // Otherwise, perform user authentication with given username and password
+                 //
                  else {
                      [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
                  }
              }
+             //
+             // If the device is not registered
+             //
              else {
                  
+                 //
+                 // If user credential flow is set
+                 //
                  if ([MAS grantFlow] == MASGrantFlowPassword)
                  {
+                     //
+                     // Register device with given username and password
+                     //
                      [[MASModelService sharedService] registerDeviceForUser:username password:password completion:^(BOOL completed, NSError *error) {
                          
                          if (!completed || error != nil)
@@ -3152,12 +3171,43 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              }
                          }
                          else {
-                             [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                             //
+                             // Perform authentication with given username and password
+                             //
+                             [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
+                                 
+                                 if (!completed || error != nil)
+                                 {
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                                 else {
+                                     //
+                                     // Upon successful validation of session, ensure to have all necessary files are generated
+                                     //
+                                     [[MASSecurityService sharedService] getClientCertificate];
+                                     [[MASSecurityService sharedService] getPrivateKey];
+                                     [[MASSecurityService sharedService] getSignedCertificate];
+                                     
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                             }];
                          }
                      }];
                  }
+                 //
+                 // Ifclient credential flow is set
+                 //
                  else {
                      
+                     //
+                     // Register device with client credentials
+                     //
                      [[MASModelService sharedService] registerDeviceForClientCredentialsCompletion:^(BOOL completed, NSError *error) {
                        
                          if (!completed || error != nil)
@@ -3168,7 +3218,32 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              }
                          }
                          else {
-                             [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                             //
+                             // Perform user authentication with given usernmae and password
+                             //
+                             [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
+                                 
+                                 if (!completed || error != nil)
+                                 {
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                                 else {
+                                     //
+                                     // Upon successful validation of session, ensure to have all necessary files are generated
+                                     //
+                                     [[MASSecurityService sharedService] getClientCertificate];
+                                     [[MASSecurityService sharedService] getPrivateKey];
+                                     [[MASSecurityService sharedService] getSignedCertificate];
+                                     
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                             }];
                          }
                      }];
                  }
@@ -3220,7 +3295,29 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                             //
                             //  Check login status
                             //
-                            [self loginWithCompletion:originalCompletion];
+                            [self loginWithCompletion:^(BOOL completed, NSError *error) {
+                                
+                                if (!completed || error != nil)
+                                {
+                                    if(originalCompletion)
+                                    {
+                                        originalCompletion(completed, error);
+                                    }
+                                }
+                                else {
+                                    //
+                                    // Upon successful validation of session, ensure to have all necessary files are generated
+                                    //
+                                    [[MASSecurityService sharedService] getClientCertificate];
+                                    [[MASSecurityService sharedService] getPrivateKey];
+                                    [[MASSecurityService sharedService] getSignedCertificate];
+                                    
+                                    if(originalCompletion)
+                                    {
+                                        originalCompletion(completed, error);
+                                    }
+                                }
+                            }];
                         }
                     }];
                 }

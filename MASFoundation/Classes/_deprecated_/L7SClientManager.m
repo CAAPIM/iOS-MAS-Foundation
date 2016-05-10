@@ -250,6 +250,31 @@ static id<L7SClientProtocol> _delegate_;
 }
 
 
+- (void)logoutDevice
+{
+    [[MASUser currentUser] logoutWithCompletion:^(BOOL completed, NSError *error) {
+        DLog(@"\n\n(L7SClientManager.logoutDevice() did log off: %@ or error: %@\n\n",
+             (completed ? @"Yes" : @"No"), [error localizedDescription]);
+        
+        if(error)
+        {
+            if(_delegate_) [_delegate_ DidReceiveError:error];
+            
+            return;
+        }
+        
+        if(completed)
+        {
+            //
+            // if the logoff was successful, send notification
+            //
+            NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:L7SDidLogout], L7SStatusUpdateKey, nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:L7SDidReceiveStatusUpdateNotification object:nil userInfo:userinfo];
+        }
+    }];
+}
+
+
 - (BOOL)isRegistered
 {
 	return [MASDevice currentDevice].isRegistered;

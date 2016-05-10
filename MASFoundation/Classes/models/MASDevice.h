@@ -134,6 +134,19 @@
 
 
 /**
+ *  Logout the device from the server.  This will revoke the id_token from the server and local by calling log out endpoint
+ *  If clearLocal is defined as true, as part of log out process (revoking id_token),
+ *  this method will also clear access_token, and refresh_token that are stored in local.
+ *
+ *  @param clearLocal BOOL boolean to indicate to clear local access_token and refresh_token or not.
+ *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that
+ *      receives the results.
+ */
+- (void)logOutDeviceAndClearLocal:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion DEPRECATED_MSG_ATTRIBUTE("Use [[MASUser currentUser] logoutWithCompletion:] instead.");
+
+
+
+/**
  *  Reset the application's locally stored data on the device only.  This does NOT call the
  *  Gateway to remove the device record.  You must call deregisterWithCompletion: to do that.
  *
