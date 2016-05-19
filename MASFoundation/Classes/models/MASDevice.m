@@ -58,66 +58,7 @@ static id<MASSessionSharingDelegate> _SessionSharingDelegate_;
     //
     // Pass through to the service
     //
-    [[MASModelService sharedService] deregisterCurrentDeviceWithCompletion:^(BOOL completed, NSError *error)
-    {
-        
-        __block NSError *serverError = error;
-   
-        //
-        // Reset all on device settings, credentials, etc ... whether the deregister call succeeds or fails
-        //
-        [self resetLocallyWithCompletion:^(BOOL localCompleted, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Notify
-                //
-                if(completion) completion(NO, error);
-            
-                return;
-            }
-            
-            //
-            // Detect if error, if so stop here
-            //
-            if(serverError)
-            {
-                //
-                // Post the did fail to deregister in cloud notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterInCloudNotification object:self];
-                
-                //
-                // Notify
-                //
-                if(completion) completion(NO, serverError);
-                
-                return;
-            }
-            
-            if (completed)
-            {
-                //
-                // Post the did deregister in cloud notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterInCloudNotification object:self];
-            }
-            
-            //
-            // Post the did deregister overall notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterNotification object:self];
-            
-            //
-            // Notify
-            //
-            if(completion) completion(YES, nil);
-        }];
-    }];
+    [[MASModelService sharedService] deregisterCurrentDeviceWithCompletion:completion];
 }
 
 
@@ -143,46 +84,64 @@ static id<MASSessionSharingDelegate> _SessionSharingDelegate_;
 - (void)resetLocallyWithCompletion:(MASCompletionErrorBlock)completion
 {
     //
-    // KeyChain
+    // Reset locally
+    //
+    [self resetLocally];
+    
+    if (completion)
+    {
+        completion(YES, nil);
+    }
+//    //
+//    // KeyChain
+//    //
+//    [[MASAccessService sharedService] clearLocal];
+//    [[MASAccessService sharedService] clearShared];
+//    
+//    //
+//    // MASFiles
+//    //
+//    [[MASSecurityService sharedService] removeAllFiles];
+//    
+//    //
+//    // Registry Services
+//    //
+//    [[MASServiceRegistry sharedRegistry] resetWithCompletion:^(BOOL completed, NSError *error) {
+//       
+//        if(error)
+//        {
+//            //
+//            // Post the did fail to deregister on device notification
+//            //
+//            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterOnDeviceNotification object:self];
+//
+//            //
+//            // Notify
+//            //
+//            if(completion) completion(NO, error);
+//            
+//            return;
+//        }
+//        
+//        //
+//        // Post the did deregister on device notification
+//        //
+//        [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterOnDeviceNotification object:self];
+//
+//        //
+//        // Notify
+//        //
+//        if(completion) completion(YES, nil);
+//    }];
+}
+
+
+- (void)resetLocally
+{
+    //
+    // Remove local keychains
     //
     [[MASAccessService sharedService] clearLocal];
-    [[MASAccessService sharedService] clearShared];
-    
-    //
-    // MASFiles
-    //
-    [[MASSecurityService sharedService] removeAllFiles];
-    
-    //
-    // Registry Services
-    //
-    [[MASServiceRegistry sharedRegistry] resetWithCompletion:^(BOOL completed, NSError *error) {
-       
-        if(error)
-        {
-            //
-            // Post the did fail to deregister on device notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterOnDeviceNotification object:self];
-            
-            //
-            // Notify
-            //
-            if(completion) completion(NO, error);
-            
-            return;
-        }
-        
-        //
-        // Post the did deregister on device notification
-        //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterOnDeviceNotification object:self];
-        
-        //
-        // Notify
-        //
-        if(completion) completion(YES, nil);
-    }];
 }
 
 

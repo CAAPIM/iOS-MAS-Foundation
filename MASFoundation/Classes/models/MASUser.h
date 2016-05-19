@@ -28,54 +28,58 @@
 # pragma mark - Properties
 
 /**
- *
+ *  Boolean indicator of whether the MASUser object is currently authenticated user or not.
  */
 @property (nonatomic, assign, readonly) BOOL isCurrentUser;
 
+
 /**
- *
+ *  Boolean indicator of whether the MASUser object is authenticated or not
  */
 @property (nonatomic, assign, readonly) BOOL isAuthenticated;
 
-/**
- *
- */
-@property (nonatomic, assign, readonly) BOOL wasLoggedOff;
 
 /**
- *
+ *  NSString property of username
  */
 @property (nonatomic, copy, readonly) NSString *userName;
 
+
 /**
- *
+ *  NSString property of the user's family name
  */
 @property (nonatomic, copy, readonly) NSString *familyName;
 
+
 /**
- *
+ *  NSString property of the user's given name
  */
 @property (nonatomic, copy, readonly) NSString *givenName;
 
+
 /**
- *
+ *  NSString property of the user's full name
  */
 @property (nonatomic, copy, readonly) NSString *formattedName;
 
+
 /**
- *
+ *  NSString property of the user's email address
  */
 @property (nonatomic, copy, readonly) NSDictionary *emailAddresses;
 
+
 /**
- *
+ *  NSString property of the user's phone number
  */
 @property (nonatomic, copy, readonly) NSDictionary *phoneNumbers;
 
+
 /**
- *
+ *  NSString property of the user's address
  */
 @property (nonatomic, copy, readonly) NSDictionary *addresses;
+
 
 /**
  *

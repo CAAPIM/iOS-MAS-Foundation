@@ -52,11 +52,10 @@
 - (NSString *)debugDescription
 {
     return [NSString stringWithFormat:@"(%@) is current user: %@, is authenticated: %@\n\n"
-        "        and was previously logged off: %@\n        objectId: %@\n        user name: %@\n        family name: %@\n"
+        "        and objectId: %@\n        user name: %@\n        family name: %@\n"
         "        given name: %@\n        formatted name: %@\n        active: %@\n        email addresses: %@\n"
         "        phone numbers: %@\n        addresses: %@\n        photos: %@\n        groups: %@",
         [self class], ([self isCurrentUser] ? @"Yes" : @"No"), ([self isAuthenticated] ? @"Yes" : @"No"),
-        ([self wasLoggedOff] ? @"Yes" : @"No"),
         [self objectId], [self userName], [self familyName],
         [self givenName], [self formattedName], ([self active] ? @"Yes" : @"No"), [self emailAddresses],
         [self phoneNumbers], [self addresses], [self photos], [self groups]];

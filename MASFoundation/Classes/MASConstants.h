@@ -465,60 +465,6 @@ static NSString *const MASWillSwitchGatewayServerNotification = @"MASWillSwitchG
 static NSString *const MASDidSwitchGatewayServerNotification = @"MASDidSwitchGatewayServerNotification";
 
 
-///--------------------------------------
-/// @name Configuration Notifications
-///--------------------------------------
-
-# pragma mark - Configuraton Notifications
-
-/*
- * The NSString constant for the configuration notification indicating that the MASConfiguration
- * has begun the process of loading the configuration.
- 
-static NSString *const MASConfigurationWillLoadNotification = @"MASConfigurationWillLoadNotification";
-
-
-**
- * The NSString constant for the configuration notification indicating that the MASConfiguration
- * has failed to successfully load the configuration.
- *
-static NSString *const MASConfigurationDidFailToLoadNotification = @"MASConfigurationDidFailToLoadNotification";
-
-
-**
- * The NSString constant for the configuration notification indicating that the MASConfiguration
- * has successfully loaded the configuration.
- *
-static NSString *const MASConfigurationDidLoadNotification = @"MASConfigurationDidLoadNotification";
-*/
-
-
-///--------------------------------------
-/// @name Application Notifications
-///--------------------------------------
-
-# pragma mark - Application Notifications
-
-/**
- * The NSString constant for the application notification indicating that the MASApplication
- * has begun the process of registering for credentials.
- */
-static NSString *const MASApplicationWillRegisterNotification = @"MASApplicationWillRegisterNotification";
-
-
-/**
- * The NSString constant for the application notification indicating that the MASApplication
- * has failed to successfully register for credentials.
- */
-static NSString *const MASApplicationDidFailToRegisterNotification = @"MASApplicationDidFailToRegisterNotification";
-
-
-/**
- * The NSString constant for the application notification indicating that the MASApplication
- * has successfully registered for credentials.
- */
-static NSString *const MASApplicationDidRegisterNotification = @"MASApplicationDidRegisterNotification";
-
 
 
 ///--------------------------------------
@@ -536,30 +482,9 @@ static NSString *const MASDeviceWillDeregisterNotification = @"MASDeviceWillDere
 
 /**
  * The NSString constant for the device notification indicating that the MASDevice
- * has failed to successfully deregister in the cloud.
+ * has failed to successfully deregister.
  */
-static NSString *const MASDeviceDidFailToDeregisterInCloudNotification = @"MASDeviceDidFailToDeregisterInCloudNotification";
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has failed to successfully deregister on the device.
- */
-static NSString *const MASDeviceDidFailToDeregisterOnDeviceNotification = @"MASDeviceDidFailToDeregisterOnDeviceNotification";
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has successfully deregistered in the cloud.
- */
-static NSString *const MASDeviceDidDeregisterInCloudNotification = @"MASDeviceDidDeregisterInCloudNotification";
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has successfully deregistered on the device.
- */
-static NSString *const MASDeviceDidDeregisterOnDeviceNotification = @"MASDeviceDidDeregisterOnDeviceNotification";
+static NSString *const MASDeviceDidFailToDeregisterNotification = @"MASDeviceDidFailToDeregisterNotification";
 
 
 /**
@@ -568,26 +493,6 @@ static NSString *const MASDeviceDidDeregisterOnDeviceNotification = @"MASDeviceD
  */
 static NSString *const MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
 
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has begun the process of registering for credentials.
- */
-static NSString *const MASDeviceWillRegisterNotification = @"MASDeviceWillRegisterNotification";
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has failed to successfully register for credentials.
- */
-static NSString *const MASDeviceDidFailToRegisterNotification = @"MASDeviceDidFailToRegisterNotification";
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has successfully registered for credentials.
- */
-static NSString *const MASDeviceDidRegisterNotification = @"MASDeviceDidRegisterNotification";
 
 
 ///--------------------------------------

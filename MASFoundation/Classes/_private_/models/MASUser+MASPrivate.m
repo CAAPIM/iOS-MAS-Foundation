@@ -20,7 +20,6 @@
 # pragma mark - Property Constants
 
 static NSString *const MASUserIsCurrentUserPropertyKey = @"isCurrentUser"; // bool
-static NSString *const MASUserWasLoggedOffPropertyKey = @"wasLoggedOff"; // bool
 static NSString *const MASUserObjectIdPropertyKey = @"objectId"; // string
 static NSString *const MASUserUserNamePropertyKey = @"userName"; // string
 static NSString *const MASUserFamilyNamePropertyKey = @"familyName"; // string
@@ -239,7 +238,6 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
     [super encodeWithCoder:aCoder];
     
     if(self.isCurrentUser) [aCoder encodeBool:self.isCurrentUser forKey:MASUserIsCurrentUserPropertyKey];
-    if(self.wasLoggedOff) [aCoder encodeBool:self.wasLoggedOff forKey:MASUserWasLoggedOffPropertyKey];
     
     if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
     if(self.familyName) [aCoder encodeObject:self.familyName forKey:MASUserFamilyNamePropertyKey];
@@ -261,7 +259,6 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
     if(self = [super initWithCoder:aDecoder])
     {
         self.isCurrentUser = [aDecoder decodeBoolForKey:MASUserIsCurrentUserPropertyKey];
-        self.wasLoggedOff = [aDecoder decodeBoolForKey:MASUserWasLoggedOffPropertyKey];
         
         self.userName = [aDecoder decodeObjectForKey:MASUserUserNamePropertyKey];
         self.familyName = [aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey];
@@ -446,23 +443,8 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
 }
 
 
-- (BOOL)wasLoggedOff
-{
-    NSNumber *wasLoggedOffNumber = objc_getAssociatedObject(self, &MASUserWasLoggedOffPropertyKey);
-    
-    return [wasLoggedOffNumber boolValue];
-}
-
-
-- (void)setWasLoggedOff:(BOOL)wasLoggedOff
-{
-    objc_setAssociatedObject(self, &MASUserWasLoggedOffPropertyKey, [NSNumber numberWithBool:wasLoggedOff], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
 - (void)setWasLoggedOffAndSave:(BOOL)wasLoggedOff
 {
-    [self setWasLoggedOff:wasLoggedOff];
     
     //
     // If was logged off remove the keychain stored values

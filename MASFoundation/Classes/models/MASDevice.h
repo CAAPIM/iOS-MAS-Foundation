@@ -157,7 +157,18 @@
  *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that
  *      receives the results.
  */
-- (void)resetLocallyWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)resetLocallyWithCompletion:(MASCompletionErrorBlock)completion DEPRECATED_MSG_ATTRIBUTE("Use [[MASDevice currentDevice] resetLocally] instead.");
+
+
+
+/**
+ *  Reset the application's locally stored data on the device only.  This does NOT call the
+ *  backend service to remove the device record.  You must call [[MASDevice currentDevice] deregisterWithCompletion:] to do that.
+ *
+ *  WARNING: if you call this method, all access credentials and locally stored configuration related to the application will be removed.  
+ *  Re-authentication proccess will be triggered whenever you are trying to access the gateway.
+ */
+- (void)resetLocally;
 
 
 

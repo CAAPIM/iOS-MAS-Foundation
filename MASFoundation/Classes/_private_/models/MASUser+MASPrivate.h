@@ -23,7 +23,6 @@
 
 @property (nonatomic, assign, readwrite) BOOL isCurrentUser;
 @property (nonatomic, assign, readonly) BOOL isAuthenticated;
-@property (nonatomic, assign, readwrite) BOOL wasLoggedOff;
 
 @property (nonatomic, copy, readwrite) NSString *userName;
 @property (nonatomic, copy, readwrite) NSString *familyName;

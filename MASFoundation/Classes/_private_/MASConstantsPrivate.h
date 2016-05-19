@@ -281,5 +281,85 @@ typedef void (^MASLocationMonitorBlock)(CLLocation *_Nonnull location, MASLocati
  * The SessionDataTask completion block that will receive the reponse, the response object and/or error if applicable.
  */
 typedef void (^MASSessionDataTaskCompletionBlock)(NSURLResponse *_Nonnull response, id _Nonnull responseObject, NSError *_Nonnull error);
+
+
+//
+// MAS Notification - private
+//
+
+
+
+///--------------------------------------
+/// @name Application Notifications
+///--------------------------------------
+
+# pragma mark - Application Notifications
+
+/**
+ * The NSString constant for the application notification indicating that the MASApplication
+ * has begun the process of registering for credentials.
+ */
+static NSString *_Nonnull const MASApplicationWillRegisterNotification = @"MASApplicationWillRegisterNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASApplication
+ * has failed to successfully register for credentials.
+ */
+static NSString *_Nonnull const MASApplicationDidFailToRegisterNotification = @"MASApplicationDidFailToRegisterNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASApplication
+ * has successfully registered for credentials.
+ */
+static NSString *_Nonnull const MASApplicationDidRegisterNotification = @"MASApplicationDidRegisterNotification";
+
     
 
+///--------------------------------------
+/// @name Device Notifications
+///--------------------------------------
+
+# pragma mark - Device Notifications
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has begun the process of registering for credentials.
+ */
+static NSString *_Nonnull const MASDeviceWillRegisterNotification = @"MASDeviceWillRegisterNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has failed to successfully register for credentials.
+ */
+static NSString *_Nonnull const MASDeviceDidFailToRegisterNotification = @"MASDeviceDidFailToRegisterNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has successfully registered for credentials.
+ */
+static NSString *_Nonnull const MASDeviceDidRegisterNotification = @"MASDeviceDidRegisterNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has failed to successfully deregister on the device.
+ */
+static NSString *_Nonnull const MASDeviceDidFailToDeregisterOnDeviceNotification = @"MASDeviceDidFailToDeregisterOnDeviceNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has successfully deregistered in the cloud.
+ */
+static NSString *_Nonnull const MASDeviceDidDeregisterInCloudNotification = @"MASDeviceDidDeregisterInCloudNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has successfully deregistered on the device.
+ */
+static NSString *_Nonnull const MASDeviceDidDeregisterOnDeviceNotification = @"MASDeviceDidDeregisterOnDeviceNotification";

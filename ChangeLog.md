@@ -18,6 +18,8 @@
 - ```[MAS deviceRegistrationType]``` is renamed to ```[MAS grantFlow]```.
 - ```[[MASUser currentUser] logoffWithCompletion:]``` is renamed to ```[[MASUser currentUser] logoutWithCompletion:]```.
 - ```MASDeviceRegistrationType``` is renamed to ```MASGrantFlow``` in ```MASConstants.h```.
+- ```wasLoggedOff``` property in ```[MASUser currentUser]``` is deprecated.
+- ```[[MASDevice currentDevice] resetLocallyWithCompletion:]``` will be deprecated.  Use ```[[MASDevice currentDevice] resetLocally]``` instead.
 
 
 

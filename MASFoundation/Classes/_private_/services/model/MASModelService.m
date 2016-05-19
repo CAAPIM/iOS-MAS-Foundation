@@ -623,11 +623,38 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         andHeaders:mutableHeaderInfo
         completion:^(NSDictionary *responseInfo, NSError *error)
         {
+            
+            //
+            // KeyChain
+            //
+            [[MASAccessService sharedService] clearLocal];
+            [[MASAccessService sharedService] clearShared];
+            
+            //
+            // MASFiles
+            //
+            [[MASSecurityService sharedService] removeAllFiles];
+            
+            //
+            // re-establish URL session
+            //
+            [[MASNetworkingService sharedService] establishURLSession];
+            
+            //
+            // Post the did deregister on device notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterOnDeviceNotification object:self];
+            
             //
             // Detect if error, if so stop here
             //
             if(error)
             {
+                //
+                // Post the did fail to deregister in cloud notification
+                //
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterNotification object:self];
+
                 //
                 // Notify
                 //
@@ -637,9 +664,14 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             }
             
             //
-            // re-establish URL session
+            // Post the did deregister in cloud notification
             //
-            [[MASNetworkingService sharedService] establishURLSession];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterInCloudNotification object:self];
+            
+            //
+            // Post the did deregister overall notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterNotification object:self];
         
             //
             // Notify
@@ -1609,7 +1641,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // If the current user is NOT authenticated as user credentials
     // And NOT logged off, and refresh_token exists, authenticate with refresh_token
     //
-    if (self.currentUser && refreshToken && !self.currentUser.wasLoggedOff)
+    if (self.currentUser && refreshToken)
     {
         
         // if refresh_token exists
