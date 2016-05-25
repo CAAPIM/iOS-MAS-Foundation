@@ -317,6 +317,8 @@
 		CB5E4C711C1D250D001B3B8A /* MASPutURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C6F1C1D250D001B3B8A /* MASPutURLRequest.m */; };
 		CB5E4C741C1D26BA001B3B8A /* MASPatchURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C721C1D26BA001B3B8A /* MASPatchURLRequest.h */; };
 		CB5E4C751C1D26BA001B3B8A /* MASPatchURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */; };
+		CB63A8911CF64E21005DDBEB /* MASSocialLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */; };
 		D58808E91C31FB450082321D /* L7SBrowserURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D58808E51C31FB450082321D /* L7SBrowserURLProtocol.h */; };
 		D58808EA1C31FB450082321D /* L7SBrowserURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D58808E61C31FB450082321D /* L7SBrowserURLProtocol.m */; };
 		D58808EB1C31FB450082321D /* L7SEnterpriseApp.h in Headers */ = {isa = PBXBuildFile; fileRef = D58808E71C31FB450082321D /* L7SEnterpriseApp.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -663,6 +665,8 @@
 		CB5E4C6F1C1D250D001B3B8A /* MASPutURLRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPutURLRequest.m; sourceTree = "<group>"; };
 		CB5E4C721C1D26BA001B3B8A /* MASPatchURLRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASPatchURLRequest.h; sourceTree = "<group>"; };
 		CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPatchURLRequest.m; sourceTree = "<group>"; };
+		CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSocialLogin.h; sourceTree = "<group>"; };
+		CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSocialLogin.m; sourceTree = "<group>"; };
 		D58808E51C31FB450082321D /* L7SBrowserURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = L7SBrowserURLProtocol.h; sourceTree = "<group>"; };
 		D58808E61C31FB450082321D /* L7SBrowserURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = L7SBrowserURLProtocol.m; sourceTree = "<group>"; };
 		D58808E71C31FB450082321D /* L7SEnterpriseApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = L7SEnterpriseApp.h; sourceTree = "<group>"; };
@@ -1187,6 +1191,8 @@
 				1046618D1C0ABDDE00A2A03C /* MASGroup.m */,
 				CB2B19611C76534200EFF3ED /* MASSessionSharingQRCode.h */,
 				CB2B19621C76534200EFF3ED /* MASSessionSharingQRCode.m */,
+				CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */,
+				CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1318,6 +1324,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB63A8911CF64E21005DDBEB /* MASSocialLogin.h in Headers */,
 				105B2F501CA6B3EA0005A2D0 /* srp.h in Headers */,
 				CB2B19631C76534200EFF3ED /* MASSessionSharingQRCode.h in Headers */,
 				A419B3A11C176259008DC88C /* NSData+MAS.h in Headers */,
@@ -1633,6 +1640,7 @@
 			files = (
 				CB5E4C711C1D250D001B3B8A /* MASPutURLRequest.m in Sources */,
 				A4641FA21BE09B62004E025C /* L7SErrors.m in Sources */,
+				CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */,
 				10738A321C711C2F00B7E87E /* read_handle_shared.c in Sources */,
 				A4150EE11BF16E0F00037E27 /* MASBluetoothService.m in Sources */,
 				10D2D49F1C1686ED00DF8AC4 /* MASGroup+MASPrivate.m in Sources */,

@@ -50,6 +50,7 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASObject.h>
 #import <MASFoundation/MASUser.h>
 #import <MASFoundation/MASSessionSharingQRCode.h>
+#import <MASFoundation/MASSocialLogin.h>
 
 //
 // Categories
