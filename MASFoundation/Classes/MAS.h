@@ -133,8 +133,7 @@
 # pragma mark - Start & Stop
 
 /**
- *  Starts the lifecycle of the MAS processes.  This includes the registration of the
- *  application to the Gateway, if the network is available.
+ *  Starts the lifecycle of the MAS processes.  
  *
  *  Although an asynchronous block callback parameter is provided for response usage, 
  *  optionally you can set that to nil and the caller can observe the lifecycle 
@@ -165,8 +164,7 @@
 
 
 /**
- *  Starts the lifecycle of the MAS processes.  This includes the registration of the
- *  application to the Gateway, if the network is available.
+ *  Starts the lifecycle of the MAS processes.
  *
  *  Although an asynchronous block callback parameter is provided for response usage,
  *  optionally you can set that to nil and the caller can observe the lifecycle
@@ -201,9 +199,6 @@
  *  Starts the lifecycle of the MAS processes with given JSON configuration data.
  *  This method will overwrite JSON configuration (if they are different) that was stored in keychain.
  *
- *  This includes the registration of the
- *  application to the Gateway, if the network is available.
- *
  *  Although an asynchronous block callback parameter is provided for response usage,
  *  optionally you can set that to nil and the caller can observe the lifecycle
  *
@@ -231,9 +226,6 @@
 /**
  *  Starts the lifecycle of the MAS processes with given JSON configuration file path.
  *  This method will overwrite JSON configuration (if they are different) that was stored in keychain.
- *
- *  This includes the registration of the
- *  application to the Gateway, if the network is available.
  *
  *  Although an asynchronous block callback parameter is provided for response usage,
  *  optionally you can set that to nil and the caller can observe the lifecycle
