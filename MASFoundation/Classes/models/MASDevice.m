@@ -92,47 +92,6 @@ static id<MASSessionSharingDelegate> _SessionSharingDelegate_;
     {
         completion(YES, nil);
     }
-//    //
-//    // KeyChain
-//    //
-//    [[MASAccessService sharedService] clearLocal];
-//    [[MASAccessService sharedService] clearShared];
-//    
-//    //
-//    // MASFiles
-//    //
-//    [[MASSecurityService sharedService] removeAllFiles];
-//    
-//    //
-//    // Registry Services
-//    //
-//    [[MASServiceRegistry sharedRegistry] resetWithCompletion:^(BOOL completed, NSError *error) {
-//       
-//        if(error)
-//        {
-//            //
-//            // Post the did fail to deregister on device notification
-//            //
-//            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterOnDeviceNotification object:self];
-//
-//            //
-//            // Notify
-//            //
-//            if(completion) completion(NO, error);
-//            
-//            return;
-//        }
-//        
-//        //
-//        // Post the did deregister on device notification
-//        //
-//        [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterOnDeviceNotification object:self];
-//
-//        //
-//        // Notify
-//        //
-//        if(completion) completion(YES, nil);
-//    }];
 }
 
 
