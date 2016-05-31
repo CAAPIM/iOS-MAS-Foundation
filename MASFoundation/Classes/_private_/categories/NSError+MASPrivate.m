@@ -328,12 +328,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 
 # pragma mark - Create specific error types
 
-+ (NSError *)errorInvalidDeviceRegistrationBlock
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidDeviceRegistrationBlock errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
 + (NSError *)errorInvalidUserLoginBlock
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeInvalidUserLoginBlock errorDomain:MASFoundationErrorDomainLocal];
@@ -721,7 +715,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeInvalidNSDictionary: return @"Invalid NSDictionary object. JSON object cannot be nil.";
         case MASFoundationErrorCodeInvalidNSURL: return @"Invalid NSURL object. File URL cannot be nil";
         case MASFoundationErrorCodeInvalidUserLoginBlock: return @"SDK is attempting to invoke MASDeviceRegistrationWithUserCredentialsBlock, but the block has not defined.  The block is mandatory for user credential flow if you have decided to not use MASUI.";
-        case MASFoundationErrorCodeInvalidDeviceRegistrationBlock: return @"SDK is attempting to invoke MASUserLoginWithUserCredentialsBlock, but the block has not defined.  The block is mandatory for user credential flow if you have decided to not use MASUI.";
             
         //
         // Application

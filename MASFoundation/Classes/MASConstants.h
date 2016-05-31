@@ -282,122 +282,120 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     // SDK start
     //
-    MASFoundationErrorCodeInvalidNSURL,
-    MASFoundationErrorCodeInvalidNSDictionary,
-    MASFoundationErrorCodeInvalidDeviceRegistrationBlock,
-    MASFoundationErrorCodeInvalidUserLoginBlock,
-    
-    //
-    // Application
-    //
-    MASFoundationErrorCodeApplicationAlreadyRegistered,
-    MASFoundationErrorCodeApplicationInvalid,
-    MASFoundationErrorCodeApplicationNotRegistered,
-    MASFoundationErrorCodeApplicationInvalidMagIdentifer,
-    
-    //
-    // Configuration
-    //
-    MASFoundationErrorCodeConfigurationLoadingFailedFileNotFound,
-    MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization,
-    MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation,
-    MASFoundationErrorCodeConfigurationInvalidEndpoint,
-    
-    //
-    // Device
-    //
-    MASFoundationErrorCodeDeviceAlreadyRegistered,
-    MASFoundationErrorCodeDeviceAlreadyRegisteredWithDifferentFlow,
-    MASFoundationErrorCodeDeviceCouldNotBeDeregistered,
-    MASFoundationErrorCodeDeviceNotRegistered,
-    MASFoundationErrorCodeDeviceNotLoggedIn,
-    MASFoundationErrorCodeDeviceRecordIsNotValid,
-    MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope,
-    MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters,
+    MASFoundationErrorCodeInvalidNSURL = 100001,
+    MASFoundationErrorCodeInvalidNSDictionary = 100002,
+    MASFoundationErrorCodeInvalidUserLoginBlock = 100003,
     
     //
     // Flow
     //
-    MASFoundationErrorCodeFlowIsNotActive,
-    MASFoundationErrorCodeFlowIsNotImplemented,
-    MASFoundationErrorCodeFlowTypeUnsupported,
+    MASFoundationErrorCodeFlowIsNotActive = 100101,
+    MASFoundationErrorCodeFlowIsNotImplemented = 100102,
+    MASFoundationErrorCodeFlowTypeUnsupported = 100103,
+    
+    //
+    // Configuration
+    //
+    MASFoundationErrorCodeConfigurationLoadingFailedFileNotFound = 100201,
+    MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization = 100202,
+    MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation = 100203,
+    MASFoundationErrorCodeConfigurationInvalidEndpoint = 100204,
     
     //
     // Geolocation
     //
-    MASFoundationErrorCodeGeolocationIsInvalid,
-    MASFoundationErrorCodeGeolocationIsMissing,
-    MASFoundationErrorCodeGeolocationServicesAreUnauthorized,
+    MASFoundationErrorCodeGeolocationIsInvalid = 100301,
+    MASFoundationErrorCodeGeolocationIsMissing = 100302,
+    MASFoundationErrorCodeGeolocationServicesAreUnauthorized = 100303,
     
     //
     // Network
     //
-    MASFoundationErrorCodeNetworkUnacceptableContentType,
-    MASFoundationErrorCodeNetworkIsOffline,
-    MASFoundationErrorCodeNetworkNotReachable,
-    MASFoundationErrorCodeNetworkNotStarted,
-    MASFoundationErrorCodeNetworkRequestTimedOut,
-    MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade,
+    MASFoundationErrorCodeNetworkUnacceptableContentType = 100401,
+    MASFoundationErrorCodeNetworkIsOffline = 100402,
+    MASFoundationErrorCodeNetworkNotReachable = 100403,
+    MASFoundationErrorCodeNetworkNotStarted = 100404,
+    MASFoundationErrorCodeNetworkRequestTimedOut = 100405,
+    MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade = 100406,
+    MASFoundationErrorCodeResponseSerializationFailedToParseResponse = 100407,
     
-    MASFoundationErrorCodeResponseSerializationFailedToParseResponse,
+    //
+    // Application
+    //
+    MASFoundationErrorCodeApplicationAlreadyRegistered = 110001,
+    MASFoundationErrorCodeApplicationInvalid = 110002,
+    MASFoundationErrorCodeApplicationNotRegistered = 110003,
+    MASFoundationErrorCodeApplicationInvalidMagIdentifer = 110004,
+    
+    //
+    // Device
+    //
+    MASFoundationErrorCodeDeviceAlreadyRegistered = 120001,
+    MASFoundationErrorCodeDeviceAlreadyRegisteredWithDifferentFlow = 120002,
+    MASFoundationErrorCodeDeviceCouldNotBeDeregistered = 120003,
+    MASFoundationErrorCodeDeviceNotRegistered = 120004,
+    MASFoundationErrorCodeDeviceNotLoggedIn = 120005,
+    MASFoundationErrorCodeDeviceRecordIsNotValid = 120006,
+    MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
+    MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
     
     //
     // User
     //
-    MASFoundationErrorCodeUserAlreadyAuthenticated,
-    MASFoundationErrorCodeUserBasicCredentialsNotValid,
-    MASFoundationErrorCodeUserDoesNotExist,
-    MASFoundationErrorCodeUserNotAuthenticated,
+    MASFoundationErrorCodeUserAlreadyAuthenticated = 130001,
+    MASFoundationErrorCodeUserBasicCredentialsNotValid = 130002,
+    MASFoundationErrorCodeUserDoesNotExist = 130003,
+    MASFoundationErrorCodeUserNotAuthenticated = 130004,
     
     //
     // Token
     //
-    MASFoundationErrorCodeTokenInvalidIdToken,
-    MASFoundationErrorCodeTokenIdTokenExpired,
-    MASFoundationErrorCodeTokenIdTokenInvalidAud,
-    MASFoundationErrorCodeTokenIdTokenInvalidAzp,
-    MASFoundationErrorCodeTokenIdTokenInvalidSignature,
+    MASFoundationErrorCodeTokenInvalidIdToken = 130101,
+    MASFoundationErrorCodeTokenIdTokenExpired = 130102,
+    MASFoundationErrorCodeTokenIdTokenInvalidAud = 130103,
+    MASFoundationErrorCodeTokenIdTokenInvalidAzp = 130104,
+    MASFoundationErrorCodeTokenIdTokenInvalidSignature = 130105,
     
-    MASFoundationErrorCodeAccessTokenInvalid,
-    MASFoundationErrorCodeAccessTokenDisabled,
-    MASFoundationErrorCodeAccessTokenNotGrantedScope,
+    MASFoundationErrorCodeAccessTokenInvalid = 130201,
+    MASFoundationErrorCodeAccessTokenDisabled = 130202,
+    MASFoundationErrorCodeAccessTokenNotGrantedScope = 130203,
     
     //
     // Enterprise Browser
     //
-    MASFoundationErrorCodeEnterpriseBrowserWebAppInvalidURL,
-    MASFoundationErrorCodeEnterpriseBrowserNativeAppDoesNotExist,
-    MASFoundationErrorCodeEnterpriseBrowserNativeAppCannotOpen,
-    MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist,
+    MASFoundationErrorCodeEnterpriseBrowserWebAppInvalidURL = 140001,
+    MASFoundationErrorCodeEnterpriseBrowserNativeAppDoesNotExist = 140002,
+    MASFoundationErrorCodeEnterpriseBrowserNativeAppCannotOpen = 140003,
+    MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist = 140004,
     
     //
     // BLE
     //
-    MASFoundationErrorCodeBLEUnknownState,
-    MASFoundationErrorCodeBLEAuthorizationFailed,
-    MASFoundationErrorCodeBLEAuthorizationPollingFailed,
-    MASFoundationErrorCodeBLECentralDeviceNotFound,
-    MASFoundationErrorCodeBLEDelegateNotDefined,
-    MASFoundationErrorCodeBLEInvalidAuthenticationProvider,
-    MASFoundationErrorCodeBLEPoweredOff,
-    MASFoundationErrorCodeBLERestting,
-    MASFoundationErrorCodeBLERSSINotInRange,
-    MASFoundationErrorCodeBLEUnSupported,
-    MASFoundationErrorCodeBLEUnauthorized,
-    MASFoundationErrorCodeBLEUserDeclined,
-    MASFoundationErrorCodeBLECentral,
-    MASFoundationErrorCodeBLEPeripheral,
-    MASFoundationErrorCodeBLEPeripheralServices,
-    MASFoundationErrorCodeBLEPeripheralCharacteristics,
+    MASFoundationErrorCodeBLEUnknownState = 150001,
+    MASFoundationErrorCodeBLEAuthorizationFailed = 150002,
+    MASFoundationErrorCodeBLEAuthorizationPollingFailed = 150003,
+    MASFoundationErrorCodeBLECentralDeviceNotFound = 150004,
+    MASFoundationErrorCodeBLEDelegateNotDefined = 150005,
+    MASFoundationErrorCodeBLEInvalidAuthenticationProvider = 150006,
+    MASFoundationErrorCodeBLEPoweredOff = 150007,
+    MASFoundationErrorCodeBLERestting = 150008,
+    MASFoundationErrorCodeBLERSSINotInRange = 150009,
+    MASFoundationErrorCodeBLEUnSupported = 150010,
+    MASFoundationErrorCodeBLEUnauthorized = 150011,
+    MASFoundationErrorCodeBLEUserDeclined = 150012,
+    MASFoundationErrorCodeBLECentral = 150013,
+    MASFoundationErrorCodeBLEPeripheral = 150014,
+    MASFoundationErrorCodeBLEPeripheralServices = 150015,
+    MASFoundationErrorCodeBLEPeripheralCharacteristics = 150016,
     
     //
     // Session Sharing
     //
-    MASFoundationErrorCodeSessionSharingAuthorizationInProgress,
-    MASFoundationErrorCodeSessionSharingInvalidAuthenticationURL,
-    MASFoundationErrorCodeQRCodeSessionSharingAuthorizationPollingFailed,
+    MASFoundationErrorCodeSessionSharingAuthorizationInProgress = 150101,
+    MASFoundationErrorCodeSessionSharingInvalidAuthenticationURL = 150102,
+    MASFoundationErrorCodeQRCodeSessionSharingAuthorizationPollingFailed = 150103,
     
-    MASFoundationErrorCodeCount
+    MASFoundationErrorCodeCount = -999999
 };
 
 

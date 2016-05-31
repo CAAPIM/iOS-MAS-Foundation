@@ -97,15 +97,6 @@
 
 
 /**
- *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidDeviceRegistrationBlock.
- *
- *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
- *  error code MASFoundationErrorCodeInvalidDeviceRegistrationBlock.
- */
-+ (NSError *)errorInvalidDeviceRegistrationBlock;
-
-
-/**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidUserLoginBlock.
  *
  *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and 

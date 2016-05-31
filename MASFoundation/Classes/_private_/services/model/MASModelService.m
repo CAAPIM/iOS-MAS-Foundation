@@ -934,7 +934,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 if (completion)
                 {
-                    completion(NO, [NSError errorInvalidDeviceRegistrationBlock]);
+                    completion(NO, [NSError errorInvalidUserLoginBlock]);
                 }
             }
             
