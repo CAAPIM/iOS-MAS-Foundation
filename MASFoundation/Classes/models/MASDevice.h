@@ -13,7 +13,7 @@
 
 @class MASAuthenticationProvider;
 
-@protocol MASSessionSharingDelegate;
+@protocol MASProximityLoginDelegate;
 
 
 /**
@@ -60,15 +60,15 @@
 
 
 /**
- *  The MASDeviceSessionSharingDelegate static property getter
+ *  The MASProximityLoginDelegate static property getter
  */
-+ (id<MASSessionSharingDelegate>)SessionSharingDelegate;
++ (id<MASProximityLoginDelegate>)proximityLoginDelegate;
 
 
 /**
- *  The MASDeviceSessionSharingDelegate static property setter
+ *  The MASProximityLoginDelegate static property setter
  */
-+ (void)setSessionSharingDelegate:(id<MASSessionSharingDelegate>)delegate;
++ (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate>)delegate;
 
 
 ///--------------------------------------

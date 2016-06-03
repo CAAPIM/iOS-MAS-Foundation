@@ -13,82 +13,6 @@
 #import "MASConstants.h"
 
 
-
-/**
- *  The enumerated MASBLEServiceState that can indicate what is current status of Device BLE
- */
-typedef NS_ENUM(NSInteger, MASBLEServiceState) {
-    /**
-     *  Unknown
-     */
-    MASBLEServiceStateUnknonw = -1,
-    /**
-     *  BLE Central started
-     */
-    MASBLEServiceStateCentralStarted,
-    /**
-     *  BLE Central stopped
-     */
-    MASBLEServiceStateCentralStopped,
-    /**
-     *  BLE Central a device detected
-     */
-    MASBLEServiceStateCentralDeviceDetected,
-    /**
-     *  BLE Central a device connected
-     */
-    MASBLEServiceStateCentralDeviceConnected,
-    /**
-     *  BLE Central a device disconnected
-     */
-    MASBLEServiceStateCentralDeviceDisconnected,
-    /**
-     *  BLE Central service discovered
-     */
-    MASBLEServiceStateCentralServiceDiscovered,
-    /**
-     *  BLE Central characteristic discovered
-     */
-    MASBLEServiceStateCentralCharacteristicDiscovered,
-    /**
-     *  BLE Central characteristic written
-     */
-    MASBLEServiceStateCentralCharacteristicWritten,
-    /**
-     *  BLE Central authorization succeeded
-     */
-    MASBLEServiceStateCentralAuthorizationSucceeded,
-    /**
-     *  BLE Central authorization failed
-     */
-    MASBLEServiceStateCentralAuthorizationFailed,
-    /**
-     *  BLE Peripheral subscribed
-     */
-    MASBLEServiceStatePeripheralSubscribed,
-    /**
-     *  BLE Peripheral unsubscribed
-     */
-    MASBLEServiceStatePeripheralUnsubscribed,
-    /**
-     *  BLE Peripheral started
-     */
-    MASBLEServiceStatePeripheralStarted,
-    /**
-     *  BLE Peripheral stopped
-     */
-    MASBLEServiceStatePeripheralStopped,
-    /**
-     *  BLE Peripheral session authorized
-     */
-    MASBLEServiceStatePeripheralSessionAuthorized,
-    /**
-     *  BLE Peripheral session notified
-     */
-    MASBLEServiceStatePeripheralSessionNotified
-};
-
-
 @protocol MASSessionSharingDelegate <NSObject>
 
 
@@ -123,7 +47,7 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
  *
  *  @param state enumeration of MASBLEServiceState
  */
-- (void)didReceiveBLESessionSharingStateUpdate:(MASBLEServiceState)state;
+//- (void)didReceiveBLESessionSharingStateUpdate:(MASBLEServiceState)state;
 
 
 

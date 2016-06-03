@@ -55,16 +55,16 @@
 
 
 ///--------------------------------------
-/// @name Session Sharing
+/// @name Proximity Login
 ///--------------------------------------
 
-# pragma mark - Session Sharing
+# pragma mark - Proximity Login
 
 /**
- *  Retrieves the instance of MASAuthenticationProvider for BLE/QR Code session sharing.
+ *  Retrieves the instance of MASAuthenticationProvider for BLE/QR Code Proximity Login.
  *
- *  @return Returns MASAuthenticationProvider for BLE/QA Code session sharing.
+ *  @return Returns MASAuthenticationProvider for BLE/QA Code Proximity Login.
  */
-- (MASAuthenticationProvider *)retrieveAuthenticationProviderForSessionSharing;
+- (MASAuthenticationProvider *)retrieveAuthenticationProviderForProximityLogin;
 
 @end

@@ -1,14 +1,12 @@
 //
-//  MASSessionSharingQRCode+MASPrivate.m
+//  MASProximityLogin+MASPrivate.m
 //  MASFoundation
 //
-//  Copyright (c) 2016 CA, Inc.
-//
-//  This software may be modified and distributed under the terms
-//  of the MIT license. See the LICENSE file for details.
+//  Created by Hun Go on 2016-06-03.
+//  Copyright © 2016 CA Technologies. All rights reserved.
 //
 
-#import "MASSessionSharingQRCode+MASPrivate.h"
+#import "MASProximityLogin+MASPrivate.h"
 
 #import <objc/runtime.h>
 #import "MASNetworkingService.h"
@@ -24,8 +22,7 @@ static NSString *const kMASSessionSharingQRCodePollingLimitKey = @"pollingLimit"
 static NSString *const kMASSessionSharingQRCodeCurrentPollingCounterKey = @"currentPollingCounter"; // string
 static NSString *const kMASSessionSharingQRCodeIsPollingKey = @"isPolling"; // string
 
-
-@implementation MASSessionSharingQRCode (MASPrivate) 
+@implementation MASProximityLogin (MASPrivate)
 
 
 # pragma mark - Lifecycle
@@ -95,7 +92,7 @@ static NSString *const kMASSessionSharingQRCodeIsPollingKey = @"isPolling"; // s
                 [[NSNotificationCenter defaultCenter] postNotificationName:MASSessionSharingQRCodeDidStartDisplayingQRCodeImage object:nil userInfo:nil];
             });
         });
-    
+        
     }
     @catch (NSException *exception) {
         NSLog(@"exception : %@",exception);
@@ -146,7 +143,7 @@ static NSString *const kMASSessionSharingQRCodeIsPollingKey = @"isPolling"; // s
     
     NSString *pollPath = [self.pollUrl stringByReplacingOccurrencesOfString:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString withString:@""];
     
-    __block MASSessionSharingQRCode *blockSelf = self;
+    __block MASProximityLogin *blockSelf = self;
     
     //
     // Instead of making a request through [MAS getFrom:..] public interface, call directly the networking service to bypass validation process
@@ -157,80 +154,80 @@ static NSString *const kMASSessionSharingQRCodeIsPollingKey = @"isPolling"; // s
                                       requestType:MASRequestResponseTypeWwwFormUrlEncoded
                                      responseType:MASRequestResponseTypeJson
                                        completion:^(NSDictionary *responseInfo, NSError *error) {
-        
-        if (error)
-        {
-            NSError * pollError = [NSError errorForFoundationCode:MASFoundationErrorCodeQRCodeSessionSharingAuthorizationPollingFailed info:error.userInfo errorDomain:MASFoundationErrorDomain];
-            //
-            // Stop polling and displaying the QR Code image
-            //
-            [blockSelf stopPrivateDisplayingQRCodeImageForSessionSharing];
-            
-            //
-            // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
-            //
-            if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveSessionSharingError:)])
-            {
-                [[MASDevice SessionSharingDelegate] didReceiveSessionSharingError:pollError];
-            }
-            
-            //
-            // Send the notification with authorization code
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromSessionSharingNotification object:pollError];
-        }
-        else {
-            
-            //
-            // Retrieve authorization code
-            //
-            NSString *code = [responseInfo[MASResponseInfoBodyInfoKey] valueForKey:@"code"];
-            
-            if (code == nil || [code length] == 0)
-            {
-                
-                //
-                // re trigger polling if no authorization code is found; if the counter did not exceed the limit
-                //
-                
-                if (blockSelf.currentPollingCounter < [blockSelf.pollingLimit intValue])
-                {
-                    dispatch_time_t pollTimer = dispatch_time(DISPATCH_TIME_NOW, [self.pollingDelay intValue] * NSEC_PER_SEC);
-                    dispatch_after(pollTimer, dispatch_get_main_queue(), ^{
-                        
-                        [blockSelf makePollingRequest];
-                    });
-                }
-            }
-            else {
-                
-                //
-                // If the delegate is set, send the authorization code to delegation method
-                //
-                if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveAuthorizationCode:)])
-                {
-                    [[MASDevice SessionSharingDelegate] didReceiveAuthorizationCode:code];
-                }
-                
-                //
-                // Send the notification with authoriation code
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveAuthorizationCodeFromSessionSharingNotification object:@{@"code" : code}];
-                
-            }
-            
-            //
-            // If the current polling count exceeds pollLimit
-            //
-            if (blockSelf.currentPollingCounter >= [blockSelf.pollingLimit intValue])
-            {
-                //
-                // Stop polling and displaying the QR Code image
-                //
-                [blockSelf stopPrivateDisplayingQRCodeImageForSessionSharing];
-            }
-        }
-    }];
+                                           
+                                           if (error)
+                                           {
+                                               NSError * pollError = [NSError errorForFoundationCode:MASFoundationErrorCodeQRCodeSessionSharingAuthorizationPollingFailed info:error.userInfo errorDomain:MASFoundationErrorDomain];
+                                               //
+                                               // Stop polling and displaying the QR Code image
+                                               //
+                                               [blockSelf stopPrivateDisplayingQRCodeImageForSessionSharing];
+                                               
+                                               //
+                                               // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
+                                               //
+                                               if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveProximityLoginError:)])
+                                               {
+                                                   [[MASDevice proximityLoginDelegate] didReceiveProximityLoginError:pollError];
+                                               }
+                                               
+                                               //
+                                               // Send the notification with authorization code
+                                               //
+                                               [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromSessionSharingNotification object:pollError];
+                                           }
+                                           else {
+                                               
+                                               //
+                                               // Retrieve authorization code
+                                               //
+                                               NSString *code = [responseInfo[MASResponseInfoBodyInfoKey] valueForKey:@"code"];
+                                               
+                                               if (code == nil || [code length] == 0)
+                                               {
+                                                   
+                                                   //
+                                                   // re trigger polling if no authorization code is found; if the counter did not exceed the limit
+                                                   //
+                                                   
+                                                   if (blockSelf.currentPollingCounter < [blockSelf.pollingLimit intValue])
+                                                   {
+                                                       dispatch_time_t pollTimer = dispatch_time(DISPATCH_TIME_NOW, [self.pollingDelay intValue] * NSEC_PER_SEC);
+                                                       dispatch_after(pollTimer, dispatch_get_main_queue(), ^{
+                                                           
+                                                           [blockSelf makePollingRequest];
+                                                       });
+                                                   }
+                                               }
+                                               else {
+                                                   
+                                                   //
+                                                   // If the delegate is set, send the authorization code to delegation method
+                                                   //
+                                                   if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveAuthorizationCode:)])
+                                                   {
+                                                       [[MASDevice proximityLoginDelegate] didReceiveAuthorizationCode:code];
+                                                   }
+                                                   
+                                                   //
+                                                   // Send the notification with authoriation code
+                                                   //
+                                                   [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveAuthorizationCodeFromSessionSharingNotification object:@{@"code" : code}];
+                                                   
+                                               }
+                                               
+                                               //
+                                               // If the current polling count exceeds pollLimit
+                                               //
+                                               if (blockSelf.currentPollingCounter >= [blockSelf.pollingLimit intValue])
+                                               {
+                                                   //
+                                                   // Stop polling and displaying the QR Code image
+                                                   //
+                                                   [blockSelf stopPrivateDisplayingQRCodeImageForSessionSharing];
+                                               }
+                                           }
+                                       }];
 }
 
 
@@ -326,7 +323,7 @@ static NSString *const kMASSessionSharingQRCodeIsPollingKey = @"isPolling"; // s
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    MASSessionSharingQRCode *qrCode = [super copyWithZone:zone];
+    MASProximityLogin *qrCode = [super copyWithZone:zone];
     
     qrCode.authenticationUrl = self.authenticationUrl;
     qrCode.pollUrl = self.pollUrl;

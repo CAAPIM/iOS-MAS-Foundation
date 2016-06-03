@@ -54,9 +54,9 @@
     //
     // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
     //
-    if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveBLESessionSharingStateUpdate:)])
+    if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveBLEProximityLoginStateUpdate:)])
     {
-        [[MASDevice SessionSharingDelegate] didReceiveBLESessionSharingStateUpdate:state];
+        [[MASDevice proximityLoginDelegate] didReceiveBLEProximityLoginStateUpdate:state];
     }
 }
 
@@ -66,9 +66,9 @@
     //
     // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
     //
-    if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveSessionSharingError:)])
+    if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveProximityLoginError:)])
     {
-        [[MASDevice SessionSharingDelegate] didReceiveSessionSharingError:error];
+        [[MASDevice proximityLoginDelegate] didReceiveProximityLoginError:error];
     }
 }
 
@@ -175,7 +175,7 @@
             //
             // Send the notification with authorization code
             //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromSessionSharingNotification object:pollError];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromProximityLoginNotification object:pollError];
         }
         else {
             
@@ -187,15 +187,15 @@
             //
             // If the delegate is set, send the authorization code to delegation method
             //
-            if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveAuthorizationCode:)])
+            if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveAuthorizationCode:)])
             {
-                [[MASDevice SessionSharingDelegate] didReceiveAuthorizationCode:code];
+                [[MASDevice proximityLoginDelegate] didReceiveAuthorizationCode:code];
             }
             
             //
             // Send the notification with authoriation code
             //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveAuthorizationCodeFromSessionSharingNotification object:@{@"code" : code}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification object:@{@"code" : code}];
             
         }
     }];

@@ -1,22 +1,20 @@
 //
-//  MASSessionSharingQRCode.h
+//  MASProximityLoginQRCode.h
 //  MASFoundation
 //
-//  Copyright (c) 2016 CA, Inc.
-//
-//  This software may be modified and distributed under the terms
-//  of the MIT license. See the LICENSE file for details.
+//  Created by Hun Go on 2016-06-03.
+//  Copyright © 2016 CA Technologies. All rights reserved.
 //
 
 #import <MASFoundation/MASFoundation.h>
+#import "MASProximityLogin.h"
 
 @class MASAuthenticationProvider;
 
-
 /**
- * The `MASSessionSharingQRCode` class is a local representation of QR Code authentication provider data and handle necessary logic.
+ * The `MASProximityLoginQRCode` class is a local representation of QR Code authentication provider data and handle necessary logic.
  */
-@interface MASSessionSharingQRCode : MASObject
+@interface MASProximityLoginQRCode : MASProximityLogin
 
 ///--------------------------------------
 /// @name Properties
@@ -77,7 +75,7 @@
  *  @param pollingInterval NSNumber of interval for polling requests.
  *  @param pollingLimit    NSNumber of limit counter for number of polling requests.
  *
- *  @return MASSessionSharingQRCode object
+ *  @return MASProximityLoginQRCode object
  */
 - (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider initialDelay:(NSNumber *)initDelay pollingInterval:(NSNumber *)pollingInterval pollingLimit:(NSNumber *)pollingLimit;
 
@@ -92,7 +90,7 @@
  *
  *  @param provider MASAuthenticationProvider object with authenticationUrl and pollUrl for QR Code.
  *
- *  @return MASSessionSharingQRCode object
+ *  @return MASProximityLoginQRCode object
  */
 - (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider;
 
@@ -100,19 +98,19 @@
 # pragma mark - Start/Stop displaying QR Code image
 
 /**
- *  Generates QR Code image for session sharing based on provided authentication provider and starts polling request for authorization.
- *  Upon successful start display, NSNotification with notification name, MASSessionSharingQRCodeDidStartDisplayingQRCodeImage, will be sent.
+ *  Generates QR Code image for proximity login based on provided authentication provider and starts polling request for authorization.
+ *  Upon successful start display, NSNotification with notification name, MASProximityLoginQRCodeDidStartDisplayingQRCodeImage, will be sent.
  *
  *  @return UIImage of QR Code.
  */
-- (UIImage *)startDisplayingQRCodeImageForSessionSharing;
+- (UIImage *)startDisplayingQRCodeImageForProximityLogin;
 
 
 /**
- *  Stops displaying QR Code image for session sharing based on provided polling configuration.  
- *  Upon successful stop display, NSNotification with notification name, MASSessionSharingQRCodeDidStopDisplayingQRCodeImage, will be sent.
+ *  Stops displaying QR Code image for proximity login based on provided polling configuration.
+ *  Upon successful stop display, NSNotification with notification name, MASProxityLoginQRCodeDidStopDisplayingQRCodeImage, will be sent.
  */
-- (void)stopDisplayingQRCodeImageForSessionSharing;
+- (void)stopDisplayingQRCodeImageForProximityLogin;
 
 
 # pragma mark - Authorize authenticateUrl for session sharing

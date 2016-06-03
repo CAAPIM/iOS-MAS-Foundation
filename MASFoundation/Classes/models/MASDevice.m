@@ -23,20 +23,20 @@
 @implementation MASDevice
 
 
-static id<MASSessionSharingDelegate> _SessionSharingDelegate_;
+static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 
 # pragma mark - Property
 
-+ (id<MASSessionSharingDelegate>)SessionSharingDelegate;
++ (id<MASProximityLoginDelegate>)proximityLoginDelegate
 {
-    return _SessionSharingDelegate_;
+    return _proximityLoginDelegate_;
 }
 
 
-+ (void)setSessionSharingDelegate:(id<MASSessionSharingDelegate>)delegate;
++ (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate>)delegate
 {
-    _SessionSharingDelegate_ = delegate;
+    _proximityLoginDelegate_ = delegate;
 }
 
 

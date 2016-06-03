@@ -24,7 +24,7 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 
 #import <MASFoundation/MAS.h>
 #import <MASFoundation/MASConstants.h>
-#import <MASFoundation/MASSessionSharingDelegate.h>
+#import <MASFoundation/MASProximityLoginDelegate.h>
 #import <MASFoundation/MASService.h>
 
 
@@ -49,8 +49,9 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASGroup.h>
 #import <MASFoundation/MASObject.h>
 #import <MASFoundation/MASUser.h>
-#import <MASFoundation/MASSessionSharingQRCode.h>
 #import <MASFoundation/MASSocialLogin.h>
+#import <MASFoundation/MASProximityLogin.h>
+#import <MASFoundation/MASProximityLoginQRCode.h>
 
 //
 // Categories

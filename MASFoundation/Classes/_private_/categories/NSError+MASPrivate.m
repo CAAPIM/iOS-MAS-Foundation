@@ -599,9 +599,9 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
-+ (NSError *)errorSessionSharingAuthorizationInProgress
++ (NSError *)errorProximityLoginAuthorizationInProgress
 {
-    return [self errorForFoundationCode:MASFoundationErrorCodeSessionSharingAuthorizationInProgress errorDomain:MASFoundationErrorDomainLocal];
+    return [self errorForFoundationCode:MASFoundationErrorCodeProximityLoginAuthorizationInProgress errorDomain:MASFoundationErrorDomainLocal];
 }
 
 
@@ -825,9 +825,9 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         // Session Sharing
         //
-        case MASFoundationErrorCodeSessionSharingAuthorizationInProgress: return @"Authorization is currently in progress through session sharing.";
-        case MASFoundationErrorCodeQRCodeSessionSharingAuthorizationPollingFailed: return @"QR Code session sharing authentication failed with specific information on userInfo.";
-        case MASFoundationErrorCodeSessionSharingInvalidAuthenticationURL: return @"Invalid authentication URL is provided for session sharing.";
+        case MASFoundationErrorCodeProximityLoginAuthorizationInProgress: return @"Authorization is currently in progress through session sharing.";
+        case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code session sharing authentication failed with specific information on userInfo.";
+        case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for session sharing.";
             
         //
         // Default

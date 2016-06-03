@@ -1,20 +1,18 @@
 //
-//  MASSessionSharingQRCode.m
+//  MASProximityLoginQRCode.m
 //  MASFoundation
 //
-//  Copyright (c) 2016 CA, Inc.
-//
-//  This software may be modified and distributed under the terms
-//  of the MIT license. See the LICENSE file for details.
+//  Created by Hun Go on 2016-06-03.
+//  Copyright © 2016 CA Technologies. All rights reserved.
 //
 
-#import "MASSessionSharingQRCode.h"
+#import "MASProximityLoginQRCode.h"
 
-#import "MASSessionSharingQRCode+MASPrivate.h"
+#import "MASProximityLoginQRCode+MASPrivate.h"
 #import "NSString+MASPrivate.h"
 #import "NSError+MASPrivate.h"
 
-@interface MASSessionSharingQRCode ()
+@interface MASProximityLoginQRCode ()
 
 @property (nonatomic, strong) UIImage *qrCodeImage;
 
@@ -24,9 +22,7 @@
 
 @end
 
-
-@implementation MASSessionSharingQRCode
-
+@implementation MASProximityLoginQRCode
 
 # pragma mark - Lifecycle
 
@@ -60,23 +56,23 @@
 
 # pragma mark - Start/Stop displaying QR Code image
 
-- (UIImage *)startDisplayingQRCodeImageForSessionSharing
+- (UIImage *)startDisplayingQRCodeImageForProximityLogin
 {
     //
     // Generate image only once
     //
     if (_qrCodeImage == nil)
     {
-        _qrCodeImage = [self startPrivateDisplayingQRCodeImageForSessionSharing];
+        _qrCodeImage = [self startPrivateDisplayingQRCodeImageForProximityLogin];
     }
     
     return _qrCodeImage;
 }
 
 
-- (void)stopDisplayingQRCodeImageForSessionSharing
+- (void)stopDisplayingQRCodeImageForProximityLogin
 {
-    [self stopPrivateDisplayingQRCodeImageForSessionSharing];
+    [self stopPrivateDisplayingQRCodeImageForProximityLogin];
 }
 
 
@@ -92,7 +88,7 @@
     //
     if ([authenticateUrl isEmpty])
     {
-        invalidURLError = [NSError errorForFoundationCode:MASFoundationErrorCodeSessionSharingInvalidAuthenticationURL errorDomain:MASFoundationErrorDomainLocal];
+        invalidURLError = [NSError errorForFoundationCode:MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL errorDomain:MASFoundationErrorDomainLocal];
     }
     
     if (invalidURLError)
@@ -112,7 +108,7 @@
                                                                     withString:@""];
     
     [MAS postTo:authPath withParameters:nil andHeaders:nil requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeJson completion:^(NSDictionary *responseInfo, NSError *error) {
-       
+        
         if (error)
         {
             if (completion)
@@ -138,4 +134,5 @@
             "        objectId: %@\n        auth url: %@\n        poll url: %@\n        polling delay: %@\n        polling interval: %@\n        polling limit: %@\n",
             [self class], [self objectId], [self authenticationUrl], [self pollUrl], [self pollingDelay], [self pollingInterval], [self pollingLimit]];
 }
+
 @end

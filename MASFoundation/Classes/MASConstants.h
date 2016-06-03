@@ -389,11 +389,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeBLEPeripheralCharacteristics = 150016,
     
     //
-    // Session Sharing
+    // Proximity Login
     //
-    MASFoundationErrorCodeSessionSharingAuthorizationInProgress = 150101,
-    MASFoundationErrorCodeSessionSharingInvalidAuthenticationURL = 150102,
-    MASFoundationErrorCodeQRCodeSessionSharingAuthorizationPollingFailed = 150103,
+    MASFoundationErrorCodeProximityLoginAuthorizationInProgress = 150101,
+    MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL = 150102,
+    MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed = 150103,
     
     MASFoundationErrorCodeCount = -999999
 };
@@ -570,28 +570,28 @@ static NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpd
 
 /**
  *  The NSString constant for the device notification indicating that the MASDevice
- *  has received authorization code from session sharing (BLE/QR Code)
+ *  has received authorization code from proximity login (BLE/QR Code)
  */
-static NSString *const MASDeviceDidReceiveAuthorizationCodeFromSessionSharingNotification = @"MASDeviceDidReceiveAuthorizationCodeFromSessionSharingNotification";
+static NSString *const MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification = @"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification";
 
 
 /**
  *  The NSString constant for the device notification indicating that the MASDevice
- *  has received an error from session sharing (BLE/QR Code)
+ *  has received an error from proximity login (BLE/QR Code)
  */
-static NSString *const MASDeviceDidReceiveErrorFromSessionSharingNotification = @"MASDeviceDidReceiveErrorFromSessionSharingNotification";
+static NSString *const MASDeviceDidReceiveErrorFromProximityLoginNotification = @"MASDeviceDidReceiveErrorFromProximityLoginNotification";
 
 
 /**
- *  The NSString constant for the session sharing notification indicating that QR Code image did start displaying.
+ *  The NSString constant for the proximity login notification indicating that QR Code image did start displaying.
  */
-static NSString *const MASSessionSharingQRCodeDidStartDisplayingQRCodeImage = @"MASSessionSharingQRCodeDidStartDisplayingQRCodeImage";
+static NSString *const MASProximityLoginQRCodeDidStartDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStartDisplayingQRCodeImage";
 
 
 /**
- *  The NSString constant for the session sharing notification indicating that QR Code image did stop displaying.
+ *  The NSString constant for the proximity login notification indicating that QR Code image did stop displaying.
  */
-static NSString *const MASSessionSharingQRCodeDidStopDisplayingQRCodeImage = @"MASSessionSharingQRCodeDidStopDisplayingQRCodeImage";
+static NSString *const MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStopDisplayingQRCodeImage";
 
 
 ///--------------------------------------

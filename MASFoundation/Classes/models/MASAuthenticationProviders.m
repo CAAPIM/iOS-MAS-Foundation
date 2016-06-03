@@ -62,9 +62,9 @@
 }
 
 
-# pragma mark - Session Sharing
+# pragma mark - Proximity Login
 
-- (MASAuthenticationProvider *)retrieveAuthenticationProviderForSessionSharing
+- (MASAuthenticationProvider *)retrieveAuthenticationProviderForProximityLogin
 {
     MASAuthenticationProvider *authProvider = nil;
     

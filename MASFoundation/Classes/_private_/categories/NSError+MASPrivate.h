@@ -434,11 +434,11 @@
 
 
 /**
- *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeSessionSharingAuthorizationInProgress.
+ *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
  *
  *  @return Returns an NSError instance with the domain MASFoundationLocalErrorDomain and 
- *  error MASFoundationErrorCodeSessionSharingAuthorizationInProgress.
+ *  error MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
  */
-+ (NSError *)errorSessionSharingAuthorizationInProgress;
++ (NSError *)errorProximityLoginAuthorizationInProgress;
 
 @end

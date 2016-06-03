@@ -12,7 +12,7 @@
 #import <MASFoundation/MASFoundation.h>
 #import "MASAccessService.h"
 #import "MASModelService.h"
-#import "MASSessionSharingQRCode.h"
+#import "MASProximityLoginQRCode.h"
 
 
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
@@ -81,7 +81,7 @@ static id<L7SClientProtocol> _delegate_;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ensureMASFrameworkWhenAppBecomesActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
         
         // Listen to the notification that QR Code image disappears
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMASNotification:) name:MASSessionSharingQRCodeDidStopDisplayingQRCodeImage object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMASNotification:) name:MASProximityLoginQRCodeDidStopDisplayingQRCodeImage object:nil];
 	}
 
 	return self;
@@ -122,7 +122,7 @@ static id<L7SClientProtocol> _delegate_;
 		        [MAS setGrantFlow:MASGrantFlowPassword];
 
 
-		        [MASDevice setSessionSharingDelegate:_sharedClientManager];
+		        [MASDevice setProximityLoginDelegate:_sharedClientManager];
 
 		        //
 		        // This is a really bad way to start something up inside a synchronous
@@ -283,7 +283,7 @@ static id<L7SClientProtocol> _delegate_;
 
 - (void) authorize: (NSString *) code failure: (void (^)(NSError *)) callback
 {
-    [MASSessionSharingQRCode authorizeAuthenticateUrl:code completion:^(BOOL completed, NSError *error) {
+    [MASProximityLoginQRCode authorizeAuthenticateUrl:code completion:^(BOOL completed, NSError *error) {
        
         if (!completed || error)
         {
@@ -305,7 +305,7 @@ static id<L7SClientProtocol> _delegate_;
 
 	if ([MASDevice currentDevice])
 	{
-		[MASDevice setSessionSharingDelegate:self];
+		[MASDevice setProximityLoginDelegate:self];
 
 		[[MASDevice currentDevice] startAsBluetoothPeripheral];
 	}
@@ -315,7 +315,7 @@ static id<L7SClientProtocol> _delegate_;
 {
 	if ([MASDevice currentDevice])
 	{
-		[MASDevice setSessionSharingDelegate:self];
+		[MASDevice setProximityLoginDelegate:self];
 
 		[[MASDevice currentDevice] stopAsBluetoothPeripheral];
 	}
@@ -327,7 +327,7 @@ static id<L7SClientProtocol> _delegate_;
 
 	if ([MASDevice currentDevice] && ![MASUser currentUser].isAuthenticated)
 	{
-		[MASDevice setSessionSharingDelegate:self];
+		[MASDevice setProximityLoginDelegate:self];
 
 		_bleSessionSharingRequestReceived = YES;
 
@@ -335,7 +335,7 @@ static id<L7SClientProtocol> _delegate_;
 		{
 			[[MASModelService sharedService] retrieveAuthenticationProviders:^(id object, NSError *error) {
 
-			         MASAuthenticationProvider *authProvider = [[MASAuthenticationProviders currentProviders] retrieveAuthenticationProviderForSessionSharing];
+			         MASAuthenticationProvider *authProvider = [[MASAuthenticationProviders currentProviders] retrieveAuthenticationProviderForProximityLogin];
 			         [[MASDevice currentDevice] startAsBluetoothCentralWithAuthenticationProvider:authProvider];
 			 }];
 		}
@@ -349,7 +349,7 @@ static id<L7SClientProtocol> _delegate_;
 {
 	if ([MASDevice currentDevice])
 	{
-		[MASDevice setSessionSharingDelegate:self];
+		[MASDevice setProximityLoginDelegate:self];
 
 		[[MASDevice currentDevice] stopAsBluetoothCentral];
 	}
@@ -362,14 +362,14 @@ static id<L7SClientProtocol> _delegate_;
 
 	[[MASModelService sharedService] retrieveAuthenticationProviders:^(id object, NSError *error) {
 
-	         MASAuthenticationProvider *authProvider = [[MASAuthenticationProviders currentProviders] retrieveAuthenticationProviderForSessionSharing];
+	         MASAuthenticationProvider *authProvider = [[MASAuthenticationProviders currentProviders] retrieveAuthenticationProviderForProximityLogin];
 	         [[MASDevice currentDevice] startAsBluetoothCentralWithAuthenticationProvider:authProvider];
 	 }];
 }
 
 # pragma mark - MASDevice BLE delegate
 
-- (void)didReceiveSessionSharingError:(NSError *)error
+- (void)didReceiveProximityLoginError:(NSError *)error
 {
 	if (_delegate_ && [_delegate_ respondsToSelector:@selector(DidReceiveError:)])
 	{
@@ -465,7 +465,7 @@ static id<L7SClientProtocol> _delegate_;
 //	[[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveAuthorizationCodeFromSessionSharingNotification object:@{@"code" : authorizationCode}];
 }
 
-- (void)handleBLESessionSharingUserConsent:(MASCompletionErrorBlock)completion deviceName:(NSString *)deviceName
+- (void)handleBLEProximityLoginUserConsent:(MASCompletionErrorBlock)completion deviceName:(NSString *)deviceName
 {
 	if (_BLEDelegate && [_BLEDelegate respondsToSelector:@selector(requestUserConsent:deviceName:)])
 	{
@@ -532,7 +532,7 @@ static id<L7SClientProtocol> _delegate_;
 		[[NSNotificationCenter defaultCenter] postNotificationName:L7SDidReceiveStatusUpdateNotification object:nil userInfo:userinfo];
 	}
     // QR Code session sharing; stop displaying QR code image
-    else if ([notification.name isEqualToString:MASSessionSharingQRCodeDidStopDisplayingQRCodeImage]) {
+    else if ([notification.name isEqualToString:MASProximityLoginQRCodeDidStopDisplayingQRCodeImage]) {
         
         NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:L7SQRAuthenticationPollingStopped], L7SStatusUpdateKey, nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:L7SDidReceiveStatusUpdateNotification object:nil userInfo:userinfo];
@@ -575,7 +575,7 @@ static id<L7SClientProtocol> _delegate_;
 		}
 		else {
 
-			[MASDevice setSessionSharingDelegate:self];
+			[MASDevice setProximityLoginDelegate:self];
 
 			[MAS start:^(BOOL completed, NSError *error) {
 

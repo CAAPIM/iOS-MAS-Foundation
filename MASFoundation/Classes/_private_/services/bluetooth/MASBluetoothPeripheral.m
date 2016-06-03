@@ -59,9 +59,9 @@
     //
     // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
     //
-    if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveBLESessionSharingStateUpdate:)])
+    if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveBLEProximityLoginStateUpdate:)])
     {
-        [[MASDevice SessionSharingDelegate] didReceiveBLESessionSharingStateUpdate:state];
+        [[MASDevice proximityLoginDelegate] didReceiveBLEProximityLoginStateUpdate:state];
     }
 }
 
@@ -71,9 +71,9 @@
     //
     // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
     //
-    if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(didReceiveSessionSharingError:)])
+    if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveProximityLoginError:)])
     {
-        [[MASDevice SessionSharingDelegate] didReceiveSessionSharingError:error];
+        [[MASDevice proximityLoginDelegate] didReceiveProximityLoginError:error];
     }
 }
 
@@ -83,9 +83,9 @@
     //
     // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
     //
-    if ([MASDevice SessionSharingDelegate] && [[MASDevice SessionSharingDelegate] respondsToSelector:@selector(handleBLESessionSharingUserConsent:deviceName:)])
+    if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(handleBLEProximityLoginUserConsent:deviceName:)])
     {
-        [[MASDevice SessionSharingDelegate] handleBLESessionSharingUserConsent:completion deviceName:deviceName];
+        [[MASDevice proximityLoginDelegate] handleBLEProximityLoginUserConsent:completion deviceName:deviceName];
     }
     //
     // Otherwise, return an error for delegate undefine

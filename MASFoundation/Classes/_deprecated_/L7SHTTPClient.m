@@ -274,7 +274,7 @@
     else {
         
         
-        [MASDevice setSessionSharingDelegate:[L7SClientManager sharedClientManager]];
+        [MASDevice setProximityLoginDelegate:[L7SClientManager sharedClientManager]];
         
         //
         //  If the SDK was not initialized, initialize the SDK which will go through validation process inside
