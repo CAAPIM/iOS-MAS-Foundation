@@ -45,3 +45,4 @@ of the MIT license. See the [LICENSE][license-link] file for details.
  [releases]: ../../releases
  [contributing]: /CONTRIBUTING.md
  [license-link]: /LICENSE
+
