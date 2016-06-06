@@ -145,9 +145,7 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     NSData *certificateData = info[MASResponseInfoBodyInfoKey];
     if (certificateData)
     {
-        NSData *base64Certificate = [NSData dataWithBase64EncodedString:[certificateData base64EncodedStringWithOptions:0]];
         [accessService setAccessValueCertificate:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificate];
-        
         [accessService setAccessValueData:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificateData];
     }
     

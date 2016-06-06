@@ -836,7 +836,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 - (BOOL)isScopeTypeMssoRegisterSupported
 {
-    return ([self isScopeTypeMssoSupported] && (![self.scopeAsString rangeOfString:MASScopeValueMssoRegister].location != NSNotFound));
+    return ([self isScopeTypeMssoSupported] && ([self.scopeAsString rangeOfString:MASScopeValueMssoRegister].location != NSNotFound));
 }
 
 @end

@@ -121,7 +121,8 @@
         
         case MASRegistryStateStopped:
         currentState = MASStateDidStop;
-        
+        break;
+            
         case MASRegistryStateShouldStop:
         currentState = MASStateIsBeingStopped;
         break;

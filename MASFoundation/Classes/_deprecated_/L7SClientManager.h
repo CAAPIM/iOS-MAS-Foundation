@@ -9,7 +9,6 @@
 
 @import Foundation;
 
-@protocol MASProximityLoginDelegate;
 @class L7SHTTPClient;
 
 
@@ -69,7 +68,10 @@ typedef NS_ENUM(NSInteger, L7SBLESessionSharingState)
 
 
 @protocol L7SClientProtocol;
+@protocol MASProximityLoginDelegate;
 @protocol L7SBLESessionSharingDelegate;
+
+#import "MASProximityLoginDelegate.h"
 
 @interface L7SClientManager : NSObject <MASProximityLoginDelegate>
 
