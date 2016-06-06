@@ -825,9 +825,9 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         // Session Sharing
         //
-        case MASFoundationErrorCodeProximityLoginAuthorizationInProgress: return @"Authorization is currently in progress through session sharing.";
-        case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code session sharing authentication failed with specific information on userInfo.";
-        case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for session sharing.";
+        case MASFoundationErrorCodeProximityLoginAuthorizationInProgress: return @"Authorization is currently in progress through proximity login.";
+        case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code proximity login authentication failed with specific information on userInfo.";
+        case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for proximity login.";
             
         //
         // Default

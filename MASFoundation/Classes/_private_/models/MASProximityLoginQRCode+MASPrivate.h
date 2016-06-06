@@ -47,7 +47,7 @@
 # pragma mark - Start/Stop displaying QR Code image : Private
 
 /**
- *  Generates QR Code image for session sharing based on provided authentication provider and starts polling request for authorization.
+ *  Generates QR Code image for proximity login based on provided authentication provider and starts polling request for authorization.
  *  Upon successful start display, NSNotification with notification name, MASProximityLoginQRCodeDidStartDisplayingQRCodeImage, will be sent.
  *
  *  @return UIImage of QR Code.
@@ -56,7 +56,7 @@
 
 
 /**
- *  Stops displaying QR Code image for session sharing based on provided polling configuration.
+ *  Stops displaying QR Code image for proximity login based on provided polling configuration.
  *  Upon successful stop display, NSNotification with notification name, MASProximityLoginQRCodeDidStopDisplayingQRCodeImage, will be sent.
  */
 - (void)stopPrivateDisplayingQRCodeImageForProximityLogin;

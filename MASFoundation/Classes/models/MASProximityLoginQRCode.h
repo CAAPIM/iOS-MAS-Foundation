@@ -25,7 +25,7 @@
 # pragma mark - Properties
 
 /**
- *  Polling interval in seconds for QR Code Session Sharing
+ *  Polling interval in seconds for QR Code proximity login
  */
 @property (nonatomic, assign, readonly) NSNumber *pollingInterval;
 
@@ -115,7 +115,7 @@
 - (void)stopDisplayingQRCodeImageForProximityLogin;
 
 
-# pragma mark - Authorize authenticateUrl for session sharing
+# pragma mark - Authorize authenticateUrl for proximity login
 
 /**
  *  Authorize given authenticateUrl with gateway.  Method will validate authenticateUrl, and send it over to gateway to authorize.

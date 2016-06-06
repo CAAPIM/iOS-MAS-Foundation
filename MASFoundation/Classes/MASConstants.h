@@ -563,10 +563,10 @@ static NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpd
 
 
 ///--------------------------------------
-/// @name Session Sharing Notification
+/// @name Proximity Login Notification
 ///--------------------------------------
 
-# pragma mark - Session Sharing Notification
+# pragma mark - Proximity Login Notification
 
 /**
  *  The NSString constant for the device notification indicating that the MASDevice

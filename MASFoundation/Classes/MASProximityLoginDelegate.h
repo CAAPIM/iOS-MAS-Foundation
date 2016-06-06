@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
 @required
 
 /**
- *  SDK callback to this method for user consent to authorize session sharing.
+ *  SDK callback to this method for user consent to authorize proximity login.
  *
  *  @param completion MASCompletionErrorBlock returns boolean of consent state and error if there is any
  *  @param deviceName NSString of device name
@@ -126,9 +126,9 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
 
 
 /**
- *  Notify the host application on any error occured while session sharing
+ *  Notify the host application on any error occured while proximity login
  *
- *  @param error NSError of BLE session sharing error
+ *  @param error NSError of BLE proximity login error
  */
 - (void)didReceiveProximityLoginError:(NSError *)error;
 

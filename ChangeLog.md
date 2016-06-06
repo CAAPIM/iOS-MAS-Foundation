@@ -7,7 +7,7 @@
 
 ### New features
 
-- .
+- ```MASSocialLogin``` class is newly added for developers to handle social login on their customized login dialog.
 
 ### Deprecated methods
 
@@ -20,6 +20,8 @@
 - ```MASDeviceRegistrationType``` is renamed to ```MASGrantFlow``` in ```MASConstants.h```.
 - ```wasLoggedOff``` property in ```[MASUser currentUser]``` is deprecated.
 - ```[[MASDevice currentDevice] resetLocallyWithCompletion:]``` will be deprecated.  Use ```[[MASDevice currentDevice] resetLocally]``` instead.
+- ```MASSessionSharingDelegate``` protocol is renamed as ```MASProximityLoginDelegate```.
+- All class methods, properties, and notofications containing **sessionSharing** are renamed to **proximityLogin**.
 
 
 
@@ -27,7 +29,6 @@
 
 ### Bug fixes
 
-- 
 - .
 
 ### New features

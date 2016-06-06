@@ -54,7 +54,7 @@
 
 
 /**
- *  Boolean indicator of whether the device is being authorized with other devices through session sharing.
+ *  Boolean indicator of whether the device is being authorized with other devices through proximity login.
  */
 @property (assign) BOOL isBeingAuthorized;
 

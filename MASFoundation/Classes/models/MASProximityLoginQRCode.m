@@ -79,7 +79,7 @@
 
 
 
-# pragma mark - Authorize authenticateUrl for session sharing
+# pragma mark - Authorize authenticateUrl for proximity login
 
 + (void)authorizeAuthenticateUrl:(NSString *)authenticateUrl completion:(MASCompletionErrorBlock)completion
 {
