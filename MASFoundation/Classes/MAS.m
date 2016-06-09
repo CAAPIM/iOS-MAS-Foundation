@@ -17,6 +17,7 @@
 #import "MASFileService.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
+#import "MASOTPService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 
@@ -93,6 +94,18 @@
 + (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
 {
     [MASModelService setUserLoginBlock:login];
+}
+
+
++ (void)setOTPChannelSelectionBlock:(MASOTPChannelSelectionBlock)OTPChannelSelector
+{
+    [MASOTPService setOTPChannelSelectionBlock:OTPChannelSelector];
+}
+
+
++ (void)setOTPCredentialsBlock:(MASOTPCredentialsBlock)oneTimePassword
+{
+    [MASOTPService setOTPCredentialsBlock:oneTimePassword];
 }
 
 

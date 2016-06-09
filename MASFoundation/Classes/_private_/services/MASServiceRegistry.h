@@ -161,4 +161,31 @@ typedef NS_ENUM(NSInteger, MASRegistryState)
 - (BOOL)uiServiceWillHandleBasicAuthentication:(MASBasicCredentialsBlock)basicBlock
     authorizationCodeBlock:(MASAuthorizationCodeCredentialsBlock)authorizationCodeBlock;
 
+
+
+/**
+ * Calling this method will attempt to have a resident UI service handle OTP authentication steps.
+ *
+ * @param otpBlock The MASOTPFetchCredentialsBlock to receive OTP responses.
+ * @param otpError The NSError object to provide the information about the OTP
+ *   related error information.
+ * @returns Return YES if handled, NO if not.
+ */
+
+- (BOOL)uiServiceWillHandleOTPAuthentication:(MASOTPFetchCredentialsBlock)otpBlock
+                                       error:(NSError *)otpError;
+
+
+
+/**
+ * Calling this method will attempt to have a resident UI service handle otp channel selection steps.
+ *
+ * @param supportedChannels The server supported OTP channels.
+ * @param generationBlock The MASOTPGenerationBlock to receive the selected OTP channels response.
+ * @returns Return YES if handled, NO if not.
+ */
+
+- (BOOL)uiServiceWillHandleOTPChannelSelection:(NSArray *)supportedChannels
+                            otpGenerationBlock:(MASOTPGenerationBlock)generationBlock;
+
 @end

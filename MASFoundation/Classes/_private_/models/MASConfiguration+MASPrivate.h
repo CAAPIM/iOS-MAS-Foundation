@@ -39,6 +39,7 @@
 @property (nonatomic, copy, readonly) NSString *storagePathEndpointPath;
 @property (nonatomic, copy, readonly) NSString *authorizationEndpointPath;
 @property (nonatomic, copy, readonly) NSString *clientInitializeEndpointPath;
+@property (nonatomic, copy, readonly) NSString *authenticateOTPEndpointPath;
 @property (nonatomic, copy, readonly) NSString *deviceListAllEndpointPath;
 @property (nonatomic, copy, readonly) NSString *deviceRegisterEndpointPath;
 @property (nonatomic, copy, readonly) NSString *deviceRegisterClientEndpointPath;

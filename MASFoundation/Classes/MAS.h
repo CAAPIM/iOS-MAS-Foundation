@@ -87,6 +87,24 @@
 
 
 /**
+ *  Set a OTP channel selection block to handle the case where the channel for Two-factor authentication is required.
+ *
+ *  @param OTPChannelSelector The MASOTPChannelSelectionBlock to receive the request for OTP channels.
+ */
++ (void)setOTPChannelSelectionBlock:(MASOTPChannelSelectionBlock) OTPChannelSelector;
+
+
+
+/**
+ *  Set a OTP credentials block to handle the case where a Two-factor authentication is required.
+ *
+ *  @param oneTimePassword The MASOTPCredentialsBlock to receive the request for OTP credentials.
+ */
++ (void)setOTPCredentialsBlock:(MASOTPCredentialsBlock)oneTimePassword;
+
+
+
+/**
  *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
  *  This block will be triggered when any change to the current monitoring status
  *  takes place with a MASGatewayMonitoringStatus.

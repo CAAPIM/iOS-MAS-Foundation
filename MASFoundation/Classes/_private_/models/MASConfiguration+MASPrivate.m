@@ -108,6 +108,7 @@ static NSString *const MASTokenRevokeEndpoint = @"token_revocation_endpoint_path
 static NSString *const MASUserInfoEndpoint = @"userinfo_endpoint_path"; // string
 static NSString *const MASUserSessionLogoutEndpoint = @"usersession_logout_endpoint_path"; // string
 static NSString *const MASUserSessionStatusEndpoint = @"usersession_status_endpoint_path"; // string
+static NSString *const MASAuthenticateOTPEndpoint = @"authenticate_otp_endpoint_path"; // string
 
 static NSString *const MASUsersLDAPEndpoint = @"users_ldap_endpoint_path"; // string
 static NSString *const MASUserGroupsLDAPEndpoint = @"user_groups_ldap_endpoint_path"; // string
@@ -607,6 +608,12 @@ static float _systemVersionNumber_;
 }
 
 
+- (NSString *)authenticateOTPEndpointPath
+{
+    return _endpointKeysToPaths_[MASAuthenticateOTPEndpoint];
+}
+
+
 - (NSString *)deviceListAllEndpointPath
 {
     return _endpointKeysToPaths_[MASDeviceListEndpoint];
@@ -838,6 +845,7 @@ static float _systemVersionNumber_;
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"mag.system_endpoints.device_register_endpoint_path", @"keyPath", [NSString class], @"classType", nil]];
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"mag.system_endpoints.device_client_register_endpoint_path", @"keyPath", [NSString class], @"classType", nil]];
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"mag.system_endpoints.client_credential_init_endpoint_path", @"keyPath", [NSString class], @"classType", nil]];
+    [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"mag.system_endpoints.authenticate_otp_endpoint_path", @"keyPath", [NSString class], @"classType", nil]];
     
     //  MAG OAuth protected endpoint
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"mag.oauth_protected_endpoints.enterprise_browser_endpoint_path", @"keyPath", [NSString class], @"classType", nil]];

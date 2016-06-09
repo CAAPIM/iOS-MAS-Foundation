@@ -79,6 +79,30 @@ typedef void (^MASDeviceRegistrationWithUserCredentialsBlock)(MASBasicCredential
 typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock basicBlock, MASAuthorizationCodeCredentialsBlock authorizationCodeBlock);
 
 
+/**
+ * The OTP channels (NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock) block.
+ */
+typedef void (^MASOTPGenerationBlock)(NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock);
+
+
+/**
+ * The OTP credentials (NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock) block.
+ */
+typedef void (^MASOTPFetchCredentialsBlock)(NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock);
+
+
+/**
+ * The Two-factor authentication with supported OTP Channels (NSArray *supportedOTPChannels, MASOTPGenerationBlock) block.
+ */
+typedef void (^MASOTPChannelSelectionBlock)(NSArray *supportedOTPChannels, MASOTPGenerationBlock otpGenerationBlock);
+
+
+/**
+ * The Two-factor authentication with OTP Credentials (MASOTPFetchCredentialsBlock) block.
+ */
+typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock);
+
+
 ///--------------------------------------
 /// @name MAS Constants
 ///--------------------------------------
@@ -227,6 +251,12 @@ static NSString *const MASNotStartedYet = @"MAS not started yet";
  * The NSString constant key for the user info returned in various file related operations or errors.
  */
 static NSString *const MASFileNameKey = @"MASFileNameKey";
+
+
+/**
+ * The NSString constant key for the otp retry suspension time returned in various otp related operations or errors.
+ */
+static NSString *const MASOTPSuspensionTimeKey = @"MASOTPSuspensionTimeKey";
 
 
 /**
@@ -394,6 +424,16 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeProximityLoginAuthorizationInProgress = 150101,
     MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL = 150102,
     MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed = 150103,
+    
+    //
+    // OTP
+    //
+    MASFoundationErrorCodeInvalidOTPChannelSelectionBlock,
+    MASFoundationErrorCodeInvalidOTPCredentialsBlock,
+    MASFoundationErrorCodeInvalidOTPProvided,
+    MASFoundationErrorCodeOTPNotProvided,
+    MASFoundationErrorCodeOTPExpired,
+    MASFoundationErrorCodeOTPRetryLimitExceeded,
     
     MASFoundationErrorCodeCount = -999999
 };

@@ -106,6 +106,60 @@
 
 
 /**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidOTPChannelSelectionBlock.
+ *
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeInvalidOTPChannelSelectionBlock.
+ */
++ (NSError *)errorInvalidOTPChannelSelectionBlock;
+
+
+/**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidOTPCredentialsBlock.
+ *
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeInvalidOTPCredentialsBlock.
+ */
++ (NSError *)errorInvalidOTPCredentialsBlock;
+
+
+/**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeOTPNotProvided.
+ *
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeOTPNotProvided.
+ */
++ (NSError *)errorOTPCredentialsNotProvided;
+
+
+/**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidOTPProvided.
+ *
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeInvalidOTPProvided.
+ */
++ (NSError *)errorInvalidOTPCredentials;
+
+
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeOTPExpired.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeOTPExpired.
+ */
++ (NSError *)errorOTPCredentialsExpired;
+
+
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeOTPRetryLimitExceeded.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeOTPRetryLimitExceeded.
+ */
++ (NSError *)errorOTPRetryLimitExceeded:(NSString *)suspensionTime;
+
+
+/**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidNSURL.
  *
  *  @return Retruns an NSError instance with the domain MASFoundationErrorDomainLocal and
