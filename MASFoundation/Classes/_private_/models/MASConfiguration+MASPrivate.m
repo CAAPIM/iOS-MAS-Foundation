@@ -819,6 +819,7 @@ static float _systemVersionNumber_;
     //  Server config
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"server.hostname", @"keyPath", [NSString class], @"classType", nil]];
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"server.port", @"keyPath", [NSNumber class], @"classType", nil]];
+    [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"server.prefix", @"keyPath", [NSString class], @"classType", nil]];
     [validationRules addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"server.server_certs", @"keyPath", [NSArray class], @"classType", nil]];
     
     //  OAuth config
@@ -874,7 +875,7 @@ static float _systemVersionNumber_;
         //
         //  If the values is type of NSString, make sure to not allow empty string
         //
-        else if ([rule objectForKey:@"classType"] == [NSString class])
+        else if ([rule objectForKey:@"classType"] == [NSString class] && ![[rule objectForKey:@"keyPath"] isEqualToString:@"server.prefix"])
         {
             NSString *trimmedString = [[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
