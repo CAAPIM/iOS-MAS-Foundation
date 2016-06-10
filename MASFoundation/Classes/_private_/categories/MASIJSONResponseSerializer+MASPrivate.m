@@ -10,6 +10,7 @@
 
 #import "MASIJSONResponseSerializer+MASPrivate.h"
 
+#import "NSError+MASPrivate.h"
 
 @implementation MASIJSONResponseSerializer (MASprivate)
 
@@ -22,10 +23,30 @@
     //
     NSMutableSet *acceptableContentTypes = [[serializer acceptableContentTypes] mutableCopy];
     [acceptableContentTypes addObject:@"application/scim+json"];
-    [acceptableContentTypes addObject:@"text/plain"];
     [serializer setAcceptableContentTypes:acceptableContentTypes];
     
     return serializer;
+}
+
+- (BOOL)validateJSONResponse:(nullable NSHTTPURLResponse *)response
+                        data:(nullable NSData *)data
+                       error:(NSError * __nullable __autoreleasing *)error
+{
+    BOOL isValid = YES;
+    
+    NSMutableDictionary *mutableUserInfo = [@{
+                                              NSLocalizedDescriptionKey: [NSString stringWithFormat:NSLocalizedStringFromTable(@"Request failed: unacceptable content-type: %@", @"MASINetworking", nil), [response MIMEType]],
+                                              NSURLErrorFailingURLErrorKey:[response URL],
+                                              MASINetworkingOperationFailingURLResponseErrorKey: response,
+                                              } mutableCopy];
+    
+    if (![data isKindOfClass:[NSDictionary class]])
+    {
+        *error = [NSError errorWithDomain:MASFoundationErrorDomainLocal code:MASFoundationErrorCodeNetworkUnacceptableContentType userInfo:mutableUserInfo];
+        isValid = NO;
+    }
+    
+    return isValid;
 }
 
 @end
