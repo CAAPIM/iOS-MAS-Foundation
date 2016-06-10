@@ -13,7 +13,6 @@
 #import "MASAccessService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
-#import "MASIKeyChainStore.h"
 
 
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
@@ -630,7 +629,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             //
             [[MASAccessService sharedService] clearLocal];
             [[MASAccessService sharedService] clearShared];
-            [[MASIKeyChainStore keyChainStore] removeAllItems];
             
             //
             // MASFiles
