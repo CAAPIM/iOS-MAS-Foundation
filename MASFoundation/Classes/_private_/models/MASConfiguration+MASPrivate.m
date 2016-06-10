@@ -865,9 +865,16 @@ static float _systemVersionNumber_;
         //DLog(@"configuration value : %@",[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]]);
         
         //
-        //  If the value is type of NSString, make sure to not allow empty string
+        //  If the value is not class type that is being expected, return an error
         //
-        if ([rule objectForKey:@"classType"] == [NSString class])
+        if (![[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] isKindOfClass:[rule objectForKey:@"classType"]])
+        {
+            return [NSError errorConfigurationLoadingFailedJsonValidationWithDescription:[NSString stringWithFormat:@"%@ should be %@; but it is %@", [rule objectForKey:@"keyPath"], NSStringFromClass([rule objectForKey:@"classType"]), NSStringFromClass([[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] class])]];
+        }
+        //
+        //  If the values is type of NSString, make sure to not allow empty string
+        //
+        else if ([rule objectForKey:@"classType"] == [NSString class])
         {
             NSString *trimmedString = [[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
@@ -875,14 +882,6 @@ static float _systemVersionNumber_;
             {
                 return [NSError errorConfigurationLoadingFailedJsonValidationWithDescription:[NSString stringWithFormat:@"%@ cannot be empty string", [rule objectForKey:@"keyPath"]]];
             }
-        }
-        
-        //
-        //  If the value is not class type that is being expected, return an error
-        //
-        if (![[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] isKindOfClass:[rule objectForKey:@"classType"]])
-        {
-            return [NSError errorConfigurationLoadingFailedJsonValidationWithDescription:[NSString stringWithFormat:@"%@ should be %@; but it is %@", [rule objectForKey:@"keyPath"], NSStringFromClass([rule objectForKey:@"classType"]), NSStringFromClass([[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] class])]];
         }
         
     }
