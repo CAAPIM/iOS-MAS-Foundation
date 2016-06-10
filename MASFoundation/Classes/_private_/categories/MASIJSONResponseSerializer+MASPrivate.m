@@ -22,6 +22,7 @@
     //
     NSMutableSet *acceptableContentTypes = [[serializer acceptableContentTypes] mutableCopy];
     [acceptableContentTypes addObject:@"application/scim+json"];
+    [acceptableContentTypes addObject:@"text/plain"];
     [serializer setAcceptableContentTypes:acceptableContentTypes];
     
     return serializer;
