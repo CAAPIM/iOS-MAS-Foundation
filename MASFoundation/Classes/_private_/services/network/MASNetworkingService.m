@@ -279,12 +279,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         MASIHTTPResponseSerializer *responseSerializer = [MASURLRequest responseSerializerForType:blockResponseType];
         [responseSerializer validateResponse:httpResponse data:responseObject error:&error];
         
-        if (blockResponseType == MASRequestResponseTypeJson && !error)
-        {
-            MASIJSONResponseSerializer *jsonSerializer = (MASIJSONResponseSerializer *)responseSerializer;
-            [jsonSerializer validateJSONResponse:httpResponse data:responseObject error:&error];
-        }
-        
         //
         // Response header info
         //
