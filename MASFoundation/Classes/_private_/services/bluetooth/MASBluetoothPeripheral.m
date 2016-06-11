@@ -390,10 +390,25 @@
                         }
                         
                         //
+                        //  Retrieve the absolute URL of the authorizing device's gateway URL
+                        //  Due to TLS Caching issue, if the authenticating device is on iOS 8, the auth url may come with trailing dot.
+                        //  Make sure to handle both of them.
+                        //
+                        NSString *absoluteURL = [NSString stringWithFormat:@"https://%@:%@",[MASConfiguration currentConfiguration].gatewayHostName, [MASConfiguration currentConfiguration].gatewayPort];
+                        NSString *absoluteURLWithTrailingDot = [NSString stringWithFormat:@"https://%@.:%@",[MASConfiguration currentConfiguration].gatewayHostName, [MASConfiguration currentConfiguration].gatewayPort];
+                        
+                        if ([MASConfiguration currentConfiguration].gatewayPrefix)
+                        {
+                            absoluteURL = [NSString stringWithFormat:@"%@/%@", absoluteURL, [MASConfiguration currentConfiguration].gatewayPrefix];
+                            absoluteURLWithTrailingDot = [NSString stringWithFormat:@"%@/%@", absoluteURLWithTrailingDot, [MASConfiguration currentConfiguration].gatewayPrefix];
+                        }
+                        
+                        //
                         // Extract the path of the authorization URL
                         //
-                        NSString *providerPath = [providerURL stringByReplacingOccurrencesOfString:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString
-                                                                                         withString:@""];
+                        NSString *providerPath = [providerURL stringByReplacingOccurrencesOfString:absoluteURL
+                                                                                        withString:@""];
+                        providerPath = [providerPath stringByReplacingOccurrencesOfString:absoluteURLWithTrailingDot withString:@""];
                         
                         @try {
                             
@@ -401,7 +416,7 @@
                          withParameters:nil
                              andHeaders:nil
                             requestType:MASRequestResponseTypeWwwFormUrlEncoded
-                           responseType:MASRequestResponseTypeJson
+                           responseType:MASRequestResponseTypeTextPlain
                              completion:^(NSDictionary *responseInfo, NSError *error) {
                                 
                                  if (error)
