@@ -441,4 +441,13 @@
  */
 + (NSError *)errorProximityLoginAuthorizationInProgress;
 
+
+/**
+ *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL.
+ *
+ *  @return REturns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ *  error MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL
+ */
++ (NSError *)errorProximityLoginInvalidAuthroizeURL;
+
 @end

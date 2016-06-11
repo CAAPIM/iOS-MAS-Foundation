@@ -403,16 +403,25 @@
                             absoluteURLWithTrailingDot = [NSString stringWithFormat:@"%@/%@", absoluteURLWithTrailingDot, [MASConfiguration currentConfiguration].gatewayPrefix];
                         }
                         
-                        //
-                        // Extract the path of the authorization URL
-                        //
-                        NSString *providerPath = [providerURL stringByReplacingOccurrencesOfString:absoluteURL
-                                                                                        withString:@""];
-                        providerPath = [providerPath stringByReplacingOccurrencesOfString:absoluteURLWithTrailingDot withString:@""];
+                        NSString *authPath = @"";
+                        
+                        if ([providerURL rangeOfString:absoluteURL].location != NSNotFound || [providerURL rangeOfString:absoluteURLWithTrailingDot].location != NSNotFound)
+                        {
+                            //
+                            // Extract the path of the authorization URL
+                            //
+                            authPath = [providerURL stringByReplacingOccurrencesOfString:absoluteURL withString:@""];
+                            authPath = [authPath stringByReplacingOccurrencesOfString:absoluteURLWithTrailingDot withString:@""];
+                        }
+                        else {
+                            
+                            [self notifyErrorForBLEState:[NSError errorProximityLoginInvalidAuthroizeURL]];
+                            return;
+                        }
                         
                         @try {
                             
-                            [MAS postTo:providerPath
+                            [MAS postTo:authPath
                          withParameters:nil
                              andHeaders:nil
                             requestType:MASRequestResponseTypeWwwFormUrlEncoded
