@@ -703,6 +703,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorProximityLoginInvalidAuthroizeURL
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 # pragma mark - Foundation Errors Private
 
 + (MASFoundationErrorCode)foundationErrorCodeForApiCode:(MASApiErrorCode)apiCode
@@ -941,6 +947,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeProximityLoginAuthorizationInProgress: return @"Authorization is currently in progress through proximity login.";
         case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code proximity login authentication failed with specific information on userInfo.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for proximity login.";
+        case MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL: return @"Invalid authorization url.";
             
         //
         // Default

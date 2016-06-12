@@ -424,6 +424,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeProximityLoginAuthorizationInProgress = 150101,
     MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL = 150102,
     MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed = 150103,
+    MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL = 150104,
     
     //
     // OTP
