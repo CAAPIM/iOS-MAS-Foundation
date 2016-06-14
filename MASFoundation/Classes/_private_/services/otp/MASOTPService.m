@@ -14,21 +14,6 @@
 #import "NSError+MASPrivate.h"
 
 
-@interface MASOTPService ()
-
-
-# pragma mark - Properties
-
-/**
- *  Blocked original request details - originalEndPoint, originalParameterInfo, 
- *  originalHeaderInfo, originalHTTPMethod, originalRequestResponseContentType
- */
-@property (strong, nonatomic, readwrite) NSMutableDictionary *originalRequestInfo;
-
-
-@end
-
-
 @implementation MASOTPService
 
 
@@ -96,342 +81,37 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
 
 # pragma mark - Private
 
-- (void)validateOTPSessionWithEndPoint:(NSString *)endPoint
-                            parameters:(NSDictionary *)originalParameterInfo
-                               headers:(NSDictionary *)originalHeaderInfo
-                            httpMethod:(NSString *)httpMethod
-                           requestType:(MASRequestResponseType)requestType
-                          responseType:(MASRequestResponseType)responseType
-                       responseHeaders:(NSDictionary *)responseHeaderInfo
-                       completionBlock:(MASResponseInfoErrorBlock)completion
+- (void)validateOTPSessionWithResponseHeaders:(NSDictionary *)responseHeaderInfo
+                              completionBlock:(MASObjectResponseErrorBlock)completion
 {
-    
-    NSString *otpStatus = nil;
-    NSString *magErrorCode = nil;
+    //
+    // If UI handling framework is not present and handling it continue on with notifying the
+    // application it needs to handle this itself
+    //
+    __block MASOTPGenerationBlock otpGenerationBlock;
+    __block MASOTPFetchCredentialsBlock otpCredentialsBlock;
     
     //
-    // Check if OTP got generated.
+    // OTP Credentials Block
     //
-    if ([[responseHeaderInfo allKeys] containsObject:MASHeaderOTPKey])
+    otpCredentialsBlock = ^(NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock otpFetchcompletion)
     {
-        otpStatus = [NSString stringWithFormat:@"%@", [responseHeaderInfo objectForKey:MASHeaderOTPKey]];
-    }
-    
-    //
-    // Check if MAG error code exists
-    //
-    if ([[responseHeaderInfo allKeys] containsObject:MASHeaderErrorKey])
-    {
-        magErrorCode = [NSString stringWithFormat:@"%@", [responseHeaderInfo objectForKey:MASHeaderErrorKey]];
-    }
-    
-    __block NSMutableDictionary *newRequestInfo = [NSMutableDictionary new];
-    
-    if ((magErrorCode && [magErrorCode hasPrefix:MASApiErrorCodeOTPPrefix]) ||
-        (otpStatus && [otpStatus isEqualToString:MASOTPResponseOTPStatusKey]))
-    {
+        DLog(@"\n\nOTP credentials block called with oneTimePassword: %@ and cancel: %@\n\n",
+             oneTimePassword, (cancel ? @"Yes" : @"No"));
+        
         //
-        // OTP Required - Save original request.
-        // Generate OTP with user selected OTP channels.
+        // Cancelled stop here
         //
-        if ([magErrorCode hasSuffix:MASApiErrorCodeOTPNotProvidedSuffix])
+        if(cancel)
         {
             //
-            // If UI handling framework is not present and handling it continue on with notifying the
-            // application it needs to handle this itself
+            // Notify UI
             //
-            
-            __block MASOTPGenerationBlock otpGenerationBlock;
-            
-            otpGenerationBlock = ^(NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock otpGenerationcompletion)
+            if (otpFetchcompletion)
             {
-                DLog(@"\n\nOTP generation block called with otpChannels: %@ and cancel: %@\n\n",
-                     otpChannels, (cancel ? @"Yes" : @"No"));
-                
-                //
-                // Cancelled stop here
-                //
-                if(cancel)
-                {
-                    //
-                    // Notify UI
-                    //
-                    if (otpGenerationcompletion)
-                    {
-                        otpGenerationcompletion(NO, nil);
-                    }
-                    
-                    //
-                    // Notify
-                    //
-                    if(completion)
-                    {
-                        completion(nil, nil);
-                    }
-                    
-                    return;
-                }
-                
-                //
-                // Endpoint
-                //
-                NSString *endPoint =
-                    [MASConfiguration currentConfiguration].authenticateOTPEndpointPath;
-                
-                //
-                // Selected channels
-                //
-                NSMutableDictionary *headerInfo = [NSMutableDictionary new];
-                NSString *otpChannelsStr = [otpChannels componentsJoinedByString:@","];
-                [headerInfo setObject:otpChannelsStr forKey:MASHeaderOTPChannelKey];
-                
-                //
-                // OTP generate request
-                //
-                newRequestInfo =
-                [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                 endPoint, MASOTPRequestEndpointKey,
-                 [NSDictionary dictionary], MASOTPRequestParameterInfoKey,
-                 headerInfo, MASOTPRequestHeaderInfoKey,
-                 @"GET", MASOTPRequestHTTPMethodKey,
-                 MASRequestResponseTypeJson, MASOTPRequestTypeKey,
-                 MASRequestResponseTypeJson, MASOTPResponseTypeKey, nil];
-
-                //
-                // Notify UI
-                //
-                if (otpGenerationcompletion)
-                {
-                    otpGenerationcompletion(YES, nil);
-                }
-                
-                //
-                // Notify
-                //
-                if(completion)
-                {
-                    completion(newRequestInfo, nil);
-                }
-            };
-            
-            //
-            // Save the original request
-            //
-            self.originalRequestInfo =
-                [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                    endPoint, MASOTPRequestEndpointKey,
-                    originalParameterInfo, MASOTPRequestParameterInfoKey,
-                    originalHeaderInfo, MASOTPRequestHeaderInfoKey,
-                    httpMethod, MASOTPRequestHTTPMethodKey,
-                    requestType, MASOTPRequestTypeKey,
-                    responseType, MASOTPResponseTypeKey, nil];
-         
-            DLog(@"\n\n\n********************************************************\n\n"
-                 "Waiting for channel selection to continue otp generation"
-                 @"\n\n********************************************************\n\n\n");
-            
-            //
-            // Supported channels
-            //
-            NSArray *supportedChannels =
-            [responseHeaderInfo [MASHeaderOTPChannelKey] componentsSeparatedByString:@","];
-            
-            //
-            // If the UI handling framework is present and will handle this stop here
-            //
-            MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-            if([serviceRegistry uiServiceWillHandleOTPChannelSelection:supportedChannels otpGenerationBlock:otpGenerationBlock])
-            {
-                return;
+                otpFetchcompletion(NO, nil);
             }
             
-            //
-            // Else notify block if available
-            //
-            if(_OTPChannelSelectionBlock_)
-            {
-                //
-                // Do this is the main queue since the reciever is almost certainly a UI component.
-                // Lets do this for them and not make them figure it out
-                //
-                dispatch_async(dispatch_get_main_queue(),^
-                               {
-                                   _OTPChannelSelectionBlock_(supportedChannels, otpGenerationBlock);
-                               });
-            }
-            else {
-                
-                //
-                // If the device registration block is not defined, return an error
-                //
-                if (completion)
-                {
-                    completion(nil, [NSError errorInvalidOTPChannelSelectionBlock]);
-                }
-            }
-        }
-        //
-        // OTP Generated / Invalid OTP
-        // Prompt for OTP generated and use OTP with saved original request.
-        //
-        else if ([magErrorCode hasSuffix:MASApiErrorCodeInvalidOTPProvidedSuffix] ||
-                 [otpStatus isEqualToString:MASOTPResponseOTPStatusKey]) {
-                    
-            //
-            // If UI handling framework is not present and handling it continue on with notifying the
-            // application it needs to handle this itself
-            //
-            __block MASOTPFetchCredentialsBlock otpCredentialsBlock;
-            
-            otpCredentialsBlock = ^(NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock otpFetchcompletion)
-            {
-                DLog(@"\n\nOTP credentials block called with oneTimePassword: %@ and cancel: %@\n\n",
-                     oneTimePassword, (cancel ? @"Yes" : @"No"));
-                
-                //
-                // Cancelled stop here
-                //
-                if(cancel)
-                {
-                    //
-                    // Notify UI
-                    //
-                    if (otpFetchcompletion)
-                    {
-                        otpFetchcompletion(NO, nil);
-                    }
-                    
-                    //
-                    // Notify
-                    //
-                    if(completion)
-                    {
-                        completion(nil, nil);
-                    }
-                    
-                    return;
-                }
-                
-                //
-                // Set the OTP
-                //
-                NSMutableDictionary *headerInfo =
-                [self.originalRequestInfo [@"headerInfo"] mutableCopy];
-                
-                if (!headerInfo)
-                {
-                    headerInfo = [NSMutableDictionary new];
-                }
-                
-                [headerInfo setObject:oneTimePassword forKey:MASHeaderOTPKey];
-                self.originalRequestInfo [@"header_info"] = headerInfo;
-                
-                //
-                // Notify UI
-                //
-                if (otpFetchcompletion)
-                {
-                    otpFetchcompletion(YES, nil);
-                }
-                
-                //
-                // Notify
-                //
-                if(completion)
-                {
-                    completion(self.originalRequestInfo, nil);
-                }
-            };
-            
-            DLog(@"\n\n\n********************************************************\n\n"
-                 "Waiting for one time password to continue request"
-                 @"\n\n********************************************************\n\n\n");
-            
-            //
-            // otpError to provide details of the OTP flow handle
-            //
-            NSError *otpError = nil;
-            if ([magErrorCode hasSuffix:MASApiErrorCodeInvalidOTPProvidedSuffix])
-            {
-                otpError = [NSError errorInvalidOTPCredentials];
-            }
-            else if ([otpStatus isEqualToString:MASOTPResponseOTPStatusKey]) {
-                
-                otpError = [NSError errorOTPCredentialsNotProvided];
-            }
-            
-            //
-            // If the UI handling framework is present and will handle this stop here
-            //
-            MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-            if([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
-            {
-                return;
-            }
-            
-            //
-            // Else notify block if available
-            //
-            if(_OTPCredentialsBlock_)
-            {
-                //
-                // Do this is the main queue since the reciever is almost certainly a UI component.
-                // Lets do this for them and not make them figure it out
-                //
-                dispatch_async(dispatch_get_main_queue(),^
-                               {
-                                   _OTPCredentialsBlock_(otpCredentialsBlock);
-                               });
-            }
-            else {
-                
-                //
-                // If the device registration block is not defined, return an error
-                //
-                if (completion)
-                {
-                    completion(nil, [NSError errorInvalidOTPCredentialsBlock]);
-                }
-            }
-        }
-        //
-        // OTP Provided Expired
-        //
-        else if ([magErrorCode hasSuffix:MASApiErrorCodeOTPExpiredSuffix]) {
-         
-            //
-            // Notify
-            //
-            if(completion)
-            {
-                completion(nil, [NSError errorOTPCredentialsExpired]);
-            }
-            
-            return;
-        }
-        //
-        // OTP Retry Limit Exceeded / Retry Suspended.
-        //
-        else if ([magErrorCode hasSuffix:MASApiErrorCodeOTPRetryLimitExceededSuffix] ||
-                 [magErrorCode hasSuffix:MASApiErrorCodeOTPRetryBarredSuffix]) {
-            
-            //
-            // Suspension time
-            //
-            NSString *suspensionTime = responseHeaderInfo [MASHeaderOTPRetryIntervalKey];
-            
-            //
-            // Notify
-            //
-            if(completion)
-            {
-                completion(nil, [NSError errorOTPRetryLimitExceeded:suspensionTime]);
-            }
-            
-            return;
-        }
-    }
-    else {
             //
             // Notify
             //
@@ -439,8 +119,313 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             {
                 completion(nil, nil);
             }
-        
+            
             return;
+        }
+        
+        //
+        // Notify UI
+        //
+        if (otpFetchcompletion)
+        {
+            otpFetchcompletion(YES, nil);
+        }
+        
+        //
+        // Notify
+        //
+        if(completion)
+        {
+            completion(oneTimePassword, nil);
+        }
+    };
+    
+    //
+    // OTP Generation Block
+    //
+    otpGenerationBlock = ^(NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock otpGenerationcompletion)
+    {
+        DLog(@"\n\nOTP generation block called with otpChannels: %@ and cancel: %@\n\n",
+             otpChannels, (cancel ? @"Yes" : @"No"));
+        
+        //
+        // Cancelled stop here
+        //
+        if(cancel)
+        {
+            //
+            // Notify UI
+            //
+            if (otpGenerationcompletion)
+            {
+                otpGenerationcompletion(NO, nil);
+            }
+            
+            //
+            // Notify
+            //
+            if(completion)
+            {
+                completion(nil, nil);
+            }
+            
+            return;
+        }
+        
+        //
+        // Notify UI
+        //
+        if (otpGenerationcompletion)
+        {
+            otpGenerationcompletion(YES, nil);
+        }
+        
+        //
+        // Endpoint
+        //
+        NSString *endPoint =
+        [MASConfiguration currentConfiguration].authenticateOTPEndpointPath;
+        
+        //
+        // Headers
+        //
+        MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+        NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
+        [headerInfo setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
+        
+        //
+        // Parameters
+        //
+        MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+        
+        //
+        // Trigger the OTP generate request
+        //        
+        [[MASNetworkingService sharedService] getFrom:endPoint
+            withParameters:parameterInfo
+            andHeaders:headerInfo
+            requestType:MASRequestResponseTypeJson
+            responseType:MASRequestResponseTypeJson
+            completion:^(NSDictionary *responseInfo, NSError *error)
+            {
+                MASIMutableOrderedDictionary *responseHeaderInfo =
+                [responseInfo objectForKey:MASResponseInfoHeaderInfoKey];
+             
+                //
+                // Check if OTP got generated.
+                //
+                NSString *otpStatus = nil;
+                if ([[responseHeaderInfo allKeys] containsObject:MASHeaderOTPKey])
+                {
+                    otpStatus = [NSString stringWithFormat:@"%@", [responseHeaderInfo objectForKey:MASHeaderOTPKey]];
+                }
+             
+                //
+                // otpStatus = generated
+                //
+                if ([otpStatus isEqualToString:MASOTPResponseOTPStatusKey])
+                {
+                    DLog(@"\n\n\n********************************************************\n\n"
+                         "Waiting for one time password to continue request"
+                         @"\n\n********************************************************\n\n\n");
+                 
+                    //
+                    // otpError to provide details of the OTP flow handle
+                    //
+                    NSError *otpError = [NSError errorOTPCredentialsNotProvided];
+                 
+                    //
+                    // If the UI handling framework is present and will handle this stop here
+                    //
+                    MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+                    if([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
+                    {
+                        return;
+                    }
+                 
+                    //
+                    // Else notify block if available
+                    //
+                    if(_OTPCredentialsBlock_)
+                    {
+                        //
+                        // Do this is the main queue since the reciever is almost certainly a UI component.
+                        // Lets do this for them and not make them figure it out
+                        //
+                        dispatch_async(dispatch_get_main_queue(),^
+                        {
+                            _OTPCredentialsBlock_(otpCredentialsBlock);
+                        });
+                    }
+                    else {
+                     
+                        //
+                        // If the device registration block is not defined, return an error
+                        //
+                        if (completion)
+                        {
+                            completion(nil, [NSError errorInvalidOTPCredentialsBlock]);
+                        }
+                    }
+                }
+            }];
+    };
+    
+    //
+    // Check if MAG error code exists
+    //
+    NSString *magErrorCode = nil;
+    if ([[responseHeaderInfo allKeys] containsObject:MASHeaderErrorKey])
+    {
+        magErrorCode = [NSString stringWithFormat:@"%@", [responseHeaderInfo objectForKey:MASHeaderErrorKey]];
+    }
+    
+    //
+    // OTP Required.
+    // Generate OTP with user selected OTP channels and send OTP to continue original request.
+    //
+    if ([magErrorCode hasSuffix:MASApiErrorCodeOTPNotProvidedSuffix])
+    {
+        DLog(@"\n\n\n********************************************************\n\n"
+             "Waiting for channel selection to continue otp generation"
+             @"\n\n********************************************************\n\n\n");
+        
+        //
+        // Supported channels
+        //
+        NSArray *supportedChannels =
+        [responseHeaderInfo [MASHeaderOTPChannelKey] componentsSeparatedByString:@","];
+        
+        //
+        // If the UI handling framework is present and will handle this stop here
+        //
+        MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+        if([serviceRegistry uiServiceWillHandleOTPChannelSelection:supportedChannels otpGenerationBlock:otpGenerationBlock])
+        {
+            return;
+        }
+        
+        //
+        // Else notify block if available
+        //
+        if(_OTPChannelSelectionBlock_)
+        {
+            //
+            // Do this is the main queue since the reciever is almost certainly a UI component.
+            // Lets do this for them and not make them figure it out
+            //
+            dispatch_async(dispatch_get_main_queue(),^
+            {
+                _OTPChannelSelectionBlock_(supportedChannels, otpGenerationBlock);
+            });
+        }
+        else {
+            
+            //
+            // If the device registration block is not defined, return an error
+            //
+            if (completion)
+            {
+                completion(nil, [NSError errorInvalidOTPChannelSelectionBlock]);
+            }
+        }
+    }
+    //
+    // Invalid OTP.
+    // Prompt for OTP generated and send OTP to continue original request.
+    //
+    else if ([magErrorCode hasSuffix:MASApiErrorCodeInvalidOTPProvidedSuffix]) {
+       
+        DLog(@"\n\n\n********************************************************\n\n"
+             "Waiting for one time password to continue request"
+             @"\n\n********************************************************\n\n\n");
+        
+        //
+        // otpError to provide details of the OTP flow handle
+        //
+        NSError *otpError = [NSError errorInvalidOTPCredentials];
+        
+        //
+        // If the UI handling framework is present and will handle this stop here
+        //
+        MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+        if([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
+        {
+            return;
+        }
+        
+        //
+        // Else notify block if available
+        //
+        if(_OTPCredentialsBlock_)
+        {
+            //
+            // Do this is the main queue since the reciever is almost certainly a UI component.
+            // Lets do this for them and not make them figure it out
+            //
+            dispatch_async(dispatch_get_main_queue(),^
+            {
+                _OTPCredentialsBlock_(otpCredentialsBlock);
+            });
+        }
+        else {
+            
+            //
+            // If the device registration block is not defined, return an error
+            //
+            if (completion)
+            {
+                completion(nil, [NSError errorInvalidOTPCredentialsBlock]);
+            }
+        }
+    }
+    //
+    // OTP Provided Expired
+    //
+    else if ([magErrorCode hasSuffix:MASApiErrorCodeOTPExpiredSuffix]) {
+        
+        //
+        // Notify
+        //
+        if(completion)
+        {
+            completion(nil, [NSError errorOTPCredentialsExpired]);
+        }
+        
+        return;
+    }
+    //
+    // OTP Retry Limit Exceeded / Retry Suspended.
+    //
+    else if ([magErrorCode hasSuffix:MASApiErrorCodeOTPRetryLimitExceededSuffix] ||
+             [magErrorCode hasSuffix:MASApiErrorCodeOTPRetryBarredSuffix]) {
+        
+        //
+        // Suspension time
+        //
+        NSString *suspensionTime = responseHeaderInfo [MASHeaderOTPRetryIntervalKey];
+        
+        //
+        // Notify
+        //
+        if(completion)
+        {
+            completion(nil, [NSError errorOTPRetryLimitExceeded:suspensionTime]);
+        }
+        
+        return;
+    }
+    else {
+        
+        //
+        // Notify
+        //
+        if(completion)
+        {
+            completion(nil, nil);
+        }
+        
+        return;
     }
 }
 
@@ -452,6 +437,5 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
     return [NSString stringWithFormat:@"%@",
             [super debugDescription]];
 }
-
 
 @end

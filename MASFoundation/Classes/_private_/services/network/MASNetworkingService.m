@@ -316,7 +316,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             [responseInfo setObject:responseObject forKey:MASResponseInfoBodyInfoKey];
         }
         
-        NSString *otpStatus = nil;
         NSString *magErrorCode = nil;
         
         //
@@ -325,14 +324,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         if ([[headerInfo allKeys] containsObject:MASHeaderErrorKey])
         {
             magErrorCode = [NSString stringWithFormat:@"%@", [headerInfo objectForKey:MASHeaderErrorKey]];
-        }
-        
-        //
-        // Check if OTP got generated.
-        //
-        if ([[headerInfo allKeys] containsObject:MASHeaderOTPKey])
-        {
-            otpStatus = [NSString stringWithFormat:@"%@", [headerInfo objectForKey:MASHeaderOTPKey]];
         }
         
         //
@@ -389,67 +380,55 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 }
             }];
         }
-        /**
-         *  If MAG error code exists, and it starts with 8000, it means that the OTP is required.
-         *  Then, try fetching the one time password and retry the request.
-         */
-        else if ((magErrorCode && [magErrorCode hasPrefix:MASApiErrorCodeOTPPrefix]) ||
-                 (otpStatus && [otpStatus isEqualToString:MASOTPResponseOTPStatusKey])) {
+        //
+        // If MAG error code exists, and it ends with 140/142/143/144/145,
+        // it means that the OTP is required to proceed with the request.
+        // Then, try validate OTP session and retry the request.
+        //
+        else if (magErrorCode &&
+                 ([magErrorCode hasSuffix:@"140"] ||
+                  [magErrorCode hasSuffix:@"142"] || [magErrorCode hasSuffix:@"143"] ||
+                  [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
             
-            [[MASOTPService sharedService] validateOTPSessionWithEndPoint:endPoint
-                                                               parameters:originalParameterInfo
-                                                                  headers:originalHeaderInfo
-                                                               httpMethod:httpMethod
-                                                              requestType:requestType
-                                                             responseType:responseType
-                                                          responseHeaders:headerInfo
-                                                          completionBlock:
-             ^(NSDictionary *newRequestInfo, NSError *error) {
-                 
-                 //
-                 // If it fails to validate otp session, notify user
-                 //
-                 if (!newRequestInfo || error)
-                 {
-                     if(completion) completion(responseInfo, error);
-                 }
-                 else {
-                     
-                     //
-                     // Retry request details
-                     //
-                     NSString *newEndpoint = newRequestInfo [MASOTPRequestEndpointKey];
-                     NSString *newHTTPMethod = newRequestInfo [MASOTPRequestHTTPMethodKey];
-                     NSDictionary *newParameterInfo = newRequestInfo [MASOTPRequestParameterInfoKey];
-                     NSDictionary *newHeaderInfo = newRequestInfo [MASOTPRequestHeaderInfoKey];
-                     MASRequestResponseType newRequestType =
-                     (MASRequestResponseType)newRequestInfo [MASOTPRequestTypeKey];
-                     MASRequestResponseType newResponseType =
-                     (MASRequestResponseType)newRequestInfo [MASOTPResponseTypeKey];
-                     
-                     //
-                     // Retry request
-                     //
-                     if ([newHTTPMethod isEqualToString:@"DELETE"])
-                     {
-                         [self deleteFrom:newEndpoint withParameters:newParameterInfo andHeaders:newHeaderInfo   requestType:newRequestType responseType:newResponseType completion:completion];
-                     }
-                     else if ([newHTTPMethod isEqualToString:@"GET"]) {
-                         [self getFrom:newEndpoint withParameters:newParameterInfo andHeaders:newHeaderInfo requestType:newRequestType responseType:newResponseType completion:completion];
-                     }
-                     else if ([newHTTPMethod isEqualToString:@"PATCH"]) {
-                         [self patchTo:newEndpoint withParameters:newParameterInfo andHeaders:newHeaderInfo requestType:newRequestType responseType:newResponseType completion:completion];
-                     }
-                     else if ([newHTTPMethod isEqualToString:@"POST"]) {
-                         [self postTo:newEndpoint withParameters:newParameterInfo andHeaders:newHeaderInfo requestType:newRequestType responseType:newResponseType completion:completion];
-                     }
-                     else if ([newHTTPMethod isEqualToString:@"PUT"]) {
-                         [self putTo:newEndpoint withParameters:newParameterInfo andHeaders:newHeaderInfo requestType:newRequestType responseType:newResponseType completion:completion];
-                     }
-                     
-                     return;
-                 }
-             }];
+            [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
+                completionBlock:^(NSString *oneTimePassword, NSError *error)
+                {
+                    //
+                    // If it fails to fetch OTP, notify user
+                    //
+                    if (!oneTimePassword || error)
+                    {
+                        if(completion) completion(responseInfo, error);
+                    }
+                    else {
+                        
+                        NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
+                        [newHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
+                        
+                        //
+                        // Retry request
+                        //
+                        if ([httpMethod isEqualToString:@"DELETE"])
+                        {
+                            [self deleteFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"GET"]) {
+                            [self getFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"PATCH"]) {
+                            [self patchTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"POST"]) {
+                            [self postTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"PUT"]) {
+                            [self putTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        
+                        return;
+                    }
+                }
+             ];
         }
         else {
             //

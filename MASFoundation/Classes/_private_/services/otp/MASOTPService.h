@@ -55,28 +55,11 @@
  *  Validate the current request's otp session information.
  *  This method will go through the validation process of error codes related to OTP flow.
  *
- *  @param endPoint              The specific end point path fragment NSString to append to the base
- *     Gateway URL.
- *  @param originalParameterInfo An NSDictionary of key/value parameter values that will go into the
- *     query portion of the URL.
- *  @param originalHeaderInfo    An NSDictionary of key/value header values that will go into the HTTP
- *     header.
- *  @param httpMethod            NSString of the request's HTTP Method.
- *  @param requestType           The expected content type encoding for the parameter values.
- *  @param responseType          The expected content type encoding for any response data.
  *  @param responseHeaderInfo    the value will be an NSDictionary of key/value pairs from the HTTP response header.
- *  @param completion            An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
- *      receive the new request info object or an NSError object if there is a failure.
+ *  @param completion            An MASObjectResponseErrorBlock (id object, NSError *error) that will
+ *   receive the one time password object or an NSError object if there is a failure.
  */
-- (void)validateOTPSessionWithEndPoint:(NSString *)endPoint
-                            parameters:(NSDictionary *)originalParameterInfo
-                               headers:(NSDictionary *)originalHeaderInfo
-                            httpMethod:(NSString *)httpMethod
-                           requestType:(MASRequestResponseType)requestType
-                          responseType:(MASRequestResponseType)responseType
-                       responseHeaders:(NSDictionary *)responseHeaderInfo
-                       completionBlock:(MASResponseInfoErrorBlock)completion;
-
-
+- (void)validateOTPSessionWithResponseHeaders:(NSDictionary *)responseHeaderInfo
+                              completionBlock:(MASObjectResponseErrorBlock)completion;
 
 @end
