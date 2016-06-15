@@ -208,6 +208,22 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             responseType:MASRequestResponseTypeJson
             completion:^(NSDictionary *responseInfo, NSError *error)
             {
+                //
+                // Detect if error, if so stop here
+                //
+                if(error)
+                {
+                    //
+                    // Notify
+                    //
+                    if(completion)
+                    {
+                        completion(responseInfo, error);
+                    }
+                    
+                    return;
+                }
+                
                 MASIMutableOrderedDictionary *responseHeaderInfo =
                 [responseInfo objectForKey:MASResponseInfoHeaderInfoKey];
              
