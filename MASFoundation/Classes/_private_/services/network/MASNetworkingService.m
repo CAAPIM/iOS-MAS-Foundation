@@ -22,6 +22,7 @@
 #import "MASHTTPSessionManager.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
+#import "MASOTPService.h"
 #import "MASINetworking.h"
 #import "MASINetworkActivityLogger.h"
 
@@ -378,6 +379,56 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                     return;
                 }
             }];
+        }
+        //
+        // If MAG error code exists, and it ends with 140/142/143/144/145,
+        // it means that the OTP is required to proceed with the request.
+        // Then, try validate OTP session and retry the request.
+        //
+        else if (magErrorCode &&
+                 ([magErrorCode hasSuffix:@"140"] ||
+                  [magErrorCode hasSuffix:@"142"] || [magErrorCode hasSuffix:@"143"] ||
+                  [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
+            
+            [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
+                completionBlock:^(NSString *oneTimePassword, NSError *error)
+                {
+                    //
+                    // If it fails to fetch OTP, notify user
+                    //
+                    if (!oneTimePassword || error)
+                    {
+                        if(completion) completion(responseInfo, error);
+                    }
+                    else {
+                        
+                        NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
+                        [newHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
+                        
+                        //
+                        // Retry request
+                        //
+                        if ([httpMethod isEqualToString:@"DELETE"])
+                        {
+                            [self deleteFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"GET"]) {
+                            [self getFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"PATCH"]) {
+                            [self patchTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"POST"]) {
+                            [self postTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"PUT"]) {
+                            [self putTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        
+                        return;
+                    }
+                }
+             ];
         }
         else {
             //

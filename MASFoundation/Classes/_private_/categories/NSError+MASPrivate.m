@@ -102,6 +102,11 @@ typedef NS_ENUM(NSInteger, MASApiErrorCode)
     MASApiErrorCodeTokenInvalidAccessTokenSuffix = 992,
     MASApiErrorCodeTokenDisabledSuffix = 993,
     
+    // OTP
+    MASApiErrorCodeOTPExpired = 8000143,
+    MASApiErrorCodeOTPRetryLimitExceeded = 8000144,
+    MASApiErrorCodeOTPRetryBarred = 8000145,
+    
     MASApiErrorCodeCount
 };
 
@@ -337,6 +342,99 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 + (NSError *)errorInvalidNSURL
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeInvalidNSURL errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorInvalidOTPChannelSelectionBlock
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidOTPChannelSelectionBlock errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorInvalidOTPCredentialsBlock
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidOTPCredentialsBlock errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorOTPCredentialsNotProvided
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *localDescription =
+    [self descriptionForFoundationErrorCode:MASFoundationErrorCodeOTPNotProvided];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPNotProvided info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorInvalidOTPCredentials
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *localDescription =
+    [self descriptionForFoundationErrorCode:MASFoundationErrorCodeInvalidOTPProvided];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidOTPProvided info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorOTPCredentialsExpired
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *localDescription =
+    [self descriptionForFoundationErrorCode:MASFoundationErrorCodeOTPExpired];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPExpired info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorOTPRetryLimitExceeded:(NSString *)suspensionTime
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *localDescription =
+    [self descriptionForFoundationErrorCode:MASFoundationErrorCodeOTPRetryLimitExceeded];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    //
+    // Suspension time
+    //
+    if(suspensionTime) userInfo[MASOTPSuspensionTimeKey] = suspensionTime;
+    
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPRetryLimitExceeded info:userInfo errorDomain:MASFoundationErrorDomainLocal];
 }
 
 
@@ -661,6 +759,13 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASApiErrorCodeTokenInvalidAccessTokenSuffix: return MASFoundationErrorCodeAccessTokenInvalid;
         case MASApiErrorCodeTokenDisabledSuffix: return MASFoundationErrorCodeAccessTokenDisabled;
         case MASApiErrorCodeTokenNotGrantedForScopeSuffix: return MASFoundationErrorCodeAccessTokenNotGrantedScope;
+         
+        //
+        // OTP
+        //
+        case MASApiErrorCodeOTPExpired: return MASFoundationErrorCodeOTPExpired;
+        case MASApiErrorCodeOTPRetryLimitExceeded:
+        case MASApiErrorCodeOTPRetryBarred: return MASFoundationErrorCodeOTPRetryLimitExceeded;
             
         //
         // Default
@@ -721,6 +826,14 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeInvalidNSDictionary: return @"Invalid NSDictionary object. JSON object cannot be nil.";
         case MASFoundationErrorCodeInvalidNSURL: return @"Invalid NSURL object. File URL cannot be nil";
         case MASFoundationErrorCodeInvalidUserLoginBlock: return @"SDK is attempting to invoke MASDeviceRegistrationWithUserCredentialsBlock, but the block has not defined.  The block is mandatory for user credential flow if you have decided to not use MASUI.";
+        
+        //
+        // OTP
+        //
+        case MASFoundationErrorCodeOTPNotProvided: return @"Enter the OTP.";
+        case MASFoundationErrorCodeInvalidOTPProvided: return @"Authentication failed due to invalid OTP.";
+        case MASFoundationErrorCodeOTPExpired: return @"The OTP has expired.";
+        case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of invalid attempts. Please try after some time.";
             
         //
         // Application

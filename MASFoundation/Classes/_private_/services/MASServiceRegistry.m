@@ -788,4 +788,149 @@ static NSArray const *_serviceUUIDs_;
     return YES;
 }
 
+
+- (BOOL)uiServiceWillHandleOTPAuthentication:(MASOTPFetchCredentialsBlock)otpBlock error:(NSError *)otpError
+{
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    
+    //
+    // If the UI handling framework is not present no need to continue
+    //
+    if(!self.uiHandlingIsPresent)
+    {
+        return NO;
+    }
+    
+    //
+    // If the service does not even implement the will handle OTP authentication UI method
+    // stop here.
+    //
+    // Note this method is a static method
+    //
+    SEL selector = NSSelectorFromString(@"willHandleOTPAuthentication");
+    Class uiServiceClass = self.uiService.class;
+    if(![uiServiceClass respondsToSelector:selector])
+    {
+        return NO;
+    }
+    
+    //
+    // Retrieve the function pointer for this selector
+    //
+    IMP imp = [uiServiceClass methodForSelector:selector];
+    BOOL (*willHandleOTPAuthentication)(id, SEL) = (void *)imp;
+    
+    //
+    // Invoke the method and if the service responds that it will NOT handle OTP authentication UI
+    // stop here
+    //
+    // Note this is an instance method
+    //
+    BOOL willHandle = willHandleOTPAuthentication(self.uiService.class, selector);
+    if(!willHandle)
+    {
+        return NO;
+    }
+    
+    //
+    // If the service does not even implement the notification callback to handle the OTP
+    // authentication stop here
+    //
+    selector = NSSelectorFromString(@"__masRequestsOTPCredentialsWithOTPCredentialsBlock__:error:");
+    if(![self.uiService respondsToSelector:selector])
+    {
+        return NO;
+    }
+    
+    //
+    // Retrieve the function pointer for this selector
+    //
+    imp = [self.uiService methodForSelector:selector];
+    __block void (*handleOTPAuthentication)(id, SEL, MASOTPFetchCredentialsBlock, NSError *) = (void *)imp;
+    
+    //
+    // Attempt to retrieve the one time password
+    //
+    handleOTPAuthentication(self.uiService, selector, otpBlock, otpError);
+    
+#pragma clang diagnostic pop
+    
+    return YES;
+}
+
+
+- (BOOL)uiServiceWillHandleOTPChannelSelection:(NSArray *)supportedChannels
+                            otpGenerationBlock:(MASOTPGenerationBlock)generationBlock
+{
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    
+    //
+    // If the UI handling framework is not present no need to continue
+    //
+    if(!self.uiHandlingIsPresent)
+    {
+        return NO;
+    }
+    
+    //
+    // If the service does not even implement the will handle OTP authentication UI method
+    // stop here.
+    //
+    // Note this method is a static method
+    //
+    SEL selector = NSSelectorFromString(@"willHandleOTPAuthentication");
+    Class uiServiceClass = self.uiService.class;
+    if(![uiServiceClass respondsToSelector:selector])
+    {
+        return NO;
+    }
+    
+    //
+    // Retrieve the function pointer for this selector
+    //
+    IMP imp = [uiServiceClass methodForSelector:selector];
+    BOOL (*willHandleOTPAuthentication)(id, SEL) = (void *)imp;
+    
+    //
+    // Invoke the method and if the service responds that it will NOT handle OTP authentication UI
+    // stop here
+    //
+    // Note this is an instance method
+    //
+    BOOL willHandle = willHandleOTPAuthentication(self.uiService.class, selector);
+    if(!willHandle)
+    {
+        return NO;
+    }
+    
+    //
+    // If the service does not even implement the notification callback to handle the OTP
+    // authentication stop here
+    //
+    selector = NSSelectorFromString(@"__masRequestsOTPChannelsWithOTPGenerationBlock__:supportedChannels:");
+    if(![self.uiService respondsToSelector:selector])
+    {
+        return NO;
+    }
+    
+    //
+    // Retrieve the function pointer for this selector
+    //
+    imp = [self.uiService methodForSelector:selector];
+    __block void (*handleOTPChannelSelection)(id, SEL, MASOTPGenerationBlock, NSArray*) = (void *)imp;
+    
+    //
+    // Attempt to retrieve the selected OTP channels
+    //
+    handleOTPChannelSelection(self.uiService, selector, generationBlock, supportedChannels);
+    
+#pragma clang diagnostic pop
+    
+    return YES;
+}
+
 @end

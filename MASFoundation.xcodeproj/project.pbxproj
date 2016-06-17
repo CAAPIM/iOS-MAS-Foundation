@@ -290,6 +290,8 @@
 		A4E341011B9E9F2000883AD3 /* MASConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340D61B9E9F2000883AD3 /* MASConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4F671321BAFC345000E2223 /* NSString+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4F671301BAFC345000E2223 /* NSString+MASPrivate.h */; };
 		A4F671331BAFC345000E2223 /* NSString+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */; };
+		A858C6651D0978A6001FB9AD /* MASOTPService.h in Headers */ = {isa = PBXBuildFile; fileRef = A858C6631D0978A6001FB9AD /* MASOTPService.h */; };
+		A858C6661D0978A6001FB9AD /* MASOTPService.m in Sources */ = {isa = PBXBuildFile; fileRef = A858C6641D0978A6001FB9AD /* MASOTPService.m */; };
 		CB0A8ADF1D01F64F00B1DCCC /* MASProximityLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CB0A8AE01D01F64F00B1DCCC /* MASProximityLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */; };
 		CB136A3E1C0FC32300BCB157 /* L7SHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = CB136A3A1C0FC32300BCB157 /* L7SHTTPClient.m */; };
@@ -640,6 +642,8 @@
 		A4F19ED71C30BD0E00289DE4 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		A4F671301BAFC345000E2223 /* NSString+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MASPrivate.h"; sourceTree = "<group>"; };
 		A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MASPrivate.m"; sourceTree = "<group>"; };
+		A858C6631D0978A6001FB9AD /* MASOTPService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASOTPService.h; sourceTree = "<group>"; };
+		A858C6641D0978A6001FB9AD /* MASOTPService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASOTPService.m; sourceTree = "<group>"; };
 		CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASProximityLogin.h; sourceTree = "<group>"; };
 		CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASProximityLogin.m; sourceTree = "<group>"; };
 		CB136A3A1C0FC32300BCB157 /* L7SHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = L7SHTTPClient.m; sourceTree = "<group>"; };
@@ -1215,6 +1219,7 @@
 				A4150ED61BF16DBE00037E27 /* location */,
 				A4150EBD1BF16D9A00037E27 /* network */,
 				A4150EE91BF16EB200037E27 /* model */,
+				A858C6621D0978A6001FB9AD /* otp */,
 				A4150EF61BF16EE200037E27 /* security */,
 			);
 			path = services;
@@ -1305,6 +1310,15 @@
 			path = models;
 			sourceTree = "<group>";
 		};
+		A858C6621D0978A6001FB9AD /* otp */ = {
+			isa = PBXGroup;
+			children = (
+				A858C6631D0978A6001FB9AD /* MASOTPService.h */,
+				A858C6641D0978A6001FB9AD /* MASOTPService.m */,
+			);
+			path = otp;
+			sourceTree = "<group>";
+		};
 		CB1907F51C17950700A5EF16 /* access */ = {
 			isa = PBXGroup;
 			children = (
@@ -1345,6 +1359,7 @@
 				105B2F4D1CA6B3EA0005A2D0 /* safestack.h in Headers */,
 				10738A2E1C711C2F00B7E87E /* net_mosq.h in Headers */,
 				105B2F311CA6B3EA0005A2D0 /* engine.h in Headers */,
+				A858C6651D0978A6001FB9AD /* MASOTPService.h in Headers */,
 				A4831AAB1BD1A551007B4AE6 /* MASAuthenticationProvider.h in Headers */,
 				CB136A401C0FC32300BCB157 /* L7SAFHTTPRequestOperation.h in Headers */,
 				105B2F3A1CA6B3EA0005A2D0 /* md5.h in Headers */,
@@ -1648,6 +1663,7 @@
 				CB5E4C711C1D250D001B3B8A /* MASPutURLRequest.m in Sources */,
 				CB14D21A1D02266D004F772E /* MASProximityLoginQRCode.m in Sources */,
 				A4641FA21BE09B62004E025C /* L7SErrors.m in Sources */,
+				A858C6661D0978A6001FB9AD /* MASOTPService.m in Sources */,
 				CB14D2241D02328C004F772E /* MASProximityLoginQRCode+MASPrivate.m in Sources */,
 				CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */,
 				10738A321C711C2F00B7E87E /* read_handle_shared.c in Sources */,

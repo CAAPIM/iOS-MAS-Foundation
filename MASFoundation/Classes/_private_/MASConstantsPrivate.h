@@ -46,6 +46,7 @@ static NSString *_Nonnull const MASFileServiceUUID = @"f94672c4-7daf-4a28-a26e-0
 static NSString *_Nonnull const MASModelServiceUUID = @"37a4f3f3-e029-430d-a2d2-2c1f46e87bd2";
 static NSString *_Nonnull const MASNetworkServiceUUID = @"cd460414-b248-47a4-af8a-4eadfdb937f8";
 static NSString *_Nonnull const MASSecurityServiceUUID = @"8a1e8e72-e714-11e5-9730-9a79f06e9478";
+static NSString *_Nonnull const MASOTPServiceUUID = @"1dcd2f44-bdc2-449c-9ffc-084592feb046";
 
 // Known external MAS service UUIDs, these are optional and pluggable services
 static NSString const *_Nonnull MASDebugServiceUUID = @"018c9134-688e-4f47-ace9-f18b4430ca42";
@@ -67,6 +68,28 @@ static NSString *_Nonnull const MASKey = @"MAS.key";
 static NSString *_Nonnull const MASHeaderErrorKey = @"x-ca-err";
 
 static NSString *_Nonnull const MASIdTokenTypeToValidateConstant = @"urn:ietf:params:oauth:grant-type:jwt-bearer"; // string
+
+# pragma mark - OTP Constants
+
+static NSString *_Nonnull const MASHeaderOTPKey = @"X-OTP";
+static NSString *_Nonnull const MASHeaderOTPChannelKey = @"X-OTP-CHANNEL";
+static NSString *_Nonnull const MASHeaderOTPRetryIntervalKey = @"X-OTP-RETRY-INTERVAL";
+
+static NSString *_Nonnull const MASOTPRequestEndpointKey = @"end_point"; // string
+static NSString *_Nonnull const MASOTPRequestParameterInfoKey = @"parameter_info"; // string
+static NSString *_Nonnull const MASOTPRequestHeaderInfoKey = @"header_info"; // string
+static NSString *_Nonnull const MASOTPRequestHTTPMethodKey = @"http_method"; // string
+static NSString *_Nonnull const MASOTPRequestTypeKey = @"request_type"; // string
+static NSString *_Nonnull const MASOTPResponseTypeKey = @"response_type"; // string
+static NSString *_Nonnull const MASOTPResponseOTPStatusKey = @"generated"; // string
+
+static NSString *_Nonnull const MASApiErrorCodeOTPPrefix = @"8000"; // string
+
+static NSString *_Nonnull const MASApiErrorCodeOTPNotProvidedSuffix = @"140"; // string
+static NSString *_Nonnull const MASApiErrorCodeInvalidOTPProvidedSuffix = @"142"; // string
+static NSString *_Nonnull const MASApiErrorCodeOTPExpiredSuffix = @"143"; // string
+static NSString *_Nonnull const MASApiErrorCodeOTPRetryLimitExceededSuffix = @"144"; // string
+static NSString *_Nonnull const MASApiErrorCodeOTPRetryBarredSuffix = @"145"; // string
 
 # pragma mark - Certificate Constants
 
