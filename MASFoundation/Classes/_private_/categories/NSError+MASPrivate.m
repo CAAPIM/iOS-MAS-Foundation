@@ -830,10 +830,10 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         // OTP
         //
-        case MASFoundationErrorCodeOTPNotProvided: return @"Enter OTP.";
+        case MASFoundationErrorCodeOTPNotProvided: return @"Enter the OTP.";
         case MASFoundationErrorCodeInvalidOTPProvided: return @"Authentication failed due to invalid OTP.";
-        case MASFoundationErrorCodeOTPExpired: return @"The submitted OTP has expired.";
-        case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of attempts. Please try after some time.";
+        case MASFoundationErrorCodeOTPExpired: return @"The OTP has expired.";
+        case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of invalid attempts. Please try after some time.";
             
         //
         // Application
