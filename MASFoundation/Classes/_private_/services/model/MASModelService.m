@@ -205,7 +205,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //  If the clientId and clientSecret are both in JSON configuration, it means that the application is configured to be non-dynamic client_id.
     //  In this case, use both client_id and client_secret from JSON configuration and set the expiration time to infinite.
     //
-    if (clientId && clientId.length > 0 && clientSecret && clientSecret.length > 0)
+    if (clientId && clientId.length > 0 && clientSecret && clientSecret.length > 0 && ![clientId isEqualToString:clientSecret])
     {
         NSMutableDictionary *applicationInfo = [NSMutableDictionary dictionary];
         
