@@ -195,7 +195,7 @@
     //
     // id_token - body, if header does not exist
     //
-    if (!_idToken)
+    if (!idToken)
     {
         NSString *idTokenBody = info[MASIdTokenBodyRequestResponseKey];
         
@@ -217,7 +217,7 @@
     //
     // id_token_type - body, if header does not exist
     //
-    if (!_idTokenType)
+    if (!idTokenType)
     {
         NSString *idTokenTypeBody = info[MASIdTokenTypeBodyRequestResponseKey];
         
