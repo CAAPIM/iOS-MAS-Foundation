@@ -19,6 +19,7 @@
 static NSString *_configurationFileName_ = @"msso_config";
 static NSString *_configurationFileType_ = @"json";
 static NSDictionary *_newConfigurationObject_ = nil;
+static BOOL _newConfigurationDetected_ = NO;
 
 
 # pragma mark - Properties
@@ -32,6 +33,7 @@ static NSDictionary *_newConfigurationObject_ = nil;
 + (void)setNewConfigurationObject:(NSDictionary *)configuration
 {
     _newConfigurationObject_ = configuration;
+    _newConfigurationDetected_ = YES;
 }
 
 
@@ -120,10 +122,11 @@ static NSDictionary *_newConfigurationObject_ = nil;
     // If the configuration is being loaded dynamically by JSON as parameter,
     // reset the current configuration and load it from the object.
     //
-    else if (_newConfigurationObject_)
+    else if (_newConfigurationDetected_)
     {
         [self.currentConfiguration reset];
         _currentConfiguration = nil;
+        _newConfigurationDetected_ = NO;
     }
     
     //
