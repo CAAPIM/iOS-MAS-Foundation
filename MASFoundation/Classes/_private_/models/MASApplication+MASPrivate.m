@@ -588,6 +588,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     if (([expiresInDate timeIntervalSinceNow] <= 0))
     {
         currentStatus = MASAuthenticationStatusNotLoggedIn;
+        [accessService.currentAccessObj deleteForTokenExpiration];
     }
     
     //DLog(@"\n\nNOW date is: %@, expiration date is: %@ and interval since now: %f\n\n",

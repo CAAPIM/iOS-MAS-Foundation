@@ -357,6 +357,26 @@
 }
 
 
+- (void)deleteForTokenExpiration
+{
+    //
+    // remove all data from the keychain
+    //
+    _accessToken = nil;
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
+    
+    _tokenType = nil;
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
+
+    _expiresIn = nil;
+    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeExpiresIn];
+    
+    _scope = nil;
+    _scopeAsString = nil;
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+}
+
+
 # pragma mark - Current Access
 
 + (MASAccess *)currentAccess

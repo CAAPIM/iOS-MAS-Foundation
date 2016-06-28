@@ -137,9 +137,15 @@
 
 
 /**
- *  Remove only user associated access information (access toke, refresh token, expires date)
+ *  Remove only user associated access information (access token, refresh token, expiration date) for user log out
  */
 - (void)deleteForLogOff;
+
+
+/**
+ *  Remove only user associated access information (access token, and expiration date) for token expiration
+ */
+- (void)deleteForTokenExpiration;
 
 
 

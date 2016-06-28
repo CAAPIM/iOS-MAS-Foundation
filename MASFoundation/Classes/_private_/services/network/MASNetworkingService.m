@@ -336,8 +336,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             // Remove access_token from keychain
             //
-            [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
-            [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeExpiresIn];
+            [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
             [[MASAccessService sharedService].currentAccessObj refresh];
             
             //
