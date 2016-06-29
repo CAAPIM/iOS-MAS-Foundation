@@ -2087,6 +2087,11 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
 
+    //
+    // Empty authorization header for token endpoint with auth code
+    //
+    headerInfo[MASAuthorizationRequestResponseKey] = @"";
+
     // AccessService
     MASAccessService *accessService = [MASAccessService sharedService];
 
