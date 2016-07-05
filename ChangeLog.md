@@ -1,13 +1,14 @@
 # Version 1.2.00
 
 ### Bug fixes
-
-- 
-- Handling multiples response type with one session manager
+ 
+- Handling multiple response types with one session manager.
+- SDK offline initialization: a bug where SDK cannot be initialized while the device has no network connectivity is fixed.  SDK now can be used for secure local storage.
 
 ### New features
 
-- ```MASSocialLogin``` class is newly added for developers to handle social login on their customized login dialog.
+- [One-Time Password (OTP)](http://mas.ca.com/docs/ios/1.2.00/guides/#create-your-own-otp-dialog) feature for accessing APIs
+- ```MASSocialLogin``` class is newly added for developers to handle social login on [customized login dialog](http://mas.ca.com/docs/ios/1.2.00/guides/#create-your-own-login-dialog).
 
 ### Deprecated methods
 
