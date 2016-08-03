@@ -74,14 +74,10 @@
         [self serviceDidLoadCompletion:^(BOOL completed, NSError *error)
          {
              //
-             // Error
+             // Regardless of the location status, SDK should successfully initialize SDK.
+             // In case of unavailable location from the device, it would simply not send location information in the request,
+             // and return a proper error from the endpoint (if needed).
              //
-             if(error)
-             {
-                 [self serviceDidFailWithError:error];
-                 return;
-             }
-             
              [super serviceWillStart];
          }];
     }
@@ -90,6 +86,19 @@
     }
 }
 
+
+- (void)serviceDidReset
+{
+    //
+    // Reset the value
+    //
+    _monitoringBlock = nil;
+    
+    [super serviceDidReset];
+}
+
+
+# pragma mark - Private
 
 - (void)serviceDidLoadCompletion:(MASCompletionErrorBlock)completion
 {
@@ -116,17 +125,6 @@
 }
 
 
-- (void)serviceDidReset
-{
-    //
-    // Reset the value
-    //
-    _monitoringBlock = nil;
-    
-    [super serviceDidReset];
-}
-
-
 # pragma mark - Public
 
 - (NSString *)debugDescription
@@ -142,6 +140,12 @@
 + (BOOL)isLocationMonitoringAuthorized
 {
     return ([MASINTULocationManager locationServicesState] == MASINTULocationServicesStateAvailable);
+}
+
+
++ (BOOL)isLocationMonitoringDenied
+{
+    return ([MASINTULocationManager locationServicesState] != MASINTULocationServicesStateAvailable && [MASINTULocationManager locationServicesState] != MASINTULocationServicesStateNotDetermined);
 }
 
 

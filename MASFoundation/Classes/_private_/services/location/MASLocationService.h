@@ -38,11 +38,19 @@
 # pragma mark - Location Monitoring
 
 /**
- *  Retrieves the current location services authorization for the application.
+ *  Retrieves the current authorization status of location services for the application and return boolean value of whether it is authorized or not.
  *
  *  @return Returns YES if the application has been authorized to use location services, NO if not.
  */
 + (BOOL)isLocationMonitoringAuthorized;
+
+
+/**
+ *  Retrieves the current authorization status of location services for the application and return boolean value of whether it is denied or not.
+ *
+ *  @return Retruns YES if the application does not have an access to the location service or the authorization status is not determined (not asked for permission yet).
+ */
++ (BOOL)isLocationMonitoringDenied;
 
 
 /**

@@ -325,31 +325,39 @@
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeGeolocationIsInvalid.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeGeolocationIsInvalid.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeGeolocationIsInvalid.
  */
 + (NSError *)errorGeolocationIsInvalid;
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeGeolocationIsMissing.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeGeolocationIsMissing.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeGeolocationIsMissing.
  */
 + (NSError *)errorGeolocationIsMissing;
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeGeolocationServicesAreUnauthorized.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeGeolocationServicesAreUnauthorized.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeGeolocationServicesAreUnauthorized.
  */
 + (NSError *)errorGeolocationServicesAreUnauthorized;
 
+
+/**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeGeolocationIsNotConfigured.
+ *
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeGeolocationIsNotConfigured.
+ */
++ (NSError *)errorGeolocationServiceIsNotConfigured;
 
 
 /**

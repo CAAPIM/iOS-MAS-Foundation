@@ -337,6 +337,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeGeolocationIsInvalid = 100301,
     MASFoundationErrorCodeGeolocationIsMissing = 100302,
     MASFoundationErrorCodeGeolocationServicesAreUnauthorized = 100303,
+    MASFoundationErrorCodeGeolocationIsNotConfigured = 100304,
     
     //
     // Network

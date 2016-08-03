@@ -327,10 +327,106 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         }
         
         //
+        // For geo-fencing, MAG backend service returns with specific HTTP status code for an error; not as in x-ca-err format in the header.
+        // Therefore, SDK should look into the specific status code for the geo-location related error; and behaves accordingly.
+        //
+        if (httpResponse.statusCode == 449)
+        {
+            //
+            // If geo-location is disabled from msso_config.json, SDK will NOT attempt to retrieve the geo-location information.
+            // Developers should re-configure the msso_config.json properly.
+            //
+            if (![MASConfiguration currentConfiguration].locationIsRequired)
+            {
+                if(completion)
+                {
+                    completion(nil, [NSError errorGeolocationServiceIsNotConfigured]);
+                }
+            }
+            //
+            // If location service on the device is denied for the app, there is nothing that app nor SDK can do. Simply return an error.
+            //
+            else if ([MASLocationService isLocationMonitoringDenied])
+            {
+                if(completion)
+                {
+                    completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
+                }
+            }
+            //
+            // If location service was authorized, but somehow got an error for geo-location, try to retrieve the location once again.
+            //
+            else if ([MASLocationService isLocationMonitoringAuthorized])
+            {
+                //
+                // Retrieve the geo-location coordinates
+                //
+                [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
+                    
+                    //
+                    // If an invalid geolocation result is detected
+                    //
+                    if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
+                       !location)
+                    {
+                        //
+                        // Notify
+                        //
+                        if(completion)
+                        {
+                            completion(nil, [NSError errorGeolocationIsInvalid]);
+                        }
+                    }
+                    else {
+                        
+                        //
+                        // If a valid geolocation result is found
+                        //
+                        NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
+                        
+                        //
+                        // Inject in the header
+                        //
+                        newHeader[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+                        
+                        //
+                        // Retry request
+                        //
+                        if ([httpMethod isEqualToString:@"DELETE"])
+                        {
+                            [self deleteFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"GET"]) {
+                            [self getFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"PATCH"]) {
+                            [self patchTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"POST"]) {
+                            [self postTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                        else if ([httpMethod isEqualToString:@"PUT"]) {
+                            [self putTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        }
+                    }
+                }];
+            }
+            //
+            // All other cases (which unlikely happen), return the original error from the server to the client
+            //
+            else {
+                
+                if(completion)
+                {
+                    completion(nil, error);
+                }
+            }
+        }
+        //
         // If MAG error code exists, and it ends with 990, it means that the token is invalid.
         // Then, try re-validate user's session and retry the request.
         //
-        if (magErrorCode && [magErrorCode hasSuffix:@"990"])
+        else if (magErrorCode && [magErrorCode hasSuffix:@"990"])
         {
             
             //
@@ -581,43 +677,25 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
     if(configuration.locationIsRequired)
     {
-        //
-        // Location required but the location services are not currently authorized for use
-        //
-        if(![MASLocationService isLocationMonitoringAuthorized])
-        {
-            //
-            // Notify
-            //
-            if(completion) completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
-            
-            return;
-        }
         
         //
         // Request the one time, currently available location before proceeding
         //
         [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
          {
-             //
-             // If an invalid geolocation result is detected
-             //
-             if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
-                !location)
-             {
-                 //
-                 // Notify
-                 //
-                 if(completion) completion(nil, [NSError errorGeolocationIsInvalid]);
-                 
-                 return;
-             }
              
              //
              // Update the header
              //
              NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             
+             //
+             // If a valid geolocation result is detected
+             //
+             if (status == MASLocationMonitoringStatusSuccess && location)
+             {
+                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             }
              
              //
              // create request
@@ -641,30 +719,30 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              [dataTask resume];
          }];
-        
-        return;
     }
-    
-    //
-    // create request
-    //
-    MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
-    
-    //
-    // create dataTask
-    //
-    NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                 completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                         parameters:parameterInfo
-                                                                                                            headers:headerInfo
-                                                                                                         httpMethod:request.HTTPMethod
-                                                                                                        requestType:requestType
-                                                                                                       responseType:responseType
-                                                                                                    completionBlock:completion]];
-    //
-    // resume dataTask
-    //
-    [dataTask resume];
+    else {
+        
+        //
+        // create request
+        //
+        MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        
+        //
+        // create dataTask
+        //
+        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                             parameters:parameterInfo
+                                                                                                                headers:headerInfo
+                                                                                                             httpMethod:request.HTTPMethod
+                                                                                                            requestType:requestType
+                                                                                                           responseType:responseType
+                                                                                                        completionBlock:completion]];
+        //
+        // resume dataTask
+        //
+        [dataTask resume];
+    }
 }
 
 
@@ -732,43 +810,25 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
     if(configuration.locationIsRequired)
     {
-        //
-        // Location required but the location services are not currently authorized for use
-        //
-        if(![MASLocationService isLocationMonitoringAuthorized])
-        {
-            //
-            // Notify
-            //
-            if(completion) completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
-            
-            return;
-        }
         
         //
         // Request the one time, currently available location before proceeding
         //
         [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
          {
-             //
-             // If an invalid geolocation result is detected
-             //
-             if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
-                !location)
-             {
-                 //
-                 // Notify
-                 //
-                 if(completion) completion(nil, [NSError errorGeolocationIsInvalid]);
-                 
-                 return;
-             }
              
              //
              // Update the header
              //
              NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             
+             //
+             // If a valid geolocation result is detected
+             //
+             if (status == MASLocationMonitoringStatusSuccess && location)
+             {
+                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             }
              
              //
              // create request
@@ -792,31 +852,31 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              [dataTask resume];
          }];
-        
-        return;
     }
-    
-    //
-    // Else just create the request
-    //
-    MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
-    
-    //
-    // create dataTask
-    //
-    NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                 completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                         parameters:parameterInfo
-                                                                                                            headers:headerInfo
-                                                                                                         httpMethod:request.HTTPMethod
-                                                                                                        requestType:requestType
-                                                                                                       responseType:responseType
-                                                                                                    completionBlock:completion]];
-    
-    //
-    // resume dataTask
-    //
-    [dataTask resume];
+    else {
+        
+        //
+        // Else just create the request
+        //
+        MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        
+        //
+        // create dataTask
+        //
+        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                             parameters:parameterInfo
+                                                                                                                headers:headerInfo
+                                                                                                             httpMethod:request.HTTPMethod
+                                                                                                            requestType:requestType
+                                                                                                           responseType:responseType
+                                                                                                        completionBlock:completion]];
+        
+        //
+        // resume dataTask
+        //
+        [dataTask resume];
+    }
 }
 
 
@@ -882,43 +942,25 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
     if(configuration.locationIsRequired)
     {
-        //
-        // Location required but the location services are not currently authorized for use
-        //
-        if(![MASLocationService isLocationMonitoringAuthorized])
-        {
-            //
-            // Notify
-            //
-            if(completion) completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
-            
-            return;
-        }
         
         //
         // Request the one time, currently available location before proceeding
         //
         [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
          {
-             //
-             // If an invalid geolocation result is detected
-             //
-             if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
-                !location)
-             {
-                 //
-                 // Notify
-                 //
-                 if(completion) completion(nil, [NSError errorGeolocationIsInvalid]);
-                 
-                 return;
-             }
              
              //
              // Update the header
              //
              NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             
+             //
+             // If a valid geolocation result is detected
+             //
+             if (status == MASLocationMonitoringStatusSuccess && location)
+             {
+                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             }
              
              //
              // create request
@@ -942,31 +984,31 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              [dataTask resume];
          }];
-        
-        return;
     }
-    
-    //
-    // create request
-    //
-    MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
-    
-    //
-    // create dataTask
-    //
-    NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                 completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                         parameters:parameterInfo
-                                                                                                            headers:headerInfo
-                                                                                                         httpMethod:request.HTTPMethod
-                                                                                                        requestType:requestType
-                                                                                                       responseType:responseType
-                                                                                                    completionBlock:completion]];
-    
-    //
-    // resume dataTask
-    //
-    [dataTask resume];
+    else {
+        
+        //
+        // create request
+        //
+        MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        
+        //
+        // create dataTask
+        //
+        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                             parameters:parameterInfo
+                                                                                                                headers:headerInfo
+                                                                                                             httpMethod:request.HTTPMethod
+                                                                                                            requestType:requestType
+                                                                                                           responseType:responseType
+                                                                                                        completionBlock:completion]];
+        
+        //
+        // resume dataTask
+        //
+        [dataTask resume];
+    }
 }
 
 
@@ -1035,43 +1077,25 @@ withParameters:(NSDictionary *)parameterInfo
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
     if(configuration.locationIsRequired)
     {
-        //
-        // Location required but the location services are not currently authorized for use
-        //
-        if(![MASLocationService isLocationMonitoringAuthorized])
-        {
-            //
-            // Notify
-            //
-            if(completion) completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
-            
-            return;
-        }
         
         //
         // Request the one time, currently available location before proceeding
         //
         [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
          {
-             //
-             // If an invalid geolocation result is detected
-             //
-             if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
-                !location)
-             {
-                 //
-                 // Notify
-                 //
-                 if(completion) completion(nil, [NSError errorGeolocationIsInvalid]);
-                 
-                 return;
-             }
              
              //
              // Update the header
              //
              NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             
+             //
+             // If a valid geolocation result is detected
+             //
+             if (status == MASLocationMonitoringStatusSuccess && location)
+             {
+                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             }
              
              //
              // create request
@@ -1096,31 +1120,31 @@ withParameters:(NSDictionary *)parameterInfo
              [dataTask resume];
              
          }];
-        
-        return;
     }
-    
-    //
-    // create request
-    //
-    MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
-    
-    //
-    // create dataTask
-    //
-    NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                 completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                         parameters:parameterInfo
-                                                                                                            headers:headerInfo
-                                                                                                         httpMethod:request.HTTPMethod
-                                                                                                        requestType:requestType
-                                                                                                       responseType:responseType
-                                                                                                    completionBlock:completion]];
-    
-    //
-    // resume dataTask
-    //
-    [dataTask resume];
+    else {
+        
+        //
+        // create request
+        //
+        MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        
+        //
+        // create dataTask
+        //
+        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                             parameters:parameterInfo
+                                                                                                                headers:headerInfo
+                                                                                                             httpMethod:request.HTTPMethod
+                                                                                                            requestType:requestType
+                                                                                                           responseType:responseType
+                                                                                                        completionBlock:completion]];
+        
+        //
+        // resume dataTask
+        //
+        [dataTask resume];
+    }
 }
 
 
@@ -1186,43 +1210,25 @@ withParameters:(NSDictionary *)parameterInfo
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
     if(configuration.locationIsRequired)
     {
-        //
-        // Location required but the location services are not currently authorized for use
-        //
-        if(![MASLocationService isLocationMonitoringAuthorized])
-        {
-            //
-            // Notify
-            //
-            if(completion) completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
-            
-            return;
-        }
         
         //
         // Request the one time, currently available location before proceeding
         //
         [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
          {
-             //
-             // If an invalid geolocation result is detected
-             //
-             if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
-                !location)
-             {
-                 //
-                 // Notify
-                 //
-                 if(completion) completion(nil, [NSError errorGeolocationIsInvalid]);
-                 
-                 return;
-             }
              
              //
              // Update the header
              //
              NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             
+             //
+             // If a valid geolocation result is detected
+             //
+             if (status == MASLocationMonitoringStatusSuccess && location)
+             {
+                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+             }
              
              //
              // create request
@@ -1246,31 +1252,31 @@ withParameters:(NSDictionary *)parameterInfo
              //
              [dataTask resume];
          }];
-        
-        return;
     }
-    
-    //
-    // create request
-    //
-    MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
-    
-    //
-    // create dataTask
-    //
-    NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                 completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                         parameters:parameterInfo
-                                                                                                            headers:headerInfo
-                                                                                                         httpMethod:request.HTTPMethod
-                                                                                                        requestType:requestType
-                                                                                                       responseType:responseType
-                                                                                                    completionBlock:completion]];
-    
-    //
-    // resume dataTask
-    //
-    [dataTask resume];
+    else {
+        
+        //
+        // create request
+        //
+        MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        
+        //
+        // create dataTask
+        //
+        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                             parameters:parameterInfo
+                                                                                                                headers:headerInfo
+                                                                                                             httpMethod:request.HTTPMethod
+                                                                                                            requestType:requestType
+                                                                                                           responseType:responseType
+                                                                                                        completionBlock:completion]];
+        
+        //
+        // resume dataTask
+        //
+        [dataTask resume];
+    }
 }
 
 @end

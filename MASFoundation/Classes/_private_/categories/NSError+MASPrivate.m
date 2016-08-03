@@ -601,6 +601,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorGeolocationServiceIsNotConfigured
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeGeolocationIsNotConfigured errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorNetworkNotReachable
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeNetworkNotReachable errorDomain:MASFoundationErrorDomainLocal];
@@ -879,6 +885,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeGeolocationIsMissing: return @"No location coordinates found and they are required.";
         case MASFoundationErrorCodeGeolocationIsInvalid: return @"The current location is not valid.";
         case MASFoundationErrorCodeGeolocationServicesAreUnauthorized: return @"The geolocation services are unauthorized.";
+        case MASFoundationErrorCodeGeolocationIsNotConfigured: return @"The geolocation service is not configured in JSON configuration file.";
         
         //
         // Network
