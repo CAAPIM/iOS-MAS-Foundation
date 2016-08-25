@@ -466,6 +466,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             //Authenticated username
         case MASAccessValueTypeAuthenticatedUsername:
             storageKey = kMASAccessLocalStorageKey;
+            break;
             //RefreshToken
         case MASAccessValueTypeRefreshToken:
             storageKey = kMASAccessLocalStorageKey;
