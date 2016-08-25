@@ -191,4 +191,11 @@
     self._attributes[key] = obj;
 }
 
+#pragma mark - Print Attributes
+
+- (void)listAttributes
+{
+    DLog(@"%@",self._attributes);
+}
+
 @end

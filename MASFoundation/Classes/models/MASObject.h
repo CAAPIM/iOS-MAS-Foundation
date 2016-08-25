@@ -123,4 +123,12 @@
 - (void)setObject:(id)object forKeyedSubscript:(id <NSCopying>)key;
 
 
+#pragma mark - Print Attributes
+
+/**
+ *  List all attributes from the Object
+ */
+- (void)listAttributes;
+
+
 @end
