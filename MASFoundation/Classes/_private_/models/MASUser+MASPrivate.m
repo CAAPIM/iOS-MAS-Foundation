@@ -202,6 +202,11 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
     [accessService setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
     
     //
+    // set authenticated username
+    //
+    [accessService setAccessValueString:self.objectId withAccessValueType:MASAccessValueTypeAuthenticatedUsername];
+    
+    //
     // storing access information into keychain
     //
     [accessService saveAccessValuesWithDictionary:bodyInfo forceToOverwrite:NO];
@@ -302,10 +307,15 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
 //        [self userStatusAsString], ([self status] != MASUserStatusNotLoggedIn) ? @"Yes" : @"No");
     
     //
+    // Get currently authenticated username to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUsername = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUsername];
+    
+    //
     // if the user status is not MASUserStatusNotLoggedIn,
     // the user is authenticated either anonymously or with username and password
     //
-    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser);
+    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUsername]);
 }
 
 

@@ -311,6 +311,10 @@
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
     
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUsername];
+    
+    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    
     _tokenType = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
     
@@ -342,6 +346,10 @@
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
     
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUsername];
+    
+    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    
     _tokenType = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
     
@@ -364,6 +372,10 @@
     //
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
+    
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUsername];
+    
+    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
     
     _tokenType = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
