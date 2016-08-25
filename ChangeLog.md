@@ -2,6 +2,20 @@
 
 ### Bug fixes
  
+- Adding listAttibutes to MASObject in MASFoundation framework after removing from MASStorage MASObject category.
+
+### New features
+
+- 
+
+### Deprecated methods
+
+- 
+
+# Version 1.2.00
+
+### Bug fixes
+ 
 - Handling multiple response types with one session manager.
 - SDK offline initialization: a bug where SDK cannot be initialized while the device has no network connectivity is fixed.  SDK now can be used for secure local storage.
 
