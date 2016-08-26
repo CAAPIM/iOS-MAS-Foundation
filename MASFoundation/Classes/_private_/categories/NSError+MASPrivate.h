@@ -217,7 +217,7 @@
 
 
 /**
- *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation.
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation.
  *
  *  @param description The json validation error description
  *
