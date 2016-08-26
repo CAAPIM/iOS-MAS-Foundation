@@ -31,7 +31,7 @@ static NSString *const MASUserAddressesPropertyKey = @"addresses"; // string
 static NSString *const MASUserPhotosPropertyKey = @"photos"; // string
 static NSString *const MASUserGroupsPropertyKey = @"groups"; // string
 static NSString *const MASUserActivePropertyKey = @"active"; // bool
-
+static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 @implementation MASUser (MASPrivate)
 
@@ -210,6 +210,13 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
     // storing access information into keychain
     //
     [accessService saveAccessValuesWithDictionary:bodyInfo forceToOverwrite:NO];
+    
+    
+    //
+    // All attributes as dictionary
+    //
+    self._attributes    = [[NSMutableDictionary alloc] initWithDictionary:info];
+    
     
     //
     // Save to the keychain
@@ -450,6 +457,16 @@ static NSString *const MASUserActivePropertyKey = @"active"; // bool
 - (void)setActive:(BOOL)active
 {
     objc_setAssociatedObject(self, &MASUserActivePropertyKey, [NSNumber numberWithBool:active], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDictionary *)_attributes
+{
+    return objc_getAssociatedObject(self, &MASUserAttributesPropertyKey);
+}
+
+- (void)set_attributes:(NSDictionary *)attributes
+{
+    objc_setAssociatedObject(self, &MASUserAttributesPropertyKey, attributes, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 

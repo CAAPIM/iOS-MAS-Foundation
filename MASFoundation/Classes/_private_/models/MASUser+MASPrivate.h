@@ -35,7 +35,7 @@
 @property (nonatomic, copy, readwrite) NSArray *groups;
 @property (nonatomic, assign, readwrite) BOOL active;
 @property (nonatomic, copy, readonly) NSString *accessToken;
-
+@property (nonatomic, copy, readwrite) NSMutableDictionary *_attributes;
 
 
 ///--------------------------------------
