@@ -4,6 +4,8 @@
  
 - Adding listAttibutes to MASObject in MASFoundation framework after removing from MASStorage MASObject category.
 - Fix the bug where MASUser object's isAuthenticated property returns wrong value for other user objects retrieved from MASIdentityManagement.
+- Fix the bug when passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock.
+- Fix the bug where version number and version string were returning incorrect values.
 
 ### New features
 
