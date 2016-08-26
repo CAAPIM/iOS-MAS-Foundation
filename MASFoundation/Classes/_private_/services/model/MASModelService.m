@@ -765,7 +765,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                         //
                         // Notify
                         //
-                        if(completion) completion(NO, nil);
+                        if (completion)
+                        {
+                            completion(NO, [NSError errorLoginProcessCancelled]);
+                        }
+                        
+                        if (completionBlock)
+                        {
+                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                        }
                         
                         return;
                     }
@@ -863,7 +871,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                         //
                         // Notify
                         //
-                        if(completion) completion(NO, nil);
+                        if (completion)
+                        {
+                            completion(NO, [NSError errorLoginProcessCancelled]);
+                        }
+                        
+                        if (completionBlock)
+                        {
+                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                        }
                         
                         return;
                     }
@@ -1732,7 +1748,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      //
                      // Notify
                      //
-                     if(completion) completion(NO, nil);
+                     if (completion)
+                     {
+                         completion(NO, [NSError errorLoginProcessCancelled]);
+                     }
+                     
+                     if (completionBlock)
+                     {
+                         completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                     }
                      
                      return;
                  }
@@ -1794,7 +1818,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      //
                      // Notify
                      //
-                     if(completion) completion(NO, nil);
+                     if (completion)
+                     {
+                         completion(NO, [NSError errorLoginProcessCancelled]);
+                     }
+                     
+                     if (completionBlock)
+                     {
+                         completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                     }
                      
                      return;
                  }

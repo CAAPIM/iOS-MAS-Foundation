@@ -643,6 +643,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorLoginProcessCancelled
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeLoginProcessCancel errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorInvalidIdToken
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeTokenInvalidIdToken errorDomain:MASFoundationErrorDomainLocal];
@@ -907,6 +913,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeUserBasicCredentialsNotValid: return @"Username or password invalid";
         case MASFoundationErrorCodeUserDoesNotExist: return @"A user does not exist";
         case MASFoundationErrorCodeUserNotAuthenticated: return @"A user is not authenticated";
+        case MASFoundationErrorCodeLoginProcessCancel: return @"Login process has been cancelled";
     
         //
         // Token

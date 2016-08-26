@@ -178,7 +178,7 @@
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeApplicationAlreadyRegistered.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeApplicationAlreadyRegistered.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
  * error code MASFoundationErrorCodeApplicationAlreadyRegistered.
@@ -187,7 +187,7 @@
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeApplicationNotRegistered.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeApplicationNotRegistered.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
  * error code MASFoundationErrorCodeApplicationNotRegistered.
@@ -196,7 +196,7 @@
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeConfigurationLoadingFailedFileNotFound.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeConfigurationLoadingFailedFileNotFound.
  *
  * @param fileName The file name of the configuration file which could not be loaded.
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
@@ -206,7 +206,7 @@
 
 
 /**
- * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization.
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization.
  *
  * @param fileName The file name of the configuration file which could not be loaded.
  * @param description The json serialization error description.
@@ -229,7 +229,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceAlreadyRegistered.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeDeviceAlreadyRegistered.
  */
 + (NSError *)errorDeviceAlreadyRegistered;
@@ -238,7 +238,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceAlreadyRegisteredWithDifferentFlow.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeDeviceRegisteredWithDifferentFlow.
  */
 + (NSError *)errorDeviceAlreadyRegisteredWithDifferentFlow;
@@ -247,7 +247,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceCouldNotBeDeregistered.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeDeviceCouldNotBeDeregistered.
  */
 + (NSError *)errorDeviceCouldNotBeDeregistered;
@@ -256,7 +256,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceNotRegistered.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeDeviceNotRegistered.
  */
 + (NSError *)errorDeviceNotRegistered;
@@ -265,7 +265,7 @@
 /**
  *  Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceNotLoggedIn
  *
- *  @return Returns an NSError instance with the domain MASFoundationErrorDomain and error code MASFoundationErrorCodeDeviceNotLoggedIn.
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and error code MASFoundationErrorCodeDeviceNotLoggedIn.
  */
 + (NSError *)errorDeviceNotLoggedIn;
 
@@ -273,7 +273,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceRegistrationAttempedWithUnregisteredScope.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope.
  */
 + (NSError *)errorDeviceRegistrationAttemptedWithUnregisteredScope;
@@ -282,7 +282,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeDeviceWithoutRequiredParameters.
  */
 + (NSError *)errorDeviceRegistrationWithoutRequiredParameters;
@@ -291,7 +291,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeFlowIsNotActive.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeFlowIsNotActive.
  */
 + (NSError *)errorFlowIsNotActive;
@@ -300,7 +300,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeFlowIsNotImplemented.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeFlowIsNotImplemented.
  */
 + (NSError *)errorFlowIsNotImplemented;
@@ -309,7 +309,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeFlowTypeUnsupported.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeFlowTypeUnsupported.
  */
 + (NSError *)errorFlowTypeUnsupported;
@@ -318,7 +318,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeNetworkNotReachable.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeNetworkNotReachable.
  */
 + (NSError *)errorNetworkNotReachable;
@@ -363,7 +363,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeNetworkNotStarted.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error code MASFoundationErrorCodeNetworkNotStarted.
  */
 + (NSError *)errorNetworkNotStarted;
@@ -372,7 +372,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserAlreadyAuthenticated.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error codeSFoundationErrorCodeUserAlreadyAuthenticated.
  */
 + (NSError *)errorUserAlreadyAuthenticated;
@@ -381,7 +381,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserBasicCredentialsNotValid.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error codeSFoundationErrorCodeUserBasicCredentialsNotValid.
  */
 + (NSError *)errorUserBasicCredentialsNotValid;
@@ -390,7 +390,7 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserDoesNotExist.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error codeSFoundationErrorCodeUserDoesNotExist.
  */
 + (NSError *)errorUserDoesNotExist;
@@ -399,16 +399,25 @@
 /**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserNotAuthenticated.
  *
- * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error codeSFoundationErrorCodeUserNotAuthenticated.
  */
 + (NSError *)errorUserNotAuthenticated;
 
 
 /**
+ * Create MASFoundationErrorLocalDomain NSError for MASFoundationErrorCodeLoginProcessCancel.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeLoginProcessCancel.
+ */
++ (NSError *)errorLoginProcessCancelled;
+
+
+/**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenInvalidIdToken.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeTokenInvalidIdToken.
  */
 + (NSError *)errorInvalidIdToken;
@@ -417,7 +426,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenIdTokenExpired.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeTokenIdTokenExpired.
  */
 + (NSError *)errorIdTokenExpired;
@@ -426,7 +435,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenIdTokenInvalidSignature.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeTokenIdTokenInvalidSignature.
  */
 + (NSError *)errorIdTokenInvalidSignature;
@@ -435,7 +444,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenIdTokenInvalidAzp.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeTokenIdTokenInvalidAzp.
  */
 + (NSError *)errorIdTokenInvalidAzp;
@@ -444,7 +453,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenIdTokenInvalidAud.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeTokenIdTokenInvalidAud.
  */
 + (NSError *)errorIdTokenInvalidAud;
@@ -453,7 +462,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeEnterpriseBrowserWebAppInvalidURL.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeEnterpriseBrowserWebAppInvalidURL.
  */
 + (NSError *)errorEnterpriseBrowserWebAppInvalidURL;
@@ -462,7 +471,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeEnterpriseBrowserNativeAppDoesNotExist.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeEnterpriseBrowserNativeAppDoesNotExist.
  */
 + (NSError *)errorEnterpriseBrowserNativeAppDoesNotExist;
@@ -471,7 +480,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeEnterpriseBrowserNativeAppCannotOpen.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeEnterpriseBrowserNativeAppCannotOpen.
  */
 + (NSError *)errorEnterpriseBrowserNativeAppCannotOpen;
@@ -480,7 +489,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist.
  */
 + (NSError *)errorEnterpriseBrowserAppDoesNotExist;
@@ -489,7 +498,7 @@
 /**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeConfigurationInvalidEndpoint.
  *
- * @returns Returns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeConfigurationInvalidEndpoint.
  */
 + (NSError *)errorInvalidEndpoint;
@@ -498,7 +507,7 @@
 /**
  *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
  *
- *  @return Returns an NSError instance with the domain MASFoundationLocalErrorDomain and 
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  *  error MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
  */
 + (NSError *)errorProximityLoginAuthorizationInProgress;
@@ -507,7 +516,7 @@
 /**
  *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL.
  *
- *  @return REturns an NSError instance with the domain MASFoundationLocalErrorDomain and
+ *  @return REturns an NSError instance with the domain MASFoundationErrorDomainLocal and
  *  error MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL
  */
 + (NSError *)errorProximityLoginInvalidAuthroizeURL;

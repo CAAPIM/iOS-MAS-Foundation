@@ -377,6 +377,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeUserBasicCredentialsNotValid = 130002,
     MASFoundationErrorCodeUserDoesNotExist = 130003,
     MASFoundationErrorCodeUserNotAuthenticated = 130004,
+    MASFoundationErrorCodeLoginProcessCancel = 130005,
     
     //
     // Token
