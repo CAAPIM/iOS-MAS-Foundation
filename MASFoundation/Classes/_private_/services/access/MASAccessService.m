@@ -464,7 +464,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             storageKey = kMASAccessLocalStorageKey;
             break;
             //Authenticated username
-        case MASAccessValueTypeAuthenticatedUsername:
+        case MASAccessValueTypeAuthenticatedUserObjectId:
             storageKey = kMASAccessLocalStorageKey;
             break;
             //RefreshToken
@@ -571,8 +571,8 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASKeyChainAccessToken"];
             break;
             //Authenticated username
-        case MASAccessValueTypeAuthenticatedUsername:
-            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeAuthenticatedUsername"];
+        case MASAccessValueTypeAuthenticatedUserObjectId:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"MASAccessValueTypeAuthenticatedUserObjectId"];
             break;
             //RefreshToken
         case MASAccessValueTypeRefreshToken:

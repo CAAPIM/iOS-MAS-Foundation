@@ -21,7 +21,7 @@
 
 # pragma mark - Properties
 
-@property (nonatomic, assign, readwrite) BOOL isCurrentUser;
+@property (nonatomic, assign, readonly) BOOL isCurrentUser;
 @property (nonatomic, assign, readonly) BOOL isAuthenticated;
 
 @property (nonatomic, copy, readwrite) NSString *userName;

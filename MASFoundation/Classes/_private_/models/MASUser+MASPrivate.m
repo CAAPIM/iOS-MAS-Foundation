@@ -19,7 +19,6 @@
 
 # pragma mark - Property Constants
 
-static NSString *const MASUserIsCurrentUserPropertyKey = @"isCurrentUser"; // bool
 static NSString *const MASUserObjectIdPropertyKey = @"objectId"; // string
 static NSString *const MASUserUserNamePropertyKey = @"userName"; // string
 static NSString *const MASUserFamilyNamePropertyKey = @"familyName"; // string
@@ -43,7 +42,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     self = [super init];
     if(self)
     {
-        self.isCurrentUser = YES;
         [self saveWithUpdatedInfo:info];
     }
     
@@ -202,9 +200,9 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     [accessService setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
     
     //
-    // set authenticated username
+    // set authenticated user's objectId
     //
-    [accessService setAccessValueString:self.objectId withAccessValueType:MASAccessValueTypeAuthenticatedUsername];
+    [accessService setAccessValueString:self.objectId withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
     
     //
     // storing access information into keychain
@@ -249,8 +247,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
     [super encodeWithCoder:aCoder];
     
-    if(self.isCurrentUser) [aCoder encodeBool:self.isCurrentUser forKey:MASUserIsCurrentUserPropertyKey];
-    
     if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
     if(self.familyName) [aCoder encodeObject:self.familyName forKey:MASUserFamilyNamePropertyKey];
     if(self.givenName) [aCoder encodeObject:self.givenName forKey:MASUserGivenNamePropertyKey];
@@ -270,8 +266,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
     if(self = [super initWithCoder:aDecoder])
     {
-        self.isCurrentUser = [aDecoder decodeBoolForKey:MASUserIsCurrentUserPropertyKey];
-        
         self.userName = [aDecoder decodeObjectForKey:MASUserUserNamePropertyKey];
         self.familyName = [aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey];
         self.givenName = [aDecoder decodeObjectForKey:MASUserGivenNamePropertyKey];
@@ -295,15 +289,12 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (BOOL)isCurrentUser
 {
-    NSNumber *isCurrentUserNumber = objc_getAssociatedObject(self, &MASUserIsCurrentUserPropertyKey);
-    
-    return [isCurrentUserNumber boolValue];
-}
+    //
+    // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
 
-
-- (void)setIsCurrentUser:(BOOL)isCurrentUser
-{
-    objc_setAssociatedObject(self, &MASUserIsCurrentUserPropertyKey, [NSNumber numberWithBool:isCurrentUser], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
 }
 
 
@@ -314,15 +305,15 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 //        [self userStatusAsString], ([self status] != MASUserStatusNotLoggedIn) ? @"Yes" : @"No");
     
     //
-    // Get currently authenticated username to make sure that isAuthenticated flag can be determined properly for other users
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
     //
-    NSString *currentlyAuthenticatedUsername = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUsername];
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
     
     //
     // if the user status is not MASUserStatusNotLoggedIn,
     // the user is authenticated either anonymously or with username and password
     //
-    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUsername]);
+    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
 }
 
 
