@@ -486,8 +486,12 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                   [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
             
             [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
-                completionBlock:^(NSString *oneTimePassword, NSError *error)
+                completionBlock:^(NSDictionary *responseInfo, NSError *error)
                 {
+                    
+                    NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
+                    NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
+                    
                     //
                     // If it fails to fetch OTP, notify user
                     //
@@ -499,6 +503,8 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                         
                         NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
                         [newHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
+                        NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
+                        [newHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
                         
                         //
                         // Retry request

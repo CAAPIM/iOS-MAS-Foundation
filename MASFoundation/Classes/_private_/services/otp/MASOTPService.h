@@ -56,10 +56,9 @@
  *  This method will go through the validation process of error codes related to OTP flow.
  *
  *  @param responseHeaderInfo    the value will be an NSDictionary of key/value pairs from the HTTP response header.
- *  @param completion            An MASObjectResponseErrorBlock (id object, NSError *error) that will
- *   receive the one time password object or an NSError object if there is a failure.
+ *  @param completion            An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will receive the one time password object and user selected otp channels or an NSError object if there is a failure.
  */
 - (void)validateOTPSessionWithResponseHeaders:(NSDictionary *)responseHeaderInfo
-                              completionBlock:(MASObjectResponseErrorBlock)completion;
+                              completionBlock:(MASResponseInfoErrorBlock)completion;
 
 @end

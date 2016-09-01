@@ -438,6 +438,30 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorOTPRetryBarred:(NSString *)suspensionTime
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *localDescription =
+    [self descriptionForFoundationErrorCode:MASFoundationErrorCodeOTPRetryBarred];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    //
+    // Suspension time
+    //
+    if(suspensionTime) userInfo[MASOTPSuspensionTimeKey] = suspensionTime;
+    
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPRetryBarred info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorInvalidNSDictionary
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeInvalidNSDictionary errorDomain:MASFoundationErrorDomainLocal];
@@ -776,8 +800,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // OTP
         //
         case MASApiErrorCodeOTPExpired: return MASFoundationErrorCodeOTPExpired;
-        case MASApiErrorCodeOTPRetryLimitExceeded:
-        case MASApiErrorCodeOTPRetryBarred: return MASFoundationErrorCodeOTPRetryLimitExceeded;
+        case MASApiErrorCodeOTPRetryLimitExceeded: return MASFoundationErrorCodeOTPRetryLimitExceeded;
+        case MASApiErrorCodeOTPRetryBarred: return MASFoundationErrorCodeOTPRetryBarred;
             
         //
         // Default
@@ -842,10 +866,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         // OTP
         //
-        case MASFoundationErrorCodeOTPNotProvided: return @"Enter the OTP.";
-        case MASFoundationErrorCodeInvalidOTPProvided: return @"Authentication failed due to invalid OTP.";
+        case MASFoundationErrorCodeOTPNotProvided: return @"Enter the OTP";
+        case MASFoundationErrorCodeInvalidOTPProvided: return @"Authentication failed due to invalid OTP";
         case MASFoundationErrorCodeOTPExpired: return @"The OTP has expired.";
         case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of invalid attempts. Please try after some time.";
+        case MASFoundationErrorCodeOTPRetryBarred: return @"Your account is blocked. Try after some time.";
             
         //
         // Application
