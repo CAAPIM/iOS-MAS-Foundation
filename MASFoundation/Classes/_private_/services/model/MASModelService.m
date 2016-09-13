@@ -615,6 +615,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
     
+    __block MASModelService *blockSelf = self;
+    
     //
     // Trigger the request
     //
@@ -624,6 +626,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         completion:^(NSDictionary *responseInfo, NSError *error)
         {
             
+            //
+            // Clear currentUser object upon log-out
+            //
+            [blockSelf clearCurrentUserForLogout];
             //
             // KeyChain
             //
