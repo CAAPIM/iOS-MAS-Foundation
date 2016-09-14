@@ -877,6 +877,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 - (void)clearShared;
 {
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeMAGIdentifier];
     [_storages[kMASAccessSharedStorageKey] removeAllItems];
     
     //
