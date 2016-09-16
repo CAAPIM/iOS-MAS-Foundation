@@ -233,6 +233,15 @@
 
 
 /**
+ *  Re-login a specific user with the id_token
+ *
+ *  @param ignoreFallback BOOL property that specifies whether to ignore fallback to user authenticated session validation or not
+ *  @param completion     The completion block that receives the results.
+ */
+- (void)loginAsIdTokenIgnoreFallback:(BOOL)ignoreFallback completion:(MASCompletionErrorBlock)completion;
+
+
+/**
  *  Logout the current access credentials via asynchronous request.
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
