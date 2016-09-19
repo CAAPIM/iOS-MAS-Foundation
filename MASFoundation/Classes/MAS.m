@@ -168,7 +168,7 @@
     //
     // Post the notification
     //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStartNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStartNotification object:nil];
     
     
     __block MASCompletionErrorBlock blockCompletion = completion;
@@ -217,7 +217,7 @@
                         //
                         // Post the notification
                         //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:self];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
                         
                         //
                         // Notify
@@ -235,7 +235,7 @@
                     //
                     // Post the notification
                     //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:self];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
                     
                     //
                     // Notify
@@ -250,7 +250,7 @@
             //
             // Post the notification
             //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:self];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
             
             //
             // Notify
@@ -309,7 +309,7 @@
             //
             // Broadcast the notification if SDK detects server change.
             //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:self];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
         }
         
         __block MASCompletionErrorBlock blockCompletion = completion;
@@ -328,7 +328,7 @@
                     //
                     // Broadcast the notification if SDK detects server change.
                     //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                 }
                 
                 if (blockCompletion)
@@ -363,7 +363,7 @@
                             //
                             // Broadcast the notification if SDK detects server change.
                             //
-                            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                         }
                         
                         if (blockCompletion)
@@ -428,7 +428,7 @@
         //
         // Broadcast the notification if SDK detects server change.
         //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
     }
     
     
@@ -456,7 +456,7 @@
                 //
                 // Broadcast the notification if SDK detects server change.
                 //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
             }
             
             if (blockCompletion)
@@ -494,7 +494,7 @@
                         //
                         // Broadcast the notification if SDK detects server change.
                         //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                     }
                     
                     if (blockCompletion)
@@ -589,7 +589,7 @@
         //
         // Broadcast the notification if SDK detects server change.
         //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
     }
     
     
@@ -617,7 +617,7 @@
                 //
                 // Broadcast the notification if SDK detects server change.
                 //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
             }
             
             if (blockCompletion)
@@ -656,7 +656,7 @@
                         //
                         // Broadcast the notification if SDK detects server change.
                         //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                     }
                     
                     if (blockCompletion)
@@ -684,7 +684,7 @@
     //
     // Post the notification
     //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStopNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStopNotification object:nil];
 
     //
     // Stop the service registry
@@ -694,7 +694,7 @@
     //
     // Post the notification
     //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStopNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStopNotification object:nil];
 
     //
     // Notify
