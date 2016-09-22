@@ -2,12 +2,12 @@
 
 ### Bug fixes
  
-- Adding listAttibutes to MASObject in MASFoundation framework after removing from MASStorage MASObject category.
-- Fix the bug where MASUser object's isAuthenticated property returns wrong value for other user objects retrieved from MASIdentityManagement.
-- Fix the bug where isCurrentUser flag was not determined dynamically when retrieved from MASIdentityManagement.  MASFoundation will determine isCurrentUser flag dynamically by [MASUser currentUser] and/or user retrival from MASIdentityManagement.
-- Fix the bug when passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock.
-- Fix the bug where version number and version string were returning incorrect values.
-- Fix the bug where the MSSO is not handled properly for explicit authentication method.
+- Adding listAttibutes to MASObject in MASFoundation framework after removing from MASStorage MASObject category. [MCT-436]
+- Fix the bug where MASUser object's isAuthenticated property returns wrong value for other user objects retrieved from MASIdentityManagement. [MCT-469]
+- Fix the bug where isCurrentUser flag was not determined dynamically when retrieved from MASIdentityManagement.  MASFoundation will determine isCurrentUser flag dynamically by [MASUser currentUser] and/or user retrival from MASIdentityManagement. [MCT-434]
+- Fix the bug when passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock. [MCT-439]
+- Fix the bug where version number and version string were returning incorrect values. [MCT-437]
+- Fix the bug where the MSSO is not handled properly for explicit authentication method. [MCT-504]
 
 ### New features
 
