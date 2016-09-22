@@ -8,6 +8,7 @@
 - Fix the bug when passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock. [MCT-439]
 - Fix the bug where version number and version string were returning incorrect values. [MCT-437]
 - Fix the bug where the MSSO is not handled properly for explicit authentication method. [MCT-504]
+- Fix the behaviour of SDK to allow to use while geo-location service is not available or not authorized. [MCT-335]
 
 ### New features
 
