@@ -1589,12 +1589,12 @@
 		1059D3671B61AA3700223267 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "CA Technologies";
 				TargetAttributes = {
 					1059D36F1B61AA3700223267 = {
 						CreatedOnToolsVersion = 6.4;
-						DevelopmentTeam = 2JJZ96P8P5;
+						ProvisioningStyle = Automatic;
 					};
 					1059D37A1B61AA3800223267 = {
 						CreatedOnToolsVersion = 6.4;
@@ -1891,7 +1891,7 @@
 				CURRENT_PROJECT_VERSION = "1.2-CR1";
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 2JJZ96P8P5;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
