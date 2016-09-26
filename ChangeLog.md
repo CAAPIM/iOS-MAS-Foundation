@@ -1,20 +1,22 @@
-# Version 1.2.00
+# Version 1.2.00-CR1
 
 ### Bug fixes
  
-- Adding listAttibutes to MASObject in MASFoundation framework after removing from MASStorage MASObject category.
-- Fix the bug where MASUser object's isAuthenticated property returns wrong value for other user objects retrieved from MASIdentityManagement.
-- Fix the bug where isCurrentUser flag was not determined dynamically when retrieved from MASIdentityManagement.  MASFoundation will determine isCurrentUser flag dynamically by [MASUser currentUser] and/or user retrival from MASIdentityManagement.
-- Fix the bug when passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock.
-- Fix the bug where version number and version string were returning incorrect values.
+- Added listAttibutes method to MASObject in MASFoundation framework. [MCT-436]
+- The MASUser object isAuthenticated property returned wrong value for other user objects retrieved from MASIdentityManagement. [MCT-469]
+- The isCurrentUser flag was not determined dynamically when retrieved from MASIdentityManagement. MASFoundation will determine isCurrentUser flag dynamically by [MASUser currentUser] and/or user retrival from MASIdentityManagement. [MCT-434]
+- When passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock. [MCT-439]
+- Version number and version string returned incorrect values. [MCT-437]
+- MSSO is not handled properly for explicit authentication method. [MCT-504]
+- A MASFoundation app stops working if geolocation is enabled (location_enabled) in the JSON configuration file and the user selects "Don't Allow" at the allow access to location prompt. Now, the app continues to work, but returns errors from APIs requiring the geolocation information. [MCT-335]
 
 ### New features
 
-- 
+None.
 
 ### Deprecated methods
 
-- 
+None.
 
 # Version 1.2.00
 

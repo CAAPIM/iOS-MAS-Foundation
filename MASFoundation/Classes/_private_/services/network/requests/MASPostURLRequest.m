@@ -57,7 +57,7 @@
     NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
     
     //mag-identifier
-    if ([[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
+    if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
     {
         mutableHeaderInfo[MASMagIdentifierRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
     }

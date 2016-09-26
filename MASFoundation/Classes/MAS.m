@@ -168,14 +168,17 @@
     //
     // Post the notification
     //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStartNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStartNotification object:nil];
+    
+    
+    __block MASCompletionErrorBlock blockCompletion = completion;
     
     //
     // Start the services registry
     //
     MASServiceRegistry *registry = [MASServiceRegistry sharedRegistry];
-    [registry startWithCompletion:^(BOOL completed, NSError *error)
-     {
+    [registry startWithCompletion:^(BOOL completed, NSError *error) {
+        
         //
         // If error stop here
         //
@@ -184,19 +187,78 @@
             //
             // Notify
             //
-            if(completion) completion(NO, error);
+            if(blockCompletion)
+            {
+                blockCompletion(NO, error);
+            }
             return;
         }
-        
-         //
-         // Post the notification
-         //
-         [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:self];
-         
-         //
-         // Notify
-         //
-         if(completion) completion(YES, nil);
+        //
+        //  If the device is registered, and id_token exists, which means MSSO can be used for this application
+        //
+        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken])
+        {
+            //
+            //  Make sure to register the client (application)
+            //
+            [[MASModelService sharedService] registerApplication:^(BOOL completed, NSError *error) {
+               
+                //
+                //  If the client registration was successful, perform id_token authentication
+                //
+                if (completed && !error)
+                {
+                    [[MASModelService sharedService] loginAsIdTokenIgnoreFallback:YES completion:^(BOOL completed, NSError *error) {
+                        
+                        //
+                        //  Regardless of result of the authentication, should post the successful result to SDK initialization completion block
+                        //
+                        
+                        //
+                        // Post the notification
+                        //
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
+                        
+                        //
+                        // Notify
+                        //
+                        if(blockCompletion){
+                            blockCompletion(YES, nil);
+                        }
+                    }];
+                }
+                else {
+                    //
+                    //  Regardless of result of the client registration, should post the successful result to SDK initialization completion block
+                    //
+                    
+                    //
+                    // Post the notification
+                    //
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
+                    
+                    //
+                    // Notify
+                    //
+                    if(blockCompletion){
+                        blockCompletion(YES, nil);
+                    }
+                }
+            }];
+        }
+        else {
+            //
+            // Post the notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
+            
+            //
+            // Notify
+            //
+            if(blockCompletion){
+                blockCompletion(YES, nil);
+            }
+        }
     }];
 }
 
@@ -247,7 +309,7 @@
             //
             // Broadcast the notification if SDK detects server change.
             //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:self];
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
         }
         
         __block MASCompletionErrorBlock blockCompletion = completion;
@@ -266,7 +328,7 @@
                     //
                     // Broadcast the notification if SDK detects server change.
                     //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                 }
                 
                 if (blockCompletion)
@@ -301,7 +363,7 @@
                             //
                             // Broadcast the notification if SDK detects server change.
                             //
-                            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                         }
                         
                         if (blockCompletion)
@@ -366,7 +428,7 @@
         //
         // Broadcast the notification if SDK detects server change.
         //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
     }
     
     
@@ -394,7 +456,7 @@
                 //
                 // Broadcast the notification if SDK detects server change.
                 //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
             }
             
             if (blockCompletion)
@@ -432,7 +494,7 @@
                         //
                         // Broadcast the notification if SDK detects server change.
                         //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                     }
                     
                     if (blockCompletion)
@@ -527,7 +589,7 @@
         //
         // Broadcast the notification if SDK detects server change.
         //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
     }
     
     
@@ -555,7 +617,7 @@
                 //
                 // Broadcast the notification if SDK detects server change.
                 //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
             }
             
             if (blockCompletion)
@@ -594,7 +656,7 @@
                         //
                         // Broadcast the notification if SDK detects server change.
                         //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:self];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
                     }
                     
                     if (blockCompletion)
@@ -622,7 +684,7 @@
     //
     // Post the notification
     //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStopNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASWillStopNotification object:nil];
 
     //
     // Stop the service registry
@@ -632,7 +694,7 @@
     //
     // Post the notification
     //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStopNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStopNotification object:nil];
 
     //
     // Notify

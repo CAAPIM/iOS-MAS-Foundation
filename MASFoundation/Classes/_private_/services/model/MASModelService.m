@@ -615,6 +615,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
     
+    __block MASModelService *blockSelf = self;
+    
     //
     // Trigger the request
     //
@@ -624,6 +626,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         completion:^(NSDictionary *responseInfo, NSError *error)
         {
             
+            //
+            // Clear currentUser object upon log-out
+            //
+            [blockSelf clearCurrentUserForLogout];
             //
             // KeyChain
             //
@@ -1686,7 +1692,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         //
         // Login with id token
         //
-        [self loginAsIdTokenWithCompletion:completion];
+        [self loginAsIdTokenIgnoreFallback:NO completion:completion];
         
         return;
     }
@@ -2521,7 +2527,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
  *
  *  @param completion The completion block that receives the results.
  */
-- (void)loginAsIdTokenWithCompletion:(MASCompletionErrorBlock)completion
+- (void)loginAsIdTokenIgnoreFallback:(BOOL)ignoreFallback completion:(MASCompletionErrorBlock)completion
 {
     DLog(@"called");
     
@@ -2633,6 +2639,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
+    __block BOOL blockIgnoreFallback = ignoreFallback;
     
     [[MASNetworkingService sharedService] postTo:endPoint
         withParameters:parameterInfo
@@ -2653,8 +2660,19 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
              [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
              [[MASAccessService sharedService].currentAccessObj refresh];
-             [blockSelf validateCurrentUserSession:completion];
-
+             
+             //
+             // If it was set to fallback to authentication validation
+             //
+             if (!blockIgnoreFallback)
+             {
+                 [blockSelf validateCurrentUserSession:completion];
+             }
+             else if (blockCompletion)
+             {
+                 blockCompletion(NO, error);
+             }
+             
              return;
          }
          

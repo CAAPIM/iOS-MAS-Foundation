@@ -218,6 +218,11 @@
         }
         @catch (NSException *exception) {
             
+            //
+            //  Nullify the transferCharacteristic, otherwise on the second attempt to startPeripheral it will throw an uncaught exception.
+            //
+            self.transferCharacteristic = nil;
+            
             NSDictionary *exceptionInfo = @{@"reason" : exception.reason , @"name" : exception.name};
             
             //
