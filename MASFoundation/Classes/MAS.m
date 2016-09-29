@@ -743,9 +743,17 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMissingEndpoint]);
+            
+            return;
+        }
+    }
  
     //
     // Check that network service is ready, expected to be at this point but lets be sure
@@ -836,9 +844,17 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMissingEndpoint]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
@@ -936,9 +952,17 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMissingEndpoint]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
@@ -1031,12 +1055,18 @@
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock)completion
 {
-    //DLog(@"called");
-    
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMissingEndpoint]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
@@ -1128,9 +1158,17 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMissingEndpoint]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure

@@ -732,6 +732,10 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeConfigurationInvalidEndpoint errorDomain:MASFoundationErrorDomainLocal];
 }
 
++ (NSError *)errorMissingEndpoint
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeConfigurationMissingEndpoint errorDomain:MASFoundationErrorDomainLocal];
+}
 
 + (NSError *)errorProximityLoginAuthorizationInProgress
 {
@@ -888,6 +892,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization: return @"The configuration file %@ was found but the contents could not be loaded with description\n\n\'%@\'";
         case MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation: return @"The configuration was successfully loaded, but the configuration is invalid for the following reason\n\n'%@'";
         case MASFoundationErrorCodeConfigurationInvalidEndpoint: return @"Invalid endpoint";
+        case MASFoundationErrorCodeConfigurationMissingEndpoint: return @"Missing endpoint";
+            
         //
         // Device
         //

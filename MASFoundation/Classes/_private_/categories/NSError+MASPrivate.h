@@ -514,6 +514,15 @@
 
 
 /**
+ * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeConfigurationMissingEndpoint.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error MASFoundationErrorCodeConfigurationInvalidEndpoint.
+ */
++ (NSError *)errorMissingEndpoint;
+
+
+/**
  *  Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
  *
  *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and

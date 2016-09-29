@@ -330,6 +330,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization = 100202,
     MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation = 100203,
     MASFoundationErrorCodeConfigurationInvalidEndpoint = 100204,
+    MASFoundationErrorCodeConfigurationMissingEndpoint = 100205,
     
     //
     // Geolocation
