@@ -160,6 +160,15 @@
 
 
 /**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeOTPRetryBarred.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeOTPRetryBarred.
+ */
++ (NSError *)errorOTPRetryBarred:(NSString *)suspensionTime;
+
+
+/**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidNSURL.
  *
  *  @return Retruns an NSError instance with the domain MASFoundationErrorDomainLocal and

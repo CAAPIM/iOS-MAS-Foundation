@@ -100,7 +100,7 @@ typedef void (^MASOTPChannelSelectionBlock)(NSArray *supportedOTPChannels, MASOT
 /**
  * The Two-factor authentication with OTP Credentials (MASOTPFetchCredentialsBlock) block.
  */
-typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock);
+typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock, NSError *otpError);
 
 
 ///--------------------------------------
@@ -431,12 +431,13 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     // OTP
     //
-    MASFoundationErrorCodeInvalidOTPChannelSelectionBlock,
-    MASFoundationErrorCodeInvalidOTPCredentialsBlock,
-    MASFoundationErrorCodeInvalidOTPProvided,
-    MASFoundationErrorCodeOTPNotProvided,
-    MASFoundationErrorCodeOTPExpired,
-    MASFoundationErrorCodeOTPRetryLimitExceeded,
+    MASFoundationErrorCodeInvalidOTPChannelSelectionBlock = 160101,
+    MASFoundationErrorCodeInvalidOTPCredentialsBlock = 160102,
+    MASFoundationErrorCodeInvalidOTPProvided = 160103,
+    MASFoundationErrorCodeOTPNotProvided = 160104,
+    MASFoundationErrorCodeOTPExpired = 160105,
+    MASFoundationErrorCodeOTPRetryLimitExceeded = 160106,
+    MASFoundationErrorCodeOTPRetryBarred = 160107,
     
     MASFoundationErrorCodeCount = -999999
 };
