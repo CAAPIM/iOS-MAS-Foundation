@@ -35,7 +35,7 @@
  *
  *  @param fileName The NSString name of the configuration file.
  */
-+ (void)setConfigurationFileName:(NSString *)fileName;
++ (void)setConfigurationFileName:(nonnull NSString *)fileName;
 
 
 
@@ -82,7 +82,7 @@
  *
  *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
  */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login;
++ (void)setUserLoginBlock:(nullable MASUserLoginWithUserCredentialsBlock)login;
 
 
 
@@ -91,7 +91,7 @@
  *
  *  @param OTPChannelSelector The MASOTPChannelSelectionBlock to receive the request for OTP channels.
  */
-+ (void)setOTPChannelSelectionBlock:(MASOTPChannelSelectionBlock) OTPChannelSelector;
++ (void)setOTPChannelSelectionBlock:(nullable MASOTPChannelSelectionBlock) OTPChannelSelector;
 
 
 
@@ -100,7 +100,7 @@
  *
  *  @param oneTimePassword The MASOTPCredentialsBlock to receive the request for OTP credentials.
  */
-+ (void)setOTPCredentialsBlock:(MASOTPCredentialsBlock)oneTimePassword;
++ (void)setOTPCredentialsBlock:(nullable MASOTPCredentialsBlock)oneTimePassword;
 
 
 
@@ -119,7 +119,7 @@
  *
  *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
  */
-+ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor;
++ (void)setGatewayMonitor:(nullable MASGatewayMonitorStatusBlock)monitor;
 
 
 
@@ -177,7 +177,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)start:(MASCompletionErrorBlock)completion;
++ (void)start:(nullable MASCompletionErrorBlock)completion;
 
 
 
@@ -209,7 +209,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithDefaultConfiguration:(BOOL)shouldUseDefault completion:(MASCompletionErrorBlock)completion;
++ (void)startWithDefaultConfiguration:(BOOL)shouldUseDefault completion:(nullable MASCompletionErrorBlock)completion;
 
 
 
@@ -237,7 +237,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithJSON:(NSDictionary *)jsonConfiguration completion:(MASCompletionErrorBlock)completion;
++ (void)startWithJSON:(nonnull NSDictionary *)jsonConfiguration completion:(nullable MASCompletionErrorBlock)completion;
 
 
 
@@ -265,7 +265,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithURL:(NSURL *)url completion:(MASCompletionErrorBlock)completion;
++ (void)startWithURL:(nonnull NSURL *)url completion:(nullable MASCompletionErrorBlock)completion;
 
 
 
@@ -286,7 +286,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)stop:(MASCompletionErrorBlock)completion;
++ (void)stop:(nullable MASCompletionErrorBlock)completion;
 
 
 
@@ -316,7 +316,7 @@
  *
  *  @return Returns the gateway monitoring status as a human readable NSString.
  */
-+ (NSString *)gatewayMonitoringStatusAsString;
++ (nonnull NSString *)gatewayMonitoringStatusAsString;
 
 
 

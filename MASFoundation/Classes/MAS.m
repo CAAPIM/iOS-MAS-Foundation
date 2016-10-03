@@ -749,7 +749,7 @@
     {
         if (completion)
         {
-            completion(nil, [NSError errorMissingEndpoint]);
+            completion(nil, [NSError errorInvalidEndpoint]);
             
             return;
         }
@@ -850,7 +850,7 @@
     {
         if (completion)
         {
-            completion(nil, [NSError errorMissingEndpoint]);
+            completion(nil, [NSError errorInvalidEndpoint]);
             
             return;
         }
@@ -958,7 +958,7 @@
     {
         if (completion)
         {
-            completion(nil, [NSError errorMissingEndpoint]);
+            completion(nil, [NSError errorInvalidEndpoint]);
             
             return;
         }
@@ -1062,7 +1062,7 @@
     {
         if (completion)
         {
-            completion(nil, [NSError errorMissingEndpoint]);
+            completion(nil, [NSError errorInvalidEndpoint]);
             
             return;
         }
@@ -1164,7 +1164,7 @@
     {
         if (completion)
         {
-            completion(nil, [NSError errorMissingEndpoint]);
+            completion(nil, [NSError errorInvalidEndpoint]);
             
             return;
         }
