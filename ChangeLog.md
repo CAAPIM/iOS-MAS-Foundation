@@ -9,6 +9,9 @@
 - Version number and version string returned incorrect values. [MCT-437]
 - MSSO is not handled properly for explicit authentication method. [MCT-504]
 - A MASFoundation app stops working if geolocation is enabled (location_enabled) in the JSON configuration file and the user selects "Don't Allow" at the allow access to location prompt. Now, the app continues to work, but returns errors from APIs requiring the geolocation information. [MCT-335]
+- Fixes an issue with dynamically switching between msso config's when one of the configs has location enabled and another msso config has location disabled. If the user declines location services permission when first opening the app, the app would hang when switching msso's back to the config that allowed location. [DE230814]'
+- Improved error handling in the case of missing parameters. [US240398]
+- Added nullability annotations to certain interfaces. [US240400]
 
 ### New features
 
