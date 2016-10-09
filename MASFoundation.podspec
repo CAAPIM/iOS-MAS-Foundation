@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
     s.requires_arc  = true
     s.source        = { :git => 'https://github.com/CAAPIM/iOS-MAS-Foundation.git', :tag => s.version.to_s }
     s.public_header_files = 'MASFoundation/**/*.h'
-    s.source_files = 'MASFoundation/*.{h,m}'
+    s.source_files = 'MASFoundation/**/*'
     
 
     s.subspec 'OpenSSL' do |openssl|
