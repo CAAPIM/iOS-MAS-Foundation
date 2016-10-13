@@ -754,6 +754,19 @@
             return;
         }
     }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
  
     //
     // Check that network service is ready, expected to be at this point but lets be sure
@@ -851,6 +864,19 @@
         if (completion)
         {
             completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
             
             return;
         }
@@ -965,6 +991,19 @@
     }
     
     //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    //
     // Check that network manager is ready, expected to be at this point but lets be sure
     //
     if(![[MASNetworkingService sharedService] networkIsReachable])
@@ -1069,6 +1108,19 @@
     }
     
     //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    //
     // Check that network manager is ready, expected to be at this point but lets be sure
     //
     if(![[MASNetworkingService sharedService] networkIsReachable])
@@ -1165,6 +1217,19 @@
         if (completion)
         {
             completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
             
             return;
         }
