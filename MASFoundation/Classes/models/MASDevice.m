@@ -62,6 +62,24 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 }
 
 
+- (void)lockWithCompletion:(MASCompletionErrorBlock)completion
+{
+    NSError *error = nil;
+    BOOL success = [[MASAccessService sharedService] lockDevice:&error];
+    
+    completion(success, error);
+}
+
+
+- (void)unlockWithCompletion:(MASCompletionErrorBlock)completion
+{
+    NSError *error = nil;
+    BOOL success = [[MASAccessService sharedService] unlockDevice:&error];
+    
+    completion(success, error);
+}
+
+
 - (void)logOutDeviceAndClearLocal:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion
 {
     //
@@ -129,8 +147,8 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"(%@) is registered: %@\n\n        identifier: %@\n        name: %@\n        status: %@",
-        [self class], (self.isRegistered ? @"Yes" : @"No"), [self identifier], [self name], [self status]];
+    return [NSString stringWithFormat:@"(%@) is registered: %@\n\n        identifier: %@\n        name: %@\n        status: %@\n        lock status: %@",
+        [self class], (self.isRegistered ? @"Yes" : @"No"), [self identifier], [self name], [self status], [self isLocked] ? @"locked":@"unlocked"];
 }
 
 

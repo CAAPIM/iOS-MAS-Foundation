@@ -589,6 +589,30 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorDeviceIsAlreadyLocked
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceIsAlreadyLocked errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorDeviceIsAlreadyUnlocked
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceIsAlreadyUnlocked errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorDeviceDoesNotSupportLocalAuthentication
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorDeviceIsCurrentlyLocked
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceIsCurrentlyLocked errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorFlowIsNotActive
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeFlowIsNotActive errorDomain:MASFoundationErrorDomainLocal];
@@ -700,6 +724,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 + (NSError *)errorIdTokenInvalidAud
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeTokenIdTokenInvalidAud errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorIdTokenNotExistForLockingDevice
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeTokenIdTokenNotExistForLockingDevice errorDomain:MASFoundationErrorDomainLocal];
 }
 
 
@@ -901,6 +931,10 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeDeviceRecordIsNotValid: return @"The registered device record is invalid";
         case MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope: return @"Attempted to register the device with a Scope that isn't registered in the application record on the Gateway";
         case MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters: return @"The device registration does not have the required parameters";
+        case MASFoundationErrorCodeDeviceIsAlreadyLocked: return @"The device is already locked";
+        case MASFoundationErrorCodeDeviceIsAlreadyUnlocked: return @"The device is not locked";
+        case MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication: return @"The device does not support or have valid local authnetication method";
+        case MASFoundationErrorCodeDeviceIsCurrentlyLocked: return @"The device is currently locked";
         
         //
         // Flow
@@ -949,6 +983,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeTokenIdTokenInvalidAud: return @"JWT Validation: aud value does not match";
         case MASFoundationErrorCodeTokenIdTokenInvalidAzp: return @"JWT Validation: azp value does not match";
         case MASFoundationErrorCodeTokenIdTokenInvalidSignature: return @"JWT Validation: signature does not match";
+        case MASFoundationErrorCodeTokenIdTokenNotExistForLockingDevice: return @"id_token does not exist; id_token is required for locking device";
             
         case MASFoundationErrorCodeAccessTokenNotGrantedScope: return @"Given access token is not granted for required scope.";
         case MASFoundationErrorCodeAccessTokenDisabled: return @"Given access token is disabled";

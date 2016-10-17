@@ -1558,6 +1558,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
          [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
          
+         [[MASAccessService sharedService].currentAccessObj refresh];
          //
          // Notify
          //
@@ -3232,7 +3233,23 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                  // Otherwise, perform user authentication with given username and password
                  //
                  else {
-                     [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                     
+                     //
+                     // If the device is currently locked, return an error
+                     //
+                     if (self.currentDevice.isLocked)
+                     {
+                         if (originalCompletion)
+                         {
+                             originalCompletion(NO, [NSError errorDeviceIsCurrentlyLocked]);
+                         }
+                         
+                         return;
+                     }
+                     else {
+                         
+                         [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                     }
                  }
              }
              //
@@ -3250,6 +3267,14 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      //
                      [[MASModelService sharedService] registerDeviceForUser:username password:password completion:^(BOOL completed, NSError *error) {
                          
+                         //
+                         // If the registration status is correct, and the device is currently locked, generate an error
+                         //
+                         if (!error && self.currentDevice.isLocked)
+                         {
+                             error = [NSError errorDeviceIsCurrentlyLocked];
+                         }
+                         
                          if (!completed || error != nil)
                          {
                              if(originalCompletion)
@@ -3258,6 +3283,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              }
                          }
                          else {
+                                 
                              //
                              // Perform authentication with given username and password
                              //
@@ -3296,7 +3322,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      // Register device with client credentials
                      //
                      [[MASModelService sharedService] registerDeviceForClientCredentialsCompletion:^(BOOL completed, NSError *error) {
-                       
+                         
+                         //
+                         // If the registration status is correct, and the device is currently locked, generate an error
+                         //
+                         if (!error && self.currentDevice.isLocked)
+                         {
+                             error = [NSError errorDeviceIsCurrentlyLocked];
+                         }
+                         
                          if (!completed || error != nil)
                          {
                              if(originalCompletion)
@@ -3305,6 +3339,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              }
                          }
                          else {
+                             
                              //
                              // Perform user authentication with given usernmae and password
                              //
@@ -3372,13 +3407,21 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                     //
                     [self registerDeviceWithCompletion:^(BOOL completed, NSError *error)
                     {
+                        //
+                        // If the registration status is correct, and the device is currently locked, generate an error
+                        //
+                        if (!error && self.currentDevice.isLocked)
+                        {
+                            error = [NSError errorDeviceIsCurrentlyLocked];
+                            completed = NO;
+                        }
                         
                         if (!completed || error != nil)
                         {
                             if(originalCompletion) originalCompletion(NO, error);
                         }
                         else {
-                            
+                                
                             //
                             //  Check login status
                             //

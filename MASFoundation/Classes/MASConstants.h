@@ -369,6 +369,10 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeDeviceRecordIsNotValid = 120006,
     MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
     MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
+    MASFoundationErrorCodeDeviceIsAlreadyLocked = 120009,
+    MASFoundationErrorCodeDeviceIsAlreadyUnlocked = 120010,
+    MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120011,
+    MASFoundationErrorCodeDeviceIsCurrentlyLocked = 120012,
     
     //
     // User
@@ -387,6 +391,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeTokenIdTokenInvalidAud = 130103,
     MASFoundationErrorCodeTokenIdTokenInvalidAzp = 130104,
     MASFoundationErrorCodeTokenIdTokenInvalidSignature = 130105,
+    MASFoundationErrorCodeTokenIdTokenNotExistForLockingDevice = 130106,
     
     MASFoundationErrorCodeAccessTokenInvalid = 130201,
     MASFoundationErrorCodeAccessTokenDisabled = 130202,

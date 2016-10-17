@@ -215,6 +215,25 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 }
 
 
+- (BOOL)isLocked
+{
+    //
+    // Obtain key chain items to determine device lock status
+    //
+    MASAccessService *accessService = [MASAccessService sharedService];
+    
+    NSNumber *isLocked = [accessService getAccessValueNumberWithType:MASAccessValueTypeIsDeviceLocked];
+    
+    if (isLocked)
+    {
+        return [isLocked boolValue];
+    }
+    else {
+        return NO;
+    }
+}
+
+
 - (NSString *)identifier
 {
     return objc_getAssociatedObject(self, &MASDeviceIdentifierPropertyKey);
