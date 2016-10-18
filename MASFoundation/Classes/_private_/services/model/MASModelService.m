@@ -9,11 +9,10 @@
 //
 
 #import "MASModelService.h"
-
 #import "MASAccessService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
-
+#import "MASIKeyChainStore.h"
 
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
@@ -91,6 +90,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // then initialize with default configuration
     //
     _currentApplication = [MASApplication instanceFromStorage];
+    
     if(!_currentApplication)
     {
         _currentApplication = [[MASApplication alloc] initWithConfiguration];
@@ -117,6 +117,32 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // were previously retrieved and archived.  If not, leave empty.
     //
     _currentProviders = [MASAuthenticationProviders instanceFromStorage];
+    
+    
+    //
+    // Attempt to retrieve the most recent client data from keychain
+    //
+    MASApplication *keychainApplication;
+    
+    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASApplication.class description]];
+    
+    if(data)
+    {
+        keychainApplication = (MASApplication *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
+    }
+    
+    //
+    // If the instanceFromStorage and the actual keychain data are different;
+    // the msso master client id has recently changed, and credientials should now be reset.
+    //
+    if (![keychainApplication.identifier isEqualToString:_currentApplication.identifier])
+    {
+        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
+        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
+        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientExpiration];
+        
+        [[MASModelService sharedService] clearCurrentUserForLogout];
+    }
     
     [super serviceWillStart];
 }

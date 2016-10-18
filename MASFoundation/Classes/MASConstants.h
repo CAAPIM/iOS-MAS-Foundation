@@ -315,6 +315,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeInvalidNSURL = 100001,
     MASFoundationErrorCodeInvalidNSDictionary = 100002,
     MASFoundationErrorCodeInvalidUserLoginBlock = 100003,
+    MASFoundationErrorCodeMASIsNotStarted = 100004,
     
     //
     // Flow
