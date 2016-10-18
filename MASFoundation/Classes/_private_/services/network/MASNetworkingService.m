@@ -277,6 +277,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     __block NSMutableDictionary *blockOriginalParameter = [originalParameterInfo mutableCopy];
     __block NSMutableDictionary *blockOriginalHeader = [originalHeaderInfo mutableCopy];
     __block MASResponseInfoErrorBlock blockCompletion = completion;
+    __block MASNetworkingService *blockSelf = self;
     
     MASSessionDataTaskCompletionBlock taskCompletionBlock = ^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error){
         
@@ -392,13 +393,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                         //
                         //  Proceed with original request
                         //
-                        [self proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                  originalHeader:blockOriginalHeader
-                                               originalParameter:blockOriginalParameter
-                                                     requestType:blockRequestType
-                                                    responseType:blockResponseType
-                                                      httpMethod:blockHTTPMethod
-                                                      completion:blockCompletion];
+                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                       originalHeader:blockOriginalHeader
+                                                    originalParameter:blockOriginalParameter
+                                                          requestType:blockRequestType
+                                                         responseType:blockResponseType
+                                                           httpMethod:blockHTTPMethod
+                                                           completion:blockCompletion];
                     }
                 }];
             }
@@ -443,7 +444,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 }
                 else {
                     
-                    if ([self isMAGEndpoint:blockEndPoint])
+                    if ([blockSelf isMAGEndpoint:blockEndPoint])
                     {
                         blockCompletion(responseInfo, nil);
                     }
@@ -452,13 +453,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                         //
                         //  Proceed with original request
                         //
-                        [self proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                  originalHeader:blockOriginalHeader
-                                               originalParameter:blockOriginalParameter
-                                                     requestType:blockRequestType
-                                                    responseType:blockResponseType
-                                                      httpMethod:blockHTTPMethod
-                                                      completion:blockCompletion];
+                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                       originalHeader:blockOriginalHeader
+                                                    originalParameter:blockOriginalParameter
+                                                          requestType:blockRequestType
+                                                         responseType:blockResponseType
+                                                           httpMethod:blockHTTPMethod
+                                                           completion:blockCompletion];
                     }
                 }
             }];
@@ -472,45 +473,45 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                  ([magErrorCode hasSuffix:@"140"] ||
                   [magErrorCode hasSuffix:@"142"] || [magErrorCode hasSuffix:@"143"] ||
                   [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
-            
-            [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
-                completionBlock:^(NSDictionary *responseInfo, NSError *error)
-                {
-                    
-                    NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
-                    NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
-                    
-                    //
-                    // If it fails to fetch OTP, notify user
-                    //
-                    if (!oneTimePassword || error)
-                    {
-                        if(blockCompletion)
-                        {
-                            blockCompletion(responseInfo, error);
-                        }
-                    }
-                    else {
-                        
-                        NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
-                        
-                        [blockOriginalHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
-                        [blockOriginalHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
-                        
-                        //
-                        //  Proceed with original request
-                        //
-                        [self proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                  originalHeader:blockOriginalHeader
-                                               originalParameter:blockOriginalParameter
-                                                     requestType:blockRequestType
-                                                    responseType:blockResponseType
-                                                      httpMethod:blockHTTPMethod
-                                                      completion:blockCompletion];
-                    }
-                }
-             ];
-        }
+                     
+                     [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
+                                                                          completionBlock:^(NSDictionary *responseInfo, NSError *error)
+                      {
+                          
+                          NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
+                          NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
+                          
+                          //
+                          // If it fails to fetch OTP, notify user
+                          //
+                          if (!oneTimePassword || error)
+                          {
+                              if(blockCompletion)
+                              {
+                                  blockCompletion(responseInfo, error);
+                              }
+                          }
+                          else {
+                              
+                              NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
+                              
+                              [blockOriginalHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
+                              [blockOriginalHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
+                              
+                              //
+                              //  Proceed with original request
+                              //
+                              [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                             originalHeader:blockOriginalHeader
+                                                          originalParameter:blockOriginalParameter
+                                                                requestType:blockRequestType
+                                                               responseType:blockResponseType
+                                                                 httpMethod:blockHTTPMethod
+                                                                 completion:blockCompletion];
+                          }
+                      }
+                      ];
+                 }
         else {
             //
             // If the server complains that client_secret or client_id is invalid, we have to clear the client_id and client_secret
@@ -544,7 +545,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                     }
                     else {
                         
-                        if ([self isMAGEndpoint:blockEndPoint])
+                        if ([blockSelf isMAGEndpoint:blockEndPoint])
                         {
                             blockCompletion(responseInfo, nil);
                         }
@@ -567,13 +568,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                             //
                             //  Proceed with original request
                             //
-                            [self proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                      originalHeader:blockOriginalHeader
-                                                   originalParameter:blockOriginalParameter
-                                                         requestType:blockRequestType
-                                                        responseType:blockResponseType
-                                                          httpMethod:blockHTTPMethod
-                                                          completion:blockCompletion];
+                            [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                           originalHeader:blockOriginalHeader
+                                                        originalParameter:blockOriginalParameter
+                                                              requestType:blockRequestType
+                                                             responseType:blockResponseType
+                                                               httpMethod:blockHTTPMethod
+                                                               completion:blockCompletion];
                         }
                     }
                 }];
@@ -617,10 +618,10 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     {
         isMAGEndpoint = YES;
     }
-//    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].authorizationEndpointPath])
-//    {
-//        isMAGEndpoint = YES;
-//    }
+    //    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].authorizationEndpointPath])
+    //    {
+    //        isMAGEndpoint = YES;
+    //    }
     else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].clientInitializeEndpointPath])
     {
         isMAGEndpoint = YES;
