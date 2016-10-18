@@ -12,6 +12,7 @@
 - Fixes an issue with dynamically switching between msso config's when one of the configs has location enabled and another msso config has location disabled. If the user declines location services permission when first opening the app, the app would hang when switching msso's back to the config that allowed location. [DE230814]'
 - Improved error handling in the case of missing parameters. [US240398]
 - Added nullability annotations to certain interfaces. [US240400]
+- When changing the master client key , the sdk now recognizes the change. The sdk will clean out the client id, client secret, access token, refresh token. The client will attempt to re-authenticate with the id token. This addresses adding scope to an existing api. [US240404]
 
 ### New features
 
