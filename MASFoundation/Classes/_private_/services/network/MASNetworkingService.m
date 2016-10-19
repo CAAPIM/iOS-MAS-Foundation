@@ -270,8 +270,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                                                                    responseType:(MASRequestResponseType)responseType
                                                                 completionBlock:(MASResponseInfoErrorBlock)completion
 {
-    
     __block MASRequestResponseType blockResponseType = responseType;
+    __block MASRequestResponseType blockRequestType = requestType;
+    __block NSString *blockEndPoint = endPoint;
+    __block NSString *blockHTTPMethod = httpMethod;
+    __block NSMutableDictionary *blockOriginalParameter = [originalParameterInfo mutableCopy];
+    __block NSMutableDictionary *blockOriginalHeader = [originalHeaderInfo mutableCopy];
+    __block MASResponseInfoErrorBlock blockCompletion = completion;
+    __block MASNetworkingService *blockSelf = self;
     
     MASSessionDataTaskCompletionBlock taskCompletionBlock = ^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error){
         
@@ -338,9 +344,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             if (![MASConfiguration currentConfiguration].locationIsRequired)
             {
-                if(completion)
+                if(blockCompletion)
                 {
-                    completion(nil, [NSError errorGeolocationServiceIsNotConfigured]);
+                    blockCompletion(nil, [NSError errorGeolocationServiceIsNotConfigured]);
                 }
             }
             //
@@ -348,9 +354,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             else if ([MASLocationService isLocationMonitoringDenied])
             {
-                if(completion)
+                if(blockCompletion)
                 {
-                    completion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
+                    blockCompletion(nil, [NSError errorGeolocationServicesAreUnauthorized]);
                 }
             }
             //
@@ -372,42 +378,28 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                         //
                         // Notify
                         //
-                        if(completion)
+                        if(blockCompletion)
                         {
-                            completion(nil, [NSError errorGeolocationIsInvalid]);
+                            blockCompletion(nil, [NSError errorGeolocationIsInvalid]);
                         }
                     }
                     else {
                         
                         //
-                        // If a valid geolocation result is found
+                        // Inject geo-location information in the header
                         //
-                        NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
+                        [blockOriginalHeader setObject:[location locationAsGeoCoordinates] forKey:MASGeoLocationRequestResponseKey];
                         
                         //
-                        // Inject in the header
+                        //  Proceed with original request
                         //
-                        newHeader[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-                        
-                        //
-                        // Retry request
-                        //
-                        if ([httpMethod isEqualToString:@"DELETE"])
-                        {
-                            [self deleteFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"GET"]) {
-                            [self getFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"PATCH"]) {
-                            [self patchTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"POST"]) {
-                            [self postTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"PUT"]) {
-                            [self putTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
+                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                       originalHeader:blockOriginalHeader
+                                                    originalParameter:blockOriginalParameter
+                                                          requestType:blockRequestType
+                                                         responseType:blockResponseType
+                                                           httpMethod:blockHTTPMethod
+                                                           completion:blockCompletion];
                     }
                 }];
             }
@@ -416,9 +408,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             else {
                 
-                if(completion)
+                if(blockCompletion)
                 {
-                    completion(nil, error);
+                    blockCompletion(nil, error);
                 }
             }
         }
@@ -445,33 +437,30 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 //
                 if (!completed || error)
                 {
-                    if(completion) completion(responseInfo, error);
+                    if(blockCompletion)
+                    {
+                        blockCompletion(responseInfo, error);
+                    }
                 }
                 else {
                     
-                    NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
-                    
-                    //
-                    // Retry request
-                    //
-                    if ([httpMethod isEqualToString:@"DELETE"])
+                    if ([blockSelf isMAGEndpoint:blockEndPoint])
                     {
-                        [self deleteFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                        blockCompletion(responseInfo, nil);
                     }
-                    else if ([httpMethod isEqualToString:@"GET"]) {
-                        [self getFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
+                    else {
+                        
+                        //
+                        //  Proceed with original request
+                        //
+                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                       originalHeader:blockOriginalHeader
+                                                    originalParameter:blockOriginalParameter
+                                                          requestType:blockRequestType
+                                                         responseType:blockResponseType
+                                                           httpMethod:blockHTTPMethod
+                                                           completion:blockCompletion];
                     }
-                    else if ([httpMethod isEqualToString:@"PATCH"]) {
-                        [self patchTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                    }
-                    else if ([httpMethod isEqualToString:@"POST"]) {
-                        [self postTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                    }
-                    else if ([httpMethod isEqualToString:@"PUT"]) {
-                        [self putTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                    }
-                    
-                    return;
                 }
             }];
         }
@@ -484,53 +473,45 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                  ([magErrorCode hasSuffix:@"140"] ||
                   [magErrorCode hasSuffix:@"142"] || [magErrorCode hasSuffix:@"143"] ||
                   [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
-            
-            [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
-                completionBlock:^(NSDictionary *responseInfo, NSError *error)
-                {
-                    
-                    NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
-                    NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
-                    
-                    //
-                    // If it fails to fetch OTP, notify user
-                    //
-                    if (!oneTimePassword || error)
-                    {
-                        if(completion) completion(responseInfo, error);
-                    }
-                    else {
-                        
-                        NSMutableDictionary *newHeader = [originalHeaderInfo mutableCopy];
-                        [newHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
-                        NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
-                        [newHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
-                        
-                        //
-                        // Retry request
-                        //
-                        if ([httpMethod isEqualToString:@"DELETE"])
-                        {
-                            [self deleteFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"GET"]) {
-                            [self getFrom:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"PATCH"]) {
-                            [self patchTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"POST"]) {
-                            [self postTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        else if ([httpMethod isEqualToString:@"PUT"]) {
-                            [self putTo:endPoint withParameters:originalParameterInfo andHeaders:newHeader requestType:requestType responseType:responseType completion:completion];
-                        }
-                        
-                        return;
-                    }
-                }
-             ];
-        }
+                     
+                     [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
+                                                                          completionBlock:^(NSDictionary *responseInfo, NSError *error)
+                      {
+                          
+                          NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
+                          NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
+                          
+                          //
+                          // If it fails to fetch OTP, notify user
+                          //
+                          if (!oneTimePassword || error)
+                          {
+                              if(blockCompletion)
+                              {
+                                  blockCompletion(responseInfo, error);
+                              }
+                          }
+                          else {
+                              
+                              NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
+                              
+                              [blockOriginalHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
+                              [blockOriginalHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
+                              
+                              //
+                              //  Proceed with original request
+                              //
+                              [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                             originalHeader:blockOriginalHeader
+                                                          originalParameter:blockOriginalParameter
+                                                                requestType:blockRequestType
+                                                               responseType:blockResponseType
+                                                                 httpMethod:blockHTTPMethod
+                                                                 completion:blockCompletion];
+                          }
+                      }
+                      ];
+                 }
         else {
             //
             // If the server complains that client_secret or client_id is invalid, we have to clear the client_id and client_secret
@@ -540,31 +521,152 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
                 [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
                 [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientExpiration];
+                
+                //
+                // Remove access_token from keychain
+                //
+                [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
+                [[MASAccessService sharedService].currentAccessObj refresh];
+                
+                //
+                // Validate user's session
+                //
+                [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+                    
+                    //
+                    // If it fails to re-validate session, notify user
+                    //
+                    if (!completed || error)
+                    {
+                        if(blockCompletion)
+                        {
+                            blockCompletion(responseInfo, error);
+                        }
+                    }
+                    else {
+                        
+                        if ([blockSelf isMAGEndpoint:blockEndPoint])
+                        {
+                            blockCompletion(responseInfo, nil);
+                        }
+                        else {
+                            
+                            //
+                            // If the original header contains the clientAuthorizationHeader, which is invalid;
+                            // replace with the newly generated clientAuthorizationHeader for the retry request.
+                            //
+                            if ([[blockOriginalHeader allKeys] containsObject:MASAuthorizationRequestResponseKey] && ![[blockOriginalHeader objectForKey:MASAuthorizationRequestResponseKey] isEqualToString:[[MASApplication currentApplication] clientAuthorizationBasicHeaderValue]])
+                            {
+                                [blockOriginalHeader setObject:[[MASApplication currentApplication] clientAuthorizationBasicHeaderValue] forKey:MASAuthorizationRequestResponseKey];
+                            }
+                            
+                            if ([[blockOriginalParameter allKeys] containsObject:MASClientKeyRequestResponseKey] && ![[blockOriginalParameter objectForKey:MASClientKeyRequestResponseKey] isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId]])
+                            {
+                                [blockOriginalParameter setObject:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId] forKey:MASClientKeyRequestResponseKey];
+                            }
+                            
+                            //
+                            //  Proceed with original request
+                            //
+                            [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                           originalHeader:blockOriginalHeader
+                                                        originalParameter:blockOriginalParameter
+                                                              requestType:blockRequestType
+                                                             responseType:blockResponseType
+                                                               httpMethod:blockHTTPMethod
+                                                               completion:blockCompletion];
+                        }
+                    }
+                }];
             }
-            
-            if (completion)
+            else if (blockCompletion)
             {
                 
                 //
                 // notify
                 //
-                if (error)
-                {
-                    //
-                    // if error occured
-                    //
-                    completion(responseInfo, error);
-                }
-                else {
-                    
-                    completion(responseInfo, nil);
-                }
+                blockCompletion(responseInfo, error);
             }
         }
     };
     
     return taskCompletionBlock;
 }
+
+
+- (BOOL)isMAGEndpoint:(NSString *)endpoint
+{
+    BOOL isMAGEndpoint = NO;
+    
+    if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].tokenEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].tokenRevokeEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].deviceRemoveEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].deviceRegisterEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].deviceRegisterClientEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    //    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].authorizationEndpointPath])
+    //    {
+    //        isMAGEndpoint = YES;
+    //    }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].clientInitializeEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    
+    return isMAGEndpoint;
+}
+
+
+- (void)proceedOriginalRequestWithEndPoint:(NSString *)endPoint
+                            originalHeader:(NSMutableDictionary *)originalHeader
+                         originalParameter:(NSMutableDictionary *)originalParameter
+                               requestType:(MASRequestResponseType)requestType
+                              responseType:(MASRequestResponseType)responseType
+                                httpMethod:(NSString *)httpMethod
+                                completion:(MASResponseInfoErrorBlock)completion
+{
+    
+    //
+    // Retry request
+    //
+    if ([httpMethod isEqualToString:@"DELETE"])
+    {
+        [self deleteFrom:endPoint withParameters:originalParameter andHeaders:originalHeader requestType:requestType responseType:responseType completion:completion];
+    }
+    else if ([httpMethod isEqualToString:@"GET"])
+    {
+        [self getFrom:endPoint withParameters:originalParameter andHeaders:originalHeader requestType:requestType responseType:responseType completion:completion];
+    }
+    else if ([httpMethod isEqualToString:@"PATCH"])
+    {
+        [self patchTo:endPoint withParameters:originalParameter andHeaders:originalHeader requestType:requestType responseType:responseType completion:completion];
+    }
+    else if ([httpMethod isEqualToString:@"POST"])
+    {
+        [self postTo:endPoint withParameters:originalParameter andHeaders:originalHeader requestType:requestType responseType:responseType completion:completion];
+    }
+    else if ([httpMethod isEqualToString:@"PUT"])
+    {
+        [self putTo:endPoint withParameters:originalParameter andHeaders:originalHeader requestType:requestType responseType:responseType completion:completion];
+    }
+    
+    return;
+}
+
 
 # pragma mark - Network Monitoring
 

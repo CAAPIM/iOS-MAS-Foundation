@@ -379,6 +379,15 @@
 
 
 /**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeMasIsNotStarted.
+ *
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeMASIsNotStarted.
+ */
++ (NSError *)errorMASIsNotStarted;
+
+
+/**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeNetworkNotStarted.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and

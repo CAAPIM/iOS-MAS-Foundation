@@ -636,6 +636,10 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeGeolocationIsNotConfigured errorDomain:MASFoundationErrorDomainLocal];
 }
 
++ (NSError *)errorMASIsNotStarted
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeMASIsNotStarted errorDomain:MASFoundationErrorDomainLocal];
+}
 
 + (NSError *)errorNetworkNotReachable
 {
@@ -892,7 +896,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeInvalidNSDictionary: return @"Invalid NSDictionary object. JSON object cannot be nil.";
         case MASFoundationErrorCodeInvalidNSURL: return @"Invalid NSURL object. File URL cannot be nil";
         case MASFoundationErrorCodeInvalidUserLoginBlock: return @"SDK is attempting to invoke MASDeviceRegistrationWithUserCredentialsBlock, but the block has not defined.  The block is mandatory for user credential flow if you have decided to not use MASUI.";
-        
+        case MASFoundationErrorCodeMASIsNotStarted: return @"MAS SDK has not been started.";
+            
         //
         // OTP
         //

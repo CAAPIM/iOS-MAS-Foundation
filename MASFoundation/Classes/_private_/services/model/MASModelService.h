@@ -261,6 +261,12 @@
 - (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion;
 
 
+/**
+ *  If the current user exists, clear the user credentials from keychain storage, and log out.
+ */
+- (void)clearCurrentUserForLogout;
+
+
 # pragma mark - Authentication Validation
 
 /**
