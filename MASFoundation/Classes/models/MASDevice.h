@@ -36,12 +36,6 @@
 
 
 /**
- * Is the MASDevice locked.
- */
-@property (nonatomic, assign, readonly) BOOL isLocked;
-
-
-/**
  * The MASDevice identifier.
  */
 @property (nonatomic, copy, readonly) NSString *identifier;
@@ -136,26 +130,6 @@
  *      receives the results.
  */
 - (void)deregisterWithCompletion:(MASCompletionErrorBlock)completion;
-
-
-
-/**
- *  Lock the current authenticated session with device's local authentication (Fingerprint and/or Device's Passcode).
- *
- *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that
- *      receives the results.
- */
-- (void)lockWithCompletion:(MASCompletionErrorBlock)completion;
-
-
-
-/**
- *  Unlock the currently locekd authenticated session with device's local authentication (Fingerprint and/or Device's Passcode).
- *
- *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that
- *      receives the results.
- */
-- (void)unlockWithCompletion:(MASCompletionErrorBlock)completion;
 
 
 

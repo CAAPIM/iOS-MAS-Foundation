@@ -838,7 +838,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 # pragma mark - Public
 
-- (BOOL)lockDevice:(NSError * __nullable __autoreleasing * __nullable)error
+- (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error
 {
     NSError *localError = nil;
     BOOL success = NO;
@@ -858,19 +858,16 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             //
             localError = [NSError errorDeviceDoesNotSupportLocalAuthentication];
             
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
-            [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+            [self removeSessionLock];
         }
     }
     
     //
     // Check the device lock status
     //
-    if ([MASDevice currentDevice].isLocked && !localError)
+    if ([MASUser currentUser].isSessionLocked && !localError)
     {
-        localError = [NSError errorDeviceIsAlreadyLocked];
+        localError = [NSError errorUserSessionIsAlreadyLocked];
     }
     
     //
@@ -885,7 +882,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         //
         if (!idToken)
         {
-            localError = [NSError errorIdTokenNotExistForLockingDevice];
+            localError = [NSError errorIdTokenNotExistForLockingUserSession];
         }
         
         //
@@ -898,25 +895,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     }
     
     //
-    // If no error, secure access_token
-    //
-    if (!localError)
-    {
-        
-        NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
-        [self setAccessValueString:accessToken withAccessValueType:MASAccessValueTypeSecuredAccessToken error:&localError];
-    }
-    
-    //
-    // If no error, secure refresh_token
-    //
-    if (!localError)
-    {
-        NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
-        [self setAccessValueString:refreshToken withAccessValueType:MASAccessValueTypeSecuredRefreshToken error:&localError];
-    }
-    
-    //
     // If an error occured from any of above, revert everything and return the error
     //
     if (localError)
@@ -924,11 +902,9 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         //
         // If the device is not locked, and there was an error, clean up the protected keychain storage
         //
-        if (![MASDevice currentDevice].isLocked)
+        if (![MASUser currentUser].isSessionLocked)
         {
             [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
         }
         
         *error = localError;
@@ -956,12 +932,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 }
 
 
-- (BOOL)unlockDevice:(NSError * __nullable __autoreleasing * __nullable)error
+- (BOOL)unlockSession:(NSError * __nullable __autoreleasing * __nullable)error
 {
     NSError *localError = nil;
     NSString *idToken = nil;
-    NSString *accessToken = nil;
-    NSString *refreshToken = nil;
     
     BOOL success = NO;
     
@@ -980,19 +954,16 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             //
             localError = [NSError errorDeviceDoesNotSupportLocalAuthentication];
             
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
-            [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+            [self removeSessionLock];
         }
     }
     
     //
     // Check the device lock status
     //
-    if (![MASDevice currentDevice].isLocked && !localError)
+    if (![MASUser currentUser].isSessionLocked && !localError)
     {
-        localError = [NSError errorDeviceIsAlreadyUnlocked];
+        localError = [NSError errorUserSessionIsAlreadyUnlocked];
     }
     
     //
@@ -1004,33 +975,12 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     }
     
     //
-    // If no error returned from retrieving id_token, retrieve access_token from keychain storage
-    //
-    if (!localError)
-    {
-        accessToken = [self getAccessValueStringWithType:MASAccessValueTypeSecuredAccessToken error:&localError];
-    }
-    
-    //
-    // If no error returned from retrieving access_token, retrieve refresh_token from keychain storage
-    //
-    if (!localError)
-    {
-        refreshToken = [self getAccessValueStringWithType:MASAccessValueTypeSecuredRefreshToken error:&localError];
-    }
-    
-    //
     // If all tokens were successfully retrieved from secured keychain storage, clean up the secured storage and restore them into regular keychain storage
     //
     if (!localError)
     {
         [self setAccessValueString:idToken withAccessValueType:MASAccessValueTypeIdToken];
-        [self setAccessValueString:accessToken withAccessValueType:MASAccessValueTypeAccessToken];
-        [self setAccessValueString:refreshToken withAccessValueType:MASAccessValueTypeRefreshToken];
-        
         [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-        [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-        [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
         
         [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
         
@@ -1046,6 +996,21 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     }
     
     return success;
+}
+
+
+- (void)removeSessionLock
+{
+    [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
+    [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
+    [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
+    
+    [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+    
+    //
+    // Refresh the currentAccessObj to reflect the current status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
 }
 
 

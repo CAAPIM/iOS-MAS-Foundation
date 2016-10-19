@@ -317,6 +317,25 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
+- (BOOL)isSessionLocked
+{
+    //
+    // Obtain key chain items to determine device lock status
+    //
+    MASAccessService *accessService = [MASAccessService sharedService];
+    
+    NSNumber *isLocked = [accessService getAccessValueNumberWithType:MASAccessValueTypeIsDeviceLocked];
+    
+    if (isLocked)
+    {
+        return [isLocked boolValue];
+    }
+    else {
+        return NO;
+    }
+}
+
+
 - (NSString *)objectId
 {
     return objc_getAssociatedObject(self, &MASUserObjectIdPropertyKey);

@@ -26,6 +26,32 @@
 }
 
 
+# pragma mark - Current User - Lock/Unlock Session
+
+- (void)lockSessionWithCompletion:(MASCompletionErrorBlock)completion
+{
+    NSError *error = nil;
+    BOOL success = [[MASAccessService sharedService] lockSession:&error];
+    
+    completion(success, error);
+}
+
+
+- (void)unlockSessionWithCompletion:(MASCompletionErrorBlock)completion
+{
+    NSError *error = nil;
+    BOOL success = [[MASAccessService sharedService] unlockSession:&error];
+    
+    completion(success, error);
+}
+
+
+- (void)removeSessionLock
+{
+    [[MASAccessService sharedService] removeSessionLock];
+}
+
+
 # pragma mark - Lifecycle
 
 - (id)init
@@ -51,11 +77,11 @@
 
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"(%@) is current user: %@, is authenticated: %@\n\n"
+    return [NSString stringWithFormat:@"(%@) is current user: %@, is authenticated: %@\n\n, is session locked: %@\n\n"
         "        and objectId: %@\n        user name: %@\n        family name: %@\n"
         "        given name: %@\n        formatted name: %@\n        active: %@\n        email addresses: %@\n"
         "        phone numbers: %@\n        addresses: %@\n        photos: %@\n        groups: %@",
-        [self class], ([self isCurrentUser] ? @"Yes" : @"No"), ([self isAuthenticated] ? @"Yes" : @"No"),
+        [self class], ([self isCurrentUser] ? @"Yes" : @"No"), ([self isAuthenticated] ? @"Yes" : @"No"), ([self isSessionLocked] ? @"Yes" : @"No"),
         [self objectId], [self userName], [self familyName],
         [self givenName], [self formattedName], ([self active] ? @"Yes" : @"No"), [self emailAddresses],
         [self phoneNumbers], [self addresses], [self photos], [self groups]];
@@ -88,20 +114,44 @@
 
 - (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
 {
+    
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    //
-    // Detect if there is id_token, and sso is enabled
-    //
-    if([accessService getAccessValueStringWithType:MASAccessValueTypeIdToken] && [MASConfiguration currentConfiguration].ssoEnabled)
+    if (!self.isCurrentUser)
     {
-        [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES completion:completion];
+        if (completion)
+        {
+            completion(NO, [NSError errorUserNotAuthenticated]);
+        }
+        
+        return;
     }
-    //
-    // If the sso is disabled or id_token does not exist, revoke the access_token only
-    //
+    else if (self.isSessionLocked)
+    {
+        [accessService removeSessionLock];
+        
+        if (completion)
+        {
+            completion(YES, nil);
+        }
+        
+        return;
+    }
     else {
-        [[MASModelService sharedService] logoutWithCompletion:completion];
+     
+        //
+        // Detect if there is id_token, and sso is enabled
+        //
+        if([accessService getAccessValueStringWithType:MASAccessValueTypeIdToken] && [MASConfiguration currentConfiguration].ssoEnabled)
+        {
+            [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES completion:completion];
+        }
+        //
+        // If the sso is disabled or id_token does not exist, revoke the access_token only
+        //
+        else {
+            [[MASModelService sharedService] logoutWithCompletion:completion];
+        }
     }
 }
 

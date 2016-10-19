@@ -1640,7 +1640,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // If the user is already authenticated with user credentials
     // And the access_token is still valid
     //
-    if (self.currentUser && self.currentUser.isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
+    if (self.currentUser && self.currentUser.accessToken && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
     {
         //
         // Notify
@@ -2561,7 +2561,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // If the user is already authenticated, stop here
     //
-    if ([self.currentUser isAuthenticated])
+    if (self.currentUser.accessToken && self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser)
     {
         //
         // Notify
@@ -3237,11 +3237,11 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      //
                      // If the device is currently locked, return an error
                      //
-                     if (self.currentDevice.isLocked)
+                     if (self.currentUser.isSessionLocked)
                      {
                          if (originalCompletion)
                          {
-                             originalCompletion(NO, [NSError errorDeviceIsCurrentlyLocked]);
+                             originalCompletion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
                          }
                          
                          return;
@@ -3270,9 +3270,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                          //
                          // If the registration status is correct, and the device is currently locked, generate an error
                          //
-                         if (!error && self.currentDevice.isLocked)
+                         if (!error && self.currentUser.isSessionLocked)
                          {
-                             error = [NSError errorDeviceIsCurrentlyLocked];
+                             error = [NSError errorUserSessionIsCurrentlyLocked];
                          }
                          
                          if (!completed || error != nil)
@@ -3288,7 +3288,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              // Perform authentication with given username and password
                              //
                              [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
-                                 
+                                
                                  if (!completed || error != nil)
                                  {
                                      if(originalCompletion)
@@ -3326,9 +3326,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                          //
                          // If the registration status is correct, and the device is currently locked, generate an error
                          //
-                         if (!error && self.currentDevice.isLocked)
+                         if (!error && self.currentUser.isSessionLocked)
                          {
-                             error = [NSError errorDeviceIsCurrentlyLocked];
+                             error = [NSError errorUserSessionIsCurrentlyLocked];
                          }
                          
                          if (!completed || error != nil)
@@ -3410,9 +3410,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                         //
                         // If the registration status is correct, and the device is currently locked, generate an error
                         //
-                        if (!error && self.currentDevice.isLocked)
+                        if (!error && self.currentUser.isSessionLocked)
                         {
-                            error = [NSError errorDeviceIsCurrentlyLocked];
+                            error = [NSError errorUserSessionIsCurrentlyLocked];
                             completed = NO;
                         }
                         

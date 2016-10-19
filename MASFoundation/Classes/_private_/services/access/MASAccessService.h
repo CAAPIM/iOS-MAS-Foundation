@@ -275,7 +275,7 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 
  @return BOOL of the result
  */
-- (BOOL)lockDevice:(NSError * __nullable __autoreleasing * __nullable)error;
+- (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error;
 
 
 
@@ -287,7 +287,11 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 
  @return BOOL of the result
  */
-- (BOOL)unlockDevice:(NSError * __nullable __autoreleasing * __nullable)error;
+- (BOOL)unlockSession:(NSError * __nullable __autoreleasing * __nullable)error;
+
+
+
+- (void)removeSessionLock;
 
 
 

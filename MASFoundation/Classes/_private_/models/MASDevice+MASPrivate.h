@@ -22,7 +22,6 @@
 # pragma mark - Properties
 
 @property (nonatomic, assign, readonly) BOOL isRegistered;
-@property (nonatomic, assign, readonly) BOOL isLocked;
 
 @property (nonatomic, copy, readwrite) NSString *identifier;
 @property (nonatomic, copy, readwrite) NSString *name;

@@ -40,6 +40,12 @@
 
 
 /**
+ *  Boolean indicator of whether the currently authenticated MASUser object is locked or not
+ */
+@property (nonatomic, assign, readonly) BOOL isSessionLocked;
+
+
+/**
  *  NSString property of username
  */
 @property (nonatomic, copy, readonly) NSString *userName;
@@ -116,6 +122,20 @@
  *  @return Returns a singleton 'MASUser' object.
  */
 + (MASUser *)currentUser;
+
+
+
+///--------------------------------------
+/// @name Current User - Lock/Unlock Session
+///--------------------------------------
+
+# pragma mark - Current User - Lock/Unlock Session
+
+- (void)lockSessionWithCompletion:(MASCompletionErrorBlock)completion;
+
+- (void)unlockSessionWithCompletion:(MASCompletionErrorBlock)completion;
+
+- (void)removeSessionLock;
 
 
 
