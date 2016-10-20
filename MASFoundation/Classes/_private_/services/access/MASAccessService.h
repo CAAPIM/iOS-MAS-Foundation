@@ -275,7 +275,7 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 
  @return BOOL of the result
  */
-- (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error;
+- (BOOL)lockSession:(NSError * __autoreleasing *)error;
 
 
 
@@ -283,14 +283,18 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 /**
  Unlock id_token, access_token, and refresh_token from secure keychain storage protected by device's local authentication (passcode and/or fingerprint)
 
+ @param userOperationPrompt NSString message that will display on system's local authentication screen
  @param error NSError object that may occur during the process
 
  @return BOOL of the result
  */
-- (BOOL)unlockSession:(NSError * __nullable __autoreleasing * __nullable)error;
+- (BOOL)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt error:(NSError * __autoreleasing *)error;
 
 
 
+/**
+ Remove all items in protected keychain storage with local authentications and set session lock status to default.
+ */
 - (void)removeSessionLock;
 
 

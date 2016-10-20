@@ -228,6 +228,14 @@ __OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0);
 - (BOOL)setData:(nullable NSData *)data forKey:(NSString *)key label:(nullable NSString *)label comment:(nullable NSString *)comment error:(NSError * __nullable __autoreleasing * __nullable)error;
 
 - (nullable NSString *)stringForKey:(NSString *)key error:(NSError * __nullable __autoreleasing * __nullable)error;
+//
+// Modification by James Go on October 19, 2016
+// For local authentication keychain storage item
+//
+- (nullable NSString *)stringForKey:(NSString *)key userOperationPrompt:(nullable NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error;
+//
+// END OF MODIFICATION
+//
 - (nullable NSData *)dataForKey:(NSString *)key error:(NSError * __nullable __autoreleasing * __nullable)error;
 
 + (BOOL)removeItemForKey:(NSString *)key error:(NSError * __nullable __autoreleasing * __nullable)error;

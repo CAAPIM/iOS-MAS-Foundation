@@ -40,7 +40,17 @@
 - (void)unlockSessionWithCompletion:(MASCompletionErrorBlock)completion
 {
     NSError *error = nil;
-    BOOL success = [[MASAccessService sharedService] unlockSession:&error];
+    
+    BOOL success = [[MASAccessService sharedService] unlockSessionWithUserOperationPromptMessage:nil error:&error];
+    
+    completion(success, error);
+}
+
+
+- (void)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt completion:(MASCompletionErrorBlock)completion
+{
+    NSError *error = nil;
+    BOOL success = [[MASAccessService sharedService] unlockSessionWithUserOperationPromptMessage:userOperationPrompt error:&error];
     
     completion(success, error);
 }
@@ -129,6 +139,15 @@
     else if (self.isSessionLocked)
     {
         [accessService removeSessionLock];
+        [[MASModelService sharedService] clearCurrentUserForLogout];
+        
+        //
+        // Set id_token and id_token_type to nil
+        //
+        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
+        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
+        
+        [[MASAccessService sharedService].currentAccessObj refresh];
         
         if (completion)
         {

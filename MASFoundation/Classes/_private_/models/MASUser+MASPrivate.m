@@ -326,7 +326,12 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
     NSNumber *isLocked = [accessService getAccessValueNumberWithType:MASAccessValueTypeIsDeviceLocked];
     
-    if (isLocked)
+    //
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    if (isLocked && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
     {
         return [isLocked boolValue];
     }

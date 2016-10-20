@@ -358,6 +358,18 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 }
 
 
+- (NSString *)getAccessValueStringWithType:(MASAccessValueType)type userOperationPrompt:(NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error
+{
+    NSString *storageKey = [self getStorageKeyWithAccessValueType:type];
+    NSString *accessValueAsString = [self convertAccessTypeToString:type];
+    MASIKeyChainStore *destinationStorage = _storages[storageKey];
+    
+    NSString *securedString = [destinationStorage stringForKey:accessValueAsString userOperationPrompt:userOperationPrompt error:error];
+    
+    return securedString;
+}
+
+
 - (NSString *)getAccessValueStringWithType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
 {
     
@@ -917,7 +929,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
         [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
         [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
-        
         [self setAccessValueNumber:[NSNumber numberWithBool:YES] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
         
         //
@@ -932,7 +943,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 }
 
 
-- (BOOL)unlockSession:(NSError * __nullable __autoreleasing * __nullable)error
+- (BOOL)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error
 {
     NSError *localError = nil;
     NSString *idToken = nil;
@@ -971,7 +982,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     //
     if (!localError)
     {
-        idToken = [self getAccessValueStringWithType:MASAccessValueTypeSecuredIdToken error:&localError];
+        idToken = [self getAccessValueStringWithType:MASAccessValueTypeSecuredIdToken userOperationPrompt:userOperationPrompt error:&localError];
     }
     
     //
@@ -981,7 +992,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     {
         [self setAccessValueString:idToken withAccessValueType:MASAccessValueTypeIdToken];
         [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-        
         [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
         
         //
@@ -1002,9 +1012,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 - (void)removeSessionLock
 {
     [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-    [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-    [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
-    
     [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
     
     //
