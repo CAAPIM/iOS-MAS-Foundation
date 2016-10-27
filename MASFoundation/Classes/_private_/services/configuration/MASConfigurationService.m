@@ -126,7 +126,6 @@ static BOOL _newConfigurationDetected_ = NO;
     {
         [self.currentConfiguration reset];
         _currentConfiguration = nil;
-        _newConfigurationDetected_ = NO;
     }
     
     //
@@ -139,9 +138,10 @@ static BOOL _newConfigurationDetected_ = NO;
         //
         // If the JSON configuration object was set
         //
-        if (_newConfigurationObject_)
+        if (_newConfigurationObject_ && _newConfigurationDetected_)
         {
             info = _newConfigurationObject_;
+            _newConfigurationDetected_ = NO;
         }
         //
         // Otherwise, load it from default configuration file
