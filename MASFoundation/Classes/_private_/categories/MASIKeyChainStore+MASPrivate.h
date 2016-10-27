@@ -87,6 +87,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (SecKeyRef)cryptoKeyForApplicationTag:(NSData *)applicationTag;
 
+- (nullable NSString *)stringForKey:(NSString *)key userOperationPrompt:(nullable NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error;
+
 @end
 
 NS_ASSUME_NONNULL_END
