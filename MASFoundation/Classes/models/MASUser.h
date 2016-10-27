@@ -162,7 +162,6 @@
 
 
 
-
 /**
  Unlock currently locked user session with device's local authentication (Device's Passcode or Biometric Authentication) and 
  specified message on system local authentication dialog.
@@ -175,7 +174,6 @@
  @param completion          MASCompletionErrorBlock block that receives the results.
  */
 - (void)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt completion:(MASCompletionErrorBlock)completion;
-
 
 
 
@@ -207,6 +205,11 @@
 + (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion;
 
 
+
++ (void)loginWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion;
+
+
+
 /**
  *  Requesting userInfo for the MASUser object.
  *  This method will retrieve additional information on the MASUser object.
@@ -216,6 +219,7 @@
  *
  */
 - (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion;
+
 
 
 /**

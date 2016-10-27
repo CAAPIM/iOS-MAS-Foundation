@@ -116,6 +116,22 @@
 }
 
 
++ (void)loginWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion
+{
+    //
+    //  If the user session has already been authenticated, throw an error.
+    //
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        
+        return;
+    }
+    
+    [[MASModelService sharedService] validateCurrentUserAuthenticationWithAuthorizationCode:authorizationCode completion:completion];
+}
+
+
 - (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion
 {
     [[MASModelService sharedService] requestUserInfoWithCompletion:completion];
@@ -127,7 +143,7 @@
     
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    if (!self.isCurrentUser)
+    if (!self.isAuthenticated)
     {
         if (completion)
         {

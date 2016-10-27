@@ -290,4 +290,16 @@
  */
 - (void)validateCurrentUserSession:(MASCompletionErrorBlock)completion;
 
+
+/**
+ Validate the current user's session information with authorization code.
+ 
+ Note: if the authorization code was consumed for device registration, the validation process will fall back to currently set flow.  In this case, the authorization code will not be guranteed to proceed authentication as well which may result in presenting login view controller once again for authentication.
+
+ @param authorizationCode NSString of authorization code
+ @param completion        MASCompletionErrorBlock to notify original caller for the result of the validation process.
+ */
+- (void)validateCurrentUserAuthenticationWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion;
+
+
 @end
