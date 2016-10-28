@@ -879,7 +879,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     //
     if ([MASUser currentUser].isSessionLocked && !localError)
     {
-        localError = [NSError errorUserSessionIsAlreadyLocked];
+        //
+        // If the session is alreay locked, return true
+        //
+        return YES;
     }
     
     //
@@ -974,7 +977,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     //
     if (![MASUser currentUser].isSessionLocked && !localError)
     {
-        localError = [NSError errorUserSessionIsAlreadyUnlocked];
+        //
+        // If the session is already unlocked, return true
+        //
+        return YES;
     }
     
     //

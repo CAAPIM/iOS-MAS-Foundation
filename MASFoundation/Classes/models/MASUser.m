@@ -143,16 +143,7 @@
     
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    if (!self.isAuthenticated)
-    {
-        if (completion)
-        {
-            completion(NO, [NSError errorUserNotAuthenticated]);
-        }
-        
-        return;
-    }
-    else if (self.isSessionLocked)
+    if (self.isSessionLocked)
     {
         [accessService removeSessionLock];
         [[MASModelService sharedService] clearCurrentUserForLogout];
@@ -168,6 +159,15 @@
         if (completion)
         {
             completion(YES, nil);
+        }
+        
+        return;
+    }
+    else if (!self.isAuthenticated)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorUserNotAuthenticated]);
         }
         
         return;
