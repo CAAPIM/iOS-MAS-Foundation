@@ -3391,6 +3391,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 - (void)validateCurrentUserSession:(MASCompletionErrorBlock)originalCompletion
 {
     
+    __block MASModelService *blockSelf = self;
+    
     //
     // Go through registeration, authentication logic
     //
@@ -3408,12 +3410,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 //  Check device registration status
                 //
-                [self registerDeviceWithCompletion:^(BOOL completed, NSError *error)
+                [blockSelf registerDeviceWithCompletion:^(BOOL completed, NSError *error)
                  {
                      //
                      // If the registration status is correct, and the device is currently locked, generate an error
                      //
-                     if (!error && self.currentUser.isSessionLocked)
+                     if (!error && blockSelf.currentUser.isSessionLocked)
                      {
                          error = [NSError errorUserSessionIsCurrentlyLocked];
                          completed = NO;
@@ -3428,7 +3430,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                          //
                          //  Check login status
                          //
-                         [self loginWithCompletion:^(BOOL completed, NSError *error) {
+                         [blockSelf loginWithCompletion:^(BOOL completed, NSError *error) {
                              
                              if (!completed || error != nil)
                              {
@@ -3460,7 +3462,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 //  Get authentication providers if it doesn't exist
                 //
-                [self retrieveAuthenticationProviders:^(id object, NSError *error)
+                [blockSelf retrieveAuthenticationProviders:^(id object, NSError *error)
                  {
                      
                      if (error != nil)
