@@ -24,28 +24,32 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 {
     MASAccessValueTypeUknonw = -1,
     MASAccessValueTypeAccessToken,
-    MASAccessValueTypeAuthenticatedUserObjectId,
-    MASAccessValueTypeRefreshToken,
-    MASAccessValueTypeScope,
-    MASAccessValueTypeTokenType,
     MASAccessValueTypeAuthenticatedTimestamp,
-    MASAccessValueTypeExpiresIn,
-    MASAccessValueTypeTokenExpiration,
-    MASAccessValueTypeIdToken,
-    MASAccessValueTypeIdTokenType,
+    MASAccessValueTypeAuthenticatedUserObjectId,
+    MASAccessValueTypeConfiguration,
     MASAccessValueTypeClientExpiration,
     MASAccessValueTypeClientId,
     MASAccessValueTypeClientSecret,
+    MASAccessValueTypeExpiresIn,
+    MASAccessValueTypeIdToken,
+    MASAccessValueTypeIdTokenType,
+    MASAccessValueTypeIsDeviceLocked,
     MASAccessValueTypeJWT,
     MASAccessValueTypeMAGIdentifier,
     MASAccessValueTypeMSSOEnabled,
     MASAccessValueTypePrivateKey,
     MASAccessValueTypePrivateKeyBits,
     MASAccessValueTypePublicKey,
-    MASAccessValueTypeTrustedServerCertificate,
+    MASAccessValueTypeRefreshToken,
+    MASAccessValueTypeScope,
+    MASAccessValueTypeSecuredAccessToken,
+    MASAccessValueTypeSecuredRefreshToken,
+    MASAccessValueTypeSecuredIdToken,
     MASAccessValueTypeSignedPublicCertificate,
     MASAccessValueTypeSignedPublicCertificateData,
-    MASAccessValueTypeConfiguration
+    MASAccessValueTypeTokenExpiration,
+    MASAccessValueTypeTokenType,
+    MASAccessValueTypeTrustedServerCertificate
 };
 
 
@@ -260,6 +264,39 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  @return BOOL if the id_token is still valid or not
  */
 + (BOOL)validateIdToken:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error;
+
+
+
+
+/**
+ Lock id_token, access_token, and refresh_token into secure keychain storage protected by device's local authentication (passcode and/or fingerprint)
+
+ @param error NSError object that may occur during the process
+
+ @return BOOL of the result
+ */
+- (BOOL)lockSession:(NSError * __autoreleasing *)error;
+
+
+
+
+/**
+ Unlock id_token, access_token, and refresh_token from secure keychain storage protected by device's local authentication (passcode and/or fingerprint)
+
+ @param userOperationPrompt NSString message that will display on system's local authentication screen
+ @param error NSError object that may occur during the process
+
+ @return BOOL of the result
+ */
+- (BOOL)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt error:(NSError * __autoreleasing *)error;
+
+
+
+/**
+ Remove all items in protected keychain storage with local authentications and set session lock status to default.
+ */
+- (void)removeSessionLock;
+
 
 
 # pragma mark - Debug only

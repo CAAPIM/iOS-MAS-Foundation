@@ -54,11 +54,32 @@
 }
 
 
-# pragma mark - Current Providers
+# pragma mark - Authentication Providers
 
 + (MASAuthenticationProviders *)currentProviders
 {
     return [MASModelService sharedService].currentProviders;
+}
+
+
++ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock)completion
+{
+    __block MASObjectResponseErrorBlock blockCompletion = completion;
+    
+    [[MASModelService sharedService] registerApplication:^(BOOL completed, NSError *error) {
+        
+        if (!completed || error)
+        {
+            blockCompletion(nil, error);
+        }
+        else {
+            
+            [[MASModelService sharedService] retrieveAuthenticationProviders:^(id object, NSError *error) {
+                
+                blockCompletion(object, error);
+            }];
+        }
+    }];
 }
 
 

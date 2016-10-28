@@ -370,6 +370,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeDeviceRecordIsNotValid = 120006,
     MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
     MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
+    MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120009,
     
     //
     // User
@@ -379,6 +380,9 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeUserDoesNotExist = 130003,
     MASFoundationErrorCodeUserNotAuthenticated = 130004,
     MASFoundationErrorCodeLoginProcessCancel = 130005,
+    MASFoundationErrorCodeUserSessionIsAlreadyLocked = 130006,
+    MASFoundationErrorCodeUserSessionIsAlreadyUnlocked = 130007,
+    MASFoundationErrorCodeUserSessionIsCurrentlyLocked = 130008,
     
     //
     // Token
@@ -388,6 +392,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeTokenIdTokenInvalidAud = 130103,
     MASFoundationErrorCodeTokenIdTokenInvalidAzp = 130104,
     MASFoundationErrorCodeTokenIdTokenInvalidSignature = 130105,
+    MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession = 130106,
     
     MASFoundationErrorCodeAccessTokenInvalid = 130201,
     MASFoundationErrorCodeAccessTokenDisabled = 130202,

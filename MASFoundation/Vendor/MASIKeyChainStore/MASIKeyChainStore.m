@@ -528,7 +528,14 @@ static NSString *_defaultService;
     query[(__bridge __strong id)kSecAttrAccount] = key;
 #if TARGET_OS_IOS
     if (floor(NSFoundationVersionNumber) > floor(1144.17)) { // iOS 9+
-        query[(__bridge __strong id)kSecUseAuthenticationUI] = (__bridge id)kSecUseAuthenticationUIFail;
+        //
+        // Modification by James Go on October 16, 2016
+        // For local authentication keychain storage item
+        //
+        query[(__bridge __strong id)kSecUseAuthenticationUI] = (__bridge id)kSecUseAuthenticationUIAllow;
+        //
+        // END OF MODIFICATION
+        //
     } else if (floor(NSFoundationVersionNumber) > floor(1047.25)) { // iOS 8+
         query[(__bridge __strong id)kSecUseNoAuthenticationUI] = (__bridge id)kCFBooleanTrue;
     }
@@ -1213,6 +1220,18 @@ static NSString *_defaultService;
             }
         }
     }
+    
+    //
+    // Modification by James Go on October 16, 2016
+    // For local authentication keychain storage item
+    //
+    if (!(SecAccessControlCreateFlags)_authenticationPolicy)
+    {
+        attributes[(__bridge __strong id)kSecAttrAccessControl] = (__bridge_transfer id)nil;
+    }
+    //
+    // END OF MODIFICATION
+    //
     
     if (floor(NSFoundationVersionNumber) > floor(993.00)) { // iOS 7+
         attributes[(__bridge __strong id)kSecAttrSynchronizable] = @(_synchronizable);

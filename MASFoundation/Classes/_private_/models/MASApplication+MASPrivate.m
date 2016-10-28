@@ -562,6 +562,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     
     NSString *accessToken = accessService.currentAccessObj.accessToken;
     NSString *refreshToken = accessService.currentAccessObj.refreshToken;
+    NSString *idToken = accessService.currentAccessObj.idToken;
     NSNumber *expiresIn = accessService.currentAccessObj.expiresIn;
     NSDate *expiresInDate = accessService.currentAccessObj.expiresInDate;
     
@@ -589,6 +590,11 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     {
         currentStatus = MASAuthenticationStatusNotLoggedIn;
         [accessService.currentAccessObj deleteForTokenExpiration];
+    }
+    
+    if (refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil]))
+    {
+        currentStatus = MASAuthenticationStatusLoginWithUser;
     }
     
     //DLog(@"\n\nNOW date is: %@, expiration date is: %@ and interval since now: %f\n\n",

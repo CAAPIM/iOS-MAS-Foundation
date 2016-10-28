@@ -298,6 +298,15 @@
 
 
 /**
+ * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication.
+ */
++ (NSError *)errorDeviceDoesNotSupportLocalAuthentication;
+
+
+/**
  * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeFlowIsNotActive.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
@@ -433,6 +442,33 @@
 
 
 /**
+ * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserSessionIsAlreadyLocked.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeUserSessionIsAlreadyLocked.
+ */
++ (NSError *)errorUserSessionIsAlreadyLocked;
+
+
+/**
+ * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserSessionIsAlreadyUnlocked.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeUserSessionIsAlreadyUnlocked.
+ */
++ (NSError *)errorUserSessionIsAlreadyUnlocked;
+
+
+/**
+ * Create MASFoundationErrorDomain NSError for MASFoundationErrorCodeUserSessionIsCurrentlyLocked.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeUserSessionIsCurrentlyLocked.
+ */
++ (NSError *)errorUserSessionIsCurrentlyLocked;
+
+
+/**
  * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenInvalidIdToken.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
@@ -475,6 +511,15 @@
  * error MASFoundationErrorCodeTokenIdTokenInvalidAud.
  */
 + (NSError *)errorIdTokenInvalidAud;
+
+
+/**
+ * Create MASFoundationLocalErrorDomain NSError for MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession.
+ */
++ (NSError *)errorIdTokenNotExistForLockingUserSession;
 
 
 /**

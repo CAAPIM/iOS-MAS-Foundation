@@ -333,6 +333,14 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    
+    //
+    // Clena up the tokens from Local Authentication protected keychain storage
+    //
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
+    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeIsDeviceLocked];
 }
 
 
@@ -362,6 +370,12 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    
+    //
+    // Clena up the tokens from Local Authentication protected keychain storage
+    //
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
 }
 
 
@@ -372,8 +386,6 @@
     //
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
-    
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
     
     [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
     
@@ -386,6 +398,12 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    
+    //
+    // Clena up the tokens from Local Authentication protected keychain storage
+    //
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
 }
 
 

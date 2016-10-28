@@ -15,6 +15,7 @@
 #import "MASIKeyChainStore+MASPrivate.h"
 #import "MASSecurityService.h"
 
+#import <LocalAuthentication/LocalAuthentication.h>
 
 # pragma mark - Property Constants
 
@@ -31,10 +32,11 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 # pragma mark - Properties
 
 @property (strong, nonatomic, readonly) NSDictionary *storages;
+
 @property (strong, nonatomic, readwrite) NSString *sharedStorageServiceName;
 @property (strong, nonatomic, readwrite) NSString *localStorageServiceName;
-@property (strong, nonatomic, readwrite) NSString *gatewayHostName;
 
+@property (strong, nonatomic, readwrite) NSString *gatewayHostName;
 @property (strong, nonatomic, readwrite) NSString *gatewayIdentifier;
 
 @end
@@ -84,9 +86,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     
     _localStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessLocalStorageServiceName];
     
+    _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
+    
     if ([MASConfiguration currentConfiguration].ssoEnabled)
     {
-        _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
         
         //
         // Local storage
@@ -105,8 +108,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     }
     else {
         
-        _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
-        
         //
         // Local storage
         //
@@ -117,6 +118,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         //
         _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, localStorage, kMASAccessSharedStorageKey, nil];
     }
+    
     
     //
     // For fresh install, make sure that local keychain storage information from previous installation is wiped out.
@@ -264,6 +266,13 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     NSString *accessValueAsString = [self convertAccessTypeToString:type];
     MASIKeyChainStore *destinationStorage = _storages[storageKey];
     
+    BOOL isSecuredData = [self isSecuredData:type];
+    
+    if (isSecuredData)
+    {
+        [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityWhenUnlockedThisDeviceOnly authenticationPolicy:MASIKeyChainStoreAuthenticationPolicyUserPresence];
+    }
+    
     //
     // Addition
     //
@@ -278,6 +287,11 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     {
         [destinationStorage removeItemForKey:accessValueAsString];
     }
+    
+    if (isSecuredData)
+    {
+        [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityAfterFirstUnlock authenticationPolicy:0];
+    }
 }
 
 
@@ -288,30 +302,51 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     NSString *accessValueAsString = [self convertAccessTypeToString:type];
     MASIKeyChainStore *destinationStorage = _storages[storageKey];
     
-    return [destinationStorage dataForKey:accessValueAsString];
+    NSData *keychainData = [destinationStorage dataForKey:accessValueAsString];
+
+    return keychainData;
 }
 
 
 - (void)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type
+{
+    [self setAccessValueString:string withAccessValueType:type error:nil];
+}
+
+
+- (void)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
 {
     
     NSString *storageKey = [self getStorageKeyWithAccessValueType:type];
     NSString *accessValueAsString = [self convertAccessTypeToString:type];
     MASIKeyChainStore *destinationStorage = _storages[storageKey];
     
+    BOOL isSecuredData = [self isSecuredData:type];
+    
+    if (isSecuredData)
+    {
+        [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityWhenUnlockedThisDeviceOnly authenticationPolicy:MASIKeyChainStoreAuthenticationPolicyUserPresence];
+    }
+    
     //
     // Addition
     //
     if (string)
     {
-        [destinationStorage setString:string forKey:accessValueAsString];
+        [destinationStorage setString:string forKey:accessValueAsString error:error];
     }
     //
     // Removal
     //
     else
     {
-        [destinationStorage removeItemForKey:accessValueAsString];
+        NSLog(@"data key removal : %@", accessValueAsString);
+        [destinationStorage removeItemForKey:accessValueAsString error:error];
+    }
+    
+    if (isSecuredData)
+    {
+        [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityAfterFirstUnlock authenticationPolicy:0];
     }
 }
 
@@ -319,11 +354,32 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 - (NSString *)getAccessValueStringWithType:(MASAccessValueType)type
 {
     
+    return [self getAccessValueStringWithType:type error:nil];
+}
+
+
+- (NSString *)getAccessValueStringWithType:(MASAccessValueType)type userOperationPrompt:(NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error
+{
     NSString *storageKey = [self getStorageKeyWithAccessValueType:type];
     NSString *accessValueAsString = [self convertAccessTypeToString:type];
     MASIKeyChainStore *destinationStorage = _storages[storageKey];
     
-    return [destinationStorage stringForKey:accessValueAsString];
+    NSString *securedString = [destinationStorage stringForKey:accessValueAsString userOperationPrompt:userOperationPrompt error:error];
+    
+    return securedString;
+}
+
+
+- (NSString *)getAccessValueStringWithType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
+{
+    
+    NSString *storageKey = [self getStorageKeyWithAccessValueType:type];
+    NSString *accessValueAsString = [self convertAccessTypeToString:type];
+    MASIKeyChainStore *destinationStorage = _storages[storageKey];
+    
+    NSString *securedString = [destinationStorage stringForKey:accessValueAsString error:error];
+    
+    return securedString;
 }
 
 
@@ -450,6 +506,51 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 #pragma mark - Private
 
++ (NSString *)padding: (NSString *) encodedString{
+    
+    unsigned long lengthtRequired = (int)(4 * ceil((float)[encodedString length] / 4.0));
+    long numPaddings = lengthtRequired - [encodedString length];
+    
+    if (numPaddings > 0) {
+        NSString *padding =
+        [[NSString string] stringByPaddingToLength:numPaddings
+                                        withString:@"=" startingAtIndex:0];
+        encodedString = [encodedString stringByAppendingString:padding];
+    }
+    
+    encodedString = [encodedString stringByReplacingOccurrencesOfString:@"-" withString:@"+"];
+    encodedString = [encodedString stringByReplacingOccurrencesOfString:@"_" withString:@"/"];
+    
+    return encodedString;
+}
+
+
+- (BOOL)isSecuredData:(MASAccessValueType)type
+{
+    BOOL isSecuredData = NO;
+    
+    switch (type) {
+        case MASAccessValueTypeSecuredIdToken:
+        isSecuredData = YES;
+        break;
+        
+        case MASAccessValueTypeSecuredAccessToken:
+        isSecuredData = NO;
+        break;
+        
+        case MASAccessValueTypeSecuredRefreshToken:
+        isSecuredData = NO;
+        break;
+        
+        default:
+        isSecuredData = NO;
+        break;
+    }
+    
+    return isSecuredData;
+}
+
+
 - (NSString *)getStorageKeyWithAccessValueType:(MASAccessValueType)type
 {
     NSString *storageKey = @"";
@@ -463,8 +564,16 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         case MASAccessValueTypeAccessToken:
             storageKey = kMASAccessLocalStorageKey;
             break;
+            //AccessToken with secured local authentication
+        case MASAccessValueTypeSecuredAccessToken:
+            storageKey = kMASAccessLocalStorageKey;
+            break;
             //Authenticated username
         case MASAccessValueTypeAuthenticatedUserObjectId:
+            storageKey = kMASAccessLocalStorageKey;
+            break;
+            //RefreshToken with secured local authentication
+        case MASAccessValueTypeSecuredRefreshToken:
             storageKey = kMASAccessLocalStorageKey;
             break;
             //RefreshToken
@@ -486,6 +595,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             //TokenExpiration
         case MASAccessValueTypeTokenExpiration:
             storageKey = kMASAccessLocalStorageKey;
+            break;
+            //IdToken with secured local authentication
+        case MASAccessValueTypeSecuredIdToken:
+            storageKey = kMASAccessSharedStorageKey;
             break;
             //IdToken
         case MASAccessValueTypeIdToken:
@@ -545,6 +658,9 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         case MASAccessValueTypeAuthenticatedTimestamp:
             storageKey = kMASAccessLocalStorageKey;
             break;
+        case MASAccessValueTypeIsDeviceLocked:
+            storageKey = kMASAccessSharedStorageKey;
+            break;
         default:
             //
             // MASAccessValueTypeUknonw
@@ -566,6 +682,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         case MASAccessValueTypeConfiguration:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASKeyChainConfiguration"];
             break;
+            //AccessToken with secured local authentication
+        case MASAccessValueTypeSecuredAccessToken:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeSecuredAccessToken"];
+            break;
             //AccessToken
         case MASAccessValueTypeAccessToken:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASKeyChainAccessToken"];
@@ -573,6 +693,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             //Authenticated username
         case MASAccessValueTypeAuthenticatedUserObjectId:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"MASAccessValueTypeAuthenticatedUserObjectId"];
+            break;
+            //RefreshToken with secured local authentication
+        case MASAccessValueTypeSecuredRefreshToken:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeSecuredRefreshToken"];
             break;
             //RefreshToken
         case MASAccessValueTypeRefreshToken:
@@ -593,6 +717,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             //TokenExpiration
         case MASAccessValueTypeTokenExpiration:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASKeyChainTokenExpiration"];
+            break;
+            //IdToken with secured local authentication
+        case MASAccessValueTypeSecuredIdToken:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASKeyChainSecuredIdToken"];
             break;
             //IdToken
         case MASAccessValueTypeIdToken:
@@ -651,6 +779,9 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             break;
         case MASAccessValueTypeAuthenticatedTimestamp:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeAuthenticatedTimestamp"];
+            break;
+        case MASAccessValueTypeIsDeviceLocked:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeIsDeviceLocked"];
             break;
         default:
             //
@@ -718,6 +849,183 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 
 # pragma mark - Public
+
+- (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error
+{
+    NSError *localError = nil;
+    BOOL success = NO;
+    
+    //
+    // Check if the local authentication is available
+    //
+    if ([LAContext class])
+    {
+        BOOL isLAAvailable = [[LAContext new] canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil];
+        
+        if (!isLAAvailable)
+        {
+            //
+            // If local authentication is not available, make sure to clean up all keychain data protected by local authentication
+            // those keychain data protected by LA will not be accessible if LA is not present
+            //
+            localError = [NSError errorDeviceDoesNotSupportLocalAuthentication];
+            
+            [self removeSessionLock];
+        }
+    }
+    
+    //
+    // Check the device lock status
+    //
+    if ([MASUser currentUser].isSessionLocked && !localError)
+    {
+        //
+        // If the session is alreay locked, return true
+        //
+        return YES;
+    }
+    
+    //
+    // If LA is available and device lock status is correct, retrieve id_token and secure it with LA
+    //
+    if (!localError)
+    {
+        NSString *idToken = [MASAccessService sharedService].currentAccessObj.idToken;
+        
+        //
+        // id_token should exist to lock the device with LA
+        //
+        if (!idToken)
+        {
+            localError = [NSError errorIdTokenNotExistForLockingUserSession];
+        }
+        
+        //
+        // Secure id_token
+        //
+        if (!localError)
+        {
+            [self setAccessValueString:idToken withAccessValueType:MASAccessValueTypeSecuredIdToken error:&localError];
+        }
+    }
+    
+    //
+    // If an error occured from any of above, revert everything and return the error
+    //
+    if (localError)
+    {
+        //
+        // If the device is not locked, and there was an error, clean up the protected keychain storage
+        //
+        if (![MASUser currentUser].isSessionLocked)
+        {
+            [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
+        }
+        
+        *error = localError;
+    }
+    //
+    // If it was successful to secure tokens with local authentication, nullify the tokens in unprotected keychain storage
+    //
+    else {
+        
+        [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
+        [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
+        [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
+        [self setAccessValueNumber:[NSNumber numberWithBool:YES] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+        
+        //
+        // Refresh the currentAccessObj to reflect the current status
+        //
+        [[MASAccessService sharedService].currentAccessObj refresh];
+        
+        success = YES;
+    }
+    
+    return success;
+}
+
+
+- (BOOL)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error
+{
+    NSError *localError = nil;
+    NSString *idToken = nil;
+    
+    BOOL success = NO;
+    
+    //
+    // Check if the local authentication is available
+    //
+    if ([LAContext class])
+    {
+        BOOL isLAAvailable = [[LAContext new] canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil];
+        
+        if (!isLAAvailable)
+        {
+            //
+            // If local authentication is not available, make sure to clean up all keychain data protected by local authentication
+            // those keychain data protected by LA will not be accessible if LA is not present
+            //
+            localError = [NSError errorDeviceDoesNotSupportLocalAuthentication];
+            
+            [self removeSessionLock];
+        }
+    }
+    
+    //
+    // Check the device lock status
+    //
+    if (![MASUser currentUser].isSessionLocked && !localError)
+    {
+        //
+        // If the session is already unlocked, return true
+        //
+        return YES;
+    }
+    
+    //
+    // Retrieve id_token from secured keychain storage if the device is locked
+    //
+    if (!localError)
+    {
+        idToken = [self getAccessValueStringWithType:MASAccessValueTypeSecuredIdToken userOperationPrompt:userOperationPrompt error:&localError];
+    }
+    
+    //
+    // If all tokens were successfully retrieved from secured keychain storage, clean up the secured storage and restore them into regular keychain storage
+    //
+    if (!localError)
+    {
+        [self setAccessValueString:idToken withAccessValueType:MASAccessValueTypeIdToken];
+        [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
+        [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+        
+        //
+        // Refresh the currentAccessObj to reflect the current status
+        //
+        [[MASAccessService sharedService].currentAccessObj refresh];
+        
+        success = YES;
+    }
+    else {
+        *error = localError;
+    }
+    
+    return success;
+}
+
+
+- (void)removeSessionLock
+{
+    [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
+    [self setAccessValueNumber:[NSNumber numberWithBool:NO] withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+    
+    //
+    // Refresh the currentAccessObj to reflect the current status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+}
+
 
 + (BOOL)validateIdToken:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error
 {
@@ -843,25 +1151,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
     
     return YES;
-}
-
-
-+ (NSString *)padding: (NSString *) encodedString{
-    
-    unsigned long lengthtRequired = (int)(4 * ceil((float)[encodedString length] / 4.0));
-    long numPaddings = lengthtRequired - [encodedString length];
-    
-    if (numPaddings > 0) {
-        NSString *padding =
-        [[NSString string] stringByPaddingToLength:numPaddings
-                                        withString:@"=" startingAtIndex:0];
-        encodedString = [encodedString stringByAppendingString:padding];
-    }
-    
-    encodedString = [encodedString stringByReplacingOccurrencesOfString:@"-" withString:@"+"];
-    encodedString = [encodedString stringByReplacingOccurrencesOfString:@"_" withString:@"/"];
-    
-    return encodedString;
 }
 
 

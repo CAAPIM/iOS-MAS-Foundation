@@ -372,19 +372,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         
         return;
     }
-
-    //
-    // If the device registration type is client credentials, skip this
-    //
-    if (_grantFlow_ == MASGrantFlowClientCredentials)
-    {
-        //
-        // Notify
-        //
-        if (completion) completion(nil, nil);
-        
-        return;
-    }
     
     //DLog(@"\n\nNO detected cached providers, retreiving from server\n\n");
 
@@ -1584,6 +1571,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
          [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
          
+         [[MASAccessService sharedService].currentAccessObj refresh];
          //
          // Notify
          //
@@ -1615,7 +1603,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // If ID Token is invalid or expired we ask the user to enter username and password.
         //
         
-        if (self.currentUser)
+        if (self.currentUser || self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser)
         {
             
             [self loginUsingUserCredentials:completion];
@@ -1665,7 +1653,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // If the user is already authenticated with user credentials
     // And the access_token is still valid
     //
-    if (self.currentUser && self.currentUser.isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
+    if (self.currentUser && self.currentUser.accessToken && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
     {
         //
         // Notify
@@ -2586,7 +2574,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // If the user is already authenticated, stop here
     //
-    if ([self.currentUser isAuthenticated])
+    if (self.currentUser.accessToken && self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser)
     {
         //
         // Notify
@@ -3258,7 +3246,23 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                  // Otherwise, perform user authentication with given username and password
                  //
                  else {
-                     [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                     
+                     //
+                     // If the device is currently locked, return an error
+                     //
+                     if (self.currentUser.isSessionLocked)
+                     {
+                         if (originalCompletion)
+                         {
+                             originalCompletion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
+                         }
+                         
+                         return;
+                     }
+                     else {
+                         
+                         [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                     }
                  }
              }
              //
@@ -3276,6 +3280,14 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      //
                      [[MASModelService sharedService] registerDeviceForUser:username password:password completion:^(BOOL completed, NSError *error) {
                          
+                         //
+                         // If the registration status is correct, and the device is currently locked, generate an error
+                         //
+                         if (!error && self.currentUser.isSessionLocked)
+                         {
+                             error = [NSError errorUserSessionIsCurrentlyLocked];
+                         }
+                         
                          if (!completed || error != nil)
                          {
                              if(originalCompletion)
@@ -3284,11 +3296,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              }
                          }
                          else {
+                                 
                              //
                              // Perform authentication with given username and password
                              //
                              [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
-                                 
+                                
                                  if (!completed || error != nil)
                                  {
                                      if(originalCompletion)
@@ -3322,7 +3335,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      // Register device with client credentials
                      //
                      [[MASModelService sharedService] registerDeviceForClientCredentialsCompletion:^(BOOL completed, NSError *error) {
-                       
+                         
+                         //
+                         // If the registration status is correct, and the device is currently locked, generate an error
+                         //
+                         if (!error && self.currentUser.isSessionLocked)
+                         {
+                             error = [NSError errorUserSessionIsCurrentlyLocked];
+                         }
+                         
                          if (!completed || error != nil)
                          {
                              if(originalCompletion)
@@ -3331,6 +3352,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                              }
                          }
                          else {
+                             
                              //
                              // Perform user authentication with given usernmae and password
                              //
@@ -3369,6 +3391,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 - (void)validateCurrentUserSession:(MASCompletionErrorBlock)originalCompletion
 {
     
+    __block MASModelService *blockSelf = self;
+    
     //
     // Go through registeration, authentication logic
     //
@@ -3381,60 +3405,140 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         }
         else {
             
-            //
-            //  Get authentication providers if it doesn't exist
-            //
-            [self retrieveAuthenticationProviders:^(id object, NSError *error)
-            {
+            void (^registrationAndAuthenticationBlock)(void) = ^{
                 
-                if (error != nil)
-                {
-                    if(originalCompletion) originalCompletion(NO, error);
-                }
-                else {
+                //
+                //  Check device registration status
+                //
+                [blockSelf registerDeviceWithCompletion:^(BOOL completed, NSError *error)
+                 {
+                     //
+                     // If the registration status is correct, and the device is currently locked, generate an error
+                     //
+                     if (!error && blockSelf.currentUser.isSessionLocked)
+                     {
+                         error = [NSError errorUserSessionIsCurrentlyLocked];
+                         completed = NO;
+                     }
+                     
+                     if (!completed || error != nil)
+                     {
+                         if(originalCompletion) originalCompletion(NO, error);
+                     }
+                     else {
+                         
+                         //
+                         //  Check login status
+                         //
+                         [blockSelf loginWithCompletion:^(BOOL completed, NSError *error) {
+                             
+                             if (!completed || error != nil)
+                             {
+                                 if(originalCompletion)
+                                 {
+                                     originalCompletion(completed, error);
+                                 }
+                             }
+                             else {
+                                 //
+                                 // Upon successful validation of session, ensure to have all necessary files are generated
+                                 //
+                                 [[MASSecurityService sharedService] getClientCertificate];
+                                 [[MASSecurityService sharedService] getPrivateKey];
+                                 [[MASSecurityService sharedService] getSignedCertificate];
+                                 
+                                 if(originalCompletion)
+                                 {
+                                     originalCompletion(completed, error);
+                                 }
+                             }
+                         }];
+                     }
+                 }];
+            };
+            
+            if (_grantFlow_ == MASGrantFlowPassword)
+            {
+                //
+                //  Get authentication providers if it doesn't exist
+                //
+                [blockSelf retrieveAuthenticationProviders:^(id object, NSError *error)
+                 {
+                     
+                     if (error != nil)
+                     {
+                         if(originalCompletion) originalCompletion(NO, error);
+                     }
+                     else {
+                         
+                         registrationAndAuthenticationBlock();
+                     }
+                 }];
+            }
+            else {
+                
+                registrationAndAuthenticationBlock();
+            }
+        }
+    }];
+}
 
+
+- (void)validateCurrentUserAuthenticationWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion
+{
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    // Go through registration and authentication logic with authorization code
+    //
+    [self registerApplication:^(BOOL completed, NSError *error) {
+        //
+        // Register the client
+        //
+        if (!completed || error != nil)
+        {
+            if (blockCompletion)
+            {
+                blockCompletion(NO, error);
+            }
+        }
+        else {
+            
+            //
+            // If the device is already registered, skip
+            //
+            if ([MASDevice currentDevice] && [MASDevice currentDevice].isRegistered)
+            {
+                [self loginWithAuthorizationCode:authorizationCode completion:completion];
+            }
+            //
+            // If the device is not registered, register the device with authorization code
+            //
+            else {
+                
+                [self registerDeviceWithAuthorizationCode:authorizationCode completion:^(BOOL completed, NSError *error) {
+                    
                     //
-                    //  Check device registration status
+                    // Register the device
                     //
-                    [self registerDeviceWithCompletion:^(BOOL completed, NSError *error)
+                    if (!completed || error != nil)
                     {
-                        
-                        if (!completed || error != nil)
+                        if (blockCompletion)
                         {
-                            if(originalCompletion) originalCompletion(NO, error);
+                            blockCompletion(NO, error);
                         }
-                        else {
-                            
-                            //
-                            //  Check login status
-                            //
-                            [self loginWithCompletion:^(BOOL completed, NSError *error) {
-                                
-                                if (!completed || error != nil)
-                                {
-                                    if(originalCompletion)
-                                    {
-                                        originalCompletion(completed, error);
-                                    }
-                                }
-                                else {
-                                    //
-                                    // Upon successful validation of session, ensure to have all necessary files are generated
-                                    //
-                                    [[MASSecurityService sharedService] getClientCertificate];
-                                    [[MASSecurityService sharedService] getPrivateKey];
-                                    [[MASSecurityService sharedService] getSignedCertificate];
-                                    
-                                    if(originalCompletion)
-                                    {
-                                        originalCompletion(completed, error);
-                                    }
-                                }
-                            }];
-                        }
-                    }];
-                }
-            }];
+                    }
+                    else {
+                        
+                        //
+                        // If registration was successful, follow the flow for authentication as authorization code is one time usage only
+                        // This may cause the issue where the login screen will prompt again upon successful device registration
+                        // or falling back to client credential authentication when the flow is set to client credentials.
+                        //
+                        [self validateCurrentUserSession:completion];
+                    }
+                }];
+            }
         }
     }];
 }
