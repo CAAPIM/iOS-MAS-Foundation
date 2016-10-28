@@ -2528,7 +2528,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 if (blockCompletion)
                 {
-                    completion(YES, nil);
+                    blockCompletion(YES, nil);
                 }
             }];
         }
@@ -2755,7 +2755,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              if (blockCompletion)
              {
-                 completion(YES, nil);
+                 blockCompletion(YES, nil);
              }
          }];
      }];
@@ -2942,7 +2942,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 if (blockCompletion)
                 {
-                    completion(YES, nil);
+                    blockCompletion(YES, nil);
                 }
             }];
         }
