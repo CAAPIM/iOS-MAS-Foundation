@@ -340,7 +340,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     //
     else
     {
-        NSLog(@"data key removal : %@", accessValueAsString);
         [destinationStorage removeItemForKey:accessValueAsString error:error];
     }
     

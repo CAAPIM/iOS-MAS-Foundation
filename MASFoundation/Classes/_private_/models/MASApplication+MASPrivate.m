@@ -14,6 +14,7 @@
 #import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
+#import "MASModelService.h"
 
 
 # pragma mark - Property Constants
@@ -586,10 +587,10 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Then check if expiration has passed
     //
-    if (([expiresInDate timeIntervalSinceNow] <= 0))
+    if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
     {
         currentStatus = MASAuthenticationStatusNotLoggedIn;
-        [accessService.currentAccessObj deleteForTokenExpiration];
+        [[MASModelService sharedService] clearCurrentUserForLogout];
     }
     
     if (refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil]))
