@@ -69,6 +69,9 @@ static NSString *_Nonnull const MASHeaderErrorKey = @"x-ca-err";
 
 static NSString *_Nonnull const MASIdTokenTypeToValidateConstant = @"urn:ietf:params:oauth:grant-type:jwt-bearer"; // string
 
+// Client certificate expiration advanced renew timeframe in days
+static int const MASClientCertificateAdvancedRenewTimeframe = 30;
+
 # pragma mark - OTP Constants
 
 static NSString *_Nonnull const MASHeaderOTPKey = @"X-OTP";

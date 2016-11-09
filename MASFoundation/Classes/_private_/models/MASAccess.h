@@ -90,6 +90,12 @@
 @property (nonatomic, copy, readwrite) NSString *requestingScopeAsString;
 
 
+/**
+ *  The MASAccess client certificate expiration date
+ */
+@property (nonatomic, copy, readonly) NSDate *clientCertificateExpirationDate;
+
+
 ///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------

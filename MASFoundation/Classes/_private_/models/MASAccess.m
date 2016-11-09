@@ -19,7 +19,7 @@
 
 @synthesize scope = _scope;
 @synthesize expiresInDate = _expiresInDate;
-
+@synthesize clientCertificateExpirationDate = _clientCertificateExpirationDate;
 
 # pragma mark - Lifecycle
 
@@ -338,8 +338,6 @@
     // Clena up the tokens from Local Authentication protected keychain storage
     //
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
     [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeIsDeviceLocked];
 }
 
@@ -370,12 +368,6 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
-    
-    //
-    // Clena up the tokens from Local Authentication protected keychain storage
-    //
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
 }
 
 
@@ -398,12 +390,6 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
-    
-    //
-    // Clena up the tokens from Local Authentication protected keychain storage
-    //
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredAccessToken];
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredRefreshToken];
 }
 
 
@@ -476,4 +462,36 @@
     
     return expiresInDate;
 }
+
+
+- (NSDate *)clientCertificateExpirationDate
+{
+    if (!_clientCertificateExpirationDate)
+    {
+        NSNumber *clientCertExpTimestamp = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        
+        if (clientCertExpTimestamp)
+        {
+            _clientCertificateExpirationDate = [NSDate dateWithTimeIntervalSince1970:[clientCertExpTimestamp doubleValue]];
+        }
+        else if ([MASDevice currentDevice].isRegistered)
+        {
+            //
+            // Extracting signed client certificate expiration date
+            //
+            NSArray * cert = [[MASAccessService sharedService] getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+            SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
+            
+            //
+            // Store client certificate expiration date into shared keychain storage
+            //
+            _clientCertificateExpirationDate = [[MASAccessService sharedService] extractExpirationDateFromCertificate:certificate];
+            [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithDouble:[_clientCertificateExpirationDate timeIntervalSince1970]]
+                                               withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        }
+    }
+    
+    return _clientCertificateExpirationDate;
+}
+
 @end

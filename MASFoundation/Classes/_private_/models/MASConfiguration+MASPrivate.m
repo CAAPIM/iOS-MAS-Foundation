@@ -101,6 +101,9 @@ static NSString *const MASClientInitializeEndpoint = @"client_credential_init_en
 static NSString *const MASDeviceListEndpoint = @"device_list_endpoint_path"; // string
 static NSString *const MASDeviceRegisterEndpoint = @"device_register_endpoint_path"; // string
 static NSString *const MASDeviceRegisterClientEndpoint = @"device_register_client_endpoint_path"; // string
+// TEMP
+static NSString *const MASDeviceRenewRegistrationEndpoint = @"device_register_renew_endpoint_path"; // string
+// TEMP
 static NSString *const MASDeviceRemoveEndpoint = @"device_remove_endpoint_path"; // string
 static NSString *const MASEnterpriseBrowserEndpoint = @"enterprise_browser_endpoint_path"; // string
 static NSString *const MASTokenEndpoint = @"token_endpoint_path"; // string
@@ -629,6 +632,13 @@ static float _systemVersionNumber_;
 - (NSString *)deviceRegisterClientEndpointPath
 {
     return _endpointKeysToPaths_[MASDeviceRegisterClientEndpoint];
+}
+
+
+- (NSString *)deviceRegisterRenewEndpointPath
+{
+    return @"/connect/device/renew";
+    //return _endpointKeysToPaths_[MASDeviceRenewRegistrationEndpoint];
 }
 
 

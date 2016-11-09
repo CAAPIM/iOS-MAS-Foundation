@@ -147,6 +147,18 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     {
         [accessService setAccessValueCertificate:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificate];
         [accessService setAccessValueData:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificateData];
+        
+        //
+        // Extracting signed client certificate expiration date
+        //
+        NSArray * cert = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+        SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
+
+        //
+        // Store client certificate expiration date into shared keychain storage
+        //
+        NSDate *expirationDate = [accessService extractExpirationDateFromCertificate:certificate];
+        [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
     }
     
     //
@@ -254,6 +266,22 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 #pragma clang diagnostic pop
 
 # pragma mark - Public
+
+- (BOOL)isClientCertificateExpired
+{
+    BOOL isClientCertExpired = YES;
+    
+    if (self.isRegistered)
+    {
+        NSDate *expirationDate = [[MASAccessService sharedService].currentAccessObj clientCertificateExpirationDate];
+        NSDate *advancedDate = [[NSDate date] dateByAddingTimeInterval:(MASClientCertificateAdvancedRenewTimeframe * 60 * 60 * 24)];
+        
+        isClientCertExpired = !([expirationDate timeIntervalSince1970] > [advancedDate timeIntervalSince1970]);
+    }
+    
+    return YES;
+}
+
 
 + (NSString *)deviceIdBase64Encoded
 {

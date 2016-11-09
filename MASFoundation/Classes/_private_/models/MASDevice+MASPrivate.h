@@ -71,6 +71,9 @@
 
 # pragma mark - Public
 
+- (BOOL)isClientCertificateExpired;
+
+
 /**
  * Retrieves the device identifier that is uniquely generated for the 
  * specific device the framework is running upon.  It is Base64 encoded.

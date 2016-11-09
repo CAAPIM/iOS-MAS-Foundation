@@ -42,11 +42,10 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
     MASAccessValueTypePublicKey,
     MASAccessValueTypeRefreshToken,
     MASAccessValueTypeScope,
-    MASAccessValueTypeSecuredAccessToken,
-    MASAccessValueTypeSecuredRefreshToken,
     MASAccessValueTypeSecuredIdToken,
     MASAccessValueTypeSignedPublicCertificate,
     MASAccessValueTypeSignedPublicCertificateData,
+    MASAccessValueTypeSignedPublicCertificateExpirationDate,
     MASAccessValueTypeTokenExpiration,
     MASAccessValueTypeTokenType,
     MASAccessValueTypeTrustedServerCertificate
@@ -265,6 +264,10 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  */
 + (BOOL)validateIdToken:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error;
 
+
+
+
+- (NSDate *)extractExpirationDateFromCertificate:(SecCertificateRef)certificate;
 
 
 
