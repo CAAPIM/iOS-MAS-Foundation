@@ -2349,7 +2349,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // The current user must NOT be authenticated else stop here
     //
-    if([MASApplication currentApplication] && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
+    if([MASApplication currentApplication] && self.currentUser.isAuthenticated)
     {
         //
         // Notify
