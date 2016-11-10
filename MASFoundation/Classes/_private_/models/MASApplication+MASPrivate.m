@@ -593,7 +593,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
         [[MASAccessService sharedService].currentAccessObj deleteForLogOff];
     }
     
-    if (refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil]))
+    if ((refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil])) && [MASUser currentUser])
     {
         currentStatus = MASAuthenticationStatusLoginWithUser;
     }
