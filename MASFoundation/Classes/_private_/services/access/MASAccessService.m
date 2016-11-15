@@ -221,8 +221,13 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     NSString *accessValueAsString = [self convertAccessTypeToString:type];
     MASIKeyChainStore *destinationStorage = _storages[storageKey];
  
-    NSString * certString = [[NSString alloc] initWithData:certificate encoding:NSUTF8StringEncoding];
-    NSData * certData = [NSData convertPEMCertificateToDERCertificate:certString];
+    NSData * certData = nil;
+    
+    if (certificate)
+    {
+        NSString * certString = [[NSString alloc] initWithData:certificate encoding:NSUTF8StringEncoding];
+        certData = [NSData convertPEMCertificateToDERCertificate:certString];
+    }
     
     //
     // Addition
@@ -234,7 +239,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     // Removal
     //
     else {
-        [destinationStorage removeItemForKey:accessValueAsString];
+        [destinationStorage clearCertificatesAndIdentitiesWithCertificateLabelKey:accessValueAsString];
     }
 }
 
@@ -759,7 +764,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             break;
             //PublicCertificate Expiration Date
         case MASAccessValueTypeSignedPublicCertificateExpirationDate:
-            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeSignedPublicCertificateData"];
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeSignedPublicCertificateExpirationDate"];
             break;
         case MASAccessValueTypeAuthenticatedTimestamp:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeAuthenticatedTimestamp"];

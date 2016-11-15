@@ -276,7 +276,7 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
         NSDate *expirationDate = [[MASAccessService sharedService].currentAccessObj clientCertificateExpirationDate];
         NSDate *advancedDate = [[NSDate date] dateByAddingTimeInterval:(MASClientCertificateAdvancedRenewTimeframe * 60 * 60 * 24)];
         
-        isClientCertExpired = !([expirationDate timeIntervalSince1970] > [advancedDate timeIntervalSince1970]);
+        isClientCertExpired = ([advancedDate compare:expirationDate] == NSOrderedDescending);
     }
     
     return YES;

@@ -512,6 +512,44 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                       }
                       ];
                  }
+        //
+        // If the MAG error code exists, and it ends with 206
+        // it means that the signed client certificate used to establish mutual SSL has been expired.
+        // Client SDK is responsible to renew the client certificate with given mag-identifier within grace period (defined by the server).
+        // If the renewing certificate fails, the client certificate is responsible to fallback to validation logic for registration and/or authentication.
+        //
+        else if (magErrorCode && [magErrorCode hasSuffix:@"206"])
+        {
+            //
+            // Renew the client certificate, if the renew endpoint fails,
+            //
+            [[MASModelService sharedService] renewClientCertificateWithCompletion:^(BOOL completed, NSError *error) {
+                
+                //
+                // If it fails to renew the client certificate or other registration/authentication, notify user
+                //
+                if (!completed || error)
+                {
+                    if(blockCompletion)
+                    {
+                        blockCompletion(responseInfo, error);
+                    }
+                }
+                else {
+                    
+                    //
+                    //  Proceed with original request
+                    //
+                    [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                   originalHeader:blockOriginalHeader
+                                                originalParameter:blockOriginalParameter
+                                                      requestType:blockRequestType
+                                                     responseType:blockResponseType
+                                                       httpMethod:blockHTTPMethod
+                                                       completion:blockCompletion];
+                }
+            }];
+        }
         else {
             //
             // If the server complains that client_secret or client_id is invalid, we have to clear the client_id and client_secret

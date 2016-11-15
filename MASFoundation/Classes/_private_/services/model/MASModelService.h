@@ -160,6 +160,14 @@
 
 
 /**
+ *  Renew signed client certificate.
+ *
+ *  @param completion MASCompletionErrorBlock that receives the results.
+ */
+- (void)renewClientCertificateWithCompletion:(MASCompletionErrorBlock)completion;
+
+
+/**
  *  Retrieve the currently registered devices.
  *
  *  @param completion The MASObjectsResponseErrorBlock (NSArray *objects, NSError *error) completion block.

@@ -71,6 +71,10 @@
 
 # pragma mark - Public
 
+/*
+ * BOOL indicator whether the signed client certificate is about to expire or not.
+ * This will calculate the expiration of the client certificate and advanced client certificate renew period defined in MASConstantsPrivate.h
+ */
 - (BOOL)isClientCertificateExpired;
 
 

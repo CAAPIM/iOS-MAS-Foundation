@@ -389,3 +389,24 @@ static NSString *_Nonnull const MASDeviceDidDeregisterInCloudNotification = @"MA
  * has successfully deregistered on the device.
  */
 static NSString *_Nonnull const MASDeviceDidDeregisterOnDeviceNotification = @"MASDeviceDidDeregisterOnDeviceNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * will renew its signed client certificate as it will expire.
+ */
+static NSString *_Nonnull const MASDeviceWillRenewClientCerficiateNotification = @"MASDeviceWillRenewClientCerficiateNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * did successfully renew its signed client certificate.
+ */
+static NSString *_Nonnull const MASDeviceDidRenewClientCertificateNotification = @"MASDeviceDidRenewClientCertificateNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * did fail to renew its signed client certificate.
+ */
+static NSString *_Nonnull const MASDeviceDidFailToRenewClientCertificateNotification = @"MASDeviceDidFailToRenewClientCertificateNotification";

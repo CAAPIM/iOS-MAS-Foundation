@@ -10,6 +10,7 @@
 
 #import "MASModelService.h"
 #import "MASAccessService.h"
+#import "MASFileService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 #import "MASIKeyChainStore.h"
@@ -709,7 +710,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // Check if the client certificate is expired, if so, renew
     //
-    if ([[MASDevice currentDevice] isClientCertificateExpired] && [[MASDevice currentDevice] isRegistered])
+    if ([MASDevice currentDevice].isClientCertificateExpired && [MASDevice currentDevice].isRegistered)
     {
         [self renewClientCertificateWithCompletion:completion];
         
@@ -1430,7 +1431,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // Endpoint
     //
-    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterRenewEndpointPath;
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRenewEndpointPath;
     
     //
     // Headers
@@ -1439,6 +1440,11 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     
     // Certificate Format
     headerInfo[MASCertFormatRequestResponseKey] = @"pem";
+    
+    //
+    // Post the will renew client certificate notification
+    //
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRenewClientCerficiateNotification object:self];
     
     //
     // Trigger the request
@@ -1454,46 +1460,38 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                          //
                                          if(error)
                                          {
-                                             //DLog(@"Error detected attempting to request registration of the device: %@",
-                                             //    [error localizedDescription]);
+                                             //
+                                             // Remove all files and keychain data for the registration and authentication records
+                                             //
+                                             [[MASAccessService sharedService] clearLocal];
+                                             [[MASAccessService sharedService] clearShared];
+                                             [[MASSecurityService sharedService] removeAllFiles];
                                              
                                              //
-                                             // Notify
+                                             // Trigger validation process to re-register the device for currently set flow
                                              //
-                                             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                             [blockSelf validateCurrentUserSession:completion];
                                              
                                              //
-                                             // Post the notification
+                                             // Post the did fail to renew client certificate notification
                                              //
-                                             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+                                             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRenewClientCertificateNotification object:blockSelf];
                                              
                                              return;
                                          }
                                          
                                          //
-                                         // Validate id_token when received from server.
+                                         // Remove signed client certificate from the keychain storage
                                          //
-                                         NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+                                         [[MASAccessService sharedService] setAccessValueData:nil withAccessValueType:MASAccessValueTypeSignedPublicCertificateData];
+                                         [[MASAccessService sharedService] setAccessValueCertificate:nil withAccessValueType:MASAccessValueTypeSignedPublicCertificate];
+                                         [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
                                          
-                                         if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
-                                             [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
-                                             [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-                                         {
-                                             NSError *idTokenValidationError = nil;
-                                             BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
-                                                                                       magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
-                                                                                               error:&idTokenValidationError];
-                                             
-                                             if (!isIdTokenValid && idTokenValidationError)
-                                             {
-                                                 if (completion)
-                                                 {
-                                                     completion(NO, idTokenValidationError);
-                                                     
-                                                     return;
-                                                 }
-                                             }
-                                         }
+                                         //
+                                         // Remove signedCertificate MASFile for re-generation
+                                         //
+                                         MASFile *signedCertificate = [[MASSecurityService sharedService] getSignedCertificate];
+                                         [MASFile removeItemAtFilePath:[signedCertificate filePath]];
                                          
                                          //
                                          // Updated with latest info
@@ -1506,9 +1504,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                          [[MASNetworkingService sharedService] establishURLSession];
                                          
                                          //
-                                         // Post the notification
+                                         // Post the did renew client certificate notification
                                          //
-                                         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
+                                         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRenewClientCertificateNotification object:blockSelf];
                                          
                                          //
                                          // Notify
