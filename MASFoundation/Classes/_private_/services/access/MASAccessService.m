@@ -992,6 +992,21 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     }
     
     //
+    // Validate id_token whether it is valid or not
+    //
+    BOOL isIdTokenValid = [MASAccessService validateIdToken:idToken
+                                              magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
+                                                      error:&localError];
+    
+    //
+    // If the id_token is no longer valid; remove the session lock regardless
+    //
+    if (!isIdTokenValid)
+    {
+        [self removeSessionLock];
+    }
+    
+    //
     // If all tokens were successfully retrieved from secured keychain storage, clean up the secured storage and restore them into regular keychain storage
     //
     if (!localError)
