@@ -90,6 +90,12 @@
 @property (nonatomic, copy, readwrite) NSString *requestingScopeAsString;
 
 
+/**
+ *  The MASAccess isSessionLock boolean property for current session's lock status
+ */
+@property (assign, readonly) BOOL isSessionLocked;
+
+
 ///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------
