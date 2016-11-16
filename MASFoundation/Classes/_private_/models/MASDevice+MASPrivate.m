@@ -279,7 +279,7 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
         isClientCertExpired = ([advancedDate compare:expirationDate] == NSOrderedDescending);
     }
     
-    return YES;
+    return isClientCertExpired;
 }
 
 
