@@ -51,7 +51,7 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASDevice.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASDevice.class description]];
     if(data)
     {
         device = (MASDevice *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -74,9 +74,9 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStore] setData:data
-                                            forKey:[MASDevice.class description]
-                                             error:&error];
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data
+                                                                                                                         forKey:[MASDevice.class description]
+                                                                                                                          error:&error];
     
         if(error)
         {
@@ -163,7 +163,7 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 
 - (void)reset
 {
-    [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASDevice.class description]];
+    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASDevice.class description]];
 }
 
 

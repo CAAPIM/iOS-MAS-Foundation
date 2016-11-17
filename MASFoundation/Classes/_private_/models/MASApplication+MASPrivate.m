@@ -140,7 +140,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASApplication.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASApplication.class description]];
     if(data)
     {
         application = (MASApplication *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -196,9 +196,9 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStore] setData:data
-                                            forKey:[MASApplication.class description]
-                                            error:&error];
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data
+                                                                                                                         forKey:[MASApplication.class description]
+                                                                                                                          error:&error];
     
         if(error)
         {
@@ -269,7 +269,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     [accessService setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
     [accessService setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeClientExpiration];
     
-    [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASApplication.class description]];
+    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASApplication.class description]];
 }
 
 
