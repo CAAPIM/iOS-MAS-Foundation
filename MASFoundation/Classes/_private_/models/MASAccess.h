@@ -91,6 +91,12 @@
 
 
 /**
+ *  The MASAccess client certificate expiration date
+ */
+@property (nonatomic, copy, readonly) NSDate *clientCertificateExpirationDate;
+
+
+/**
  *  The MASAccess isSessionLock boolean property for current session's lock status
  */
 @property (assign, readonly) BOOL isSessionLocked;

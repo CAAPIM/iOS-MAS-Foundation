@@ -98,9 +98,30 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 - (void)resetLocally
 {
     //
-    // Remove local keychains
+    // Remove current user object
+    //
+    [[MASModelService sharedService] clearCurrentUserForLogout];
+    
+    //
+    // Remove local & shared keychains
     //
     [[MASAccessService sharedService] clearLocal];
+    [[MASAccessService sharedService] clearShared];
+    
+    //
+    // Refresh current access object to reflect correct status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // MASFiles
+    //
+    [[MASSecurityService sharedService] removeAllFiles];
+    
+    //
+    // re-establish URL session
+    //
+    [[MASNetworkingService sharedService] establishURLSession];
 }
 
 
