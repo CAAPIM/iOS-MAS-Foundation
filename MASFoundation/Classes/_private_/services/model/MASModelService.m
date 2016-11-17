@@ -1461,16 +1461,35 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                          if(error)
                                          {
                                              //
-                                             // Remove all files and keychain data for the registration and authentication records
+                                             // Parse the error object
                                              //
-                                             [[MASAccessService sharedService] clearLocal];
-                                             [[MASAccessService sharedService] clearShared];
-                                             [[MASSecurityService sharedService] removeAllFiles];
+                                             NSError *requestError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
                                              
                                              //
-                                             // Trigger validation process to re-register the device for currently set flow
+                                             // If the error is coming from the server, and not from local, clear all credentials from keychain storage
                                              //
-                                             [blockSelf validateCurrentUserSession:completion];
+                                             if (![requestError.domain isEqualToString:MASFoundationErrorDomainLocal])
+                                             {
+                                                 
+                                                 //
+                                                 // Remove all files and keychain data for the registration and authentication records
+                                                 //
+                                                 [[MASAccessService sharedService] clearLocal];
+                                                 [[MASAccessService sharedService] clearShared];
+                                                 [[MASSecurityService sharedService] removeAllFiles];
+                                                 
+                                                 //
+                                                 // Trigger validation process to re-register the device for currently set flow
+                                                 //
+                                                 [blockSelf validateCurrentUserSession:completion];
+                                             }
+                                             //
+                                             // If the error is local domain, return the error
+                                             //
+                                             else if (completion)
+                                             {
+                                                 completion(NO, requestError);
+                                             }
                                              
                                              //
                                              // Post the did fail to renew client certificate notification

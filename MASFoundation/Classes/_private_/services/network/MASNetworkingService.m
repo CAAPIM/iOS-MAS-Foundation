@@ -518,7 +518,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         // Client SDK is responsible to renew the client certificate with given mag-identifier within grace period (defined by the server).
         // If the renewing certificate fails, the client certificate is responsible to fallback to validation logic for registration and/or authentication.
         //
-        else if (magErrorCode && [magErrorCode hasSuffix:@"206"])
+        else if (magErrorCode && [magErrorCode hasSuffix:@"206"] && ![blockEndPoint isEqualToString:[MASConfiguration currentConfiguration].deviceRenewEndpointPath])
         {
             //
             // Renew the client certificate, if the renew endpoint fails,
