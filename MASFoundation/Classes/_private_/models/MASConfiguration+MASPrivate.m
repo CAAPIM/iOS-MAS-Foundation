@@ -293,7 +293,7 @@ static float _systemVersionNumber_;
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASConfiguration.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASConfiguration.class description]];
     if(data)
     {
         configuration = (MASConfiguration *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -316,7 +316,7 @@ static float _systemVersionNumber_;
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStore] setData:data forKey:[MASConfiguration.class description] error:&error];
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data forKey:[MASConfiguration.class description] error:&error];
         if(error)
         {
             DLog(@"Error attempting to save data: %@", [error localizedDescription]);
@@ -329,7 +329,7 @@ static float _systemVersionNumber_;
 
 - (void)reset
 {
-    [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASConfiguration.class description]];
+    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASConfiguration.class description]];
 }
 
 

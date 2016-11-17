@@ -127,7 +127,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     MASApplication *keychainApplication;
     
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASApplication.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASApplication.class description]];
     
     if(data)
     {
@@ -3372,9 +3372,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                  else {
                      
                      //
-                     // If the device is currently locked, return an error
+                     // If the session is currently locked, return an error
                      //
-                     if (self.currentUser.isSessionLocked)
+                     if ([MASAccess currentAccess].isSessionLocked)
                      {
                          if (originalCompletion)
                          {
@@ -3407,7 +3407,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                          //
                          // If the registration status is correct, and the device is currently locked, generate an error
                          //
-                         if (!error && self.currentUser.isSessionLocked)
+                         if (!error && [MASAccess currentAccess].isSessionLocked)
                          {
                              error = [NSError errorUserSessionIsCurrentlyLocked];
                          }
@@ -3463,7 +3463,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                          //
                          // If the registration status is correct, and the device is currently locked, generate an error
                          //
-                         if (!error && self.currentUser.isSessionLocked)
+                         if (!error && [MASAccess currentAccess].isSessionLocked)
                          {
                              error = [NSError errorUserSessionIsCurrentlyLocked];
                          }
@@ -3539,7 +3539,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                      //
                      // If the registration status is correct, and the device is currently locked, generate an error
                      //
-                     if (!error && blockSelf.currentUser.isSessionLocked)
+                     if (!error && [MASAccess currentAccess].isSessionLocked)
                      {
                          error = [NSError errorUserSessionIsCurrentlyLocked];
                          completed = NO;

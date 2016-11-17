@@ -145,20 +145,12 @@
     
     if (self.isSessionLocked)
     {
-        [accessService removeSessionLock];
-        [[MASModelService sharedService] clearCurrentUserForLogout];
-        
         //
-        // Set id_token and id_token_type to nil
+        // If the current session is locked, return an error
         //
-        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
-        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
-        
-        [[MASAccessService sharedService].currentAccessObj refresh];
-        
         if (completion)
         {
-            completion(YES, nil);
+            completion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
         }
         
         return;

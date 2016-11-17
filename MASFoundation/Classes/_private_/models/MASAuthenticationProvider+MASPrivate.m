@@ -56,7 +56,7 @@ static NSString *const MASAuthenticationProviderPollUrlPropertyKey = @"pollUrl";
         //
         // Save to storage
         //
-        [self saveToStorage];
+//        [self saveToStorage];
     }
     
     return self;

@@ -563,7 +563,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             break;
             //Authenticated username
         case MASAccessValueTypeAuthenticatedUserObjectId:
-            storageKey = kMASAccessLocalStorageKey;
+            storageKey = kMASAccessSharedStorageKey;
             break;
             //RefreshToken
         case MASAccessValueTypeRefreshToken:
@@ -978,6 +978,21 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     if (!localError)
     {
         idToken = [self getAccessValueStringWithType:MASAccessValueTypeSecuredIdToken userOperationPrompt:userOperationPrompt error:&localError];
+    }
+    
+    //
+    // Validate id_token whether it is valid or not
+    //
+    BOOL isIdTokenValid = [MASAccessService validateIdToken:idToken
+                                              magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
+                                                      error:&localError];
+    
+    //
+    // If the id_token is no longer valid; remove the session lock regardless
+    //
+    if (!isIdTokenValid)
+    {
+        [self removeSessionLock];
     }
     
     //

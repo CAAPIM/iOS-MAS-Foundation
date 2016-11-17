@@ -87,12 +87,12 @@
         [accessDictionary setObject:idTokenType forKey:MASIdTokenTypeHeaderRequestResponseKey];
     }
     
-    if(expiresIn)
+    if (expiresIn)
     {
         [accessDictionary setObject:expiresIn forKey:MASExpiresInRequestResponseKey];
     }
     
-    if(scopeAsString)
+    if (scopeAsString)
     {
         [accessDictionary setObject:scopeAsString forKey:MASScopeRequestResponseKey];
     }
@@ -398,6 +398,21 @@
 + (MASAccess *)currentAccess
 {
     return [MASAccessService sharedService].currentAccessObj;
+}
+
+
+# pragma mark - isSessionLocked
+
+- (BOOL)isSessionLocked
+{
+    //
+    // Obtain key chain items to determine device lock status
+    //
+    MASAccessService *accessService = [MASAccessService sharedService];
+    
+    NSNumber *isLocked = [accessService getAccessValueNumberWithType:MASAccessValueTypeIsDeviceLocked];
+    
+    return [isLocked boolValue];
 }
 
 
