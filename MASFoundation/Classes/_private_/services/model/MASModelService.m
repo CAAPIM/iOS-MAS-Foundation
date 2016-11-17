@@ -124,7 +124,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     MASApplication *keychainApplication;
     
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASApplication.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASApplication.class description]];
     
     if(data)
     {
