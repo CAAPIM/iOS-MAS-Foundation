@@ -192,4 +192,10 @@
  */
 - (BOOL)detectServerChangeWithCurrentConfiguration:(NSDictionary *)newConfiguration;
 
+
+
+# pragma mark - Static
+
++ (NSError *)validateJSONConfiguration:(NSDictionary *)configuration;
+
 @end

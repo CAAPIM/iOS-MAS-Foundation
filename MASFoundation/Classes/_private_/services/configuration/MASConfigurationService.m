@@ -184,14 +184,9 @@ static BOOL _newConfigurationDetected_ = NO;
         }
         
         //
-        // Create a new configuration object
-        //
-        _currentConfiguration = [[MASConfiguration alloc] initWithConfigurationInfo:info];
-        
-        //
         //  Validate JSON content for given rules
         //
-        NSError *validationError = [_currentConfiguration validateJSONConfiguration];
+        NSError *validationError = [MASConfiguration validateJSONConfiguration:info];
         
         //
         //  If there is any error from validation, return an error
@@ -202,6 +197,11 @@ static BOOL _newConfigurationDetected_ = NO;
             
             return;
         }
+        
+        //
+        // Create a new configuration object
+        //
+        _currentConfiguration = [[MASConfiguration alloc] initWithConfigurationInfo:info];
         
         //
         //  Catch an exception for parsing certificate
