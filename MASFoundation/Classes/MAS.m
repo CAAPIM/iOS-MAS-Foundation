@@ -271,7 +271,7 @@
     if (shouldUseDefault)
     {
         BOOL shouldBroadcastNotification = NO;
-        BOOL shouldReloadConfiguration = NO;
+        BOOL shouldReloadConfiguration = YES;
         
         //
         // Retrieve the current configuration from keychain storage.
@@ -404,7 +404,7 @@
         return;
     }
     
-    BOOL shouldReloadConfiguration = NO;
+    BOOL shouldReloadConfiguration = YES;
     BOOL shouldBroadcastNotification = NO;
     
     //
@@ -565,7 +565,7 @@
         }
     }
     
-    BOOL shouldReloadConfiguration = NO;
+    BOOL shouldReloadConfiguration = YES;
     BOOL shouldBroadcastNotification = NO;
     
     //
