@@ -382,7 +382,7 @@ static id<L7SClientProtocol> _delegate_;
 	L7SBLESessionSharingState l7sState;
 
 	switch (state) {
-	case MASBLEServiceStateUnknonw:
+	case MASBLEServiceStateUnknown:
 		l7sState = L7SBLEStateUnknown;
 		break;
 
