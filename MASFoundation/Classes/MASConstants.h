@@ -110,33 +110,6 @@ typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock, NSE
 # pragma mark - MAS Constants
 
 /**
- * The enumerated MASRegistrationTypes.
- */
-typedef NS_ENUM(NSInteger, MASDeviceRegistrationType)
-{
-    /**
-     * Unknown encoding type.
-     */
-    MASDeviceRegistrationTypeUnknown = -1,
-    
-    /**
-     * The client credentials registration type.
-     */
-    MASDeviceRegistrationTypeClientCredentials,
-    
-    /**
-     * The user credentials registration type.
-     */
-    MASDeviceRegistrationTypeUserCredentials,
-    
-    /**
-     * The total number of supported types.
-     */
-    MASDeviceRegistrationTypeCount
-} DEPRECATED_MSG_ATTRIBUTE("Use MASGrantFlow instead.");
-
-
-/**
  * The enumerated MASGrantFlow.
  */
 typedef NS_ENUM(NSInteger, MASGrantFlow)

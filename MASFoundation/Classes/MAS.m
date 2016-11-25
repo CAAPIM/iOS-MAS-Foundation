@@ -21,8 +21,6 @@
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 
-#import "L7SBrowserURLProtocol.h"
-
 @implementation MAS
 
 
@@ -31,51 +29,6 @@
 + (void)setConfigurationFileName:(NSString *)fileName
 {
     [MASConfigurationService setConfigurationFileName:fileName];
-}
-
-
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType
-{
-    switch (registrationType) {
-            
-        case MASDeviceRegistrationTypeClientCredentials:
-            [MASModelService setGrantFlow:MASGrantFlowClientCredentials];
-            break;
-            
-        case MASDeviceRegistrationTypeUserCredentials:
-            [MASModelService setGrantFlow:MASGrantFlowPassword];
-            break;
-            
-        case MASDeviceRegistrationTypeCount:
-            [MASModelService setGrantFlow:MASGrantFlowCount];
-            break;
-            
-        default:
-            [MASModelService setGrantFlow:MASGrantFlowUnknown];
-            break;
-    }
-}
-
-
-+ (MASDeviceRegistrationType)deviceRegistrationType
-{
-    switch ([MASModelService grantFlow]) {
-        case MASGrantFlowClientCredentials:
-            return MASDeviceRegistrationTypeClientCredentials;
-            break;
-        
-        case MASGrantFlowPassword:
-            return MASDeviceRegistrationTypeUserCredentials;
-            break;
-            
-        case MASGrantFlowCount:
-            return MASDeviceRegistrationTypeCount;
-            break;
-            
-        default:
-            return MASDeviceRegistrationTypeUnknown;
-            break;
-    }
 }
 
 
@@ -163,8 +116,7 @@
 + (void)start:(MASCompletionErrorBlock)completion
 {
     //DLog(@"called");
-    [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
-
+    
     //
     // Post the notification
     //

@@ -13,7 +13,6 @@
 #import "MASConfiguration.h"
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
-#import "L7SClientManager.h"
 
 
 @interface MASApplication ()
