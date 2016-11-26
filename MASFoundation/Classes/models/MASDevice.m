@@ -62,39 +62,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 }
 
 
-- (void)logOutDeviceAndClearLocal:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion
-{
-    //
-    // If the user is not authenticated, return an error
-    //
-    if (![MASUser currentUser])
-    {
-        if (completion)
-        {
-            completion(NO, [NSError errorUserDoesNotExist]);
-        }
-    }
-    else {
-        
-        [[MASUser currentUser] logoutWithCompletion:completion];
-    }
-}
-
-
-- (void)resetLocallyWithCompletion:(MASCompletionErrorBlock)completion
-{
-    //
-    // Reset locally
-    //
-    [self resetLocally];
-    
-    if (completion)
-    {
-        completion(YES, nil);
-    }
-}
-
-
 - (void)resetLocally
 {
     //

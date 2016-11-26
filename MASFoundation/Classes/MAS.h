@@ -40,24 +40,6 @@
 
 
 /**
- *  Sets the MASDeviceRegistrationType property.  The default is MASDeviceRegistrationTypeClientCredentials.
- *
- *  @param registrationType The MASDeviceRegistrationType.
- */
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType DEPRECATED_MSG_ATTRIBUTE("Use [MAS setGrantFlow:] instead.");
-
-
-
-/**
- *  Returns current MASDeviceRegistrationType property.  The default is MASDeviceRegistrationTypeClientCredentials.
- *
- *  @return return MASDeviceRegistrationType of current type.
- */
-+ (MASDeviceRegistrationType)deviceRegistrationType DEPRECATED_MSG_ATTRIBUTE("Use [MAS grantFlow] instead.");
-
-
-
-/**
  *  Sets the MASGrantFlow property.  The default is MASGrantFlowClientCredentials.
  *
  *  @param grantFlow The MASGrantFlow.
