@@ -352,7 +352,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // If the user was already authenticated, we don't have to retrieve the authentication provider
     //
-    if ([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [MASAccess currentAccess].isSessionLocked)
+    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked)
     {
         
         //
