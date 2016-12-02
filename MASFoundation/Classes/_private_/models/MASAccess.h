@@ -102,6 +102,12 @@
 @property (assign, readonly) BOOL isSessionLocked;
 
 
+/**
+ *  The MASAccess isAccessTokenValid boolean property for the current access tokens' validity
+ */
+@property (assign, readonly) BOOL isAccessTokenValid;
+
+
 ///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------

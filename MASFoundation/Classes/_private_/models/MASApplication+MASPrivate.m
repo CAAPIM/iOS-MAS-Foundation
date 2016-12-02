@@ -590,7 +590,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
     {
         currentStatus = MASAuthenticationStatusNotLoggedIn;
-        [[MASAccessService sharedService].currentAccessObj deleteForLogOff];
+        [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
     }
     
     if ((refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil])) && [MASUser currentUser])

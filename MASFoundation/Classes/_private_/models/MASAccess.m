@@ -416,6 +416,31 @@
 }
 
 
+# pragma mark - isAccessTokenValid
+
+- (BOOL)isAccessTokenValid
+{
+    
+    BOOL isValid = YES;
+    
+    NSString *accessToken = self.accessToken;
+    NSNumber *expiresIn = self.expiresIn;
+    NSDate *expiresInDate = self.expiresInDate;
+    
+    if (!accessToken || !expiresIn || !expiresInDate)
+    {
+        isValid = NO;
+    }
+    
+    if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
+    {
+        isValid = NO;
+        [self deleteForTokenExpiration];
+    }
+    
+    return isValid;
+}
+
 #pragma mark - scope
 
 - (NSSet *)scope
