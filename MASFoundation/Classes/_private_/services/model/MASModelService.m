@@ -352,7 +352,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // If the user was already authenticated, we don't have to retrieve the authentication provider
     //
-    if ([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
+    if ([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [MASAccess currentAccess].isSessionLocked)
     {
         
         //
@@ -1777,7 +1777,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // If the user is already authenticated with user credentials
     // And the access_token is still valid
     //
-    if (self.currentUser && self.currentUser.accessToken && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser)
+    if (self.currentUser && self.currentUser.accessToken && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [MASAccess currentAccess].isAccessTokenValid)
     {
         //
         // Notify
@@ -2670,6 +2670,11 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     DLog(@"called");
     
     //
+    //  Refresh access obj
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
     // The application must be registered else stop here
     //
     if (![self.currentApplication isRegistered])
@@ -2698,7 +2703,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     // If the user is already authenticated, stop here
     //
-    if (self.currentUser.accessToken && self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser)
+    if (self.currentUser.accessToken && [MASAccess currentAccess].isAccessTokenValid)
     {
         //
         // Notify
