@@ -184,6 +184,19 @@
 
 
 ///--------------------------------------
+/// @name Code Verifier - PKCE support
+///--------------------------------------
+
+# pragma mark - Code Verifier - PKCE support
+
+- (void)generateCodeVerifier;
+
+- (void)deleteCodeVerifier;
+
+- (NSString *)retrieveCodeVerifier;
+
+
+///--------------------------------------
 /// @name Current Access
 ///--------------------------------------
 

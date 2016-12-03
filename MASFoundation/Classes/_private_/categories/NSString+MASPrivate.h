@@ -22,9 +22,15 @@
 # pragma mark - Public
 
 /**
- * 
+ *  Generates random string with given length
+ *
+ *  @param length   int length of random string
+ *
+ *  @return Returns randomly generated string with given length
  */
 + (NSString *)randomStringWithLength:(int)length;
+
+
 
 /**
  *  Check if the string is empty string.
@@ -34,11 +40,29 @@
 - (BOOL)isEmpty;
 
 
+
 /**
  *  Create MD5 hash string from NSString
  *
  *  @return Returns md5 hashsed NSString
  */
 - (NSString *)md5String;
+
+
+
+/**
+ *  Creates SHA256 hash NSData from NSString
+ *
+ *  @return Returns sha256 hashed NSData
+ */
+- (NSData *)sha256Data;
+
+
+
+- (NSString *)base64URL;
+
+
+
++ (NSString *)base64URLWithNSData:(NSData *)data;
 
 @end

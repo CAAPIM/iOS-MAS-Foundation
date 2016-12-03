@@ -14,8 +14,9 @@
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 #import "MASIKeyChainStore.h"
-
 #import "MASDevice+MASPrivate.h"
+#import "NSString+MASPrivate.h"
+#import "NSData+MASPrivate.h"
 
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
@@ -419,6 +420,29 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     
     // Display
     parameterInfo[MASDisplayRequestResponseKey] = @"social_login";
+    
+    // PKCE Support - generate code verifier
+    [[MASAccessService sharedService].currentAccessObj generateCodeVerifier];
+    
+    // Retrieve code verifier
+    NSString *codeVerifier = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+    
+    if (codeVerifier)
+    {
+        // SHA256 the code verifier and encode it with base64url
+        NSString *codeChallenge = [NSString base64URLWithNSData:[codeVerifier sha256Data]];
+        
+        if (codeChallenge)
+        {
+            parameterInfo[MASPKCECodeChallengeRequestResponseKey] = codeChallenge;
+            //
+            // code_challenge_method should be S256 if the code challenge is hashed;
+            //
+            // Otherwise, make code_challenge = code_verifier, and send code_challenge_method as plan, MASPKCECodeChallengeMethodPlainKey
+            //
+            parameterInfo[MASPKCECodeChallengeMethodRequestResponseKey] = MASPKCECodeChallengeMethodSHA256Key;
+        }
+    }
     
     //
     // Trigger the request
@@ -2333,6 +2357,22 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     
     // Grant Type
     parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeAuthorizationCode;
+    
+    //
+    // If code verifier exists in the memory
+    //
+    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
+    {
+        //
+        // inject it into parameter of the request
+        //
+        parameterInfo[MASPKCECodeVerifierRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+        
+        //
+        // delete the code verifier once it's used
+        //
+        [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+    }
     
     //
     // Trigger the request

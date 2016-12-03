@@ -69,6 +69,9 @@ static NSString *_Nonnull const MASHeaderErrorKey = @"x-ca-err";
 
 static NSString *_Nonnull const MASIdTokenTypeToValidateConstant = @"urn:ietf:params:oauth:grant-type:jwt-bearer"; // string
 
+static NSString *_Nonnull const MASPKCECodeChallengeMethodSHA256Key = @"S256"; // string
+static NSString *_Nonnull const MASPKCECodeChallengeMethodPlainKey = @"plain"; // string
+
 // Client certificate expiration advanced renew timeframe in days
 static int const MASClientCertificateAdvancedRenewTimeframe = 30;
 
@@ -168,6 +171,10 @@ static NSString *_Nonnull const MASStatusRequestResponseKey = @"status"; // stri
 static NSString *_Nonnull const MASTokenRequestResponseKey = @"token"; // string
 static NSString *_Nonnull const MASTokenTypeHintRequestResponseKey = @"token_type_hint"; // string
 static NSString *_Nonnull const MASTokenTypeRequestResponseKey = @"token_type"; // string
+static NSString *_Nonnull const MASPKCECodeVerifierRequestResponseKey = @"code_verifier"; // string
+static NSString *_Nonnull const MASPKCECodeChallengeRequestResponseKey = @"code_challenge"; // string
+static NSString *_Nonnull const MASPKCECodeChallengeMethodRequestResponseKey = @"code_challenge_method"; // string
+static NSString *_Nonnull const MASPKCEStateRequestResponseKey = @"state"; // string
 
 static NSString *_Nonnull const MASUserAddressRequestResponseKey = @"address"; // string
 static NSString *_Nonnull const MASUserAddressCountryRequestResponseKey = @"country"; // string
