@@ -58,7 +58,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASUser.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString accessGroup:[MASAccessService sharedService].accessGroup] dataForKey:[MASUser.class description]];
     if(data)
     {
         user = (MASUser *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -79,7 +79,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString accessGroup:[MASAccessService sharedService].accessGroup] setData:data
                                                                                                                          forKey:[self.class description]
                                                                                                                           error:&error];
     
