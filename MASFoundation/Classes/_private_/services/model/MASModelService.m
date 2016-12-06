@@ -2449,7 +2449,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              // verify that the state in the response is the same as the state sent in the request
              //
-             else if ([[bodayInfo objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
+             else if (![[bodayInfo objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
              {
                  pkceError = [NSError errorInvalidAuthorization];
              }
