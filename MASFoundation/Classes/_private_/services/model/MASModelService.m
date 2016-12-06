@@ -2429,46 +2429,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
          
          //
-         // Validate PKCE state value
-         // If either one of request or response states is present, validate it; otherwise, ignore
-         //
-         if ([bodayInfo objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
-         {
-             NSString *responseState = [bodayInfo objectForKey:MASPKCEStateRequestResponseKey];
-             NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
-             
-             NSError *pkceError = nil;
-             
-             //
-             // If response or request state is nil, invalid request and/or response
-             //
-             if (responseState == nil || requestState == nil)
-             {
-                 pkceError = [NSError errorInvalidAuthorization];
-             }
-             //
-             // verify that the state in the response is the same as the state sent in the request
-             //
-             else if (![[bodayInfo objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
-             {
-                 pkceError = [NSError errorInvalidAuthorization];
-             }
-             
-             //
-             // If the validation fail, notify
-             //
-             if (pkceError)
-             {
-                 if (blockCompletion)
-                 {
-                     blockCompletion(NO, pkceError);
-                 }
-                 
-                 return;
-             }
-         }
-         
-         //
          // Remove PKCE Code Verifier and state once it's validated
          //
          [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
