@@ -989,6 +989,11 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
                                                   magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
                                                           error:&localError];
         
+        if (localError && localError.code != MASFoundationErrorCodeTokenIdTokenExpired)
+        {
+            localError = nil;
+            isIdTokenValid = YES;
+        }
         //
         // If the id_token is no longer valid; remove the session lock regardless
         //
