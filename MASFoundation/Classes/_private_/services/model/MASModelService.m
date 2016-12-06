@@ -424,8 +424,14 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // PKCE Support - generate code verifier
     [[MASAccessService sharedService].currentAccessObj generateCodeVerifier];
     
+    // PKCE Support - generate state
+    [[MASAccessService sharedService].currentAccessObj generatePKCEState];
+    
     // Retrieve code verifier
     NSString *codeVerifier = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+    
+    // Retrieve state
+    NSString *pkceState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
     
     if (codeVerifier)
     {
@@ -441,6 +447,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             // Otherwise, make code_challenge = code_verifier, and send code_challenge_method as plan, MASPKCECodeChallengeMethodPlainKey
             //
             parameterInfo[MASPKCECodeChallengeMethodRequestResponseKey] = MASPKCECodeChallengeMethodSHA256Key;
+            
+            parameterInfo[MASPKCEStateRequestResponseKey] = pkceState;
         }
     }
     
@@ -670,6 +678,13 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             // Clear currentUser object upon log-out
             //
             [blockSelf clearCurrentUserForLogout];
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+            
             //
             // KeyChain
             //
@@ -1400,6 +1415,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              
              return;
          }
+         
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          //
          // Validate id_token when received from server.
@@ -2367,11 +2388,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // inject it into parameter of the request
         //
         parameterInfo[MASPKCECodeVerifierRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
-        
-        //
-        // delete the code verifier once it's used
-        //
-        [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
     }
     
     //
@@ -2411,6 +2427,52 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          // Validate id_token when received from server.
          //
          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+         
+         //
+         // Validate PKCE state value
+         // If either one of request or response states is present, validate it; otherwise, ignore
+         //
+         if ([bodayInfo objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
+         {
+             NSString *responseState = [bodayInfo objectForKey:MASPKCEStateRequestResponseKey];
+             NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
+             
+             NSError *pkceError = nil;
+             
+             //
+             // If response or request state is nil, invalid request and/or response
+             //
+             if (responseState == nil || requestState == nil)
+             {
+                 pkceError = [NSError errorInvalidAuthorization];
+             }
+             //
+             // verify that the state in the response is the same as the state sent in the request
+             //
+             else if ([[bodayInfo objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
+             {
+                 pkceError = [NSError errorInvalidAuthorization];
+             }
+             
+             //
+             // If the validation fail, notify
+             //
+             if (pkceError)
+             {
+                 if (blockCompletion)
+                 {
+                     blockCompletion(NO, pkceError);
+                 }
+                 
+                 return;
+             }
+         }
+         
+         //
+         // Remove PKCE Code Verifier and state once it's validated
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
              [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
@@ -2626,6 +2688,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 
                 return;
             }
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
             
             //
             // Validate id_token when received from server.
@@ -2858,6 +2926,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              
              return;
          }
+        
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          //
          // Validate id_token when received from server.
@@ -3056,6 +3130,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             
                 return;
             }
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
         
             //
             // Validate id_token when received from server.

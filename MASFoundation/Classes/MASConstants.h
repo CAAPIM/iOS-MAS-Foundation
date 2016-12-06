@@ -346,6 +346,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120009,
     
     //
+    // Authorization
+    //
+    MASFoundationErrorCodeInvalidAuthorization = 131001,
+    
+    //
     // User
     //
     MASFoundationErrorCodeUserAlreadyAuthenticated = 130001,

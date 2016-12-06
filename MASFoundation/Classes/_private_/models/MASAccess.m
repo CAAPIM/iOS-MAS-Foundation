@@ -18,6 +18,7 @@
 @interface MASAccess ()
 
 @property (nonatomic, strong) NSString *codeVerifier;
+@property (nonatomic, strong) NSString *pkceState;
 
 @end
 
@@ -421,6 +422,30 @@
 - (NSString *)retrieveCodeVerifier
 {
     return _codeVerifier;
+}
+
+
+///--------------------------------------
+/// @name PKCE State - PKCE support
+///--------------------------------------
+
+# pragma mark - PKCE State - PKCE support
+
+- (void)generatePKCEState
+{
+    _pkceState = [NSString randomStringWithLength:32];
+}
+
+
+- (void)deletePKCEState
+{
+    _pkceState = nil;
+}
+
+
+- (NSString *)retrievePKCEState
+{
+    return _pkceState;
 }
 
 

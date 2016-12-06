@@ -59,10 +59,20 @@
 
 
 
+/**
+ *  Encode string with Base64 URL encoded
+ *
+ *  @return Returns base64 URL encoded NSString
+ */
 - (NSString *)base64URL;
 
 
 
+/**
+ *  Encode NSData with Base64 URL encoded and convert it to NSString
+ *
+ *  @return Returns base64 URL encoded NSString
+ */
 + (NSString *)base64URLWithNSData:(NSData *)data;
 
 @end

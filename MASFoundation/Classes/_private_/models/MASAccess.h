@@ -189,11 +189,55 @@
 
 # pragma mark - Code Verifier - PKCE support
 
+/**
+ *  Generate Code Verifier for PKCE in authorization request
+ */
 - (void)generateCodeVerifier;
 
+
+
+/**
+ *  Delete the current code verifier in the current object
+ */
 - (void)deleteCodeVerifier;
 
+
+/**
+ *  Returns the code verifier for PKCE in current authorization request
+ *
+ *  @return Returns NSString of the current code verifier
+ */
 - (NSString *)retrieveCodeVerifier;
+
+
+
+///--------------------------------------
+/// @name PKCE State - PKCE support
+///--------------------------------------
+
+# pragma mark - PKCE State - PKCE support
+
+/**
+ *  Generate State value for PKCE in authorization request
+ */
+- (void)generatePKCEState;
+
+
+
+/**
+ *  Delete the current state value of PKCE request
+ */
+- (void)deletePKCEState;
+
+
+
+/**
+ *  Returns the state value for PKCE in current authorization request
+ *
+ *  @return Returns NSString of the state value for the current authorization request
+ */
+- (NSString *)retrievePKCEState;
+
 
 
 ///--------------------------------------
