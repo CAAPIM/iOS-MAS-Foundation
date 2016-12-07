@@ -403,13 +403,21 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     NSString *scope = [MASApplication currentApplication].scopeAsString;
     
     //
-    // HACK! - msso_register scope should NOT be used to retrieve authenticationProviders when it is going to be used to "authenticate"
+    // Workaround - msso_register scope should NOT be used to retrieve authenticationProviders when it is going to be used to "authenticate"
     // msso_register scope should only contain for device registration with authorizationCode.
     // When the authroizationCode was granted with msso_register scope and used to retrieve the tokens, it will FAIL with unknown error from the server.
     //
     if (scope && self.currentDevice.isRegistered)
     {
         scope = [scope stringByReplacingOccurrencesOfString:@"msso_register" withString:@""];
+    }
+    
+    //
+    //  If sso is disabled, manually remove msso scope, as it will create id_token with msso scope
+    //
+    if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
+    {
+        scope = [scope stringByReplacingOccurrencesOfString:@"msso" withString:@""];
     }
     
     parameterInfo[MASScopeRequestResponseKey] = scope;
