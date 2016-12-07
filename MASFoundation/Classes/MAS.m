@@ -21,6 +21,8 @@
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 
+#import "L7SBrowserURLProtocol.h"
+
 @implementation MAS
 
 
@@ -116,6 +118,7 @@
 + (void)start:(MASCompletionErrorBlock)completion
 {
     //DLog(@"called");
+    [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
     
     //
     // Post the notification
