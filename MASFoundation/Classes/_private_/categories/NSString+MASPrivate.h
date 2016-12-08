@@ -42,6 +42,6 @@
 - (NSString *)md5String;
 
 
-- (NSString *)replaceStringWithRegexPatter:(NSString *)pattern withString:(NSString *)string;
+- (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string;
 
 @end

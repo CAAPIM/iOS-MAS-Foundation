@@ -167,7 +167,7 @@
     else {
      
         //
-        // Detect if there is id_token, and sso is enabled
+        // Detect if there is id_token
         //
         if([accessService getAccessValueStringWithType:MASAccessValueTypeIdToken])
         {

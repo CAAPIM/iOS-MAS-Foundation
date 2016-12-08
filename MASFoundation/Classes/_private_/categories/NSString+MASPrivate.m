@@ -73,7 +73,7 @@ static NSString *const kMASAlphaNumerics = @"abcdefghijklmnopqrstuvwxyzABCDEFGHI
     return ret;
 }
 
-- (NSString *)replaceStringWithRegexPatter:(NSString *)pattern withString:(NSString *)string
+- (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string
 {
     NSMutableString *mutableCopy = [self mutableCopy];
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
