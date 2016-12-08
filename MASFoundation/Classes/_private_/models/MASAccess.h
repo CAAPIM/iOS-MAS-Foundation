@@ -90,6 +90,24 @@
 @property (nonatomic, copy, readwrite) NSString *requestingScopeAsString;
 
 
+/**
+ *  The MASAccess client certificate expiration date
+ */
+@property (nonatomic, copy, readonly) NSDate *clientCertificateExpirationDate;
+
+
+/**
+ *  The MASAccess isSessionLock boolean property for current session's lock status
+ */
+@property (assign, readonly) BOOL isSessionLocked;
+
+
+/**
+ *  The MASAccess isAccessTokenValid boolean property for the current access tokens' validity
+ */
+@property (assign, readonly) BOOL isAccessTokenValid;
+
+
 ///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------

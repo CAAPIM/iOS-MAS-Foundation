@@ -62,45 +62,33 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 }
 
 
-- (void)logOutDeviceAndClearLocal:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion
-{
-    //
-    // If the user is not authenticated, return an error
-    //
-    if (![MASUser currentUser])
-    {
-        if (completion)
-        {
-            completion(NO, [NSError errorUserDoesNotExist]);
-        }
-    }
-    else {
-        
-        [[MASUser currentUser] logoutWithCompletion:completion];
-    }
-}
-
-
-- (void)resetLocallyWithCompletion:(MASCompletionErrorBlock)completion
-{
-    //
-    // Reset locally
-    //
-    [self resetLocally];
-    
-    if (completion)
-    {
-        completion(YES, nil);
-    }
-}
-
-
 - (void)resetLocally
 {
     //
-    // Remove local keychains
+    // Remove current user object
+    //
+    [[MASModelService sharedService] clearCurrentUserForLogout];
+    
+    //
+    // Remove local & shared keychains
     //
     [[MASAccessService sharedService] clearLocal];
+    [[MASAccessService sharedService] clearShared];
+    
+    //
+    // Refresh current access object to reflect correct status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // MASFiles
+    //
+    [[MASSecurityService sharedService] removeAllFiles];
+    
+    //
+    // re-establish URL session
+    //
+    [[MASNetworkingService sharedService] establishURLSession];
 }
 
 

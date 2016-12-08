@@ -58,13 +58,3 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 //
 
 #import <MASFoundation/NSData+MAS.h>
-
-
-//
-// Deprecated
-//
-
-#import <MASFoundation/L7SClientManager.h>
-#import <MASFoundation/L7SErrors.h>
-#import <MASFoundation/L7SHTTPClient.h>
-#import <MASFoundation/L7SEnterpriseApp.h>

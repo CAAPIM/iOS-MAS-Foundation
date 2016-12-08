@@ -34,51 +34,6 @@
 }
 
 
-+ (void)setDeviceRegistrationType:(MASDeviceRegistrationType)registrationType
-{
-    switch (registrationType) {
-            
-        case MASDeviceRegistrationTypeClientCredentials:
-            [MASModelService setGrantFlow:MASGrantFlowClientCredentials];
-            break;
-            
-        case MASDeviceRegistrationTypeUserCredentials:
-            [MASModelService setGrantFlow:MASGrantFlowPassword];
-            break;
-            
-        case MASDeviceRegistrationTypeCount:
-            [MASModelService setGrantFlow:MASGrantFlowCount];
-            break;
-            
-        default:
-            [MASModelService setGrantFlow:MASGrantFlowUnknown];
-            break;
-    }
-}
-
-
-+ (MASDeviceRegistrationType)deviceRegistrationType
-{
-    switch ([MASModelService grantFlow]) {
-        case MASGrantFlowClientCredentials:
-            return MASDeviceRegistrationTypeClientCredentials;
-            break;
-        
-        case MASGrantFlowPassword:
-            return MASDeviceRegistrationTypeUserCredentials;
-            break;
-            
-        case MASGrantFlowCount:
-            return MASDeviceRegistrationTypeCount;
-            break;
-            
-        default:
-            return MASDeviceRegistrationTypeUnknown;
-            break;
-    }
-}
-
-
 + (void)setGrantFlow:(MASGrantFlow)grantFlow
 {
     [MASModelService setGrantFlow:grantFlow];
@@ -164,7 +119,7 @@
 {
     //DLog(@"called");
     [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
-
+    
     //
     // Post the notification
     //
@@ -271,7 +226,7 @@
     if (shouldUseDefault)
     {
         BOOL shouldBroadcastNotification = NO;
-        BOOL shouldReloadConfiguration = NO;
+        BOOL shouldReloadConfiguration = YES;
         
         //
         // Retrieve the current configuration from keychain storage.
@@ -404,7 +359,7 @@
         return;
     }
     
-    BOOL shouldReloadConfiguration = NO;
+    BOOL shouldReloadConfiguration = YES;
     BOOL shouldBroadcastNotification = NO;
     
     //
@@ -565,7 +520,7 @@
         }
     }
     
-    BOOL shouldReloadConfiguration = NO;
+    BOOL shouldReloadConfiguration = YES;
     BOOL shouldBroadcastNotification = NO;
     
     //
@@ -743,9 +698,30 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
  
     //
     // Check that network service is ready, expected to be at this point but lets be sure
@@ -836,9 +812,30 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
@@ -936,9 +933,30 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
@@ -1031,12 +1049,31 @@
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock)completion
 {
-    //DLog(@"called");
+    //
+    // Check for endpoint
+    //
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
     
     //
-    // Endpoint is required
+    // Check if MAS has been started.
     //
-    NSParameterAssert(endPoint);
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
@@ -1128,9 +1165,30 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Endpoint is required
+    // Check for endpoint
     //
-    NSParameterAssert(endPoint);
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
     
     //
     // Check that network manager is ready, expected to be at this point but lets be sure

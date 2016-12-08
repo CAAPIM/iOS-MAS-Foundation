@@ -10,9 +10,9 @@
 
 #import "MASMQTTHelper.h"
 
+#import "MASAccessService.h"
 #import "MASMQTTClient.h"
 #import "MASMQTTConstants.h"
-
 
 @implementation MASMQTTHelper
 
@@ -29,8 +29,10 @@
 
 + (NSString *)mqttClientId
 {
-    //MQTT ClientId is: <mag_device_id>::<mag_client_id>::<SCIM userID>
-    NSString *clientId = [NSString stringWithFormat:@"%@::%@::%@",[MASDevice currentDevice].identifier,[MASApplication currentApplication].identifier,[MASUser currentUser].objectId];
+    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
+    
+    //MQTT ClientId is: <mag_identifier>::<mag_client_id>::<SCIM userID>
+    NSString *clientId = [NSString stringWithFormat:@"%@::%@::%@",magIdentifier,[MASApplication currentApplication].identifier,[MASUser currentUser].objectId];
     
     return clientId;
 }

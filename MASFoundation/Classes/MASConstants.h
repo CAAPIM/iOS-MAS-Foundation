@@ -100,7 +100,7 @@ typedef void (^MASOTPChannelSelectionBlock)(NSArray *supportedOTPChannels, MASOT
 /**
  * The Two-factor authentication with OTP Credentials (MASOTPFetchCredentialsBlock) block.
  */
-typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock);
+typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock, NSError *otpError);
 
 
 ///--------------------------------------
@@ -108,33 +108,6 @@ typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock);
 ///--------------------------------------
 
 # pragma mark - MAS Constants
-
-/**
- * The enumerated MASRegistrationTypes.
- */
-typedef NS_ENUM(NSInteger, MASDeviceRegistrationType)
-{
-    /**
-     * Unknown encoding type.
-     */
-    MASDeviceRegistrationTypeUnknown = -1,
-    
-    /**
-     * The client credentials registration type.
-     */
-    MASDeviceRegistrationTypeClientCredentials,
-    
-    /**
-     * The user credentials registration type.
-     */
-    MASDeviceRegistrationTypeUserCredentials,
-    
-    /**
-     * The total number of supported types.
-     */
-    MASDeviceRegistrationTypeCount
-} DEPRECATED_MSG_ATTRIBUTE("Use MASGrantFlow instead.");
-
 
 /**
  * The enumerated MASGrantFlow.
@@ -315,6 +288,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeInvalidNSURL = 100001,
     MASFoundationErrorCodeInvalidNSDictionary = 100002,
     MASFoundationErrorCodeInvalidUserLoginBlock = 100003,
+    MASFoundationErrorCodeMASIsNotStarted = 100004,
     
     //
     // Flow
@@ -369,6 +343,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeDeviceRecordIsNotValid = 120006,
     MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
     MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
+    MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120009,
     
     //
     // User
@@ -378,6 +353,9 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeUserDoesNotExist = 130003,
     MASFoundationErrorCodeUserNotAuthenticated = 130004,
     MASFoundationErrorCodeLoginProcessCancel = 130005,
+    MASFoundationErrorCodeUserSessionIsAlreadyLocked = 130006,
+    MASFoundationErrorCodeUserSessionIsAlreadyUnlocked = 130007,
+    MASFoundationErrorCodeUserSessionIsCurrentlyLocked = 130008,
     
     //
     // Token
@@ -387,6 +365,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeTokenIdTokenInvalidAud = 130103,
     MASFoundationErrorCodeTokenIdTokenInvalidAzp = 130104,
     MASFoundationErrorCodeTokenIdTokenInvalidSignature = 130105,
+    MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession = 130106,
     
     MASFoundationErrorCodeAccessTokenInvalid = 130201,
     MASFoundationErrorCodeAccessTokenDisabled = 130202,
@@ -431,12 +410,13 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     // OTP
     //
-    MASFoundationErrorCodeInvalidOTPChannelSelectionBlock,
-    MASFoundationErrorCodeInvalidOTPCredentialsBlock,
-    MASFoundationErrorCodeInvalidOTPProvided,
-    MASFoundationErrorCodeOTPNotProvided,
-    MASFoundationErrorCodeOTPExpired,
-    MASFoundationErrorCodeOTPRetryLimitExceeded,
+    MASFoundationErrorCodeInvalidOTPChannelSelectionBlock = 160101,
+    MASFoundationErrorCodeInvalidOTPCredentialsBlock = 160102,
+    MASFoundationErrorCodeInvalidOTPProvided = 160103,
+    MASFoundationErrorCodeOTPNotProvided = 160104,
+    MASFoundationErrorCodeOTPExpired = 160105,
+    MASFoundationErrorCodeOTPRetryLimitExceeded = 160106,
+    MASFoundationErrorCodeOTPRetryBarred = 160107,
     
     MASFoundationErrorCodeCount = -999999
 };

@@ -126,7 +126,6 @@ static BOOL _newConfigurationDetected_ = NO;
     {
         [self.currentConfiguration reset];
         _currentConfiguration = nil;
-        _newConfigurationDetected_ = NO;
     }
     
     //
@@ -139,9 +138,10 @@ static BOOL _newConfigurationDetected_ = NO;
         //
         // If the JSON configuration object was set
         //
-        if (_newConfigurationObject_)
+        if (_newConfigurationObject_ && _newConfigurationDetected_)
         {
             info = _newConfigurationObject_;
+            _newConfigurationDetected_ = NO;
         }
         //
         // Otherwise, load it from default configuration file
@@ -184,14 +184,9 @@ static BOOL _newConfigurationDetected_ = NO;
         }
         
         //
-        // Create a new configuration object
-        //
-        _currentConfiguration = [[MASConfiguration alloc] initWithConfigurationInfo:info];
-        
-        //
         //  Validate JSON content for given rules
         //
-        NSError *validationError = [_currentConfiguration validateJSONConfiguration];
+        NSError *validationError = [MASConfiguration validateJSONConfiguration:info];
         
         //
         //  If there is any error from validation, return an error
@@ -202,6 +197,11 @@ static BOOL _newConfigurationDetected_ = NO;
             
             return;
         }
+        
+        //
+        // Create a new configuration object
+        //
+        _currentConfiguration = [[MASConfiguration alloc] initWithConfigurationInfo:info];
         
         //
         //  Catch an exception for parsing certificate

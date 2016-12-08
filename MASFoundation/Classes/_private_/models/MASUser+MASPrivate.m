@@ -58,7 +58,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASUser.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString accessGroup:[MASAccessService sharedService].accessGroup] dataForKey:[MASUser.class description]];
     if(data)
     {
         user = (MASUser *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -79,9 +79,9 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStore] setData:data
-                                            forKey:[self.class description]
-                                             error:&error];
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString accessGroup:[MASAccessService sharedService].accessGroup] setData:data
+                                                                                                                         forKey:[self.class description]
+                                                                                                                          error:&error];
     
         if(error)
         {
@@ -227,7 +227,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 {
     [self resetPartial];
     
-    [[MASIKeyChainStore keyChainStore] removeItemForKey:[self.class description]];
+    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[self.class description]];
 }
 
 - (void)resetPartial
@@ -314,6 +314,24 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // the user is authenticated either anonymously or with username and password
     //
     return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
+}
+
+
+- (BOOL)isSessionLocked
+{
+    
+    //
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
+    {
+        return [MASAccess currentAccess].isSessionLocked;
+    }
+    else {
+        return NO;
+    }
 }
 
 

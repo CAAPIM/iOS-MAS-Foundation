@@ -1,6 +1,6 @@
 //
 //  L7SBrowserURLProtocol.h
-//  SampleWebView
+//  MASFoundation
 //
 //  Copyright (c) 2016 CA. All rights reserved.
 //

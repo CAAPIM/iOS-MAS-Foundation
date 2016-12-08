@@ -116,6 +116,13 @@
         completion(YES, nil);
     }
     //
+    // If the location service is determined, but not available (Unauthorized)
+    //
+    else if (![MASLocationService isLocationMonitoringNotDetermined])
+    {
+        completion(NO, [NSError errorGeolocationServicesAreUnauthorized]);
+    }
+    //
     // Otherwise, request authorization from the user
     //
     else {
@@ -136,6 +143,11 @@
 
 
 # pragma mark - Location Monitoring
+
++ (BOOL)isLocationMonitoringNotDetermined
+{
+    return ([MASINTULocationManager locationServicesState] == MASINTULocationServicesStateNotDetermined);
+}
 
 + (BOOL)isLocationMonitoringAuthorized
 {

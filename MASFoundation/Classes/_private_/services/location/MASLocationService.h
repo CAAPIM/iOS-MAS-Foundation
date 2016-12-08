@@ -37,6 +37,17 @@
 
 # pragma mark - Location Monitoring
 
+
+
+
+/**
+ *  Retrieves the status of whether the location services have been authorized or declined before. 
+ *
+ *  @return Returns YES if the location services have not been determinded before. Returns no if location services have been determined before.
+ */
++ (BOOL)isLocationMonitoringNotDetermined;
+
+
 /**
  *  Retrieves the current authorization status of location services for the application and return boolean value of whether it is authorized or not.
  *

@@ -19,7 +19,7 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
     /**
      *  Unknown
      */
-    MASBLEServiceStateUnknonw = -1,
+    MASBLEServiceStateUnknown = -1,
     /**
      *  BLE Central started
      */

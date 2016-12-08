@@ -40,10 +40,10 @@
 
 
 ///--------------------------------------
-/// @name Current Providers
+/// @name Authentication Providers
 ///--------------------------------------
 
-# pragma mark - Current Providers
+# pragma mark - Authentication Providers
 
 /**
  * The application's currently configured authentication providers. This is a singleton object.
@@ -51,6 +51,17 @@
  * @return Returns a singleton 'MASAuthenticationProviders' object.
  */
 + (MASAuthenticationProviders *)currentProviders;
+
+
+
+/**
+ Retrieves the MASAuthenticationProviders from the server.
+
+ @warning *Important:* Authentication providers will not be retrieved if the user is already authenticated.
+ 
+ @param completion MASObjectResponseErrorBlock to notify original caller with the results.
+ */
++ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock)completion;
 
 
 

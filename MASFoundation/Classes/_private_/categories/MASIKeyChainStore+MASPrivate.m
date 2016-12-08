@@ -531,4 +531,63 @@
     }
 }
 
+
+- (NSData *)dataForKey:(NSString *)key userOperationPrompt:(NSString *)userOperationPrompt error:(NSError *__autoreleasing *)error
+{
+    NSMutableDictionary *query = [self query];
+    query[(__bridge __strong id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
+    query[(__bridge __strong id)kSecReturnData] = (__bridge id)kCFBooleanTrue;
+    
+    query[(__bridge __strong id)kSecAttrAccount] = key;
+    
+    if (userOperationPrompt)
+    {
+        query[(__bridge __strong id)kSecUseOperationPrompt] = userOperationPrompt;
+    }
+    
+    CFTypeRef data = nil;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &data);
+    
+    if (status == errSecSuccess) {
+        NSData *ret = [NSData dataWithData:(__bridge NSData *)data];
+        if (data) {
+            CFRelease(data);
+            return ret;
+        } else {
+            NSError *e = [self.class unexpectedError:NSLocalizedString(@"Unexpected error has occurred.", nil)];
+            if (error) {
+                *error = e;
+            }
+            return nil;
+        }
+    } else if (status == errSecItemNotFound) {
+        return nil;
+    }
+    
+    NSError *e = [self.class securityError:status];
+    if (error) {
+        *error = e;
+    }
+    return nil;
+}
+
+
+- (NSString *)stringForKey:(id)key userOperationPrompt:(NSString *)userOperationPrompt error:(NSError *__autoreleasing *)error
+{
+    NSData *data = [self dataForKey:key userOperationPrompt:userOperationPrompt error:error];
+    if (data) {
+        NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if (string) {
+            return string;
+        }
+        NSError *e = [self.class conversionError:NSLocalizedString(@"failed to convert data to string", nil)];
+        if (error) {
+            *error = e;
+        }
+        return nil;
+    }
+    
+    return nil;
+}
+
 @end

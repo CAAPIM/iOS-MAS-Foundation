@@ -19,7 +19,7 @@
 
 @synthesize scope = _scope;
 @synthesize expiresInDate = _expiresInDate;
-
+@synthesize clientCertificateExpirationDate = _clientCertificateExpirationDate;
 
 # pragma mark - Lifecycle
 
@@ -87,12 +87,12 @@
         [accessDictionary setObject:idTokenType forKey:MASIdTokenTypeHeaderRequestResponseKey];
     }
     
-    if(expiresIn)
+    if (expiresIn)
     {
         [accessDictionary setObject:expiresIn forKey:MASExpiresInRequestResponseKey];
     }
     
-    if(scopeAsString)
+    if (scopeAsString)
     {
         [accessDictionary setObject:scopeAsString forKey:MASScopeRequestResponseKey];
     }
@@ -333,6 +333,12 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    
+    //
+    // Clena up the tokens from Local Authentication protected keychain storage
+    //
+    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
+    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeIsDeviceLocked];
 }
 
 
@@ -373,8 +379,6 @@
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
     
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
-    
     [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
     
     _tokenType = nil;
@@ -396,6 +400,46 @@
     return [MASAccessService sharedService].currentAccessObj;
 }
 
+
+# pragma mark - isSessionLocked
+
+- (BOOL)isSessionLocked
+{
+    //
+    // Obtain key chain items to determine device lock status
+    //
+    MASAccessService *accessService = [MASAccessService sharedService];
+    
+    NSNumber *isLocked = [accessService getAccessValueNumberWithType:MASAccessValueTypeIsDeviceLocked];
+    
+    return [isLocked boolValue];
+}
+
+
+# pragma mark - isAccessTokenValid
+
+- (BOOL)isAccessTokenValid
+{
+    
+    BOOL isValid = YES;
+    
+    NSString *accessToken = self.accessToken;
+    NSNumber *expiresIn = self.expiresIn;
+    NSDate *expiresInDate = self.expiresInDate;
+    
+    if (!accessToken || !expiresIn || !expiresInDate)
+    {
+        isValid = NO;
+    }
+    
+    if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
+    {
+        isValid = NO;
+        [self deleteForTokenExpiration];
+    }
+    
+    return isValid;
+}
 
 #pragma mark - scope
 
@@ -458,4 +502,36 @@
     
     return expiresInDate;
 }
+
+
+- (NSDate *)clientCertificateExpirationDate
+{
+    if (!_clientCertificateExpirationDate)
+    {
+        NSNumber *clientCertExpTimestamp = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        
+        if (clientCertExpTimestamp)
+        {
+            _clientCertificateExpirationDate = [NSDate dateWithTimeIntervalSince1970:[clientCertExpTimestamp doubleValue]];
+        }
+        else if ([MASDevice currentDevice].isRegistered)
+        {
+            //
+            // Extracting signed client certificate expiration date
+            //
+            NSArray * cert = [[MASAccessService sharedService] getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+            SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
+            
+            //
+            // Store client certificate expiration date into shared keychain storage
+            //
+            _clientCertificateExpirationDate = [[MASAccessService sharedService] extractExpirationDateFromCertificate:certificate];
+            [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithDouble:[_clientCertificateExpirationDate timeIntervalSince1970]]
+                                               withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        }
+    }
+    
+    return _clientCertificateExpirationDate;
+}
+
 @end

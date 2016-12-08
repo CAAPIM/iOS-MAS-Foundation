@@ -14,6 +14,13 @@
 #import "NSError+MASPrivate.h"
 
 
+@interface MASOTPService ()
+
+@property (nonatomic, strong, readwrite) NSArray *currentChannels;
+
+@end
+
+
 @implementation MASOTPService
 
 
@@ -82,12 +89,13 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
 # pragma mark - Private
 
 - (void)validateOTPSessionWithResponseHeaders:(NSDictionary *)responseHeaderInfo
-                              completionBlock:(MASObjectResponseErrorBlock)completion
+                              completionBlock:(MASResponseInfoErrorBlock)completion
 {
     //
     // If UI handling framework is not present and handling it continue on with notifying the
     // application it needs to handle this itself
     //
+    __block MASOTPService *blockSelf = self;
     __block MASOTPGenerationBlock otpGenerationBlock;
     __block MASOTPFetchCredentialsBlock otpCredentialsBlock;
     
@@ -120,6 +128,8 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                 completion(nil, nil);
             }
             
+            blockSelf.currentChannels = nil;
+            
             return;
         }
         
@@ -136,7 +146,10 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         if(completion)
         {
-            completion(oneTimePassword, nil);
+            NSDictionary *responseInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          blockSelf.currentChannels, MASHeaderOTPChannelKey,
+                                          oneTimePassword, MASHeaderOTPKey, nil];
+            completion(responseInfo, nil);
         }
     };
     
@@ -147,6 +160,11 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
     {
         DLog(@"\n\nOTP generation block called with otpChannels: %@ and cancel: %@\n\n",
              otpChannels, (cancel ? @"Yes" : @"No"));
+        
+        //
+        // Reset the otpChannels
+        //
+        blockSelf.currentChannels = otpChannels;
         
         //
         // Cancelled stop here
@@ -169,6 +187,8 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                 completion(nil, nil);
             }
             
+            blockSelf.currentChannels = nil;
+            
             return;
         }
         
@@ -190,7 +210,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         // Headers
         //
         MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-        NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
+        NSString *otpSelectedChannelsStr = [blockSelf.currentChannels componentsJoinedByString:@","];
         [headerInfo setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
         
         //
@@ -270,7 +290,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                         //
                         dispatch_async(dispatch_get_main_queue(),^
                         {
-                            _OTPCredentialsBlock_(otpCredentialsBlock);
+                            _OTPCredentialsBlock_(otpCredentialsBlock, otpError);
                         });
                     }
                     else {
@@ -381,7 +401,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             dispatch_async(dispatch_get_main_queue(),^
             {
-                _OTPCredentialsBlock_(otpCredentialsBlock);
+                _OTPCredentialsBlock_(otpCredentialsBlock, otpError);
             });
         }
         else {
@@ -421,12 +441,17 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         NSString *suspensionTime = responseHeaderInfo [MASHeaderOTPRetryIntervalKey];
         
+        NSError *error = nil;
+        [magErrorCode hasSuffix:MASApiErrorCodeOTPRetryLimitExceededSuffix] ?
+            (error = [NSError errorOTPRetryLimitExceeded:suspensionTime]) :
+            (error = [NSError errorOTPRetryBarred:suspensionTime]);
+        
         //
         // Notify
         //
         if(completion)
         {
-            completion(nil, [NSError errorOTPRetryLimitExceeded:suspensionTime]);
+            completion(nil, error);
         }
         
         return;

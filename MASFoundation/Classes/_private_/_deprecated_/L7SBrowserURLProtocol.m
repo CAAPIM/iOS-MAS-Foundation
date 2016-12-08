@@ -1,8 +1,7 @@
 //
-//  L7SBrowserURLProtocol.m
-//  SampleWebView
+//  L7SBrowserURLProtocol.h
+//  MASFoundation
 //
-//  The code partially comes from AFNetworking
 //  Copyright (c) 2016 CA. All rights reserved.
 //
 //  This software may be modified and distributed under the terms
@@ -22,14 +21,14 @@
 
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
-    if ( [NSURLProtocol propertyForKey:@"AuthorizationSet" inRequest:request] == nil &&
-        [[self class] isProtectedResource:request.URL]){
-         return YES;
+    if ([NSURLProtocol propertyForKey:@"AuthorizationSet" inRequest:request] == nil && [[self class] isProtectedResource:request.URL]){
+        
+        return YES;
     }
-    
-    
+
     return NO;
 }
+
 
 + (BOOL)isProtectedResource:(NSURL *)resourceURL
 {
@@ -41,9 +40,6 @@
     //
     if([resourceURLHost hasPrefix:endpointHost])
     {
-        //
-        //
-        //
         if( resourceURLHost.length == endpointHost.length ||
            [resourceURLHost isEqualToString:[endpointHost stringByAppendingString:@"."]])
         {
@@ -54,13 +50,17 @@
     return NO;
 }
 
+
 + (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request
 {
     return request;
 }
+
+
 + (BOOL)requestIsCacheEquivalent:(NSURLRequest *)a toRequest:(NSURLRequest *)b {
     return [super requestIsCacheEquivalent:a toRequest:b];
 }
+
 
 - (void)startLoading
 {
@@ -77,19 +77,15 @@
     {
         [self stopLoading];
         
-        [MAS setGrantFlow:MASGrantFlowPassword];
+        [MAS setGrantFlow:MASGrantFlowClientCredentials];
         
         [MAS start:^(BOOL completed, NSError *error) {
+            
             if(error)
             {
-                if([L7SClientManager delegate] && [[L7SClientManager delegate] respondsToSelector:@selector(DidReceiveError:)]){
-                    [[L7SClientManager delegate] DidReceiveError:error];
-                }
-                
                 return;
             }
             else if (completed){
-                [L7SClientManager sharedClientManager].state = L7SDidSDKStart;
                 
                 NSString *authorization = [MASUser authorizationBearerWithAccessToken];
                 [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
@@ -97,12 +93,6 @@
                 [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
                 
                 self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
-            }
-            
-            
-            if([L7SClientManager delegate] && [[L7SClientManager delegate] respondsToSelector:@selector(DidStart)])
-            {
-                [[L7SClientManager delegate] DidStart];
             }
         }];
     }
@@ -117,9 +107,7 @@
 
 #pragma mark - NSURLConnectionDelegate. Following code are modified copy from AFNetworking AFURLConnectionOperation.m
 
-
-- (void)connection:(NSURLConnection *)connection
-willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
@@ -127,39 +115,15 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
         SecPolicyRef policy = SecPolicyCreateBasicX509();
         CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
         NSMutableArray *trustChain = [NSMutableArray arrayWithCapacity:certificateCount];
+        
         for (CFIndex i = 0; i < certificateCount; i++) {
             SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
             
-            //Todo : checking only for certificate pinning mode
-            // Currently it is assumed as certificate pinning mode
-            
-//            if ([L7SPolicyManager sharedPolicyManager].configuration.pinningMode == L7SAFSSLPinningModeCertificate) {
-            
-                [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
-            
-//            } else if ([L7SPolicyManager sharedPolicyManager].configuration.pinningMode  == L7SAFSSLPinningModePublicKey) {
-//                SecCertificateRef someCertificates[] = {certificate};
-//                CFArrayRef certificates = CFArrayCreate(NULL, (const void **)someCertificates, 1, NULL);
-//                
-//                SecTrustRef trust = NULL;
-//                
-//                OSStatus status = SecTrustCreateWithCertificates(certificates, policy, &trust);
-//                NSAssert(status == errSecSuccess, @"SecTrustCreateWithCertificates error: %ld", (long int)status);
-//                
-//                SecTrustResultType result;
-//                status = SecTrustEvaluate(trust, &result);
-//                NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
-//                
-//                [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
-//                
-//                CFRelease(trust);
-//                CFRelease(certificates);
-//            }
+            [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
         }
         
         CFRelease(policy);
         
-        //Todo: checking only for case certificatePinning mode
         {
             for (id serverCertificateData in trustChain) {
                 if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
@@ -170,61 +134,11 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
             }
             
             [[challenge sender] cancelAuthenticationChallenge:challenge];
-//            break;
         }
-        /*
-        switch ([L7SPolicyManager sharedPolicyManager].configuration.pinningMode ) {
-            case L7SAFSSLPinningModePublicKey: {
-                NSArray *pinnedPublicKeys = [self.class pinnedPublicKeys];
-                
-                for (id publicKey in trustChain) {
-                    for (id pinnedPublicKey in pinnedPublicKeys) {
-                        if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)publicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
-                            NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
-                            [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-                            return;
-                        }
-                    }
-                }
-                
-                [[challenge sender] cancelAuthenticationChallenge:challenge];
-                break;
-            }
-            case L7SAFSSLPinningModeCertificate: {
-                for (id serverCertificateData in trustChain) {
-                    if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
-                        NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
-                        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-                        return;
-                    }
-                }
-                
-                [[challenge sender] cancelAuthenticationChallenge:challenge];
-                break;
-            }
-            case L7SAFSSLPinningModeNone: {
-                if (self.allowsInvalidSSLCertificate){
-                    NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
-                    [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-                } else {
-                    SecTrustResultType result = 0;
-                    OSStatus status = SecTrustEvaluate(serverTrust, &result);
-                    NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
-                    
-                    if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
-                        NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
-                        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-                    } else {
-                        [[challenge sender] cancelAuthenticationChallenge:challenge];
-                    }
-                }
-                break;
-            }
-        }*/
     } else {
         if ([challenge previousFailureCount] == 0) {
             //client side authentication
-            NSURLCredential * credential = [[MASSecurityService sharedService]createUrlCredential];
+            NSURLCredential * credential = [[MASSecurityService sharedService] createUrlCredential];
             if (credential) {
                 [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
             } else {
@@ -257,6 +171,7 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
     });
     return _pinnedCertificates;
 }
+
 
 + (NSArray *)pinnedPublicKeys {
     static NSArray *_pinnedPublicKeys = nil;
@@ -298,78 +213,23 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
 }
 
 
-
-/*
--(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
-{
-    NSLog(@"challenge..%@",challenge.protectionSpace.authenticationMethod);
-    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        
-        [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
-        
-    }
-    else
-        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
-}
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
-{
-    [self.client URLProtocol:self didLoadData:data];
-    NSLog(@"data ...%@  ",data); //handle data here
-//    [self.mutableData appendData:data];
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
-{
-    if(!error)
-    {
-        [self.client URLProtocolDidFinishLoading:self];
-    }
-    else{
-        NSLog(@"error ...%@  ",error);
-        [self.client URLProtocol:self didFailWithError:error];
-    }
-    
-}*/
-
-
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     [self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
 }
+
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     [self.client URLProtocol:self didLoadData:data];
 }
 
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     [self.client URLProtocolDidFinishLoading:self];
 }
 
+
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     [self.client URLProtocol:self didFailWithError:error];
 }
-
-
-/*
-
-#if !defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-static NSData *AFSecKeyGetData(SecKeyRef key) {
-    CFDataRef data = NULL;
-    
-    OSStatus status = SecItemExport(key, kSecFormatUnknown, kSecItemPemArmour, NULL, &data);
-    NSCAssert(status == errSecSuccess, @"SecItemExport error: %ld", (long int)status);
-    NSCParameterAssert(data);
-    
-    return (__bridge_transfer NSData *)data;
-}
-#endif
-
-static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
-#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-    return [(__bridge id)key1 isEqual:(__bridge id)key2];
-#else
-    return [AFSecKeyGetData(key1) isEqual:AFSecKeyGetData(key2)];
-#endif
-}
-*/
 
 @end

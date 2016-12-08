@@ -101,6 +101,7 @@ static NSString *const MASClientInitializeEndpoint = @"client_credential_init_en
 static NSString *const MASDeviceListEndpoint = @"device_list_endpoint_path"; // string
 static NSString *const MASDeviceRegisterEndpoint = @"device_register_endpoint_path"; // string
 static NSString *const MASDeviceRegisterClientEndpoint = @"device_register_client_endpoint_path"; // string
+static NSString *const MASDeviceRenewEndpoint = @"device_renew_endpoint_path"; // string
 static NSString *const MASDeviceRemoveEndpoint = @"device_remove_endpoint_path"; // string
 static NSString *const MASEnterpriseBrowserEndpoint = @"enterprise_browser_endpoint_path"; // string
 static NSString *const MASTokenEndpoint = @"token_endpoint_path"; // string
@@ -292,7 +293,7 @@ static float _systemVersionNumber_;
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASConfiguration.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASConfiguration.class description]];
     if(data)
     {
         configuration = (MASConfiguration *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -315,7 +316,7 @@ static float _systemVersionNumber_;
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStore] setData:data forKey:[MASConfiguration.class description] error:&error];
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data forKey:[MASConfiguration.class description] error:&error];
         if(error)
         {
             DLog(@"Error attempting to save data: %@", [error localizedDescription]);
@@ -328,7 +329,7 @@ static float _systemVersionNumber_;
 
 - (void)reset
 {
-    [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASConfiguration.class description]];
+    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASConfiguration.class description]];
 }
 
 
@@ -632,6 +633,12 @@ static float _systemVersionNumber_;
 }
 
 
+- (NSString *)deviceRenewEndpointPath
+{
+    return _endpointKeysToPaths_[MASDeviceRenewEndpoint];
+}
+
+
 - (NSString *)deviceRemoveEndpointPath
 {
     return _endpointKeysToPaths_[MASDeviceRemoveEndpoint];
@@ -763,63 +770,7 @@ static float _systemVersionNumber_;
 
 # pragma mark - Public
 
-- (NSString *)debugDescription
-{
-    NSMutableString *endpoints = [[NSMutableString alloc] initWithString:@"\n\n        {\n"];
-    
-    NSString *keyToEndpoint;
-    for(NSString *endpointKey in _endpointKeysToPaths_)
-    {
-        keyToEndpoint = [NSString stringWithFormat:@"            %@ = %@\n", endpointKey, _endpointKeysToPaths_[endpointKey]];
-        [endpoints appendString:keyToEndpoint];
-    }
-    [endpoints appendString:@"        }"];
-    
-    
-    return [NSString stringWithFormat:@"(%@) is loaded: %@\n\n        application name: %@\n        application type: %@\n"
-            "        application description: %@\n        application organization: %@\n        application registered by: %@\n"
-            "        gateway host: %@\n        gateway port: %@\n        gateway prefix: %@\n        gateway url: %@\n"
-            "        location is required: %@\n        endpoint keys to paths: %@",
-            [self class], ([self isLoaded] ? @"Yes" : @"No"), [self applicationName], [self applicationType],
-            [self applicationDescription], [self applicationOrganization], [self applicationRegisteredBy],
-            [self gatewayHostName], [self gatewayPort], [self gatewayPrefix], [self gatewayUrl],
-            ([self locationIsRequired] ? @"Yes" : @"No"), endpoints];
-}
-
-
-- (NSDictionary *)defaultApplicationClientInfo
-{
-    NSMutableArray *applicationClientInfoFound = [NSMutableArray new];
-    for(NSDictionary *info in self.applicationClients)
-    {
-        [applicationClientInfoFound addObject:info];
-    }
-    
-    // Should there be two or more allowed in the list that meet that criteria?  Can it happen?
-    if(applicationClientInfoFound.count > 1)
-    {
-        DLog(@"Warning: found %ld iOS clients that are enabled, just choosing first in the list",
-            (long)applicationClientInfoFound.count);
-    }
-    
-    // Return the first found or nil if none
-    return (applicationClientInfoFound.count > 0 ? applicationClientInfoFound[0] : nil);
-}
-
-
-- (NSString *)defaultApplicationClientIdentifier
-{
-    return [self defaultApplicationClientInfo][MASOAuthApplicationClientId];
-}
-
-
-- (NSString *)defaultApplicationClientSecret
-{
-    return [self defaultApplicationClientInfo][MASOAuthApplicationClientSecret];
-}
-
-
-- (NSError *)validateJSONConfiguration
++ (NSError *)validateJSONConfiguration:(NSDictionary *)configuration
 {
     NSMutableArray *validationRules = [NSMutableArray array];
     
@@ -876,16 +827,16 @@ static float _systemVersionNumber_;
         //
         //  If the value is not class type that is being expected, return an error
         //
-        if (![[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] isKindOfClass:[rule objectForKey:@"classType"]])
+        if (![[configuration valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] isKindOfClass:[rule objectForKey:@"classType"]])
         {
-            return [NSError errorConfigurationLoadingFailedJsonValidationWithDescription:[NSString stringWithFormat:@"%@ should be %@; but it is %@", [rule objectForKey:@"keyPath"], NSStringFromClass([rule objectForKey:@"classType"]), NSStringFromClass([[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] class])]];
+            return [NSError errorConfigurationLoadingFailedJsonValidationWithDescription:[NSString stringWithFormat:@"%@ should be %@; but it is %@", [rule objectForKey:@"keyPath"], NSStringFromClass([rule objectForKey:@"classType"]), NSStringFromClass([[configuration valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] class])]];
         }
         //
         //  If the values is type of NSString, make sure to not allow empty string
         //
         else if ([rule objectForKey:@"classType"] == [NSString class] && ![[rule objectForKey:@"keyPath"] isEqualToString:@"server.prefix"])
         {
-            NSString *trimmedString = [[_configurationInfo_ valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            NSString *trimmedString = [[configuration valueForKeyPathWithIndexes:[rule objectForKey:@"keyPath"]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
             if (trimmedString.length <= 0)
             {
@@ -896,6 +847,62 @@ static float _systemVersionNumber_;
     }
     
     return nil;
+}
+
+
+- (NSString *)debugDescription
+{
+    NSMutableString *endpoints = [[NSMutableString alloc] initWithString:@"\n\n        {\n"];
+    
+    NSString *keyToEndpoint;
+    for(NSString *endpointKey in _endpointKeysToPaths_)
+    {
+        keyToEndpoint = [NSString stringWithFormat:@"            %@ = %@\n", endpointKey, _endpointKeysToPaths_[endpointKey]];
+        [endpoints appendString:keyToEndpoint];
+    }
+    [endpoints appendString:@"        }"];
+    
+    
+    return [NSString stringWithFormat:@"(%@) is loaded: %@\n\n        application name: %@\n        application type: %@\n"
+            "        application description: %@\n        application organization: %@\n        application registered by: %@\n"
+            "        gateway host: %@\n        gateway port: %@\n        gateway prefix: %@\n        gateway url: %@\n"
+            "        location is required: %@\n        endpoint keys to paths: %@",
+            [self class], ([self isLoaded] ? @"Yes" : @"No"), [self applicationName], [self applicationType],
+            [self applicationDescription], [self applicationOrganization], [self applicationRegisteredBy],
+            [self gatewayHostName], [self gatewayPort], [self gatewayPrefix], [self gatewayUrl],
+            ([self locationIsRequired] ? @"Yes" : @"No"), endpoints];
+}
+
+
+- (NSDictionary *)defaultApplicationClientInfo
+{
+    NSMutableArray *applicationClientInfoFound = [NSMutableArray new];
+    for(NSDictionary *info in self.applicationClients)
+    {
+        [applicationClientInfoFound addObject:info];
+    }
+    
+    // Should there be two or more allowed in the list that meet that criteria?  Can it happen?
+    if(applicationClientInfoFound.count > 1)
+    {
+        DLog(@"Warning: found %ld iOS clients that are enabled, just choosing first in the list",
+            (long)applicationClientInfoFound.count);
+    }
+    
+    // Return the first found or nil if none
+    return (applicationClientInfoFound.count > 0 ? applicationClientInfoFound[0] : nil);
+}
+
+
+- (NSString *)defaultApplicationClientIdentifier
+{
+    return [self defaultApplicationClientInfo][MASOAuthApplicationClientId];
+}
+
+
+- (NSString *)defaultApplicationClientSecret
+{
+    return [self defaultApplicationClientInfo][MASOAuthApplicationClientSecret];
 }
 
 

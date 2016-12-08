@@ -438,6 +438,30 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorOTPRetryBarred:(NSString *)suspensionTime
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *localDescription =
+    [self descriptionForFoundationErrorCode:MASFoundationErrorCodeOTPRetryBarred];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    //
+    // Suspension time
+    //
+    if(suspensionTime) userInfo[MASOTPSuspensionTimeKey] = suspensionTime;
+    
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPRetryBarred info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorInvalidNSDictionary
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeInvalidNSDictionary errorDomain:MASFoundationErrorDomainLocal];
@@ -565,6 +589,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorDeviceDoesNotSupportLocalAuthentication
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorFlowIsNotActive
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeFlowIsNotActive errorDomain:MASFoundationErrorDomainLocal];
@@ -606,6 +636,10 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeGeolocationIsNotConfigured errorDomain:MASFoundationErrorDomainLocal];
 }
 
++ (NSError *)errorMASIsNotStarted
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeMASIsNotStarted errorDomain:MASFoundationErrorDomainLocal];
+}
 
 + (NSError *)errorNetworkNotReachable
 {
@@ -649,6 +683,24 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorUserSessionIsAlreadyLocked
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeUserSessionIsAlreadyLocked errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorUserSessionIsAlreadyUnlocked
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeUserSessionIsAlreadyUnlocked errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorUserSessionIsCurrentlyLocked
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeUserSessionIsCurrentlyLocked errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorInvalidIdToken
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeTokenInvalidIdToken errorDomain:MASFoundationErrorDomainLocal];
@@ -676,6 +728,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 + (NSError *)errorIdTokenInvalidAud
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeTokenIdTokenInvalidAud errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorIdTokenNotExistForLockingUserSession
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession errorDomain:MASFoundationErrorDomainLocal];
 }
 
 
@@ -776,8 +834,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // OTP
         //
         case MASApiErrorCodeOTPExpired: return MASFoundationErrorCodeOTPExpired;
-        case MASApiErrorCodeOTPRetryLimitExceeded:
-        case MASApiErrorCodeOTPRetryBarred: return MASFoundationErrorCodeOTPRetryLimitExceeded;
+        case MASApiErrorCodeOTPRetryLimitExceeded: return MASFoundationErrorCodeOTPRetryLimitExceeded;
+        case MASApiErrorCodeOTPRetryBarred: return MASFoundationErrorCodeOTPRetryBarred;
             
         //
         // Default
@@ -838,14 +896,16 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeInvalidNSDictionary: return @"Invalid NSDictionary object. JSON object cannot be nil.";
         case MASFoundationErrorCodeInvalidNSURL: return @"Invalid NSURL object. File URL cannot be nil";
         case MASFoundationErrorCodeInvalidUserLoginBlock: return @"SDK is attempting to invoke MASDeviceRegistrationWithUserCredentialsBlock, but the block has not defined.  The block is mandatory for user credential flow if you have decided to not use MASUI.";
-        
+        case MASFoundationErrorCodeMASIsNotStarted: return @"MAS SDK has not been started.";
+            
         //
         // OTP
         //
-        case MASFoundationErrorCodeOTPNotProvided: return @"Enter the OTP.";
-        case MASFoundationErrorCodeInvalidOTPProvided: return @"Authentication failed due to invalid OTP.";
+        case MASFoundationErrorCodeOTPNotProvided: return @"Enter the OTP";
+        case MASFoundationErrorCodeInvalidOTPProvided: return @"Authentication failed due to invalid OTP";
         case MASFoundationErrorCodeOTPExpired: return @"The OTP has expired.";
         case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of invalid attempts. Please try after some time.";
+        case MASFoundationErrorCodeOTPRetryBarred: return @"Your account is blocked. Try after some time.";
             
         //
         // Application
@@ -863,6 +923,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization: return @"The configuration file %@ was found but the contents could not be loaded with description\n\n\'%@\'";
         case MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation: return @"The configuration was successfully loaded, but the configuration is invalid for the following reason\n\n'%@'";
         case MASFoundationErrorCodeConfigurationInvalidEndpoint: return @"Invalid endpoint";
+            
         //
         // Device
         //
@@ -875,6 +936,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeDeviceRecordIsNotValid: return @"The registered device record is invalid";
         case MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope: return @"Attempted to register the device with a Scope that isn't registered in the application record on the Gateway";
         case MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters: return @"The device registration does not have the required parameters";
+        case MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication: return @"The device does not support or have valid local authnetication method";
         
         //
         // Flow
@@ -914,6 +976,9 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeUserDoesNotExist: return @"A user does not exist";
         case MASFoundationErrorCodeUserNotAuthenticated: return @"A user is not authenticated";
         case MASFoundationErrorCodeLoginProcessCancel: return @"Login process has been cancelled";
+        case MASFoundationErrorCodeUserSessionIsAlreadyLocked: return @"User session is already locked";
+        case MASFoundationErrorCodeUserSessionIsAlreadyUnlocked: return @"User session is not locked";
+        case MASFoundationErrorCodeUserSessionIsCurrentlyLocked: return @"User session is currently locked";
     
         //
         // Token
@@ -923,6 +988,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeTokenIdTokenInvalidAud: return @"JWT Validation: aud value does not match";
         case MASFoundationErrorCodeTokenIdTokenInvalidAzp: return @"JWT Validation: azp value does not match";
         case MASFoundationErrorCodeTokenIdTokenInvalidSignature: return @"JWT Validation: signature does not match";
+        case MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession: return @"id_token does not exist; id_token is required for locking user session";
             
         case MASFoundationErrorCodeAccessTokenNotGrantedScope: return @"Given access token is not granted for required scope.";
         case MASFoundationErrorCodeAccessTokenDisabled: return @"Given access token is disabled";

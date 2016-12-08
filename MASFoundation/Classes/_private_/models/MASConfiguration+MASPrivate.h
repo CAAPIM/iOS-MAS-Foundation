@@ -43,6 +43,7 @@
 @property (nonatomic, copy, readonly) NSString *deviceListAllEndpointPath;
 @property (nonatomic, copy, readonly) NSString *deviceRegisterEndpointPath;
 @property (nonatomic, copy, readonly) NSString *deviceRegisterClientEndpointPath;
+@property (nonatomic, copy, readonly) NSString *deviceRenewEndpointPath;
 @property (nonatomic, copy, readonly) NSString *deviceRemoveEndpointPath;
 @property (nonatomic, copy, readonly) NSString *enterpriseBrowserEndpointPath;
 @property (nonatomic, copy, readonly) NSString *tokenEndpointPath;
@@ -190,5 +191,11 @@
  *  @return BOOL of whether the JSON object has different server environment than the current configuration.
  */
 - (BOOL)detectServerChangeWithCurrentConfiguration:(NSDictionary *)newConfiguration;
+
+
+
+# pragma mark - Static
+
++ (NSError *)validateJSONConfiguration:(NSDictionary *)configuration;
 
 @end

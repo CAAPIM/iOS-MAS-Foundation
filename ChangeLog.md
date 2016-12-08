@@ -1,21 +1,39 @@
+# Version 1.3
+
+### Bug fixes
+- Fixes an issue with dynamically switching between msso config's when one of the configs has location enabled and another msso config has location disabled. If the user declines location services permission when first opening the app, the app would hang when switching msso's back to the config that allowed location. [DE230814]
+- Improved error handling in the case of missing parameters. [US240398]
+- Added nullability annotations to certain interfaces. [US240400]
+- When changing the master client key , the sdk now recognizes the change. The sdk will clean out the client id, client secret, access token, refresh token. The client will attempt to re-authenticate with the id token. This addresses adding scope to an existing api. [US240404]
+- Fixed a bug where Mobile SDK attempted to initialize with invalid configuration file and caches the invalid configuration. [DE244332][DE255042]
+- Changed the client id format for MQTT protocol. [US263626]
+- ```[[MASDevice currentDevice] clearLocal]``` method will remove all credentials in both local and shared keychain storage.
+
+### New features
+- Fingerprint Session Lock feature implementation.  User session can now be locked and unlocked with Fingerprint and/or device passcode (device local authentication). [US246928]
+- Client certificate process is newly added.  Mobile SDK will automatically detect the validity of the client certificate and renew it when necessary. [US240412]
+- MASAuthenticationProviders can now be retreived as needed through ```[MASAuthenticationProviders retrieveAuthenticationProvidersWithCompletion:] ```.
+
 # Version 1.2.00-CR1
 
 ### Bug fixes
  
-- Adding listAttibutes to MASObject in MASFoundation framework after removing from MASStorage MASObject category.
-- Fix the bug where MASUser object's isAuthenticated property returns wrong value for other user objects retrieved from MASIdentityManagement.
-- Fix the bug where isCurrentUser flag was not determined dynamically when retrieved from MASIdentityManagement.  MASFoundation will determine isCurrentUser flag dynamically by [MASUser currentUser] and/or user retrival from MASIdentityManagement.
-- Fix the bug when passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock.
-- Fix the bug where version number and version string were returning incorrect values.
-- Fix the bug where the MSSO is not handled properly for explicit authentication method.
+- Added listAttibutes method to MASObject in MASFoundation framework. [MCT-436]
+- The MASUser object isAuthenticated property returned wrong value for other user objects retrieved from MASIdentityManagement. [MCT-469]
+- The isCurrentUser flag was not determined dynamically when retrieved from MASIdentityManagement. MASFoundation will determine isCurrentUser flag dynamically by [MASUser currentUser] and/or user retrival from MASIdentityManagement. [MCT-434]
+- When passing "cancel" as YES into MASBasicCredentialBlock, SDK was failing to notify the original caller of the request; it was only notifying the completion block of MASBasicCredentialBlock. [MCT-439]
+- Version number and version string returned incorrect values. [MCT-437]
+- MSSO is not handled properly for explicit authentication method. [MCT-504]
+- A MASFoundation app stops working if geolocation is enabled (location_enabled) in the JSON configuration file and the user selects "Don't Allow" at the allow access to location prompt. Now, the app continues to work, but returns errors from APIs requiring the geolocation information. [MCT-335]
+
 
 ### New features
 
-- 
+None.
 
 ### Deprecated methods
 
-- 
+None.
 
 # Version 1.2.00
 

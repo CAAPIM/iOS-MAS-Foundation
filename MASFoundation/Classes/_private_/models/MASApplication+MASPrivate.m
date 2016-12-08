@@ -14,6 +14,7 @@
 #import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
+#import "MASModelService.h"
 
 
 # pragma mark - Property Constants
@@ -140,7 +141,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStore] dataForKey:[MASApplication.class description]];
+    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASApplication.class description]];
     if(data)
     {
         application = (MASApplication *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -196,9 +197,9 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     if(data)
     {
         NSError *error;
-        [[MASIKeyChainStore keyChainStore] setData:data
-                                            forKey:[MASApplication.class description]
-                                            error:&error];
+        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data
+                                                                                                                         forKey:[MASApplication.class description]
+                                                                                                                          error:&error];
     
         if(error)
         {
@@ -269,7 +270,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     [accessService setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
     [accessService setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeClientExpiration];
     
-    [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASApplication.class description]];
+    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASApplication.class description]];
 }
 
 
@@ -562,6 +563,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     
     NSString *accessToken = accessService.currentAccessObj.accessToken;
     NSString *refreshToken = accessService.currentAccessObj.refreshToken;
+    NSString *idToken = accessService.currentAccessObj.idToken;
     NSNumber *expiresIn = accessService.currentAccessObj.expiresIn;
     NSDate *expiresInDate = accessService.currentAccessObj.expiresInDate;
     
@@ -585,10 +587,15 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Then check if expiration has passed
     //
-    if (([expiresInDate timeIntervalSinceNow] <= 0))
+    if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
     {
         currentStatus = MASAuthenticationStatusNotLoggedIn;
-        [accessService.currentAccessObj deleteForTokenExpiration];
+        [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
+    }
+    
+    if ((refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil])) && [MASUser currentUser])
+    {
+        currentStatus = MASAuthenticationStatusLoginWithUser;
     }
     
     //DLog(@"\n\nNOW date is: %@, expiration date is: %@ and interval since now: %f\n\n",
