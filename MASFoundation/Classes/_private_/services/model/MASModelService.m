@@ -409,7 +409,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     if (scope && self.currentDevice.isRegistered)
     {
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso_register" withString:@""];
+        scope = [scope replaceStringWithRegexPattern:@"\\bmsso_register\\b" withString:@""];
     }
     
     //
@@ -417,7 +417,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
     {
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso" withString:@""];
+        scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
     }
     
     parameterInfo[MASScopeRequestResponseKey] = scope;
@@ -2325,7 +2325,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
     {
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso" withString:@""];
+        scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
     }
     
     if (scope)
@@ -2542,7 +2542,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
     {
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso" withString:@""];
+        scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
     }
     
     if (scope)
@@ -2985,7 +2985,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
     {
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso" withString:@""];
+        scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
     }
     
     if(scope) parameterInfo[MASScopeRequestResponseKey] = scope;

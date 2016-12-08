@@ -41,4 +41,7 @@
  */
 - (NSString *)md5String;
 
+
+- (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string;
+
 @end
