@@ -75,4 +75,9 @@
  */
 + (NSString *)base64URLWithNSData:(NSData *)data;
 
+
+
+- (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string;
+
+
 @end

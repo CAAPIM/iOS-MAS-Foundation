@@ -301,6 +301,8 @@
 		CB1907F41C1794FC00A5EF16 /* MASAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907F21C1794FC00A5EF16 /* MASAccess.m */; };
 		CB1907F81C17950700A5EF16 /* MASAccessService.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1907F61C17950700A5EF16 /* MASAccessService.h */; };
 		CB1907F91C17950700A5EF16 /* MASAccessService.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907F71C17950700A5EF16 /* MASAccessService.m */; };
+		CB273F001DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = CB273EFE1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h */; };
+		CB273F011DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = CB273EFF1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m */; };
 		CB5E4C5A1C1D14DB001B3B8A /* MASHTTPSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C581C1D14DB001B3B8A /* MASHTTPSessionManager.h */; };
 		CB5E4C5B1C1D14DB001B3B8A /* MASHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C591C1D14DB001B3B8A /* MASHTTPSessionManager.m */; };
 		CB5E4C641C1D1B56001B3B8A /* MASGetURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C621C1D1B56001B3B8A /* MASGetURLRequest.h */; };
@@ -641,6 +643,8 @@
 		CB1907F21C1794FC00A5EF16 /* MASAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASAccess.m; sourceTree = "<group>"; };
 		CB1907F61C17950700A5EF16 /* MASAccessService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASAccessService.h; sourceTree = "<group>"; };
 		CB1907F71C17950700A5EF16 /* MASAccessService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASAccessService.m; sourceTree = "<group>"; };
+		CB273EFE1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = L7SBrowserURLProtocol.h; sourceTree = "<group>"; };
+		CB273EFF1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = L7SBrowserURLProtocol.m; sourceTree = "<group>"; };
 		CB5E4C581C1D14DB001B3B8A /* MASHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASHTTPSessionManager.h; sourceTree = "<group>"; };
 		CB5E4C591C1D14DB001B3B8A /* MASHTTPSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASHTTPSessionManager.m; sourceTree = "<group>"; };
 		CB5E4C621C1D1B56001B3B8A /* MASGetURLRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASGetURLRequest.h; sourceTree = "<group>"; };
@@ -1203,6 +1207,7 @@
 			isa = PBXGroup;
 			children = (
 				A4E340BE1B9E9F2000883AD3 /* MASConstantsPrivate.h */,
+				CB273EFD1DF8C5AA00AF2BDB /* _deprecated_ */,
 				A4F6712F1BAFC321000E2223 /* categories */,
 				A4831ABB1BD1A822007B4AE6 /* services */,
 				A4FB99191BAF70580083B06C /* models */,
@@ -1282,6 +1287,15 @@
 				CB1907F71C17950700A5EF16 /* MASAccessService.m */,
 			);
 			path = access;
+			sourceTree = "<group>";
+		};
+		CB273EFD1DF8C5AA00AF2BDB /* _deprecated_ */ = {
+			isa = PBXGroup;
+			children = (
+				CB273EFE1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h */,
+				CB273EFF1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m */,
+			);
+			path = _deprecated_;
 			sourceTree = "<group>";
 		};
 		CB5E4C571C1D149F001B3B8A /* sessionManager */ = {
@@ -1472,6 +1486,7 @@
 				A4E340EB1B9E9F2000883AD3 /* MASConstantsPrivate.h in Headers */,
 				CB5E4C6C1C1D2467001B3B8A /* MASDeleteURLRequest.h in Headers */,
 				10738A301C711C2F00B7E87E /* read_handle.h in Headers */,
+				CB273F001DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h in Headers */,
 				105B2F3F1CA6B3EA0005A2D0 /* ocsp.h in Headers */,
 				A483C1A31BE56BAF007572CE /* CBPeripheralManager+MASPrivate.h in Headers */,
 				10738A221C711C2F00B7E87E /* dummypthread.h in Headers */,
@@ -1663,6 +1678,7 @@
 				CB1907F41C1794FC00A5EF16 /* MASAccess.m in Sources */,
 				A4831AFB1BD1A8E8007B4AE6 /* MASFile+MASPrivate.m in Sources */,
 				A4831AAC1BD1A551007B4AE6 /* MASAuthenticationProvider.m in Sources */,
+				CB273F011DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m in Sources */,
 				CB0A8AE01D01F64F00B1DCCC /* MASProximityLogin.m in Sources */,
 				10738A2D1C711C2F00B7E87E /* net_mosq.c in Sources */,
 				A42D02E11C0E223600AA1F11 /* MASAuthenticationProviders.m in Sources */,
