@@ -14,8 +14,9 @@
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 #import "MASIKeyChainStore.h"
-
 #import "MASDevice+MASPrivate.h"
+#import "NSString+MASPrivate.h"
+#import "NSData+MASPrivate.h"
 
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
@@ -428,6 +429,37 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // Display
     parameterInfo[MASDisplayRequestResponseKey] = @"social_login";
     
+    // PKCE Support - generate code verifier
+    [[MASAccessService sharedService].currentAccessObj generateCodeVerifier];
+    
+    // PKCE Support - generate state
+    [[MASAccessService sharedService].currentAccessObj generatePKCEState];
+    
+    // Retrieve code verifier
+    NSString *codeVerifier = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+    
+    // Retrieve state
+    NSString *pkceState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
+    
+    if (codeVerifier)
+    {
+        // SHA256 the code verifier and encode it with base64url
+        NSString *codeChallenge = [NSString base64URLWithNSData:[codeVerifier sha256Data]];
+        
+        if (codeChallenge)
+        {
+            parameterInfo[MASPKCECodeChallengeRequestResponseKey] = codeChallenge;
+            //
+            // code_challenge_method should be S256 if the code challenge is hashed;
+            //
+            // Otherwise, make code_challenge = code_verifier, and send code_challenge_method as plan, MASPKCECodeChallengeMethodPlainKey
+            //
+            parameterInfo[MASPKCECodeChallengeMethodRequestResponseKey] = MASPKCECodeChallengeMethodSHA256Key;
+            
+            parameterInfo[MASPKCEStateRequestResponseKey] = pkceState;
+        }
+    }
+    
     //
     // Trigger the request
     //
@@ -654,6 +686,13 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             // Clear currentUser object upon log-out
             //
             [blockSelf clearCurrentUserForLogout];
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+            
             //
             // KeyChain
             //
@@ -1384,6 +1423,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              
              return;
          }
+         
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          //
          // Validate id_token when received from server.
@@ -2343,6 +2388,17 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeAuthorizationCode;
     
     //
+    // If code verifier exists in the memory
+    //
+    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
+    {
+        //
+        // inject it into parameter of the request
+        //
+        parameterInfo[MASPKCECodeVerifierRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+    }
+    
+    //
     // Trigger the request
     //
     // Note that security credentials are added automatically by this method
@@ -2379,6 +2435,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          // Validate id_token when received from server.
          //
          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+         
+         //
+         // Remove PKCE Code Verifier and state once it's validated
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
              [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
@@ -2594,6 +2656,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 
                 return;
             }
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
             
             //
             // Validate id_token when received from server.
@@ -2826,6 +2894,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              
              return;
          }
+        
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          //
          // Validate id_token when received from server.
@@ -3024,6 +3098,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             
                 return;
             }
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
         
             //
             // Validate id_token when received from server.

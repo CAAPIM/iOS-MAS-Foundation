@@ -653,6 +653,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorInvalidAuthorization
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidAuthorization errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorUserAlreadyAuthenticated
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeUserAlreadyAuthenticated errorDomain:MASFoundationErrorDomainLocal];
@@ -968,6 +974,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         
         case MASFoundationErrorCodeResponseSerializationFailedToParseResponse: return @"Invalid response format - failed to parse response";
         
+        //
+        // Authorization
+        //
+        case MASFoundationErrorCodeInvalidAuthorization: return @"The authorization failed due to invalid state.";
+            
         //
         // User
         //

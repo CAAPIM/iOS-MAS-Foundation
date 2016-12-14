@@ -12,6 +12,9 @@
 
 #import <WebKit/WKNavigationDelegate.h>
 
+#import "MASAccessService.h"
+#import "NSError+MASPrivate.h"
+
 
 static NSString *const MASSocialLoginAuthenticationProvider = @"provider"; // string
 static NSString *const MASSocialLoginWebview = @"webview"; // string
@@ -215,6 +218,50 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
                 //
                 else {
                     _webView.navigationDelegate = nil;
+                }
+            }
+            
+            //
+            // Validate PKCE state value
+            // If either one of request or response states is present, validate it; otherwise, ignore
+            //
+            if ([queryStringDictionary objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
+            {
+                NSString *responseState = [queryStringDictionary objectForKey:MASPKCEStateRequestResponseKey];
+                NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
+                
+                NSError *pkceError = nil;
+                
+                //
+                // If response or request state is nil, invalid request and/or response
+                //
+                if (responseState == nil || requestState == nil)
+                {
+                    pkceError = [NSError errorInvalidAuthorization];
+                }
+                //
+                // verify that the state in the response is the same as the state sent in the request
+                //
+                else if (![[queryStringDictionary objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
+                {
+                    pkceError = [NSError errorInvalidAuthorization];
+                }
+                
+                //
+                // If the validation fail, notify
+                //
+                if (pkceError)
+                {
+                    
+                    //
+                    // Notify delegate for an error from webview
+                    //
+                    if (_delegate && [_delegate respondsToSelector:@selector(didReceiveError:)])
+                    {
+                        [_delegate didReceiveError:pkceError];
+                    }
+                    
+                    return;
                 }
             }
             

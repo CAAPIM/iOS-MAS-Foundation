@@ -70,6 +70,12 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     [[MASModelService sharedService] clearCurrentUserForLogout];
     
     //
+    // Remove PKCE Code Verifier and state
+    //
+    [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+    [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+    
+    //
     // Remove local & shared keychains
     //
     [[MASAccessService sharedService] clearLocal];

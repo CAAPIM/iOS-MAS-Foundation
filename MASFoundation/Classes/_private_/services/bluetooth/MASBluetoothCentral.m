@@ -11,6 +11,7 @@
 #import "MASBluetoothCentral.h"
 
 #import <CoreBluetooth/CoreBluetooth.h>
+#import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASNetworkingService.h"
 
@@ -178,6 +179,55 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromProximityLoginNotification object:pollError];
         }
         else {
+            
+            //
+            // Validate PKCE state value
+            // If either one of request or response states is present, validate it; otherwise, ignore
+            //
+            if ([responseInfo objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
+            {
+                NSString *responseState = [responseInfo objectForKey:MASPKCEStateRequestResponseKey];
+                NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
+                
+                NSError *pkceError = nil;
+                
+                //
+                // If response or request state is nil, invalid request and/or response
+                //
+                if (responseState == nil || requestState == nil)
+                {
+                    pkceError = [NSError errorInvalidAuthorization];
+                }
+                //
+                // verify that the state in the response is the same as the state sent in the request
+                //
+                else if (![[responseInfo objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
+                {
+                    pkceError = [NSError errorInvalidAuthorization];
+                }
+                
+                //
+                // If the validation fail, notify
+                //
+                if (pkceError)
+                {
+                    
+                    //
+                    // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
+                    //
+                    if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveProximityLoginError:)])
+                    {
+                        [[MASDevice proximityLoginDelegate] didReceiveProximityLoginError:pkceError];
+                    }
+                    
+                    //
+                    // Send the notification with authorization code
+                    //
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromProximityLoginNotification object:pkceError];
+                    
+                    return;
+                }
+            }
             
             //
             // Retrieve authorization code
