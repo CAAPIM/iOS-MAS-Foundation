@@ -21,7 +21,7 @@
 
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
-    if ([NSURLProtocol propertyForKey:@"AuthorizationSet" inRequest:request] == nil && [[self class] isProtectedResource:request.URL]){
+    if ([NSURLProtocol propertyForKey:@"AuthorizationSet" inRequest:request] == nil) {
         
         return YES;
     }
@@ -66,10 +66,16 @@
 {
     NSMutableURLRequest *newRequest = [self.request mutableCopy];
     if ([MASApplication currentApplication].isAuthenticated) {
-        NSString *authorization = [MASUser authorizationBearerWithAccessToken];
-        [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
         
-        [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
+        if ([self.class isProtectedResource:self.request.URL])
+        {
+            NSString *authorization = [MASUser authorizationBearerWithAccessToken];
+            [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
+            [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
+        }
+        else {
+            [NSURLProtocol setProperty:@NO forKey:@"AuthorizationSet" inRequest:newRequest];
+        }
         
         self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
     }
@@ -87,10 +93,15 @@
             }
             else if (completed){
                 
-                NSString *authorization = [MASUser authorizationBearerWithAccessToken];
-                [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
-                
-                [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
+                if ([self.class isProtectedResource:self.request.URL])
+                {
+                    NSString *authorization = [MASUser authorizationBearerWithAccessToken];
+                    [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
+                    [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
+                }
+                else {
+                    [NSURLProtocol setProperty:@NO forKey:@"AuthorizationSet" inRequest:newRequest];
+                }
                 
                 self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
             }
@@ -133,7 +144,15 @@
                 }
             }
             
-            [[challenge sender] cancelAuthenticationChallenge:challenge];
+            SecTrustResultType result = 0;
+            SecTrustEvaluate(serverTrust, &result);
+            
+            if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
+                NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+            } else {
+                [[challenge sender] cancelAuthenticationChallenge:challenge];
+            }
         }
     } else {
         if ([challenge previousFailureCount] == 0) {
@@ -155,7 +174,7 @@
     static NSMutableArray *_pinnedCertificates = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSBundle *bundle = [NSBundle mainBundle];
         NSArray *paths = [bundle pathsForResourcesOfType:@"cer" inDirectory:@"."];
         
         NSMutableArray *certificates = [NSMutableArray arrayWithCapacity:[paths count]];
