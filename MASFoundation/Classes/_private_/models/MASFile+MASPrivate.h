@@ -16,18 +16,6 @@
 
 
 ///--------------------------------------
-/// @name Properties
-///--------------------------------------
-
-# pragma mark - Properties
-
-@property (nonatomic, copy, readwrite) NSString *name;
-@property (nonatomic, strong, readwrite) NSData *contents;
-@property (nonatomic, assign, readwrite) NSString *filePath;
-
-
-
-///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------
 

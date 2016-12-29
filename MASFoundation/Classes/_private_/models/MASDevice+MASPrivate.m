@@ -15,15 +15,6 @@
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
 
-
-# pragma mark - Property Constants
-
-static NSString *const MASDeviceIsRegisteredPropertyKey = @"isRegistered"; // bool
-static NSString *const MASDeviceIdentifierPropertyKey = @"identifier"; // string
-static NSString *const MASDeviceNamePropertyKey = @"name"; // string
-static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
-
-
 @implementation MASDevice (MASPrivate)
 
 
@@ -34,8 +25,8 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     self = [super init];
     if(self)
     {
-        self.identifier = [MASDevice deviceIdBase64Encoded];
-        self.name = [MASDevice deviceNameBase64Encoded];
+        [self setValue:[MASDevice deviceIdBase64Encoded] forKey:@"identifier"];
+        [self setValue:[MASDevice deviceNameBase64Encoded] forKey:@"name"];
     }
     
     return self;
@@ -44,8 +35,6 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 
 + (MASDevice *)instanceFromStorage
 {
-    //DLog(@"\n\ncalled\n\n");
-    
     MASDevice *device;
     
     //
@@ -56,8 +45,6 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     {
         device = (MASDevice *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
-
-    //DLog(@"\n\ncalled and returning device: %@\n\n", [device debugDescription]);
     
     return device;
 }
@@ -65,8 +52,6 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 
 - (void)saveToStorage
 {
-    //DLog(@"\n\ncalled\n\n");
-    
     //
     // Save to the keychain
     //
@@ -88,8 +73,6 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 
 - (void)saveWithUpdatedInfo:(NSDictionary *)info
 {
-    //DLog(@"\n\ncalled\n\n");
-    
     NSAssert(info, @"info cannot be nil");
     
     //
@@ -106,7 +89,7 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     NSString *status = headerInfo[MASDeviceStatusRequestResponseKey];
     if (status)
     {
-        self.status = status;
+        [self setValue:status forKey:@"status"];
     }
     
     // JWT
@@ -178,92 +161,6 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
     [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASDevice.class description]];
 }
 
-
-# pragma mark - NSCoding
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    //DLog(@"\n\ncalled\n\n");
-    
-    [super encodeWithCoder:aCoder];
-    
-    if(self.identifier) [aCoder encodeObject:self.identifier forKey:MASDeviceIdentifierPropertyKey];
-    if(self.name) [aCoder encodeObject:self.name forKey:MASDeviceNamePropertyKey];
-    if(self.status) [aCoder encodeObject:self.status forKey:MASDeviceStatusPropertyKey];
-}
-
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    //DLog(@"\n\ncalled\n\n");
-    
-    if(self = [super initWithCoder:aDecoder])
-    {
-        self.identifier = [aDecoder decodeObjectForKey:MASDeviceIdentifierPropertyKey];
-        self.name = [aDecoder decodeObjectForKey:MASDeviceNamePropertyKey];
-        self.status = [aDecoder decodeObjectForKey:MASDeviceStatusPropertyKey];
-    }
-    
-    return self;
-}
-
-
-# pragma mark - Properties
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-
-- (BOOL)isRegistered
-{
-    //
-    // Obtain key chain items to determine registration status
-    //
-    MASAccessService *accessService = [MASAccessService sharedService];
-    
-    NSString *magIdentifier = [accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    NSData *certificateData = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
-
-    return (magIdentifier && certificateData);
-}
-
-
-- (NSString *)identifier
-{
-    return objc_getAssociatedObject(self, &MASDeviceIdentifierPropertyKey);
-}
-
-
-- (void)setIdentifier:(NSString *)identifier
-{
-    objc_setAssociatedObject(self, &MASDeviceIdentifierPropertyKey, identifier, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)name
-{
-    return objc_getAssociatedObject(self, &MASDeviceNamePropertyKey);
-}
-
-
-- (void)setName:(NSString *)name
-{
-    objc_setAssociatedObject(self, &MASDeviceNamePropertyKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)status
-{
-    return objc_getAssociatedObject(self, &MASDeviceStatusPropertyKey);
-}
-
-
-- (void)setStatus:(NSString *)status
-{
-    objc_setAssociatedObject(self, &MASDeviceStatusPropertyKey, status, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-#pragma clang diagnostic pop
 
 # pragma mark - Public
 

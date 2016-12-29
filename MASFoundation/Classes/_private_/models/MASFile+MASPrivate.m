@@ -33,53 +33,12 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
     self = [super init];
     if(self)
     {
-        self.name = name;
-        self.filePath = [MASIFileManager pathForApplicationSupportDirectoryWithPath:self.name];
-        self.contents = contents;
+        [self setValue:name forKey:@"name"];
+        [self setValue:[MASIFileManager pathForApplicationSupportDirectoryWithPath:self.name] forKey:@"filePath"];
+        [self setValue:contents forKey:@"contents"];
     }
     
     return self;
-}
-
-
-# pragma mark - Properties
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-
-- (NSString *)name
-{
-    return objc_getAssociatedObject(self, &MASFileNamePropertyKey);
-}
-
-
-- (void)setName:(NSString *)name
-{
-    objc_setAssociatedObject(self, &MASFileNamePropertyKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSData *)contents
-{
-    return objc_getAssociatedObject(self, &MASFileContentsPropertyKey);
-}
-
-
-- (void)setContents:(NSData *)contents
-{
-    objc_setAssociatedObject(self, &MASFileContentsPropertyKey, contents, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)filePath
-{
-    return objc_getAssociatedObject(self, &MASFileFilePathPropertyKey);
-}
-
-
-- (void)setFilePath:(NSString *)filePath
-{
-    objc_setAssociatedObject(self, &MASFileFilePathPropertyKey, filePath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 
@@ -153,8 +112,6 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    //DLog(@"called with aDecoder: %@", aDecoder);
-    
     if(self.name) [aCoder encodeObject:self.name forKey:MASFileNamePropertyKey];
     if(self.contents) [aCoder encodeObject:self.contents forKey:MASFileContentsPropertyKey];
     if(self.filePath) [aCoder encodeObject:self.filePath forKey:MASFileFilePathPropertyKey];
@@ -163,16 +120,12 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    //DLog(@"called with aDecoder: %@", aDecoder);
-    
     if(self = [super init])
     {
-        self.name = [aDecoder decodeObjectForKey:MASFileNamePropertyKey];
-        self.contents = [aDecoder decodeObjectForKey:MASFileContentsPropertyKey];
-        self.filePath = [aDecoder decodeObjectForKey:MASFileFilePathPropertyKey];
+        [self setValue:[aDecoder decodeObjectForKey:MASFileNamePropertyKey] forKey:@"name"];
+        [self setValue:[aDecoder decodeObjectForKey:MASFileContentsPropertyKey] forKey:@"contents"];
+        [self setValue:[aDecoder decodeObjectForKey:MASFileFilePathPropertyKey] forKey:@"filePath"];
     }
-    
-    //DLog(@"called with self: %@", [self debugDescription]);
     
     return self;
 }

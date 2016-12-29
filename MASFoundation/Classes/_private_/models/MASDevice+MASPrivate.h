@@ -16,19 +16,6 @@
 
 
 ///--------------------------------------
-/// @name Properties
-///--------------------------------------
-
-# pragma mark - Properties
-
-@property (nonatomic, assign, readonly) BOOL isRegistered;
-
-@property (nonatomic, copy, readwrite) NSString *identifier;
-@property (nonatomic, copy, readwrite) NSString *name;
-@property (nonatomic, copy, readwrite) NSString *status;
-
-
-///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------
 

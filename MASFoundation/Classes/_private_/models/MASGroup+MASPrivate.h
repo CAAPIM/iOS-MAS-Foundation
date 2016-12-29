@@ -14,9 +14,6 @@
 
 # pragma mark - Properties
 
-@property (nonatomic, copy, readwrite) NSString *groupName;
-@property (nonatomic, copy, readwrite) NSString *owner;
-@property (nonatomic, copy, readwrite) NSArray *members;
 @property (nonatomic, copy, readwrite) NSMutableDictionary *_attributes;
 
 # pragma mark - Lifecycle

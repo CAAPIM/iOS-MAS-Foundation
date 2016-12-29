@@ -14,9 +14,23 @@
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 
+# pragma mark - Property Constants
+
+static NSString *const MASUserObjectIdPropertyKey = @"objectId"; // string
+static NSString *const MASUserUserNamePropertyKey = @"userName"; // string
+static NSString *const MASUserFamilyNamePropertyKey = @"familyName"; // string
+static NSString *const MASUserGivenNamePropertyKey = @"givenName"; // string
+static NSString *const MASUserFormattedNamePropertyKey = @"formattedName"; // string
+static NSString *const MASUserEmailAddressesPropertyKey = @"emailAddresses"; // string
+static NSString *const MASUserPhoneNumbersPropertyKey = @"phoneNumbers"; // string
+static NSString *const MASUserAddressesPropertyKey = @"addresses"; // string
+static NSString *const MASUserPhotosPropertyKey = @"photos"; // string
+static NSString *const MASUserGroupsPropertyKey = @"groups"; // string
+static NSString *const MASUserActivePropertyKey = @"active"; // bool
+static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 @implementation MASUser
-
+@synthesize accessToken = _accessToken;
 
 # pragma mark - Current User
 
@@ -97,6 +111,22 @@
         [self phoneNumbers], [self addresses], [self photos], [self groups]];
 }
 
+
+# pragma mark - Properties
+
+- (NSString *)accessToken
+{
+    _accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
+    
+    if (_accessToken) {
+        
+        return _accessToken;
+    }
+    else {
+        
+        return nil;
+    }
+}
 
 # pragma mark - Login & Logoff
 
@@ -181,5 +211,51 @@
         }
     }
 }
+
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    //DLog(@"\n\ncalled\n\n");
+    
+    [super encodeWithCoder:aCoder];
+    
+    if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
+    if(self.familyName) [aCoder encodeObject:self.familyName forKey:MASUserFamilyNamePropertyKey];
+    if(self.givenName) [aCoder encodeObject:self.givenName forKey:MASUserGivenNamePropertyKey];
+    if(self.formattedName) [aCoder encodeObject:self.formattedName forKey:MASUserFormattedNamePropertyKey];
+    if(self.emailAddresses) [aCoder encodeObject:self.emailAddresses forKey:MASUserEmailAddressesPropertyKey];
+    if(self.phoneNumbers) [aCoder encodeObject:self.phoneNumbers forKey:MASUserPhoneNumbersPropertyKey];
+    if(self.addresses) [aCoder encodeObject:self.addresses forKey:MASUserAddressesPropertyKey];
+    if(self.photos) [aCoder encodeObject:self.photos forKey:MASUserPhotosPropertyKey];
+    if(self.groups) [aCoder encodeObject:self.groups forKey:MASUserGroupsPropertyKey];
+    if(self.active) [aCoder encodeBool:self.active forKey:MASUserActivePropertyKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    //DLog(@"\n\ncalled\n\n");
+    
+    if(self = [super initWithCoder:aDecoder])
+    {
+        [self setValue:[aDecoder decodeObjectForKey:MASUserUserNamePropertyKey] forKey:@"userName"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey] forKey:@"familyName"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserGivenNamePropertyKey] forKey:@"givenName"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserFormattedNamePropertyKey] forKey:@"formattedName"];
+        
+        [self setValue:[aDecoder decodeObjectForKey:MASUserPhotosPropertyKey] forKey:@"photos"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserEmailAddressesPropertyKey] forKey:@"emailAddresses"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserPhoneNumbersPropertyKey] forKey:@"phoneNumbers"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserAddressesPropertyKey] forKey:@"addresses"];
+        
+        [self setValue:[aDecoder decodeObjectForKey:MASUserGroupsPropertyKey] forKey:@"groups"];
+        [self setValue:[NSNumber numberWithBool:[aDecoder decodeBoolForKey:MASUserActivePropertyKey]] forKey:@"active"];
+    }
+    
+    return self;
+}
+
 
 @end
