@@ -22,7 +22,6 @@
 #import "MASApplication+MASPrivate.h"
 #import "MASAuthenticationProvider+MASPrivate.h"
 #import "MASAuthenticationProviders+MASPrivate.h"
-#import "MASConfiguration+MASPrivate.h"
 #import "MASDevice+MASPrivate.h"
 #import "MASFile+MASPrivate.h"
 #import "MASIJSONResponseSerializer+MASPrivate.h"

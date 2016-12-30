@@ -12,22 +12,6 @@
 
 @interface MASProximityLoginQRCode (MASPrivate)
 
-///--------------------------------------
-/// @name Properties
-///--------------------------------------
-
-# pragma mark - Properties
-
-@property (nonatomic, assign, readwrite) NSNumber *pollingInterval;
-@property (nonatomic, assign, readwrite) NSNumber *pollingDelay;
-@property (nonatomic, assign, readwrite) NSNumber *pollingLimit;
-@property (nonatomic, copy, readwrite) NSString *authenticationUrl;
-@property (nonatomic, copy, readwrite) NSString *pollUrl;
-@property (nonatomic, assign, readwrite) int currentPollingCounter;
-@property (nonatomic, assign, readwrite) BOOL isPolling;
-
-
-
 # pragma mark - Lifecycle
 
 /**
