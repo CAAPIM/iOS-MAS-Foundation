@@ -10,7 +10,6 @@
 
 #import "MASKeyChainService.h"
 
-#import "MASConfiguration+MASPrivate.h"
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
 #import "NSData+MASPrivate.h"

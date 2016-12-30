@@ -128,6 +128,51 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     }
 }
 
+
+- (BOOL)isCurrentUser
+{
+    //
+    // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
+}
+
+
+// Special case which is determined by other fields
+- (BOOL)isAuthenticated
+{
+    //
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    //
+    // if the user status is not MASUserStatusNotLoggedIn,
+    // the user is authenticated either anonymously or with username and password
+    //
+    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
+}
+
+
+- (BOOL)isSessionLocked
+{
+    //
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
+    {
+        return [MASAccess currentAccess].isSessionLocked;
+    }
+    else {
+        return NO;
+    }
+}
+
+
 # pragma mark - Login & Logoff
 
 + (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
@@ -217,8 +262,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    //DLog(@"\n\ncalled\n\n");
-    
     [super encodeWithCoder:aCoder];
     
     if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
@@ -236,9 +279,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    //DLog(@"\n\ncalled\n\n");
-    
     if(self = [super initWithCoder:aDecoder])
+        
     {
         [self setValue:[aDecoder decodeObjectForKey:MASUserUserNamePropertyKey] forKey:@"userName"];
         [self setValue:[aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey] forKey:@"familyName"];
@@ -256,6 +298,5 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
     return self;
 }
-
 
 @end

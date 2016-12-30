@@ -66,6 +66,12 @@
 @property (nonatomic, readonly, copy) NSString *objectId;
 
 
+/**
+ *  List of attributes of the object.
+ */
+@property (nonatomic, readonly, copy) NSMutableDictionary *_attributes;
+
+
 
 ///--------------------------------------
 /// @name Accessors

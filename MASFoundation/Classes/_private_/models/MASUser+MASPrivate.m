@@ -196,7 +196,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // All attributes as dictionary
     //
-    self._attributes    = [[NSMutableDictionary alloc] initWithDictionary:info];
+    [self setValue:[[NSMutableDictionary alloc] initWithDictionary:info] forKey:@"_attributes"];
+//    self._attributes    = [[NSMutableDictionary alloc] initWithDictionary:info];
     
     
     //
@@ -224,66 +225,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 # pragma mark - Properties
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-
-- (BOOL)isCurrentUser
-{
-    //
-    // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
-
-    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
-}
-
-
-// Special case which is determined by other fields
-- (BOOL)isAuthenticated
-{
-    //
-    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
-    
-    //
-    // if the user status is not MASUserStatusNotLoggedIn,
-    // the user is authenticated either anonymously or with username and password
-    //
-    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
-}
-
-
-- (BOOL)isSessionLocked
-{
-    
-    //
-    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
-    
-    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
-    {
-        return [MASAccess currentAccess].isSessionLocked;
-    }
-    else {
-        return NO;
-    }
-}
-
-
-- (NSDictionary *)_attributes
-{
-    return objc_getAssociatedObject(self, &MASUserAttributesPropertyKey);
-}
-
-
-- (void)set_attributes:(NSDictionary *)attributes
-{
-    objc_setAssociatedObject(self, &MASUserAttributesPropertyKey, attributes, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
 - (void)setWasLoggedOffAndSave:(BOOL)wasLoggedOff
 {
     
@@ -297,8 +238,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     [self saveToStorage];
 }
-
-#pragma clang diagnostic pop
 
 
 # pragma mark - Public

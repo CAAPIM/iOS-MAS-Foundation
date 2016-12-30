@@ -16,20 +16,6 @@
 
 
 ///--------------------------------------
-/// @name Properties
-///--------------------------------------
-
-# pragma mark - Properties
-
-@property (nonatomic, assign, readonly) BOOL isCurrentUser;
-@property (nonatomic, assign, readonly) BOOL isAuthenticated;
-@property (nonatomic, assign, readonly) BOOL isSessionLocked;
-
-@property (nonatomic, copy, readonly) NSString *accessToken;
-@property (nonatomic, copy, readwrite) NSMutableDictionary *_attributes;
-
-
-///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------
 

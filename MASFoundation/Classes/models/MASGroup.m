@@ -19,11 +19,32 @@ static NSString *const kMASGroupOwnerPropertyKey = @"owner"; // string
 static NSString *const kMASGroupMembersPropertyKey = @"members"; // string
 static NSString *const kMASGroupAttributesPropertyKey = @"attributes"; // json
 
+//SCIM Group Object Keys
+#define kSCIM_Group_ObjectIdKey         @"id"
+#define kSCIM_Group_Name                @"displayName"
+#define kSCIM_Group_Owner               @"owner"
+#define kSCIM_Group_Owner_value         @"value"
+#define kSCIM_Group_Members             @"members"
+
 @implementation MASGroup
 
 - (instancetype)initWithInfo:(NSDictionary *)info
 {
-    return [self initWithAttributes:info];
+    self = [super init];
+    
+    if (!self) {
+        
+        return nil;
+    }
+    
+    [self setValue:[info valueForKey:kSCIM_Group_ObjectIdKey] forKey:@"objectId"];
+    [self setValue:[info valueForKey:kSCIM_Group_Name] forKey:@"groupName"];
+    [self setValue:[[info valueForKey:kSCIM_Group_Owner] valueForKey:kSCIM_Group_Owner_value] forKey:@"owner"];
+    [self setValue:[info valueForKey:kSCIM_Group_Members] forKey:@"members"];
+    [self setValue:[[NSMutableDictionary alloc] initWithDictionary:info] forKey:@"_attributes"];
+    
+    return self;
+
 }
 
 

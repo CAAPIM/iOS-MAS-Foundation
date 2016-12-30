@@ -12,19 +12,8 @@
 
 @interface MASGroup (MASPrivate)
 
-# pragma mark - Properties
-
-@property (nonatomic, copy, readwrite) NSMutableDictionary *_attributes;
-
-# pragma mark - Lifecycle
-
-/**
- *  Init the object with passed attributes in a form of NSDictionary
- *
- *  @param attributes NSDictionary to be used as attributes
- *
- *  @return The instance of the MASGroup object
- */
-- (instancetype)initWithAttributes:(NSDictionary *)attributes;
+// TO BE DELETED!
+// NOT USED ANYMORE
+// ALL IMPLEMENTATION IS DONE DIRECTLY IN THE MASConfiguration model object
 
 @end

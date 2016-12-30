@@ -86,28 +86,6 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
 }
 
 
-- (BOOL)saveWithPassword:(NSString *)password
-{
-    NSError *error;
-    
-    // Write to file
-    //
-    // If it doesn't exist already it creates it, if it does exist it will overwrite it
-    //
-    [MASIFileManager writeFileAtPath:self.filePath
-                           content:self.contents
-                             error:&error];
-    
-    if(error)
-    {
-        DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
-        return NO;
-    }
-    
-    return YES;
-}
-
-
 # pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
