@@ -19,6 +19,20 @@
  */
 @interface MASObject : NSObject <NSCopying, NSCoding>
 
+///--------------------------------------
+/// @name Lifecycle
+///--------------------------------------
+
+/**
+ *  Init the object with passed attributes in a form of NSDictionary
+ *
+ *  @param attributes NSDictionary to be used as attributes
+ *
+ *  @return The instance of the MASObject object
+ */
+- (instancetype)initWithAttributes:(NSDictionary *)attributes;
+
+
 
 ///--------------------------------------
 /// @name Instance Methods

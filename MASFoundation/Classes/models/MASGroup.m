@@ -85,12 +85,11 @@ static NSString *const kMASGroupAttributesPropertyKey = @"attributes"; // json
     MASGroup *group = [super copyWithZone:zone];
     
     [group setValue:self.objectId forKey:@"objectId"];
-    group.groupName     = self.groupName;
-    group.owner         = self.owner;
-    group.members       = self.members;
+    [group setValue:self.groupName forKey:@"groupName"];
+    [group setValue:self.owner forKey:@"owner"];
+    [group setValue:self.members forKey:@"members"];
     
     return group;
-    
 }
 
 # pragma mark - NSCoding

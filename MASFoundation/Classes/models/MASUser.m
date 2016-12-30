@@ -257,12 +257,32 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     }
 }
 
+# pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    MASUser *user = [[MASUser alloc] init];
+    
+    [user setValue:self.objectId forKey:@"objectId"];
+    [user setValue:self.userName forKey:@"userName"];
+    [user setValue:self.familyName forKey:@"familyName"];
+    [user setValue:self.givenName forKey:@"givenName"];
+    [user setValue:self.formattedName forKey:@"formattedName"];
+    [user setValue:self.emailAddresses forKey:@"emailAddresses"];
+    [user setValue:self.phoneNumbers forKey:@"phoneNumbers"];
+    [user setValue:self.addresses forKey:@"addresses"];
+    [user setValue:self.groups forKey:@"groups"];
+    [user setValue:[NSNumber numberWithBool:self.active] forKey:@"active"];
+    [user setValue:self.photos forKey:@"photos"];
+    
+    return user;
+}
 
 # pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [super encodeWithCoder:aCoder];
+    [super encodeWithCoder:aCoder]; //ObjectID is encoded in the super class MASObject
     
     if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
     if(self.familyName) [aCoder encodeObject:self.familyName forKey:MASUserFamilyNamePropertyKey];
@@ -279,7 +299,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if(self = [super initWithCoder:aDecoder])
+    if(self = [super initWithCoder:aDecoder]) //ObjectID is decoded in the super class MASObject
         
     {
         [self setValue:[aDecoder decodeObjectForKey:MASUserUserNamePropertyKey] forKey:@"userName"];
