@@ -315,6 +315,12 @@ typedef void (^MASLocationMonitorBlock)(CLLocation *_Nonnull location, MASLocati
 typedef void (^MASSessionDataTaskCompletionBlock)(NSURLResponse *_Nonnull response, id _Nonnull responseObject, NSError *_Nonnull error);
 
 
+/**
+ * Void code block.
+ */
+typedef void (^MASVoidCodeBlock)(void);
+
+
 //
 // MAS Notification - private
 //

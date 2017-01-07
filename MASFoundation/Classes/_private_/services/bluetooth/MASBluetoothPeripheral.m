@@ -26,6 +26,8 @@
 @property (nonatomic, copy, readonly) NSString *characteristicUUID;
 @property (nonatomic, copy, readonly) NSMutableData *sessionURLData;
 
+@property (nonatomic, strong) MASVoidCodeBlock initializeCodeBlock;
+
 @property (assign) BOOL isSubscribed;
 
 @end
@@ -112,8 +114,6 @@
     self = [super init];
     if(self)
     {
-        _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
-        _peripheralManager.delegate = self;
         
         _serviceUUID = serviceUUID;
         _characteristicUUID = characteristicUUID;
@@ -140,111 +140,118 @@
 {
    //DLog(@"\n\n%@\n\n", [self debugDescription]);
     
+    __block MASBluetoothPeripheral *blockSelf = self;
+    
+    MASVoidCodeBlock initializeCodeBlock = ^{
+        
+        //
+        // If the peripheral manager exists, and is not advertising
+        //
+        if (blockSelf.peripheralManager && ![blockSelf.peripheralManager isAdvertising])
+        {
+            //
+            // Check BLE state, and return proper error if the state is invalid.
+            //
+            if (![blockSelf.peripheralManager isPoweredOn])
+            {
+                NSError *bleError = [blockSelf.peripheralManager peripheralManagerStateToMASFoundationError];
+                
+                //
+                // Notify delegate
+                //
+                [blockSelf notifyErrorForBLEState:bleError];
+            }
+            else {
+                
+                //
+                // Notify delegatepo
+                //
+                [blockSelf updateBLEState:MASBLEServiceStatePeripheralStarted];
+                
+                //
+                // If characteristic service is not created
+                //
+                if (!blockSelf.transferCharacteristic)
+                {
+                    @try {
+                        
+                        //
+                        // Create characteristic
+                        //
+                        blockSelf.transferCharacteristic = [[CBMutableCharacteristic alloc] initWithType:[CBUUID UUIDWithString:_characteristicUUID]
+                                                                                              properties:CBCharacteristicPropertyWriteWithoutResponse + CBCharacteristicPropertyNotify
+                                                                                                   value:nil
+                                                                                             permissions:CBAttributePermissionsReadable|CBAttributePermissionsWriteable];
+                        
+                        //
+                        // Create service
+                        //
+                        CBMutableService *transferService = [[CBMutableService alloc] initWithType:[CBUUID UUIDWithString:_serviceUUID]
+                                                                                           primary:YES];
+                        transferService.characteristics = @[blockSelf.transferCharacteristic];
+                        
+                        //
+                        // Add service
+                        //
+                        [blockSelf.peripheralManager addService:transferService];
+                        
+                        //
+                        // Start peripheral advertising
+                        //
+                        [blockSelf.peripheralManager startAdvertising:@
+                         {
+                             CBAdvertisementDataServiceUUIDsKey : @[[CBUUID UUIDWithString:_serviceUUID]]
+                         }];
+                    }
+                    @catch (NSException *exception) {
+                        
+                        //
+                        //  Nullify the transferCharacteristic, otherwise on the second attempt to startPeripheral it will throw an uncaught exception.
+                        //
+                        blockSelf.transferCharacteristic = nil;
+                        
+                        NSDictionary *exceptionInfo = @{@"reason" : exception.reason , @"name" : exception.name};
+                        
+                        //
+                        // Conver the exception with proper framework error domain and error code.
+                        //
+                        NSError *masError = [NSError errorForFoundationCode:MASFoundationErrorCodeBLEPeripheral info:exceptionInfo errorDomain:MASFoundationErrorDomainLocal];
+                        
+                        //
+                        // Notify delegate
+                        //
+                        [blockSelf notifyErrorForBLEState:masError];
+                    }
+                }
+                else {
+                    
+                    //
+                    // Start peripheral advertising
+                    //
+                    [blockSelf.peripheralManager startAdvertising:@
+                     {
+                         CBAdvertisementDataServiceUUIDsKey : @[[CBUUID UUIDWithString:_serviceUUID]]
+                     }];
+                }
+            }
+        }
+        
+        blockSelf.initializeCodeBlock = nil;
+    };
+    
     //
     // If there is no peripheral manager instantiated stop here
     //
     if (!self.peripheralManager)
     {
         //DLog(@"\n\nError: no peripheral manager detected!!\n\n");
-        
-        return;
-    }
-    
-    //
-    // If it is already advertising stop here
-    //
-    if ([self.peripheralManager isAdvertising])
-    {
-        //DLog(@"\n\nThe peripheral is already advertising:\n%@\n\n", [self debugDescription]);
-        
-        return;
-    }
-    
-    //
-    // Check BLE state, and return proper error if the state is invalid.
-    //
-    if (![self.peripheralManager isPoweredOn])
-    {
-        NSError *bleError = [self.peripheralManager peripheralManagerStateToMASFoundationError];
-        
-        //
-        // Notify delegate
-        //
-        [self notifyErrorForBLEState:bleError];
-        
-        return;
-    }
-    else {
-        //
-        // Notify delegate
-        //
-        [self updateBLEState:MASBLEServiceStatePeripheralStarted];
-    }
-    
-    //
-    // If characteristic service is not created
-    //
-    if (!self.transferCharacteristic)
-    {
-        @try {
-            
-            //
-            // Create characteristic
-            //
-            self.transferCharacteristic = [[CBMutableCharacteristic alloc] initWithType:[CBUUID UUIDWithString:_characteristicUUID]
-                                                                             properties:CBCharacteristicPropertyWriteWithoutResponse + CBCharacteristicPropertyNotify
-                                                                                  value:nil
-                                                                            permissions:CBAttributePermissionsReadable|CBAttributePermissionsWriteable];
-            
-            //
-            // Create service
-            //
-            CBMutableService *transferService = [[CBMutableService alloc] initWithType:[CBUUID UUIDWithString:_serviceUUID]
-                                                                               primary:YES];
-            transferService.characteristics = @[self.transferCharacteristic];
-            
-            //
-            // Add service
-            //
-            [self.peripheralManager addService:transferService];
-            
-            //
-            // Start peripheral advertising
-            //
-            [self.peripheralManager startAdvertising:@
-             {
-                 CBAdvertisementDataServiceUUIDsKey : @[[CBUUID UUIDWithString:_serviceUUID]]
-             }];
-        }
-        @catch (NSException *exception) {
-            
-            //
-            //  Nullify the transferCharacteristic, otherwise on the second attempt to startPeripheral it will throw an uncaught exception.
-            //
-            self.transferCharacteristic = nil;
-            
-            NSDictionary *exceptionInfo = @{@"reason" : exception.reason , @"name" : exception.name};
-            
-            //
-            // Conver the exception with proper framework error domain and error code.
-            //
-            NSError *masError = [NSError errorForFoundationCode:MASFoundationErrorCodeBLEPeripheral info:exceptionInfo errorDomain:MASFoundationErrorDomainLocal];
-            
-            //
-            // Notify delegate
-            //
-            [self notifyErrorForBLEState:masError];
-        }
+        _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+        _peripheralManager.delegate = self;
+        _initializeCodeBlock = initializeCodeBlock;
     }
     else {
         
-        //
-        // Start peripheral advertising
-        //
-        [self.peripheralManager startAdvertising:@
-         {
-             CBAdvertisementDataServiceUUIDsKey : @[[CBUUID UUIDWithString:_serviceUUID]]
-         }];
+        initializeCodeBlock();
     }
 }
 
@@ -517,6 +524,10 @@
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral
 {
     //DLog(@"\n%@\n\n", [self debugDescription]);
+    if (_initializeCodeBlock)
+    {
+        _initializeCodeBlock();
+    }
 }
 
 
