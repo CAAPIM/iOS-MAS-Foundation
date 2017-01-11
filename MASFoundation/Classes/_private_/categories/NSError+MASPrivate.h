@@ -205,6 +205,15 @@
 
 
 /**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeApplicationRedirectUriInvalid.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomain and
+ * error code MASFoundationErrorCodeApplicationRedirectUriInvalid.
+ */
++ (NSError *)errorApplicationRedirectUriInvalid;
+
+
+/**
  * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeConfigurationLoadingFailedFileNotFound.
  *
  * @param fileName The file name of the configuration file which could not be loaded.

@@ -331,6 +331,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeApplicationInvalid = 110002,
     MASFoundationErrorCodeApplicationNotRegistered = 110003,
     MASFoundationErrorCodeApplicationInvalidMagIdentifer = 110004,
+    MASFoundationErrorCodeApplicationRedirectUriInvalid = 110005,
     
     //
     // Device
@@ -588,6 +589,26 @@ static NSString *const MASUserDidFailToUpdateInformationNotification = @"MASUser
  * has successfully updated it's information.
  */
 static NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpdateInformationNotification";
+
+
+///--------------------------------------
+/// @name Authorization Response - Social Login
+///--------------------------------------
+
+# pragma mark - Authorization Response - Social Login
+
+/**
+ *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
+ *  has received authorization code from social login
+ */
+static NSString *const MASAuthorizationResponseDidReceiveAuthorizationCodeNotification = @"MASAuthorizationResponseDidReceiveAuthorizationCodeNotification";
+
+
+/**
+ *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
+ *  has received an error from social login
+ */
+static NSString *const MASAuthorizationResponseDidReceiveErrorNotification = @"MASAuthorizationResponseDidReceiveErrorNotification";
 
 
 ///--------------------------------------

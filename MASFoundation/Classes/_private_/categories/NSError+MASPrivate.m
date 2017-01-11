@@ -480,6 +480,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorApplicationRedirectUriInvalid
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeApplicationRedirectUriInvalid errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorConfigurationLoadingFailedFileNotFound:(NSString *)fileName
 {
     //
@@ -919,6 +925,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeApplicationAlreadyRegistered: return @"The application is already registered with valid credentials";
         case MASFoundationErrorCodeApplicationInvalid: return @"The application has invalid credentials";
         case MASFoundationErrorCodeApplicationNotRegistered: return @"The application is not registered";
+        case MASFoundationErrorCodeApplicationRedirectUriInvalid: return @"redirect_uri is invalid";
         case MASFoundationErrorCodeApplicationInvalidMagIdentifer: return @"Given mag-identifer is invalid.";
         
         //
