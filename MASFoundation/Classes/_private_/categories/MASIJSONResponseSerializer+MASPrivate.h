@@ -13,10 +13,10 @@
 
 @interface MASIJSONResponseSerializer (MASPrivate)
 
-+ (MASIJSONResponseSerializer *)masSerializer;
++ (nonnull MASIJSONResponseSerializer *)masSerializer;
 
 - (BOOL)validateJSONResponse:(nullable NSHTTPURLResponse *)response
                         data:(nullable NSData *)data
-                       error:(NSError * __nullable __autoreleasing *)error;
+                       error:(NSError * __nullable __autoreleasing * __nullable)error;
 
 @end

@@ -225,7 +225,7 @@ static MASMQTTClient *_sharedClient = nil;
     NSParameterAssert(!retain || retain == YES);
     
     const char *cstrTopic = [willTopic cStringUsingEncoding:NSUTF8StringEncoding];
-    mosquitto_will_set(mosq, cstrTopic, payload.length, payload.bytes, willQos, retain);
+    mosquitto_will_set(mosq, cstrTopic, (int)payload.length, payload.bytes, willQos, retain);
 }
 
 
@@ -612,7 +612,7 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     
     int mid;
     
-    mosquitto_publish(mosq, &mid, cstrTopic, payload.length, payload.bytes, qos, retain);
+    mosquitto_publish(mosq, &mid, cstrTopic, (int)payload.length, payload.bytes, qos, retain);
     
     if (completionHandler) {
         
