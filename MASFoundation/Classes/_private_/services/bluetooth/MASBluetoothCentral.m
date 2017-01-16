@@ -362,7 +362,7 @@
     //
     // If there is no central manager instantiated, so initialize the central manager
     //
-    if (!self.centralManager)// && [self.centralManager isScanning])
+    if (!_centralManager)
     {
        //DLog(@"\n\nError: no central manager detected!!\n\n");
         _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
