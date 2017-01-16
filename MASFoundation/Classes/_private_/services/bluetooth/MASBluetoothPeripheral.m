@@ -242,7 +242,7 @@
     //
     // If there is no peripheral manager instantiated stop here
     //
-    if (!self.peripheralManager)
+    if (!_peripheralManager)
     {
         //DLog(@"\n\nError: no peripheral manager detected!!\n\n");
         _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
