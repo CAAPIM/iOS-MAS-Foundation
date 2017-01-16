@@ -102,12 +102,17 @@
     NSString *query = [url query];
     NSArray *parameters = [query componentsSeparatedByString:@"&"];
     
-    NSMutableDictionary * kvPairs = [NSMutableDictionary dictionary];
-    for (NSString * pair in parameters) {
-        NSArray * bits = [pair componentsSeparatedByString:@"="];
-        NSString * key = [[bits objectAtIndex:0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSString * value = [[bits objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        [kvPairs setObject:value forKey:key];
+    NSMutableDictionary *kvPairs = [NSMutableDictionary dictionary];
+    
+    for (NSString *parameter in parameters) {
+        NSArray *kvPair = [parameter componentsSeparatedByString:@"="];
+        
+        if ([kvPair count] >= 2)
+        {
+            NSString *key = [[kvPair objectAtIndex:0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            NSString *value = [[kvPair objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            [kvPairs setObject:value forKey:key];
+        }
     }
     
     //
