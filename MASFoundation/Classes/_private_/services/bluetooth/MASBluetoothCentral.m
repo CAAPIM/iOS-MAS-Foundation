@@ -12,9 +12,9 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 #import "MASAccessService.h"
+#import "MASBluetoothService.h"
 #import "MASConstantsPrivate.h"
 #import "MASNetworkingService.h"
-
 
 @interface MASBluetoothCentral ()
     <CBCentralManagerDelegate, CBPeripheralDelegate>
@@ -29,6 +29,8 @@
 @property (nonatomic, copy, readonly) MASAuthenticationProvider *provider;
 
 @property (nonatomic, strong) NSRecursiveLock *lock;
+
+@property (nonatomic, strong) MASVoidCodeBlock initializeCodeBlock;
 
 @end
 
@@ -268,8 +270,6 @@
     self = [super init];
     if(self)
     {
-        _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-        _centralManager.delegate = self;
     
         _serviceUUID = serviceUUID;
         _characteristicUUID = characteristicUUID;
@@ -299,64 +299,79 @@
 {
    //DLog(@"\n\n%@\n\n", [self debugDescription]);
     
-    //
-    // If there is no central manager instantiated stop here
-    //
-    if (!self.centralManager && [self.centralManager isScanning])
-    {
-       //DLog(@"\n\nError: no central manager detected!!\n\n");
+    __block MASBluetoothCentral *blockSelf = self;
+    
+    MASVoidCodeBlock initializeCodeBlock = ^{
+      
+        //
+        // If the central manager exists, and is not scanning
+        //
+        if (blockSelf.centralManager && ![blockSelf.centralManager isScanning])
+        {
+            //
+            //  If the central manager is not powered on and/or is in a state it can't search
+            //
+            if (![blockSelf.centralManager isPoweredOn])
+            {
+                NSError *bleError = [blockSelf.centralManager centralManagerStateToMASFoundationError];
+                
+                //
+                // Notify delegate
+                //
+                [blockSelf notifyErrorForBLEState:bleError];
+            }
+            else {
+                @try {
+                    //
+                    // Start central scanning for peripherals
+                    //
+                    [blockSelf.centralManager scanForPeripheralsWithServices:@[
+                                                                          [
+                                                                           CBUUID UUIDWithString:_serviceUUID]
+                                                                          ]
+                                                                options:@
+                     {
+                         CBCentralManagerScanOptionAllowDuplicatesKey : @NO
+                     }];
+                    
+                    [blockSelf updateBLEState:MASBLEServiceStateCentralStarted];
+                }
+                @catch (NSException *exception) {
+                    
+                    //
+                    // Catech an exception
+                    //
+                    NSDictionary *exceptionInfo = @{@"reason" : exception.reason , @"name" : exception.name};
+                    
+                    //
+                    // Conver the exception with proper framework error domain and error code.
+                    //
+                    NSError *masError = [NSError errorForFoundationCode:MASFoundationErrorCodeBLEPeripheral info:exceptionInfo errorDomain:MASFoundationErrorDomainLocal];
+                    
+                    //
+                    // Notify delegate
+                    //
+                    [blockSelf notifyErrorForBLEState:masError];
+                }
+            }
+        }
         
-        return;
-    }
+        blockSelf.initializeCodeBlock = nil;
+    };
     
     //
-    //  If the central manager is not powered on and is in a state it can't search
+    // If there is no central manager instantiated, so initialize the central manager
     //
-    if (![self.centralManager isPoweredOn])
+    if (!_centralManager)
     {
-        NSError *bleError = [self.centralManager centralManagerStateToMASFoundationError];
-        
-        //
-        // Notify delegate
-        //
-        [self notifyErrorForBLEState:bleError];
-        
-        return;
+       //DLog(@"\n\nError: no central manager detected!!\n\n");
+        _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+        _centralManager.delegate = self;
+        _initializeCodeBlock = initializeCodeBlock;
     }
     else {
         
-        @try {
-            //
-            // Start central scanning for peripherals
-            //
-            [self.centralManager scanForPeripheralsWithServices:@[
-                                                                  [
-                                                                   CBUUID UUIDWithString:_serviceUUID]
-                                                                  ]
-                                                        options:@
-             {
-                 CBCentralManagerScanOptionAllowDuplicatesKey : @NO
-             }];
-            
-            [self updateBLEState:MASBLEServiceStateCentralStarted];
-        }
-        @catch (NSException *exception) {
-            
-            //
-            // Catech an exception
-            //
-            NSDictionary *exceptionInfo = @{@"reason" : exception.reason , @"name" : exception.name};
-            
-            //
-            // Conver the exception with proper framework error domain and error code.
-            //
-            NSError *masError = [NSError errorForFoundationCode:MASFoundationErrorCodeBLEPeripheral info:exceptionInfo errorDomain:MASFoundationErrorDomainLocal];
-            
-            //
-            // Notify delegate
-            //
-            [self notifyErrorForBLEState:masError];
-        }
+        initializeCodeBlock();
     }
 }
 
@@ -573,7 +588,11 @@
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
-   //DLog(@"\n%@\n\n", [self debugDescription]);
+//   DLog(@"\n%@\n\n", [self debugDescription]);
+    if (_initializeCodeBlock)
+    {
+        _initializeCodeBlock();
+    }
 }
 
 
