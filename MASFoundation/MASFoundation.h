@@ -43,6 +43,7 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASApplication.h>
 #import <MASFoundation/MASAuthenticationProvider.h>
 #import <MASFoundation/MASAuthenticationProviders.h>
+#import <MASFoundation/MASAuthorizationResponse.h>
 #import <MASFoundation/MASConfiguration.h>
 #import <MASFoundation/MASDevice.h>
 #import <MASFoundation/MASFile.h>
