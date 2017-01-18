@@ -31,7 +31,7 @@
 
 - (BOOL)validateJSONResponse:(nullable NSHTTPURLResponse *)response
                         data:(nullable NSData *)data
-                       error:(NSError * __nullable __autoreleasing *)error
+                       error:(NSError * __nullable __autoreleasing * __nullable)error
 {
     BOOL isValid = YES;
     
@@ -43,7 +43,10 @@
     
     if (![data isKindOfClass:[NSDictionary class]])
     {
-        *error = [NSError errorWithDomain:MASFoundationErrorDomainLocal code:MASFoundationErrorCodeNetworkUnacceptableContentType userInfo:mutableUserInfo];
+        if (error != NULL)
+        {
+            *error = [NSError errorWithDomain:MASFoundationErrorDomainLocal code:MASFoundationErrorCodeNetworkUnacceptableContentType userInfo:mutableUserInfo];
+        }
         isValid = NO;
     }
     

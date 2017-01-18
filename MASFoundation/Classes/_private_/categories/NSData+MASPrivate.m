@@ -184,7 +184,6 @@ bool _encrypted = NO;
         }
     }
     
-    realloc(bytes, length);
     return [NSData dataWithBytesNoCopy:bytes length:length];
 }
 
