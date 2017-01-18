@@ -58,6 +58,20 @@
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
+    return [self validateURLForAuthorizationURL:url];
+}
+
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    return [self validateURLForAuthorizationURL:url];
+}
+
+
+# pragma mark - Private
+
+- (BOOL)validateURLForAuthorizationURL:(NSURL *)url
+{
     //
     // Ignore if SDK has not properly initialized at the moment
     //

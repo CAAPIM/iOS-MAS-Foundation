@@ -83,7 +83,7 @@
 
 
 
-
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_9_3
 /**
  * Prase returned URL from SFSafariViewController with authorization code and OAuth state.
  * Call this method inside [UIApplicationDelegate application:openURL:options:] of the AppDelegate for the application.
@@ -96,5 +96,22 @@
  * @return BOOL value whether the URL is specific for social login in MASFoundation or not.
  */
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
+#endif
+
+
+
+/**
+ * Prase returned URL from SFSafariViewController with authorization code and OAuth state.
+ * Call this method inside [UIApplicationDelegate application:openURL:sourceApplication:annotation:] of the AppDelegate for the application.
+ * This method should be invoked in order to properly perform social login in MASFoundation SDK.
+ *
+ * @param application       UIApplication object as passed in [UIApplicationDelegate application:openURL:sourceApplication:annotation:].
+ * @param url               NSURL object as passed in [UIApplicationDelegate application:openURL:sourceApplication:annotation:].
+ * @param sourceApplication NSDictionary as passed in [UIApplicationDelegate application:openURL:sourceApplication:annotation:].
+ * @param annotation        annotation as passed in [UIApplicationDelegate application:openURL:sourceApplication:annotation:].
+ *
+ * @return BOOL value whether the URL is specific for social login in MASFoundation or not.
+ */
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 
 @end
