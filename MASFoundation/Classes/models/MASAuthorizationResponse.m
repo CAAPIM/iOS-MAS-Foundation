@@ -56,7 +56,23 @@
 }
 
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_9_3
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+    return [self validateURLForAuthorizationURL:url];
+}
+#endif
+
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    return [self validateURLForAuthorizationURL:url];
+}
+
+
+# pragma mark - Private
+
+- (BOOL)validateURLForAuthorizationURL:(NSURL *)url
 {
     //
     // Ignore if SDK has not properly initialized at the moment
