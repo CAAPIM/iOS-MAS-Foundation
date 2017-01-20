@@ -460,6 +460,24 @@
 
 
 /**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeOTPChannelSelectionCancelled.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeOTPChannelSelectionCancelled.
+ */
++ (NSError *)errorOTPChannelSelectionCancelled;
+
+
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeOTPAuthenticationCancelled.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeOTPAuthenticationCancelled.
+ */
++ (NSError *)errorOTPAuthenticationCancelled;
+
+
+/**
  * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeUserSessionIsAlreadyLocked.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and

@@ -423,6 +423,8 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeOTPExpired = 160105,
     MASFoundationErrorCodeOTPRetryLimitExceeded = 160106,
     MASFoundationErrorCodeOTPRetryBarred = 160107,
+    MASFoundationErrorCodeOTPChannelSelectionCancelled = 160201,
+    MASFoundationErrorCodeOTPAuthenticationCancelled = 160202,
     
     MASFoundationErrorCodeCount = -999999
 };
