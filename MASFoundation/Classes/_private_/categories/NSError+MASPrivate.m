@@ -695,6 +695,18 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorOTPChannelSelectionCancelled
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPChannelSelectionCancelled errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorOTPAuthenticationCancelled
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeOTPAuthenticationCancelled errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorUserSessionIsAlreadyLocked
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeUserSessionIsAlreadyLocked errorDomain:MASFoundationErrorDomainLocal];
@@ -918,6 +930,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeOTPExpired: return @"The OTP has expired.";
         case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of invalid attempts. Please try after some time.";
         case MASFoundationErrorCodeOTPRetryBarred: return @"Your account is blocked. Try after some time.";
+        case MASFoundationErrorCodeOTPChannelSelectionCancelled: return @"OTP channel selection has been cancelled by user.";
+        case MASFoundationErrorCodeOTPAuthenticationCancelled: return @"OTP authentication has been cancelled by user.";
             
         //
         // Application

@@ -117,7 +117,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if (otpFetchcompletion)
             {
-                otpFetchcompletion(NO, nil);
+                otpFetchcompletion(NO, [NSError errorOTPAuthenticationCancelled]);
             }
             
             //
@@ -125,7 +125,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if(completion)
             {
-                completion(nil, nil);
+                completion(nil, [NSError errorOTPAuthenticationCancelled]);
             }
             
             blockSelf.currentChannels = nil;
@@ -176,7 +176,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if (otpGenerationcompletion)
             {
-                otpGenerationcompletion(NO, nil);
+                otpGenerationcompletion(NO, [NSError errorOTPChannelSelectionCancelled]);
             }
             
             //
@@ -184,7 +184,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if(completion)
             {
-                completion(nil, nil);
+                completion(nil, [NSError errorOTPChannelSelectionCancelled]);
             }
             
             blockSelf.currentChannels = nil;
