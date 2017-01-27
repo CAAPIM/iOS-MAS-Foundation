@@ -564,8 +564,8 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 - (BOOL)networkIsReachable
 {
-    return (self.monitoringStatus != MASGatewayMonitoringStatusNotReachable ||
-            self.monitoringStatus != MASGatewayMonitoringStatusUnknown);
+    return (self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWWAN ||
+            self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWiFi);
 }
 
 
