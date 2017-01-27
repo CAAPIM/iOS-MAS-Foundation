@@ -364,19 +364,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         return;
     }
     
-    //
-    // If the authenticationProviders were already retrieved and never used, use the old one
-    //
-    if (self.currentProviders)
-    {
-        //
-        // Notify
-        //
-        if (completion) completion(self.currentProviders, nil);
-        
-        return;
-    }
-    
     //DLog(@"\n\nNO detected cached providers, retreiving from server\n\n");
 
     //
@@ -1380,6 +1367,17 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     headerInfo[MASCertFormatRequestResponseKey] = @"pem";
     
     //
+    // If code verifier exists in the memory
+    //
+    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
+    {
+        //
+        // inject it into parameter of the request
+        //
+        headerInfo[MASPKCECodeVerifierHeaderRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+    }
+    
+    //
     // Parameters
     //
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
@@ -1778,9 +1776,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // If the access token is expired we should use the refresh token to get the access token.
         // If the refresh token is expired we use ID Token to get access and refresh token.
         // If ID Token is invalid or expired we ask the user to enter username and password.
+        // If the current user does not exists, but id_token does, probably from MSSO scenario or id_token given from device registration which we should consume.
         //
         
-        if (self.currentUser || self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser)
+        if (self.currentUser || self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser || (!self.currentUser && [MASAccess currentAccess].idToken))
         {
             
             [self loginUsingUserCredentials:completion];

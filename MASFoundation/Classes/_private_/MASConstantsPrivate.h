@@ -171,6 +171,7 @@ static NSString *_Nonnull const MASTokenRequestResponseKey = @"token"; // string
 static NSString *_Nonnull const MASTokenTypeHintRequestResponseKey = @"token_type_hint"; // string
 static NSString *_Nonnull const MASTokenTypeRequestResponseKey = @"token_type"; // string
 static NSString *_Nonnull const MASPKCECodeVerifierRequestResponseKey = @"code_verifier"; // string
+static NSString *_Nonnull const MASPKCECodeVerifierHeaderRequestResponseKey = @"code-verifier"; // string
 static NSString *_Nonnull const MASPKCECodeChallengeRequestResponseKey = @"code_challenge"; // string
 static NSString *_Nonnull const MASPKCECodeChallengeMethodRequestResponseKey = @"code_challenge_method"; // string
 static NSString *_Nonnull const MASPKCEStateRequestResponseKey = @"state"; // string
