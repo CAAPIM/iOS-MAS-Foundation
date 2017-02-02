@@ -12,6 +12,8 @@
 
 #import <MASFoundation/MASFoundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MASMQTTHelper : NSObject
 
 + (void)showLogMessage:(NSString *)message debugMode:(BOOL)debugMode;
@@ -22,5 +24,6 @@
 
 + (NSString *)structureTopic:(NSString *)topic forObject:(MASObject *)masObject;
 
-
 @end
+
+NS_ASSUME_NONNULL_END

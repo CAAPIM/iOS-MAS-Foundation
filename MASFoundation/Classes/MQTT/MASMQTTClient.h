@@ -13,6 +13,8 @@
 
 #import "MASMQTTMessage.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #pragma mark - MQTT Connection Return Codes & Messages
 
 /**
@@ -335,3 +337,5 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
        withCompletionHandler:(void(^)(void))completionHandler;
 
 @end
+
+NS_ASSUME_NONNULL_END

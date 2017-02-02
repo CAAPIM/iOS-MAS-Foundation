@@ -32,7 +32,7 @@
  *
  *  @return Return the NSData encrypted object
  */
-+ (NSData *)encryptData:(NSData *)data password:(NSString *)password error:(NSError **)anError;
++ (NSData *_Nullable)encryptData:(NSData *_Nonnull)data password:(NSString *_Nonnull)password error:(NSError *_Nullable __autoreleasing *_Nullable)anError;
 
 
 
@@ -45,7 +45,7 @@
  *
  *  @return Return the NSData decrypted object
  */
-+ (NSData *)decryptData:(NSData *)data password:(NSString *)password error:(NSError **)anError;
++ (NSData *_Nullable)decryptData:(NSData *_Nonnull)data password:(NSString *_Nonnull)password error:(NSError *_Nullable __autoreleasing *_Nullable)anError;
 
 
 

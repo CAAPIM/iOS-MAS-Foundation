@@ -34,74 +34,74 @@
 /**
  * The name of the application.
  */
-@property (nonatomic, strong, readonly) NSString *applicationName;
+@property (nonatomic, strong, readonly, nonnull) NSString *applicationName;
 
 
 /**
  * The type of the application.
  */
-@property (nonatomic, strong, readonly) NSString *applicationType;
+@property (nonatomic, strong, readonly, nonnull) NSString *applicationType;
 
 
 /**
  * The description of the application.
  */
-@property (nonatomic, strong, readonly) NSString *applicationDescription;
+@property (nonatomic, strong, readonly, nullable) NSString *applicationDescription;
 
 
 /**
  * The organization name of the application.
  */
-@property (nonatomic, strong, readonly) NSString *applicationOrganization;
+@property (nonatomic, strong, readonly, nonnull) NSString *applicationOrganization;
 
 
 /**
  * The name of the entity that registered the application.
  */
-@property (nonatomic, strong, readonly) NSString *applicationRegisteredBy;
+@property (nonatomic, strong, readonly, nonnull) NSString *applicationRegisteredBy;
 
 
 /**
  * The public server certificate of the Gateway as obtained from the configuration.
  */
-@property (nonatomic, copy, readonly) NSArray *gatewayCertificates;
+@property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *gatewayCertificates;
 
 
 /**
  * The public server certificate of the Gateway guaraneteed to be in DER format.
  */
-@property (nonatomic, copy, readonly) NSArray *gatewayCertificatesAsDERData;
+@property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *gatewayCertificatesAsDERData;
 
 
 /**
  * The public server certificate of the Gateway guaraneteed to be in PEM format.
  */
-@property (nonatomic, copy, readonly) NSArray *gatewayCertificatesAsPEMData;
+@property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *gatewayCertificatesAsPEMData;
 
 
 /**
  * The host name of the Gateway.
  */
-@property (nonatomic, strong, readonly) NSString *gatewayHostName;
+@property (nonatomic, strong, readonly, nonnull) NSString *gatewayHostName;
 
 
 /**
  * The port assigned on the Gateway.
  */
-@property (nonatomic, strong, readonly) NSNumber *gatewayPort;
+@property (nonatomic, strong, readonly, nonnull) NSNumber *gatewayPort;
 
 
 /**
  * The prefix assigned on the Gateway.
  */
-@property (nonatomic, strong, readonly) NSString *gatewayPrefix;
+@property (nonatomic, strong, readonly, nullable) NSString *gatewayPrefix;
 
 
 /**
  * The full URL of the Gateway including the prefix, hostname and port
  * in a https://<hostname>:<port>/<prefix (if exists)> format.
  */
-@property (nonatomic, strong, readonly) NSURL *gatewayUrl;
+@property (nonatomic, strong, readonly, nonnull) NSURL *gatewayUrl;
 
 
 /**
@@ -149,7 +149,7 @@
  *
  * @return Returns a singleton 'MASConfiguration' object.
  */
-+ (MASConfiguration *)currentConfiguration;
++ (MASConfiguration *_Nullable)currentConfiguration;
 
 
 /**
@@ -157,7 +157,7 @@
  *
  * @param endpointKey The key which applies to the endpoint path.
  */
-- (NSString *)endpointPathForKey:(NSString *)endpointKey;
+- (NSString *_Nullable)endpointPathForKey:(NSString *_Nonnull)endpointKey;
 
 
 
@@ -170,7 +170,7 @@
 # pragma mark - Properties
 
 @property (nonatomic, assign, readonly) BOOL applicationCredentialsAreDynamic;
-@property (nonatomic, copy, readonly) NSArray *applicationClients;
+@property (nonatomic, copy, readonly, nonnull) NSArray<NSDictionary *> *applicationClients;
 
 
 
@@ -180,22 +180,22 @@
 
 # pragma mark - Endpoint Properties
 
-@property (nonatomic, copy, readonly) NSString *scimPathEndpointPath;
-@property (nonatomic, copy, readonly) NSString *storagePathEndpointPath;
-@property (nonatomic, copy, readonly) NSString *authorizationEndpointPath;
-@property (nonatomic, copy, readonly) NSString *clientInitializeEndpointPath;
-@property (nonatomic, copy, readonly) NSString *authenticateOTPEndpointPath;
-@property (nonatomic, copy, readonly) NSString *deviceListAllEndpointPath;
-@property (nonatomic, copy, readonly) NSString *deviceRegisterEndpointPath;
-@property (nonatomic, copy, readonly) NSString *deviceRegisterClientEndpointPath;
-@property (nonatomic, copy, readonly) NSString *deviceRenewEndpointPath;
-@property (nonatomic, copy, readonly) NSString *deviceRemoveEndpointPath;
-@property (nonatomic, copy, readonly) NSString *enterpriseBrowserEndpointPath;
-@property (nonatomic, copy, readonly) NSString *tokenEndpointPath;
-@property (nonatomic, copy, readonly) NSString *tokenRevokeEndpointPath;
-@property (nonatomic, copy, readonly) NSString *userInfoEndpointPath;
-@property (nonatomic, copy, readonly) NSString *userSessionLogoutEndpointPath;
-@property (nonatomic, copy, readonly) NSString *userSessionStatusEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *scimPathEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *storagePathEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *authorizationEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *clientInitializeEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *authenticateOTPEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceListAllEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceRegisterEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceRegisterClientEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceRenewEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceRemoveEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *enterpriseBrowserEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *tokenEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *tokenRevokeEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *userInfoEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *userSessionLogoutEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *userSessionStatusEndpointPath;
 
 
 
@@ -205,8 +205,8 @@
 
 # pragma mark - Bluetooth Properties
 
-@property (nonatomic, copy, readonly) NSString *bluetoothServiceUuid;
-@property (nonatomic, copy, readonly) NSString *bluetoothCharacteristicUuid;
+@property (nonatomic, copy, readonly, nullable) NSString *bluetoothServiceUuid;
+@property (nonatomic, copy, readonly, nullable) NSString *bluetoothCharacteristicUuid;
 @property (assign, readonly) NSInteger bluetoothRssi;
 
 
@@ -222,7 +222,7 @@
  * @param info NSDictionary of configuration information.
  * @return Returns the newly initialized MASConfiguration.
  */
-- (id)initWithConfigurationInfo:(NSDictionary *)info;
+- (instancetype _Nullable)initWithConfigurationInfo:(NSDictionary *_Nonnull)info;
 
 
 /**
@@ -230,7 +230,7 @@
  *
  * @return Returns the newly initialized MASConfiguration or nil if none was stored.
  */
-+ (MASConfiguration *)instanceFromStorage;
++ (MASConfiguration *_Nullable)instanceFromStorage;
 
 
 /**
@@ -255,14 +255,14 @@
 /**
  * The default application client identifier.
  */
-- (NSString *)defaultApplicationClientIdentifier;
+- (NSString *_Nonnull)defaultApplicationClientIdentifier;
 
 
 
 /**
  * The default application client secret.
  */
-- (NSString *)defaultApplicationClientSecret;
+- (NSString *_Nullable)defaultApplicationClientSecret;
 
 
 
@@ -271,7 +271,7 @@
  *
  * @returns Returns an NSDictionary of the client information.
  */
-- (NSDictionary *)defaultApplicationClientInfo;
+- (NSDictionary<NSString *, NSString *> *_Nonnull)defaultApplicationClientInfo;
 
 
 
@@ -282,7 +282,7 @@
  *
  *  @return Returns BOOL of whether the JSON object is same as current configuration value or not.
  */
-- (BOOL)compareWithCurrentConfiguration:(NSDictionary *)newConfiguration;
+- (BOOL)compareWithCurrentConfiguration:(NSDictionary *_Nonnull)newConfiguration;
 
 
 
@@ -294,13 +294,13 @@
  *
  *  @return BOOL of whether the JSON object has different server environment than the current configuration.
  */
-- (BOOL)detectServerChangeWithCurrentConfiguration:(NSDictionary *)newConfiguration;
+- (BOOL)detectServerChangeWithCurrentConfiguration:(NSDictionary *_Nonnull)newConfiguration;
 
 
 
 # pragma mark - Static
 
-+ (NSError *)validateJSONConfiguration:(NSDictionary *)configuration;
++ (NSError *_Nullable)validateJSONConfiguration:(NSDictionary *_Nonnull)configuration;
 
 
 @end

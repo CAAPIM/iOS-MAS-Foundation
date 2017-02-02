@@ -59,85 +59,85 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
 /**
  * The MASApplication organization.
  */
-@property (nonatomic, copy, readonly) NSString *organization;
+@property (nonatomic, copy, readonly, nullable) NSString *organization;
 
 
 /**
  * The MASApplication name.
  */
-@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, copy, readonly, nullable) NSString *name;
 
 
 /**
  * The MASApplication identifier.
  */
-@property (nonatomic, copy, readonly) NSString *identifier;
+@property (nonatomic, copy, readonly, nonnull) NSString *identifier;
 
 
 /**
  * The MASApplication description.
  */
-@property (nonatomic, copy, readonly) NSString *detailedDescription;
+@property (nonatomic, copy, readonly, nullable) NSString *detailedDescription;
 
 
 /**
  * The MASApplication icon url.
  */
-@property (nonatomic, copy, readonly) NSString *iconUrl;
+@property (nonatomic, copy, readonly, nullable) NSString *iconUrl;
 
 
 /**
  * The MASApplication auth url.
  */
-@property (nonatomic, copy, readonly) NSString *authUrl;
+@property (nonatomic, copy, readonly, nullable) NSString *authUrl;
 
 
 /**
  * The MASApplication native url.
  */
-@property (nonatomic, copy, readonly) NSString *nativeUrl;
+@property (nonatomic, copy, readonly, nullable) NSString *nativeUrl;
 
 
 /**
  * The MASApplication custom properties.
  */
-@property (nonatomic, copy, readonly) NSDictionary *customProperties;
+@property (nonatomic, copy, readonly, nullable) NSDictionary *customProperties;
 
 
 /**
  * The MASApplication environment.
  */
-@property (nonatomic, copy, readonly) NSString *environment;
+@property (nonatomic, copy, readonly, nullable) NSString *environment;
 
 
 /**
  * The MASApplication redirect URL.
  */
-@property (nonatomic, copy, readonly) NSURL *redirectUri;
+@property (nonatomic, copy, readonly, nullable) NSURL *redirectUri;
 
 
 /**
  * The MASApplication registeredBy identifier.
  */
-@property (nonatomic, copy, readonly) NSString *registeredBy;
+@property (nonatomic, copy, readonly, nullable) NSString *registeredBy;
 
 
 /**
  * The MASApplication scope array.
  */
-@property (nonatomic, copy, readonly) NSArray *scope;
+@property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *scope;
 
 
 /**
  * The MASApplication scope array as a space seperated string.
  */
-@property (nonatomic, copy, readonly) NSString *scopeAsString;
+@property (nonatomic, copy, readonly, nullable) NSString *scopeAsString;
 
 
 /**
  * The MASApplication status.
  */
-@property (nonatomic, copy, readonly) NSString *status;
+@property (nonatomic, copy, readonly, nullable) NSString *status;
 
 
 /**
@@ -155,7 +155,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
 /**
  * The MASEnterpriseAppProtocol delegate.
  */
-@property id<MASEnterpriseAppProtocol> delegate;
+@property id<MASEnterpriseAppProtocol> _Nullable delegate;
 
 
 ///--------------------------------------
@@ -169,7 +169,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  *
  *  @return Returns a singleton 'MASApplication' object.
  */
-+ (MASApplication *)currentApplication;
++ (MASApplication *_Nullable)currentApplication;
 
 ///--------------------------------------
 /// @name Enterprise App
@@ -182,7 +182,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  *
  *  @param completion The MASObjectsResponseErrorBlock (NSArray *objects, NSError *error) completion block.
  */
-- (void)retrieveEnterpriseApps:(MASObjectsResponseErrorBlock)completion;
+- (void)retrieveEnterpriseApps:(MASObjectsResponseErrorBlock _Nullable)completion;
 
 
 /**
@@ -194,7 +194,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-- (void)enterpriseIconWithImageView:(UIImageView *)imageView completion:(MASCompletionErrorBlock)completion;
+- (void)enterpriseIconWithImageView:(UIImageView *_Nonnull)imageView completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 /**
@@ -206,7 +206,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-- (void)loadWebApp:(UIWebView *)webView completion:(MASCompletionErrorBlock)completion;
+- (void)loadWebApp:(UIWebView *_Nonnull)webView completion:(MASCompletionErrorBlock _Nullable)completion;
 
 @end
 
@@ -219,7 +219,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  *
  * @param app The app object needs to be loaded as a web app.
  */
-- (void)enterpriseWebApp:(MASApplication *)app;
+- (void)enterpriseWebApp:(MASApplication *_Nonnull)app;
 
 /**
  * This is the protocol for an app to implement to receive a error callback while loading the icon or webapp.
@@ -227,6 +227,6 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  * @param app The app object.
  * @param error object which has the details of the error.
  */
-- (void)enterpriseApp:(MASApplication *)app didReceiveError:(NSError *)error;
+- (void)enterpriseApp:(MASApplication *_Nonnull)app didReceiveError:(NSError *_Nonnull)error;
 
 @end

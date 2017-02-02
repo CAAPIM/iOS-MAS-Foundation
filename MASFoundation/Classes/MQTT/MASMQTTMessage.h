@@ -11,6 +11,7 @@
 @import Foundation;
 @import UIKit;
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  MQTTQualityOfService
@@ -84,3 +85,5 @@ typedef NS_ENUM(NSInteger, MQTTQualityOfService)
                 mid:(short)mid;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -30,7 +30,7 @@
  *
  *  @param code NSString of authorization code
  */
-- (void)didReceiveAuthorizationCode:(NSString *)code;
+- (void)didReceiveAuthorizationCode:(NSString *_Nonnull)code;
 
 
 
@@ -39,7 +39,7 @@
  *
  *  @param error NSError object of the encountered error
  */
-- (void)didReceiveError:(NSError *)error;
+- (void)didReceiveError:(NSError *_Nonnull)error;
 
 @end
 
@@ -63,7 +63,7 @@
 /**
  *  MASAuthorizationResponseDelegate property for delegation of MASAuthorizationResponse protocols
  */
-@property (nonatomic, weak) id<MASAuthorizationResponseDelegate> delegate;
+@property (nonatomic, weak, nullable) id<MASAuthorizationResponseDelegate> delegate;
 
 
 ///--------------------------------------
@@ -79,9 +79,11 @@
  *
  * @return Returns the shared MASAuthorizationResponse singleton.
  */
-+ (instancetype)sharedInstance;
++ (instancetype _Nullable)sharedInstance;
 
 
+
+NS_ASSUME_NONNULL_BEGIN
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_9_3
 /**
@@ -113,5 +115,7 @@
  * @return BOOL value whether the URL is specific for social login in MASFoundation or not.
  */
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
+
+NS_ASSUME_NONNULL_END
 
 @end
