@@ -76,13 +76,13 @@ typedef void (^MASUserLoginWithUserCredentialsBlock)(_Nonnull MASBasicCredential
 /**
  * The OTP channels (NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock) block.
  */
-typedef void (^MASOTPGenerationBlock)(NSArray *_Nonnull otpChannels, BOOL cancel, _Nullable MASCompletionErrorBlock);
+typedef void (^MASOTPGenerationBlock)(NSArray *_Nonnull otpChannels, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
  * The OTP credentials (NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock) block.
  */
-typedef void (^MASOTPFetchCredentialsBlock)(NSString *_Nonnull oneTimePassword, BOOL cancel, _Nullable MASCompletionErrorBlock);
+typedef void (^MASOTPFetchCredentialsBlock)(NSString *_Nonnull oneTimePassword, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
