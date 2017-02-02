@@ -70,7 +70,7 @@ typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authoriz
 /**
  * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
  */
-typedef void (^MASUserLoginWithUserCredentialsBlock)(_Nonnull MASBasicCredentialsBlock basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock);
+typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock);
 
 
 /**
