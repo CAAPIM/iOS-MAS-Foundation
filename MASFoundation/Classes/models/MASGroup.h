@@ -24,19 +24,19 @@
 /**
  * Group Name
  */
-@property (nonatomic, copy, readwrite) NSString *groupName;
+@property (nonatomic, copy, readwrite, nonnull) NSString *groupName;
 
 
 /**
  *  Group Owner
  */
-@property (nonatomic, copy, readwrite) NSString *owner;
+@property (nonatomic, copy, readwrite, nullable) NSString *owner;
 
 
 /**
  *  Group Members
  */
-@property (nonatomic, copy, readwrite) NSArray *members;
+@property (nonatomic, copy, readwrite, nullable) NSArray *members;
 
 
 # pragma mark - Lifecycle
@@ -48,7 +48,7 @@
  *
  *  @return The instance of the MASGroup object
  */
-- (instancetype)initWithInfo:(NSDictionary *)info;
+- (instancetype _Nullable)initWithInfo:(NSDictionary *_Nonnull)info;
 
 
 
@@ -57,6 +57,6 @@
  *
  *  @return The instance of a new MASGroup object
  */
-+ (MASGroup *)group;
++ (MASGroup *_Nullable)group;
 
 @end

@@ -48,54 +48,54 @@
 /**
  *  NSString property of username
  */
-@property (nonatomic, copy, readonly) NSString *userName;
+@property (nonatomic, copy, readonly, nonnull) NSString *userName;
 
 
 /**
  *  NSString property of the user's family name
  */
-@property (nonatomic, copy, readonly) NSString *familyName;
+@property (nonatomic, copy, readonly, nullable) NSString *familyName;
 
 
 /**
  *  NSString property of the user's given name
  */
-@property (nonatomic, copy, readonly) NSString *givenName;
+@property (nonatomic, copy, readonly, nullable) NSString *givenName;
 
 
 /**
  *  NSString property of the user's full name
  */
-@property (nonatomic, copy, readonly) NSString *formattedName;
+@property (nonatomic, copy, readonly, nullable) NSString *formattedName;
 
 
 /**
  *  NSString property of the user's email address
  */
-@property (nonatomic, copy, readonly) NSDictionary *emailAddresses;
+@property (nonatomic, copy, readonly, nullable) NSDictionary<NSString *, NSString *> *emailAddresses;
 
 
 /**
  *  NSString property of the user's phone number
  */
-@property (nonatomic, copy, readonly) NSDictionary *phoneNumbers;
+@property (nonatomic, copy, readonly, nullable) NSDictionary<NSString *, NSString *> *phoneNumbers;
 
 
 /**
  *  NSString property of the user's address
  */
-@property (nonatomic, copy, readonly) NSDictionary *addresses;
+@property (nonatomic, copy, readonly, nullable) NSDictionary<NSString *, NSString *> *addresses;
 
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSDictionary *photos;
+@property (nonatomic, copy, readonly, nullable) NSDictionary<NSString *, id> *photos;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray *groups;
+@property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *groups;
 
 /**
  *
@@ -105,7 +105,7 @@
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSString *accessToken;
+@property (nonatomic, copy, readonly, nullable) NSString *accessToken;
 
 
 
@@ -121,7 +121,7 @@
  *
  *  @return Returns a singleton 'MASUser' object.
  */
-+ (MASUser *)currentUser;
++ (MASUser *_Nullable)currentUser;
 
 
 
@@ -145,7 +145,7 @@
  *
  *  @param completion The MASCompletionErrorBlock block that receives the results.  
  */
-- (void)lockSessionWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)lockSessionWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -158,7 +158,7 @@
 
  @param completion MASCompletionErrorBlock block that receives the results.
  */
-- (void)unlockSessionWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)unlockSessionWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -173,7 +173,7 @@
  @param userOperationPrompt NSString message that will be displayed on system local authentication dialog.
  @param completion          MASCompletionErrorBlock block that receives the results.
  */
-- (void)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt completion:(MASCompletionErrorBlock)completion;
+- (void)unlockSessionWithUserOperationPromptMessage:(NSString *_Nonnull)userOperationPrompt completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -202,7 +202,7 @@
  *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user 
  *  available via [MASUser currentUser] has been updated with the new information.
  */
-+ (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion;
++ (void)loginWithUserName:(NSString *_Nonnull)userName password:(NSString *_Nonnull)password completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -215,7 +215,7 @@
  @param completion        The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
  *  available via [MASUser currentUser] has been updated with the new information.
  */
-+ (void)loginWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion;
++ (void)loginWithAuthorizationCode:(NSString *_Nonnull)authorizationCode completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -227,7 +227,7 @@
  *  the current MASUser object that is making this request, and NSError object in case any error is encountered during the process.
  *
  */
-- (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion;
+- (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock _Nullable)completion;
 
 
 
@@ -239,7 +239,7 @@
  *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user 
  *  available via [MASUser currentUser] has been updated with the new information.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)logoutWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 @end

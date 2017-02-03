@@ -29,13 +29,13 @@
 /**
  * The MASAuthenticationProvider instances.
  */
-@property (nonatomic, copy, readonly) NSArray *providers;
+@property (nonatomic, copy, readonly, nullable) NSArray *providers;
 
 
 /**
  *  idp value indicates which social media should be available for the device.
  */
-@property (nonatomic, copy, readonly) NSString *idp;
+@property (nonatomic, copy, readonly, nullable) NSString *idp;
 
 
 
@@ -50,7 +50,7 @@
  *
  * @return Returns a singleton 'MASAuthenticationProviders' object.
  */
-+ (MASAuthenticationProviders *)currentProviders;
++ (MASAuthenticationProviders *_Nullable)currentProviders;
 
 
 
@@ -61,7 +61,7 @@
  
  @param completion MASObjectResponseErrorBlock to notify original caller with the results.
  */
-+ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock)completion;
++ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock _Nullable)completion;
 
 
 
@@ -76,6 +76,6 @@
  *
  *  @return Returns MASAuthenticationProvider for BLE/QA Code Proximity Login.
  */
-- (MASAuthenticationProvider *)retrieveAuthenticationProviderForProximityLogin;
+- (MASAuthenticationProvider *_Nullable)retrieveAuthenticationProviderForProximityLogin;
 
 @end

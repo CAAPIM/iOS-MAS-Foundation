@@ -27,20 +27,20 @@
 /**
  * The MASAuthenticationProvider identifier.
  */
-@property (nonatomic, copy, readonly) NSString *identifier;
+@property (nonatomic, copy, readonly, nonnull) NSString *identifier;
 
 
 /**
  * The MASAuthenticationProvider URL.
  */
-@property (nonatomic, copy, readonly) NSURL *authenticationUrl;
+@property (nonatomic, copy, readonly, nonnull) NSURL *authenticationUrl;
 
 
 /**
  *  The MASAuthenticationProvider polling URL, only applicable to QR codes.  
  *  Nil for social login providers.
  */
-@property (nonatomic, copy, readonly) NSURL *pollUrl;
+@property (nonatomic, copy, readonly, nullable) NSURL *pollUrl;
 
 
 

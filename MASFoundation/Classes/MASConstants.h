@@ -24,21 +24,21 @@
 /**
  * A standard (BOOL completed, NSError *error) block.
  */
-typedef void (^MASCompletionErrorBlock)(BOOL completed, NSError *error);
+typedef void (^MASCompletionErrorBlock)(BOOL completed, NSError *_Nullable error);
 
 
 /**
  * A standard (id objects, NSError *error) block.  The response object could potentially
  * be any type of MASObject.
  */
-typedef void (^MASObjectResponseErrorBlock)(id object, NSError *error);
+typedef void (^MASObjectResponseErrorBlock)(id _Nullable object, NSError *_Nullable error);
 
 
 /**
  * A standard (NSArray *objects, NSError *error) block.  The response objects could potentially
  * be any type of MASObject.
  */
-typedef void (^MASObjectsResponseErrorBlock)(NSArray *objects, NSError *error);
+typedef void (^MASObjectsResponseErrorBlock)(NSArray<id> *_Nullable objects, NSError *_Nullable error);
 
 
 /**
@@ -46,61 +46,55 @@ typedef void (^MASObjectsResponseErrorBlock)(NSArray *objects, NSError *error);
  * be any type of object.  It is most often used to return NSString JSON responses from 
  * HTTP calls for example.
  */
-typedef void (^MASResponseInfoErrorBlock)(NSDictionary *responseInfo, NSError *error);
+typedef void (^MASResponseInfoErrorBlock)(NSDictionary<NSString *, id> *_Nullable responseInfo, NSError *_Nullable error);
 
 
 /**
  * The MASUser specific (MASUser *user, NSError *error) block.
  */
-typedef void (^MASUserResponseErrorBlock)(MASUser *user, NSError *error);
+typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nullable error);
 
 
 /**
  * The Basic Credentials (NSString *userName, NSString *password, BOOL cancel) block.
  */
-typedef void (^MASBasicCredentialsBlock)(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock);
+typedef void (^MASBasicCredentialsBlock)(NSString *_Nonnull userName, NSString *_Nonnull password, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
  * The Authorization Code Credentials (NSString *authorizationCode, BOOL cancel, MAScompletionErrorBlock) block.
  */
-typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *authorizationCode, BOOL cancel, MASCompletionErrorBlock);
-
-
-/**
- * The Device Registration with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
- */
-typedef void (^MASDeviceRegistrationWithUserCredentialsBlock)(MASBasicCredentialsBlock basicBlock, MASAuthorizationCodeCredentialsBlock authorizationCodeBlock);
+typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authorizationCode, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
  * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
  */
-typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock basicBlock, MASAuthorizationCodeCredentialsBlock authorizationCodeBlock);
+typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock);
 
 
 /**
  * The OTP channels (NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock) block.
  */
-typedef void (^MASOTPGenerationBlock)(NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock);
+typedef void (^MASOTPGenerationBlock)(NSArray *_Nonnull otpChannels, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
  * The OTP credentials (NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock) block.
  */
-typedef void (^MASOTPFetchCredentialsBlock)(NSString *oneTimePassword, BOOL cancel, MASCompletionErrorBlock);
+typedef void (^MASOTPFetchCredentialsBlock)(NSString *_Nonnull oneTimePassword, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
  * The Two-factor authentication with supported OTP Channels (NSArray *supportedOTPChannels, MASOTPGenerationBlock) block.
  */
-typedef void (^MASOTPChannelSelectionBlock)(NSArray *supportedOTPChannels, MASOTPGenerationBlock otpGenerationBlock);
+typedef void (^MASOTPChannelSelectionBlock)(NSArray *_Nonnull supportedOTPChannels, MASOTPGenerationBlock _Nonnull otpGenerationBlock);
 
 
 /**
  * The Two-factor authentication with OTP Credentials (MASOTPFetchCredentialsBlock) block.
  */
-typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock, NSError *otpError);
+typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock _Nonnull otpBlock, NSError *_Nullable otpError);
 
 
 ///--------------------------------------
@@ -217,36 +211,37 @@ typedef NS_ENUM(NSInteger, MASState) {
 /**
  * The NSString constant indicating the MAS 'start' method has not been called yet.
  */
-static NSString *const MASNotStartedYet = @"MAS not started yet";
+static NSString *const _Nonnull MASNotStartedYet = @"MAS not started yet";
 
 
 /**
  * The NSString constant key for the user info returned in various file related operations or errors.
  */
-static NSString *const MASFileNameKey = @"MASFileNameKey";
+static NSString *const _Nonnull MASFileNameKey = @"MASFileNameKey";
 
 
 /**
  * The NSString constant key for the otp retry suspension time returned in various otp related operations or errors.
  */
-static NSString *const MASOTPSuspensionTimeKey = @"MASOTPSuspensionTimeKey";
+static NSString *const _Nonnull MASOTPSuspensionTimeKey = @"MASOTPSuspensionTimeKey";
 
 
 /**
  * The NSString constant key for the header info in the response dictionary.
  */
-static NSString *const MASResponseInfoHeaderInfoKey = @"MASResponseInfoHeaderInfoKey";
+static NSString *const _Nonnull MASResponseInfoHeaderInfoKey = @"MASResponseInfoHeaderInfoKey";
+
 
 /**
  * The NSString constant key for the error value in the response header info dictionary.
  */
-static NSString *const MASHeaderInfoErrorKey = @"x-ca-err";
+static NSString *const _Nonnull MASHeaderInfoErrorKey = @"x-ca-err";
 
 
 /**
  * The NSString constant key for the body info in the response dictionary.
  */
-static NSString *const MASResponseInfoBodyInfoKey = @"MASResponseInfoBodyInfoKey";
+static NSString *const _Nonnull MASResponseInfoBodyInfoKey = @"MASResponseInfoBodyInfoKey";
 
 
 
@@ -259,20 +254,20 @@ static NSString *const MASResponseInfoBodyInfoKey = @"MASResponseInfoBodyInfoKey
 /**
  * The NSString error domain used by all MAS server related Foundation level NSErrors.
  */
-static NSString *const MASFoundationErrorDomain = @"com.ca.MASFoundation:ErrorDomain";
+static NSString *const _Nonnull MASFoundationErrorDomain = @"com.ca.MASFoundation:ErrorDomain";
 
 
 /**
  *  The NSString error domain used by all MAS local level NSErrors.
  */
-static NSString *const MASFoundationErrorDomainLocal = @"com.ca.MASFoundation.localError:ErrorDomain";
+static NSString *const _Nonnull MASFoundationErrorDomainLocal = @"com.ca.MASFoundation.localError:ErrorDomain";
 
 
 
 /**
  *  The NSString error domain used by all target API level NSErrors.
  */
-static NSString *const MASFoundationErrorDomainTargetAPI = @"com.ca.MASFoundation.targetAPI:ErrorDomain";
+static NSString *const _Nonnull MASFoundationErrorDomainTargetAPI = @"com.ca.MASFoundation.targetAPI:ErrorDomain";
 
 
 /**
@@ -442,56 +437,56 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
  * The NSString constant for the MAS notification indicating that MAS has begun
  * starting all it's processes.
  */
-static NSString *const MASWillStartNotification = @"MASWillStartNotification";
+static NSString *const _Nonnull MASWillStartNotification = @"MASWillStartNotification";
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has failed 
  * to successfully start it's processes.
  */
-static NSString *const MASDidFailToStartNotification = @"MASDidFailToStartNotification";
+static NSString *const _Nonnull MASDidFailToStartNotification = @"MASDidFailToStartNotification";
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has
  * successfully started it's processes.
  */
-static NSString *const MASDidStartNotification = @"MASDidStartNotification";
+static NSString *const _Nonnull MASDidStartNotification = @"MASDidStartNotification";
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has begun
  * stopping all it's processes.
  */
-static NSString *const MASWillStopNotification = @"MASWillStopNotification";
+static NSString *const _Nonnull MASWillStopNotification = @"MASWillStopNotification";
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has failed 
  * to successfully stop it's processes.
  */
-static NSString *const MASDidFailToStopNotification = @"MASDidFailToStopNotification";
+static NSString *const _Nonnull MASDidFailToStopNotification = @"MASDidFailToStopNotification";
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has
  * successfully stopped it's processes.
  */
-static NSString *const MASDidStopNotification = @"MASDidStopNotification";
+static NSString *const _Nonnull MASDidStopNotification = @"MASDidStopNotification";
 
 
 /**
  *  The NSString constant for the MAS notification indicating that MAS will
  *  switch the server.
  */
-static NSString *const MASWillSwitchGatewayServerNotification = @"MASWillSwitchGatewayServerNotification";
+static NSString *const _Nonnull MASWillSwitchGatewayServerNotification = @"MASWillSwitchGatewayServerNotification";
 
 
 /**
  *  The NSString constant for the MAS notification indicating that MAS did finish to
  *  switch the server.
  */
-static NSString *const MASDidSwitchGatewayServerNotification = @"MASDidSwitchGatewayServerNotification";
+static NSString *const _Nonnull MASDidSwitchGatewayServerNotification = @"MASDidSwitchGatewayServerNotification";
 
 
 
@@ -506,21 +501,21 @@ static NSString *const MASDidSwitchGatewayServerNotification = @"MASDidSwitchGat
  * The NSString constant for the device notification indicating that the MASDevice
  * has begun the process of deregistering the device.
  */
-static NSString *const MASDeviceWillDeregisterNotification = @"MASDeviceWillDeregisterNotification";
+static NSString *const _Nonnull MASDeviceWillDeregisterNotification = @"MASDeviceWillDeregisterNotification";
 
 
 /**
  * The NSString constant for the device notification indicating that the MASDevice
  * has failed to successfully deregister.
  */
-static NSString *const MASDeviceDidFailToDeregisterNotification = @"MASDeviceDidFailToDeregisterNotification";
+static NSString *const _Nonnull MASDeviceDidFailToDeregisterNotification = @"MASDeviceDidFailToDeregisterNotification";
 
 
 /**
  * The NSString constant for the device notification indicating that the MASDevice
  * has successfully deregistered.
  */
-static NSString *const MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
+static NSString *const _Nonnull MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
 
 
 
@@ -534,63 +529,63 @@ static NSString *const MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregi
  * The NSString constant for the user notification indicating that a MASUser
  * will attempt to authenticate.
  */
-static NSString *const MASUserWillAuthenticateNotification = @"MASUserWillAuthenticateNotification";
+static NSString *const _Nonnull MASUserWillAuthenticateNotification = @"MASUserWillAuthenticateNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has failed to authenticate.
  */
-static NSString *const MASUserDidFailToAuthenticateNotification = @"MASUserDidFailToAuthenticateNotification";
+static NSString *const _Nonnull MASUserDidFailToAuthenticateNotification = @"MASUserDidFailToAuthenticateNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has successfully authenticated.
  */
-static NSString *const MASUserDidAuthenticateNotification = @"MASUserDidAuthenticateNotification";
+static NSString *const _Nonnull MASUserDidAuthenticateNotification = @"MASUserDidAuthenticateNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * will attempt to log out.
  */
-static NSString *const MASUserWillLogoutNotification = @"MASUserWillLogoutNotification";
+static NSString *const _Nonnull MASUserWillLogoutNotification = @"MASUserWillLogoutNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has failed to log out.
  */
-static NSString *const MASUserDidFailToLogoutNotification = @"MASUserDidFailToLogoutNotification";
+static NSString *const _Nonnull MASUserDidFailToLogoutNotification = @"MASUserDidFailToLogoutNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has successfully logged out.
  */
-static NSString *const MASUserDidLogoutNotification = @"MASUserDidLogoutNotification";
+static NSString *const _Nonnull MASUserDidLogoutNotification = @"MASUserDidLogoutNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * will attempt to update it's information.
  */
-static NSString *const MASUserWillUpdateInformationNotification = @"MASUserWillUpdateInformationNotification";
+static NSString *const _Nonnull MASUserWillUpdateInformationNotification = @"MASUserWillUpdateInformationNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has failed to update it's user information.
  */
-static NSString *const MASUserDidFailToUpdateInformationNotification = @"MASUserDidFailToUpdateInformationNotification";
+static NSString *const _Nonnull MASUserDidFailToUpdateInformationNotification = @"MASUserDidFailToUpdateInformationNotification";
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has successfully updated it's information.
  */
-static NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpdateInformationNotification";
+static NSString *const _Nonnull MASUserDidUpdateInformationNotification = @"MASUserDidUpdateInformationNotification";
 
 
 ///--------------------------------------
@@ -603,14 +598,14 @@ static NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpd
  *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
  *  has received authorization code from social login
  */
-static NSString *const MASAuthorizationResponseDidReceiveAuthorizationCodeNotification = @"MASAuthorizationResponseDidReceiveAuthorizationCodeNotification";
+static NSString *const _Nonnull MASAuthorizationResponseDidReceiveAuthorizationCodeNotification = @"MASAuthorizationResponseDidReceiveAuthorizationCodeNotification";
 
 
 /**
  *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
  *  has received an error from social login
  */
-static NSString *const MASAuthorizationResponseDidReceiveErrorNotification = @"MASAuthorizationResponseDidReceiveErrorNotification";
+static NSString *const _Nonnull MASAuthorizationResponseDidReceiveErrorNotification = @"MASAuthorizationResponseDidReceiveErrorNotification";
 
 
 ///--------------------------------------
@@ -623,26 +618,26 @@ static NSString *const MASAuthorizationResponseDidReceiveErrorNotification = @"M
  *  The NSString constant for the device notification indicating that the MASDevice
  *  has received authorization code from proximity login (BLE/QR Code)
  */
-static NSString *const MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification = @"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification";
+static NSString *const _Nonnull MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification = @"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification";
 
 
 /**
  *  The NSString constant for the device notification indicating that the MASDevice
  *  has received an error from proximity login (BLE/QR Code)
  */
-static NSString *const MASDeviceDidReceiveErrorFromProximityLoginNotification = @"MASDeviceDidReceiveErrorFromProximityLoginNotification";
+static NSString *const _Nonnull MASDeviceDidReceiveErrorFromProximityLoginNotification = @"MASDeviceDidReceiveErrorFromProximityLoginNotification";
 
 
 /**
  *  The NSString constant for the proximity login notification indicating that QR Code image did start displaying.
  */
-static NSString *const MASProximityLoginQRCodeDidStartDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStartDisplayingQRCodeImage";
+static NSString *const _Nonnull MASProximityLoginQRCodeDidStartDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStartDisplayingQRCodeImage";
 
 
 /**
  *  The NSString constant for the proximity login notification indicating that QR Code image did stop displaying.
  */
-static NSString *const MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStopDisplayingQRCodeImage";
+static NSString *const _Nonnull MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStopDisplayingQRCodeImage";
 
 
 ///--------------------------------------
@@ -707,11 +702,11 @@ typedef void (^MASGatewayMonitorStatusBlock)(MASGatewayMonitoringStatus status);
  * The NSString constant for the gateway monitor notification indicating that the monitor status
  * has updated to a new value.
  */
-static NSString *const MASGatewayMonitorStatusUpdateNotification = @"MASGatewayMonitorStatusUpdateNotification";
+static NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification = @"MASGatewayMonitorStatusUpdateNotification";
 
 
 /**
  * The NSString constant key for the gateway monitor notification's NSDictionary userInfo that will 
  * retrieve new status value.
  */
-static NSString *const MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
+static NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
