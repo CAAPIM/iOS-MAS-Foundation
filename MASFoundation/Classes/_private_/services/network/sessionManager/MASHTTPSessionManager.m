@@ -10,6 +10,7 @@
 
 #import "MASHTTPSessionManager.h"
 
+#import "MASISecurityPolicy+MASPrivate.h"
 #import "MASSecurityService.h"
 #import "MASURLRequest.h"
 
@@ -53,13 +54,41 @@
         
         if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
         {
-            if ([blockSelf.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host])
+            //
+            //  For now, SSL pinning with public key would pin with raw public key.
+            //  It will be public key hash pinning soon.
+            //
+            if (blockSelf.securityPolicy.SSLPinningMode == MASISSLPinningModeCertificate || self.securityPolicy.SSLPinningMode == MASISSLPinningModePublicKey)
             {
-                *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                disposition = NSURLSessionAuthChallengeUseCredential;
+                if ([blockSelf.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host])
+                {
+                    *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                }
+                else {
+                    disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                }
             }
             else {
-                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                
+                if (blockSelf.securityPolicy.allowInvalidCertificates)
+                {
+                    *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                }
+                else {
+                    SecTrustResultType result = 0;
+                    SecTrustEvaluate(challenge.protectionSpace.serverTrust, &result);
+                    
+                    if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed)
+                    {
+                        *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                        disposition = NSURLSessionAuthChallengeUseCredential;
+                    }
+                    else {
+                        disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                    }
+                }
             }
         }
         else {
@@ -86,13 +115,41 @@
         
         if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
         {
-            if ([blockSelf.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host])
+            //
+            //  For now, SSL pinning with public key would pin with raw public key.
+            //  It will be public key hash pinning soon.
+            //
+            if (blockSelf.securityPolicy.SSLPinningMode == MASISSLPinningModeCertificate || self.securityPolicy.SSLPinningMode == MASISSLPinningModePublicKey)
             {
-                *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                disposition = NSURLSessionAuthChallengeUseCredential;
+                if ([blockSelf.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host])
+                {
+                    *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                }
+                else {
+                    disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                }
             }
             else {
-                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                
+                if (blockSelf.securityPolicy.allowInvalidCertificates)
+                {
+                    *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                }
+                else {
+                    SecTrustResultType result = 0;
+                    SecTrustEvaluate(challenge.protectionSpace.serverTrust, &result);
+                    
+                    if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed)
+                    {
+                        *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                        disposition = NSURLSessionAuthChallengeUseCredential;
+                    }
+                    else {
+                        disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                    }
+                }
             }
         }
         else {

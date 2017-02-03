@@ -215,7 +215,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     MASISecurityPolicy *policy = [MASISecurityPolicy policyWithPinningMode:pinningMode];
     
     [policy setAllowInvalidCertificates:(pinningMode == MASISSLPinningModeNone ? NO : YES)];
-    [policy setValidatesDomainName:NO];
+    [policy setValidatesDomainName:YES];
     [policy setValidatesCertificateChain:NO];
     [policy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
     

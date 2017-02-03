@@ -64,6 +64,8 @@ static NSString *const MASMobileEnbaledPublicKeyPinning = @"enable_public_key_pi
 
 static NSString *const MASMobileEnbaledTrustedPublicPKI = @"trusted_public_pki"; // bool
 
+static NSString *const MASMobileTrustedCertPinnedPublicKeyHashes = @"trusted_cert_pinned_public_key_hashes"; // array
+
 
 
 # pragma mark - OAuth Configuration Constants
@@ -481,6 +483,15 @@ static float _systemVersionNumber_;
     }
     
     return certificates;
+}
+
+
+- (NSArray *)trustedCertPinnedPublickKeyHashes
+{
+    NSDictionary *magInfo = _configurationInfo_[MASMAGConfigurationKey];
+    NSDictionary *mobileSDKs = magInfo[MASMobileConfigurationKey];
+    
+    return (NSArray *)mobileSDKs[MASMobileTrustedCertPinnedPublicKeyHashes];
 }
 
 

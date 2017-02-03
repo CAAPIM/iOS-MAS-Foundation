@@ -220,6 +220,19 @@
 
 
 /**
+ Authenticate a user via asynchronous request with id_token
+ 
+ This will create an [MASUser currentUser] upon a successful result.
+ 
+ @param idToken    The id_token for the user.
+ @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
+ available via [MASUser currentUser] has been updated with the new information.
+ */
++ (void)loginWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion;
+
+
+
+/**
  *  Requesting userInfo for the MASUser object.
  *  This method will retrieve additional information on the MASUser object.
  *

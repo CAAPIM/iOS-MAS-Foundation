@@ -314,10 +314,18 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -338,9 +346,16 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  This version defaults the request/response content type encoding to JSON.
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -360,15 +375,60 @@
 
 
 /**
+ *  Request method for an HTTP DELETE call from the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the NSURL itself as an HTTP query extension as so:
+ *
+ *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)deleteFrom:(NSString *_Nonnull)endPointPath
+    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+       requestType:(MASRequestResponseType)requestType
+      responseType:(MASRequestResponseType)responseType
+          isPublic:(BOOL)isPublic
+        completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
  *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
  *  places it's parameters within the NSURL itself as an HTTP query extension as so:
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -389,8 +449,16 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -410,6 +478,43 @@
 
 
 /**
+ *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the NSURL itself as an HTTP query extension as so:
+ *
+ *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)getFrom:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
  *  Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
  *  places it's parameters within the HTTP body in www-form-url-encoded format:
  *
@@ -417,10 +522,18 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -443,8 +556,16 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -459,6 +580,45 @@
      andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
     requestType:(MASRequestResponseType)requestType
    responseType:(MASRequestResponseType)responseType
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the HTTP body in www-form-url-encoded format:
+ *
+ *      <body>
+ *          <type=value&type2=value2&...>
+ *      </body>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)patchTo:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
      completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
@@ -471,10 +631,18 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -497,8 +665,16 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -518,6 +694,45 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
 
 
 /**
+ *  Request method for an HTTP POST call to the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the HTTP body in www-form-url-encoded format:
+ *
+ *      <body>
+ *          <type=value&type2=value2&...>
+ *      </body>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)postTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+    completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
  *  Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
  *  places it's parameters within the HTTP body in www-form-url-encoded format:
  *
@@ -525,10 +740,18 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -551,8 +774,16 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -567,6 +798,45 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
   requestType:(MASRequestResponseType)requestType
  responseType:(MASRequestResponseType)responseType
+   completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the HTTP body in www-form-url-encoded format:
+ *
+ *      <body>
+ *          <type=value&type2=value2&...>
+ *      </body>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
+ *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
+ *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
+ *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *
+ *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
+ *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)putTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
