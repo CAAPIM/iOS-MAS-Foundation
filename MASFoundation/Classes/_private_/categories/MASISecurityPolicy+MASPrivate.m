@@ -11,8 +11,16 @@
 #import "MASISecurityPolicy+MASPrivate.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#import <UIKit/UIKit.h>
+
+#define MAS_SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 @implementation MASISecurityPolicy (MASPrivate)
+
+static unsigned char rsa2048Asn1Header[] = {
+    0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+    0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00
+};
 
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust withPublicKeyHashes:(NSArray *)publicKeyHashes forDomain:(NSString *)domain
 {
@@ -70,76 +78,46 @@
             break;
         case MASISSLPinningModePublicKey:{
             
-            NSMutableSet *pinningHashData = [NSMutableSet set];
+            //
+            //  extract the server public key hash from serverTrust
+            //
+            NSSet *serverPublicKeys = [self extractPublicKeyHashesFromServerTrust:serverTrust];
             
-            for (NSString *pinningHash in publicKeyHashes)
+            //
+            //  retrieve an array of public key hash strings from configuration
+            //
+            NSMutableArray *knownPublicKeyHashes = [NSMutableArray array];
+            
+            for (NSString *publicKeyHashString in publicKeyHashes)
             {
-                NSData *publicKeyHashData = [[NSData alloc] initWithBase64EncodedString:pinningHash options:(NSDataBase64DecodingOptions)0];
-                [pinningHashData addObject:publicKeyHashData];
-            }
-            
-            NSUInteger trustedPublicKeyHashCount = 0;
-            NSArray *serverPublicKeys = [self publicKeyTrustChainForServerTrust:serverTrust];
-            
-            for (id trustChainPublicKey in serverPublicKeys)
-            {
-                NSData *publicKeyData = nil;
-                
-                SecKeyRef publicKey = (__bridge SecKeyRef)trustChainPublicKey;
-                CFDataRef publicKeyDataRef = NULL;
-                
-                if (publicKey)
+                //
+                //  create NSData based on base64 encoded public key hash
+                //
+                NSMutableData *publicKeyHashData = [[NSMutableData alloc] initWithBase64EncodedString:publicKeyHashString options:(NSDataBase64DecodingOptions)0];
+
+                //
+                //  make sure that the public keys are SHA256 hashed
+                //
+                if ([publicKeyHashData length] == CC_SHA256_DIGEST_LENGTH)
                 {
-                    publicKeyDataRef = SecKeyCopyExternalRepresentation(publicKey, NULL);
-                    
-                    if (publicKeyDataRef)
-                    {
-                        publicKeyData = (NSData *)CFBridgingRelease(publicKeyDataRef);
-                        CFRelease(publicKeyDataRef);
-                    }
-                }
-                
-                if (!publicKeyData)
-                {
-                    if (publicKeyDataRef)
-                    {
-                        CFRelease(publicKeyDataRef);
-                    }
-                    
-                    if (publicKey)
-                    {
-                        CFRelease(publicKey);
-                    }
-                    
-                    continue;
-                }
-                else {
-                    
-//                    NSString *serverPublicKeyString = [NSString stringWithUTF8String:[publicKeyData bytes]];
-                    
-                    NSMutableData *sha256Data = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
-                    CC_SHA256(publicKeyData.bytes, (CC_LONG)publicKeyData.length, sha256Data.mutableBytes);
-                    
-                    
-                    if ([pinningHashData containsObject:sha256Data])
-                    {
-                        trustedPublicKeyHashCount++;
-                    }
-                    
-                    if (publicKeyDataRef)
-                    {
-                        CFRelease(publicKeyDataRef);
-                    }
-                    
-                    if (publicKey)
-                    {
-                        CFRelease(publicKey);
-                    }
+                    [knownPublicKeyHashes addObject:publicKeyHashData];
                 }
             }
             
-            DLog(@"what?");
+            int knownPublicKeyFound = 0;
             
+            //
+            //  SDK will continue only when the set of public key hashes on the client side is a subset of the trust chain from the challenge
+            //
+            for (NSData *knownPublicKeyHash in knownPublicKeyHashes)
+            {
+                if ([serverPublicKeys containsObject:knownPublicKeyHash])
+                {
+                    knownPublicKeyFound++;
+                }
+            }
+            
+            return knownPublicKeyFound == [knownPublicKeyHashes count];
         }
     }
     
@@ -147,54 +125,131 @@
 }
 
 
-//
-// From MASISecurityPolicy
-//
-- (NSArray *)publicKeyTrustChainForServerTrust:(SecTrustRef)serverTrust
+- (NSMutableSet<NSData *> *)extractPublicKeyHashesFromServerTrust:(SecTrustRef)serverTrust
 {
-    SecPolicyRef policy = SecPolicyCreateBasicX509();
     CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
-    NSMutableArray *trustChain = [NSMutableArray array];
+    NSMutableSet *serverPublicKeyHashes = [NSMutableSet set];
     
-    for (CFIndex i = 0; i < certificateCount; i++) {
-        
+    //
+    //  loop through the certificate chain
+    //
+    for (CFIndex i = 0; i < certificateCount; i++)
+    {
+        //
+        //  retrieve an individual certificate and convert the cert into public key hased NSData
+        //
         SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+        NSData *publicKeyHashData = [self getPublicKeyFromCertificateRef:certificate];
         
-        SecCertificateRef someCertificates[] = {certificate};
-        CFArrayRef certificates = CFArrayCreate(NULL, (const void **)someCertificates, 1, NULL);
-        
-        SecTrustRef trust;
-        OSStatus trustCertResult = SecTrustCreateWithCertificates(certificates, policy, &trust);
-        
-        if (trustCertResult != errSecSuccess)
+        if (publicKeyHashData)
         {
-            continue;
+            [serverPublicKeyHashes addObject:publicKeyHashData];
         }
-        
-        SecTrustResultType result;
-        OSStatus trustResult = SecTrustEvaluate(trust, &result);
-        
-        if (trustResult != errSecSuccess)
-        {
-            continue;
-        }
-        
-        [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
+    }
+    
+    return serverPublicKeyHashes;
+}
 
-        if (trust)
-        {
-            CFRelease(trust);
-        }
+
+- (NSData *)getPublicKeyFromCertificateRef:(SecCertificateRef)certificate
+{
+    //
+    //  Create publicKey, temporary server trust, and policy references
+    //
+    SecKeyRef publicKey = NULL;
+    SecTrustRef serverTrust = NULL;
+    SecPolicyRef policy = SecPolicyCreateBasicX509();
+    
+    //
+    //  Declare the public key data
+    //
+    NSData *publicKeyHashData = nil;
+    
+    //
+    //  if creating server trust with the provided policy, continue on hashing public key
+    //
+    if (policy && SecTrustCreateWithCertificates(certificate, policy, &serverTrust) == noErr)
+    {
+        //
+        //  extract public key out of the trust
+        //
+        publicKey = SecTrustCopyPublicKey(serverTrust);
         
-        if (certificates)
+        if (publicKey)
         {
-            CFRelease(certificates);
+            NSData *publicKeyData = nil;
+            
+            //
+            //  These lines of codes will be simplified once the minimum support OS version changes to iOS 10.
+            //
+            if (MAS_SYSTEM_VERSION_LESS_THAN(@"10.0"))
+            {
+                NSString *temporaryAppTag = @"MASPublicKeyTemporaryTag";
+                
+                //
+                //  SecKeyCopyExternalRepresentation is only availabe on iOS 10 or above; therefore, to extract NSData out of SecKeyRef,
+                //  we have to store the SecKeyRef into keychain, and remove it
+                //
+                
+                //
+                //  adding public key into keychain storage
+                //
+                NSMutableDictionary *storeKey = [NSMutableDictionary dictionary];
+                [storeKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+                [storeKey setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly forKey:(__bridge id)kSecAttrAccessible];
+                [storeKey setObject:(__bridge id)(kCFBooleanTrue) forKey:(__bridge id)kSecReturnData];
+                [storeKey setObject:(__bridge id)publicKey forKey:(__bridge id)kSecValueRef];
+                [storeKey setObject:temporaryAppTag forKey:(__bridge id)kSecAttrApplicationTag];
+                
+                //
+                //  retreive the public key from the keychain as CFDataRef type
+                //
+                if (SecItemAdd((__bridge CFDictionaryRef)storeKey, (void *)&publicKeyData) == errSecSuccess)
+                {
+                    //
+                    //  make sure to delete the keychain data when it's successfully retrieved
+                    //
+                    NSMutableDictionary *removeKey = [NSMutableDictionary dictionary];
+                    [removeKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+                    [removeKey setObject:(__bridge id)(kCFBooleanFalse) forKey:(__bridge id)kSecReturnData];
+                    [removeKey setObject:temporaryAppTag forKey:(__bridge id)kSecAttrApplicationTag];
+                    
+                    SecItemDelete((__bridge CFDictionaryRef)removeKey);
+                }
+            }
+            else {
+                //
+                //  convert SecKeyRef to NSData
+                //
+                CFDataRef publicKeyDataRef = SecKeyCopyExternalRepresentation(publicKey, NULL);
+                publicKeyData = (NSData *)CFBridgingRelease(publicKeyDataRef);
+            }
+            
+            if (publicKeyData)
+            {
+                //
+                //  construct NSMutableData for SHA256 digest length
+                //
+                publicKeyHashData = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
+                CC_SHA256_CTX shaCtx;
+                CC_SHA256_Init(&shaCtx);
+                
+                //
+                //  adding RSA 2048 ASN.1 header
+                //
+                CC_SHA256_Update(&shaCtx, rsa2048Asn1Header, sizeof(rsa2048Asn1Header));
+                
+                CC_SHA256_Update(&shaCtx, [publicKeyData bytes], (unsigned int)[publicKeyData length]);
+                CC_SHA256_Final((unsigned char *)[publicKeyHashData bytes], &shaCtx);
+            }
         }
     }
     
     CFRelease(policy);
+    CFRelease(serverTrust);
+    CFRelease(publicKey);
     
-    return trustChain;
+    return publicKeyHashData;
 }
 
 @end

@@ -58,9 +58,20 @@
             //  For now, SSL pinning with public key would pin with raw public key.
             //  It will be public key hash pinning soon.
             //
-            if (blockSelf.securityPolicy.SSLPinningMode == MASISSLPinningModeCertificate || self.securityPolicy.SSLPinningMode == MASISSLPinningModePublicKey)
+            if (blockSelf.securityPolicy.SSLPinningMode == MASISSLPinningModeCertificate)
             {
                 if ([blockSelf.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host])
+                {
+                    *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                }
+                else {
+                    disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+                }
+            }
+            else if (self.securityPolicy.SSLPinningMode == MASISSLPinningModePublicKey)
+            {
+                if ([blockSelf.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host])
                 {
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
                     disposition = NSURLSessionAuthChallengeUseCredential;
