@@ -228,7 +228,7 @@
  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
  available via [MASUser currentUser] has been updated with the new information.
  */
-+ (void)loginWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion;
++ (void)loginWithIdToken:(NSString *_Nonnull)idToken completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
