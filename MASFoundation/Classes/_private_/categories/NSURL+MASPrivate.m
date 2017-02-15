@@ -33,4 +33,23 @@
     return [thisURL.absoluteString hasPrefix:self.absoluteString];
 }
 
+
+- (NSDictionary *)extractQueryParameters
+{
+    NSMutableDictionary *queryStringDictionary = [[NSMutableDictionary alloc] init];
+    NSArray *urlComponentsSeperatedwithQuestionMark = [[self description] componentsSeparatedByString:@"?"];
+    NSArray *urlComponents = [urlComponentsSeperatedwithQuestionMark[1] componentsSeparatedByString:@"&"];
+    
+    for (NSString *keyValuePair in urlComponents)
+    {
+        NSArray *pairComponents = [keyValuePair componentsSeparatedByString:@"="];
+        NSString *key = [pairComponents objectAtIndex:0];
+        NSString *value = [pairComponents objectAtIndex:1];
+        
+        [queryStringDictionary setObject:value forKey:key];
+    }
+    
+    return queryStringDictionary;
+}
+
 @end

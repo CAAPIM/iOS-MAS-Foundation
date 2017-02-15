@@ -224,8 +224,15 @@
 
 
 /**
- *  Starts the lifecycle of the MAS processes with given JSON configuration file path.
- *  This method will overwrite JSON configuration (if they are different) that was stored in keychain.
+ *  Starts the lifecycle of the MAS processes with given JSON configuration file path, enrolment URL or nil.
+ *  This method will overwrite JSON configuration (if they are different) that was stored in keychain when configuration file path or enrolment URL is provided.
+ *  When URL is recognized as nil, this method will initialize SDK by using last used JSON configuration that is stored in keychain storage,
+ *  or load JSON configuration from defined default configuration file name.
+ *
+ *  Enrolment URL is an URL from gateway containing some of credentials required to establish secure connection. 
+ *  The gateway must be configured to generate and handle enrolment process with client side SDK.
+ *  The enrolment URL can be retrieved in many ways which has to be configured properly along with the gateway in regards of the enrolment process.
+ *  MASFoundation SDK does not request, or retrieve the enrolment URL by itself.
  *
  *  Although an asynchronous block callback parameter is provided for response usage,
  *  optionally you can set that to nil and the caller can observe the lifecycle
@@ -242,12 +249,12 @@
  *      MASApplicationDidFailToRegisterNotification
  *      MASApplicationDidRegisterNotification
  *
- *  @param url       NSURL of JSON configuration file path.
+ *  @param url       NSURL of JSON configuration file path or enrolment URL.
  *  @param completion An MASCompletionErrorBlock type (BOOL completed, NSError *error) that will
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithURL:(NSURL *_Nonnull)url completion:(MASCompletionErrorBlock _Nullable)completion;
++ (void)startWithURL:(NSURL *_Nullable)url completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -314,18 +321,22 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -346,16 +357,20 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -380,16 +395,20 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -417,18 +436,22 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -449,16 +472,20 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -483,16 +510,20 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -522,18 +553,22 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -556,16 +591,20 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -592,16 +631,20 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -631,18 +674,22 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -665,16 +712,20 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -701,16 +752,20 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -740,18 +795,22 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -774,16 +833,20 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -810,16 +873,20 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *          <type=value&type2=value2&...>
  *      </body>
  *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will make a request with configured security policy in MASPublicNetworkConfiguration object.
- *  SSL pinning mode, authentication challenge, and other security policy can be configured through MASPublicNetworkConfiguration.
- *  All public network security policy is configured upon successful SDK initialization; therefore, if there is any change after the SDK initialization,
- *  make sure to update the configuration through [[MASPublicNetworkConfiguration sharedConfiguration] updateConfiguration].
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
  *
- *  When SDK is making a request other than primary gateway, the request excludes automatically injected credentials for the primary gateway regardless of isPublic flag.
- *  For public API requst to the primary gateway, the credentials are injected based on isPublic value.
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK will adhere MASPublicNetworkConfiguration's security policy.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP

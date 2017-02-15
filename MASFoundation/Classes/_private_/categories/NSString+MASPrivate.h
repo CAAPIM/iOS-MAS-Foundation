@@ -69,6 +69,15 @@
 
 
 /**
+ *  Decode string with URL decoded
+ *
+ *  @return Returns URL decoded NSString
+ */
+- (NSString *)URLDecode;
+
+
+
+/**
  *  Encode NSData with Base64 URL encoded and convert it to NSString
  *
  *  @return Returns base64 URL encoded NSString

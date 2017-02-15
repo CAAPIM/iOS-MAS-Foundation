@@ -14,4 +14,6 @@
 
 - (BOOL)isProtectedEndpoint:(NSString *)thisEndpoint;
 
+- (NSDictionary *)extractQueryParameters;
+
 @end

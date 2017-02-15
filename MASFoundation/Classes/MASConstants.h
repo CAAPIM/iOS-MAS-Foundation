@@ -177,10 +177,16 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
  *  The enumerated MASState that can indicate what state of SDK currently is at.
  */
 typedef NS_ENUM(NSInteger, MASState) {
+    
     /**
-     *  State that SDK has not been inistialized.
+     *  State that SDK has not been initialized and does not have configuration file 
+     *  either in local file system based on the default configuration file name, nor in the keychain storage.
      */
-    MASStateNotInitialized = -1,
+    MASStateNotConfigured = -1,
+    /**
+     *  State that SDK has the active configuration either in the local file system, or keychain storage, but has not been inistialized yet.
+     */
+    MASStateNotInitialized,
     /**
      *  State that SDK did load; at this state, all services have been loaded.  This state will only be invoked once for the app's lifecycle.
      */

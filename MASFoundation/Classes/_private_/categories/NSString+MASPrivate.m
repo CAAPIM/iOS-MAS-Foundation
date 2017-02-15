@@ -97,6 +97,17 @@ static NSString *const kMASAlphaNumerics = @"abcdefghijklmnopqrstuvwxyzABCDEFGHI
 }
 
 
+- (NSString *)URLDecode
+{
+    NSString *decodedString = (__bridge_transfer NSString *)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, (CFStringRef)self, CFSTR(""), kCFStringEncodingUTF8);
+    
+    decodedString = [decodedString stringByReplacingOccurrencesOfString:@"_" withString:@"/"];
+    decodedString = [decodedString stringByReplacingOccurrencesOfString:@"-" withString:@"+"];
+    
+    return decodedString;
+}
+
+
 + (NSString *)base64URLWithNSData:(NSData *)data
 {
     NSString *base64URLStr = [data base64EncodedStringWithOptions:0];

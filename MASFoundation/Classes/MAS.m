@@ -22,6 +22,12 @@
 #import "MASServiceRegistry.h"
 #import "NSURL+MASPrivate.h"
 
+#import "MASHTTPSessionManager.h"
+#import "MASSecurityPolicy.h"
+#import "MASGetURLRequest.h"
+#import "NSURL+MASPrivate.h"
+#import "NSString+MASPrivate.h"
+
 #import "L7SBrowserURLProtocol.h"
 
 @implementation MAS
@@ -73,8 +79,23 @@
 
 + (MASState)MASState
 {
-    MASState currentState = MASStateNotInitialized;
+    //
+    //  By default, SDK state is set to "not configured" which means no configuration found.
+    //
+    MASState currentState = MASStateNotConfigured;
     
+    //
+    //  If SDK is able to locate the configuration either from the local file system based on the default config file name, or
+    //  in keychain storage, SDK is configured, but has not initialized yet.
+    //
+    if ([MASConfigurationService getDefaultConfigurationAsDictionary] || [MASConfiguration instanceFromStorage])
+    {
+        currentState = MASStateNotInitialized;
+    }
+    
+    //
+    //  If service registry state is match with one of the following, adhere the service registry state.
+    //
     switch ([MASServiceRegistry sharedRegistry].state) {
         case MASRegistryStateWillStart:
         currentState = MASStateWillStart;
@@ -397,7 +418,7 @@
     //
     if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop || !shouldReloadConfiguration)
     {
-        if (shouldReloadConfiguration || (!currentConfiguration && jsonConfiguration))
+        if (jsonConfiguration)
         {
             //
             // Set JSON configuration object.
@@ -474,161 +495,252 @@
 + (void)startWithURL:(NSURL *)url completion:(MASCompletionErrorBlock)completion
 {
     //
-    // Return an error if URL is nil
+    // If URL is not specified, initialize SDK with the last active configuration
     //
     if (!url)
     {
-        completion(NO, [NSError errorInvalidNSURL]);
-        
-        return;
-    }
-    
-    //
-    // Convert file URL into NSData
-    //
-    NSData *jsonData = [[NSFileManager defaultManager] contentsAtPath:[url path]];
-    NSString *fileName = [[[url path] componentsSeparatedByString:@"/"] lastObject];
-    NSDictionary *jsonConfiguration = nil;
-    
-    //
-    // Convert NSData into NSDictionary of JSON configuration object
-    //
-    if (!jsonData)
-    {
-        if (completion)
+        //
+        //  If SDK was already initialized, stop SDK first.
+        //
+        if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop)
         {
-            completion(NO, [NSError errorConfigurationLoadingFailedFileNotFound:fileName]);
+            [MAS start:completion];
+        }
+        else {
+            
+            [MAS stop:^(BOOL completed, NSError * _Nullable error) {
+               
+                [MAS start:completion];
+            }];
+        }
+    }
+    //
+    //  If URL is recognized as enrolment URL with http or https protocol, initialize SDK with given enrolment URL.
+    //
+    else if (url.host)
+    {
+        //
+        //  Extract URL parameters from enrolment URL
+        //
+        NSMutableDictionary *urlParameters = [[url extractQueryParameters] mutableCopy];
+        
+        //
+        //  If enrolment URL does not contain subjectKeyHash or client_id, SDK cannot proceed the enrollment process
+        //
+        if (![[urlParameters allKeys] containsObject:MASClientIdentifierRequestResponseKey] || ![[urlParameters allKeys] containsObject:MASSubjectKeyHashRequestResponseKey])
+        {
+        
+            return;
         }
         
-        return;
+        //
+        //  Extract the subjectKeyHash value, and remove it from URL parameter
+        //
+        __block NSString *subjectKeyHash = [[urlParameters objectForKey:MASSubjectKeyHashRequestResponseKey] URLDecode];
+        [urlParameters removeObjectForKey:MASSubjectKeyHashRequestResponseKey];
+        
+        //
+        //  Constrcut baseURL with given scheme, host, and port
+        //
+        NSString *baseURL = [NSString stringWithFormat:@"%@://%@%@",url.scheme,url.host,url.port ? [NSString stringWithFormat:@":%@", url.port] : @""];
+
+        //
+        //  Construct an individual HTTPSessionManager as MASNetworkingService is not initialized at the moment, and it will be used for temporarily
+        //  and define authentication challenge block for SSL pinning
+        //
+        __block MASHTTPSessionManager *sessionManager = [[MASHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
+        
+        [sessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession * _Nonnull session, NSURLAuthenticationChallenge * _Nonnull challenge, NSURLCredential *__autoreleasing  _Nullable * _Nullable credential) {
+
+            NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+            
+            //
+            //  enrolmentURL can only successfully pin SSL with subjectKeyHash, otherwise, the request will be cancelled
+            //
+            MASSecurityPolicy *masSecurityPolicy = [MASSecurityPolicy policyWithMASPinningMode:MASSSLPinningModePublicKeyHash];
+            if ([masSecurityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:@[subjectKeyHash] forDomain:challenge.protectionSpace.host])
+            {
+                disposition = NSURLSessionAuthChallengeUseCredential;
+                *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+            }
+            
+            return disposition;
+        }];
+
+        //
+        //  Invoke enrolmentURL which will return entire JSON configuration file
+        //
+        [sessionManager GET:url.relativePath parameters:urlParameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+            
+            //
+            //  If the JSON configuration is successfully retrieved, initialize SDK with JSON
+            //
+            NSDictionary *configurationObject = (NSDictionary *)responseObject;
+            [MAS startWithJSON:configurationObject completion:completion];
+            
+        } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+            
+            //
+            //  If the request fails, parse the error object, and notify the block
+            //
+            if (completion)
+            {
+                completion(NO, [NSError errorFromApiResponseInfo:nil andError:error]);
+            }
+        }];
     }
+    //
+    //  If URL is not nil, and not recognized as valid http URL, it is recognized as local system file URL
+    //
     else {
-        
-        NSError *error = nil;
-        jsonConfiguration = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+     
+        //
+        // Convert file URL into NSData
+        //
+        NSData *jsonData = [[NSFileManager defaultManager] contentsAtPath:[url path]];
+        NSString *fileName = [[[url path] componentsSeparatedByString:@"/"] lastObject];
+        NSDictionary *jsonConfiguration = nil;
         
         //
-        // If an error is encountered while parsing NSData into NSDictionary
+        // Convert NSData into NSDictionary of JSON configuration object
         //
-        if (error)
+        if (!jsonData)
         {
             if (completion)
             {
-                completion(NO, [NSError errorConfigurationLoadingFailedJsonSerialization:fileName description:[error localizedDescription]]);
+                completion(NO, [NSError errorConfigurationLoadingFailedFileNotFound:fileName]);
             }
             
             return;
         }
-    }
-    
-    BOOL shouldReloadConfiguration = YES;
-    BOOL shouldBroadcastNotification = NO;
-    
-    //
-    // To ensure developer initialize SDK with this method where [MASConfiguration currentConfiguration] is not available,
-    // retrieve the configuration from the keychain storage directly.
-    //
-    MASConfiguration *currentConfiguration = [MASConfiguration instanceFromStorage];
-    
-    if (currentConfiguration)
-    {
-        shouldReloadConfiguration = ![currentConfiguration compareWithCurrentConfiguration:jsonConfiguration];
-        
-        if (shouldReloadConfiguration)
-        {
-            shouldBroadcastNotification = [currentConfiguration detectServerChangeWithCurrentConfiguration:jsonConfiguration];
-        }
-    }
-    
-    if (shouldBroadcastNotification)
-    {
-        //
-        // Broadcast the notification if SDK detects server change.
-        //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
-    }
-    
-    
-    __block MASCompletionErrorBlock blockCompletion = completion;
-    __block BOOL blockShouldBroadcastNotification = shouldBroadcastNotification;
-    __block BOOL blockShouldReloadConfiguration = shouldReloadConfiguration;
-    
-    //
-    // If SDK hasn't started yet or did fully stop, start the SDK.
-    //
-    if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop || !shouldReloadConfiguration)
-    {
-        if (shouldReloadConfiguration || (!currentConfiguration && jsonConfiguration))
-        {
+        else {
+            
+            NSError *error = nil;
+            jsonConfiguration = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+            
             //
-            // Set JSON configuration object.
+            // If an error is encountered while parsing NSData into NSDictionary
             //
-            [MASConfigurationService setNewConfigurationObject:jsonConfiguration];
+            if (error)
+            {
+                if (completion)
+                {
+                    completion(NO, [NSError errorConfigurationLoadingFailedJsonSerialization:fileName description:[error localizedDescription]]);
+                }
+                
+                return;
+            }
         }
         
-        [MAS start:^(BOOL completed, NSError *error) {
-            
-            if (blockShouldBroadcastNotification)
-            {
-                //
-                // Broadcast the notification if SDK detects server change.
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
-            }
-            
-            if (blockCompletion)
-            {
-                blockCompletion(completed, error);
-            }
-        }];
-    }
-    //
-    // If SDK is still running or not fully stop, trigger stop process and re-start the SDK once it's fully stopped.
-    //
-    else {
+        BOOL shouldReloadConfiguration = YES;
+        BOOL shouldBroadcastNotification = NO;
         
-        __block NSDictionary *blockJsonConfiguration = jsonConfiguration;
+        //
+        // To ensure developer initialize SDK with this method where [MASConfiguration currentConfiguration] is not available,
+        // retrieve the configuration from the keychain storage directly.
+        //
+        MASConfiguration *currentConfiguration = [MASConfiguration instanceFromStorage];
         
-        [MAS stop:^(BOOL completed, NSError *error) {
+        if (currentConfiguration)
+        {
+            shouldReloadConfiguration = ![currentConfiguration compareWithCurrentConfiguration:jsonConfiguration];
             
-            if (blockShouldReloadConfiguration)
+            if (shouldReloadConfiguration)
+            {
+                shouldBroadcastNotification = [currentConfiguration detectServerChangeWithCurrentConfiguration:jsonConfiguration];
+            }
+        }
+        
+        if (shouldBroadcastNotification)
+        {
+            //
+            // Broadcast the notification if SDK detects server change.
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
+        }
+        
+        
+        __block MASCompletionErrorBlock blockCompletion = completion;
+        __block BOOL blockShouldBroadcastNotification = shouldBroadcastNotification;
+        __block BOOL blockShouldReloadConfiguration = shouldReloadConfiguration;
+        
+        //
+        // If SDK hasn't started yet or did fully stop, start the SDK.
+        //
+        if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop || !shouldReloadConfiguration)
+        {
+            if (shouldReloadConfiguration || (!currentConfiguration && jsonConfiguration))
             {
                 //
                 // Set JSON configuration object.
                 //
-                [MASConfigurationService setNewConfigurationObject:blockJsonConfiguration];
-                
+                [MASConfigurationService setNewConfigurationObject:jsonConfiguration];
             }
             
-            //
-            // If there is no error
-            //
-            if (completed && error == nil)
-            {
-                [MAS start:^(BOOL completed, NSError *error) {
+            [MAS start:^(BOOL completed, NSError *error) {
+                
+                if (blockShouldBroadcastNotification)
+                {
+                    //
+                    // Broadcast the notification if SDK detects server change.
+                    //
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
+                }
+                
+                if (blockCompletion)
+                {
+                    blockCompletion(completed, error);
+                }
+            }];
+        }
+        //
+        // If SDK is still running or not fully stop, trigger stop process and re-start the SDK once it's fully stopped.
+        //
+        else {
+            
+            __block NSDictionary *blockJsonConfiguration = jsonConfiguration;
+            
+            [MAS stop:^(BOOL completed, NSError *error) {
+                
+                if (blockShouldReloadConfiguration)
+                {
+                    //
+                    // Set JSON configuration object.
+                    //
+                    [MASConfigurationService setNewConfigurationObject:blockJsonConfiguration];
                     
-                    if (blockShouldBroadcastNotification)
-                    {
-                        //
-                        // Broadcast the notification if SDK detects server change.
-                        //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
-                    }
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(completed, error);
-                    }
-                }];
-            }
-            //
-            // If there is an error and completion block exists
-            //
-            else if(blockCompletion)
-            {
-                blockCompletion(completed, error);
-            }
-        }];
+                }
+                
+                //
+                // If there is no error
+                //
+                if (completed && error == nil)
+                {
+                    [MAS start:^(BOOL completed, NSError *error) {
+                        
+                        if (blockShouldBroadcastNotification)
+                        {
+                            //
+                            // Broadcast the notification if SDK detects server change.
+                            //
+                            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
+                        }
+                        
+                        if (blockCompletion)
+                        {
+                            blockCompletion(completed, error);
+                        }
+                    }];
+                }
+                //
+                // If there is an error and completion block exists
+                //
+                else if(blockCompletion)
+                {
+                    blockCompletion(completed, error);
+                }
+            }];
+        }
     }
 }
 
@@ -757,9 +869,9 @@
     }
     
     //
-    // If the request is private API request, and made to the primary gateway, do the validation
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    if (!isPublic)
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -801,6 +913,7 @@
                                                           andHeaders:mutableHeaderInfo
                                                          requestType:requestType
                                                         responseType:responseType
+                                                            isPublic:isPublic
                                                           completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
                 }
                 else {
@@ -820,6 +933,7 @@
                                               andHeaders:headerInfo
                                              requestType:requestType
                                             responseType:responseType
+                                                isPublic:isPublic
                                               completion:completion];
     }
 }
@@ -905,9 +1019,9 @@
     }
     
     //
-    // If the request is private API request, and made to the primary gateway, do the validation
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    if (!isPublic)
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -955,6 +1069,7 @@
                                                        andHeaders:mutableHeaderInfo
                                                       requestType:requestType
                                                      responseType:responseType
+                                                         isPublic:isPublic
                                                        completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
                     
                 }
@@ -975,6 +1090,7 @@
                                            andHeaders:headerInfo
                                           requestType:requestType
                                          responseType:responseType
+                                             isPublic:isPublic
                                            completion:completion];
     }
 }
@@ -1060,9 +1176,9 @@
     }
     
     //
-    // If the request is private API request, and made to the primary gateway, do the validation
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    if (!isPublic)
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -1104,6 +1220,7 @@
                                                        andHeaders:mutableHeaderInfo
                                                       requestType:requestType
                                                      responseType:responseType
+                                                         isPublic:isPublic
                                                        completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
                     
                 }
@@ -1124,6 +1241,7 @@
                                            andHeaders:headerInfo
                                           requestType:requestType
                                          responseType:responseType
+                                             isPublic:isPublic
                                            completion:completion];
     }
 }
@@ -1209,9 +1327,9 @@ withParameters:(NSDictionary *)parameterInfo
     }
     
     //
-    // If the request is private API request, and made to the primary gateway, do the validation
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    if (!isPublic)
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -1253,6 +1371,7 @@ withParameters:(NSDictionary *)parameterInfo
                                                       andHeaders:mutableHeaderInfo
                                                      requestType:requestType
                                                     responseType:responseType
+                                                        isPublic:isPublic
                                                       completion:[self parseTargetAPIErrorForCompletionBlock:completion]];
                     
                 }
@@ -1273,6 +1392,7 @@ withParameters:(NSDictionary *)parameterInfo
                                           andHeaders:headerInfo
                                          requestType:requestType
                                         responseType:responseType
+                                            isPublic:isPublic
                                           completion:completion];
     }
 }
@@ -1359,9 +1479,9 @@ withParameters:(nullable NSDictionary *)parameterInfo
     
     
     //
-    // If the request is private API request, and made to the primary gateway, do the validation
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    if (!isPublic)
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -1404,6 +1524,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                                      andHeaders:mutableHeaderInfo
                                                     requestType:requestType
                                                    responseType:responseType
+                                                       isPublic:isPublic
                                                      completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
                     
                 }
@@ -1427,6 +1548,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                          andHeaders:headerInfo
                                         requestType:requestType
                                        responseType:responseType
+                                           isPublic:isPublic
                                          completion:completion];
     }
 }
