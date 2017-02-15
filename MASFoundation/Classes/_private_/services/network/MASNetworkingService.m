@@ -204,11 +204,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     
     MASSSLPinningMode pinningMode = MASSSLPinningModeCertificate;
     
-    if (configuration.enabledTrustedPublicPKI)
-    {
-        pinningMode = MASSSLPinningModeNone;
-    }
-    else if (configuration.enabledPublicKeyPinning) {
+    if (configuration.enabledPublicKeyPinning) {
         
         pinningMode = MASSSLPinningModePublicKeyHash;
     }

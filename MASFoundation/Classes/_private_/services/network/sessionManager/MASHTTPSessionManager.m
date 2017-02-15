@@ -57,28 +57,14 @@
         {
             BOOL didPassEvaluation = YES;
             
-            if ([MASConfiguration currentConfiguration].enabledTrustedPublicPKI)
-            {
-                SecTrustResultType result = 0;
-                SecTrustEvaluate(challenge.protectionSpace.serverTrust, &result);
-                
-                if (result != kSecTrustResultUnspecified && result != kSecTrustResultProceed)
-                {
-                    didPassEvaluation = NO;
-                }
-            }
+            MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
             
-            if (didPassEvaluation)
+            if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
             {
-                MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
-                
-                if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
-                {
-                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
-                }
-                else {
-                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
-                }
+                didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
+            }
+            else {
+                didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
             }
             
             if (didPassEvaluation)
