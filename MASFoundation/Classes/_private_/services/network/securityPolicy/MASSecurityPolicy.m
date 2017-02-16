@@ -322,9 +322,20 @@ static unsigned char rsa2048Asn1Header[] = {
         }
     }
     
-    CFRelease(policy);
-    CFRelease(serverTrust);
-    CFRelease(publicKey);
+    if (policy)
+    {
+        CFRelease(policy);
+    }
+    
+    if (serverTrust)
+    {
+        CFRelease(serverTrust);
+    }
+    
+    if (publicKey)
+    {
+        CFRelease(publicKey);
+    }
     
     return publicKeyHashData;
 }
