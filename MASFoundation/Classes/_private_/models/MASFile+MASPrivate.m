@@ -55,7 +55,7 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
     
     if(error)
     {
-        DLog(@"Error removing item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
+        //DLog(@"Error removing item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
         return NO;
     }
     
@@ -78,7 +78,7 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
     
     if(error)
     {
-        DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
+     //   DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
         return NO;
     }
     

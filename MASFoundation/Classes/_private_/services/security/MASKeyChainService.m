@@ -308,7 +308,7 @@
 
 - (NSData *)setSignedPublicCertificate:(NSData *)certificate
 {
-    DLog(@"\n\nset with certificate: %ld\n\n", (unsigned long)certificate.length);
+   // DLog(@"\n\nset with certificate: %ld\n\n", (unsigned long)certificate.length);
     
     //
     // Recreate the data with Base64 encoding
@@ -367,7 +367,7 @@
 // Attempts to import the data as a certificate
 - (void)setCertificate:(NSData *)certificate
 {
-    DLog(@"\n\ncalled with certificate data: %@\n\n", certificate);
+    //DLog(@"\n\ncalled with certificate data: %@\n\n", certificate);
     
     NSString * certStr = [[NSString alloc] initWithData:certificate encoding:NSUTF8StringEncoding];
     NSData * certData = [NSData convertPEMCertificateToDERCertificate:certStr];
@@ -382,11 +382,11 @@
     cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certData);
     if(!cert)
     {
-        DLog(@"\n\nError attempting to convert certificate data to certificate reference\n\n");
+       // DLog(@"\n\nError attempting to convert certificate data to certificate reference\n\n");
         return;
     }
     
-    DLog(@"\n\ndoes SecCertificateRef exist: %@\n\n", (cert ? @"Yes" : @"No"));
+    //DLog(@"\n\ndoes SecCertificateRef exist: %@\n\n", (cert ? @"Yes" : @"No"));
     
     if (cert != NULL)
     {
@@ -416,7 +416,7 @@
 
     }
     CFRelease(cert);
-    DLog(@"\n\ndone and status is: %d and certificate reference: %@\n\n", (int)err, cert);
+    //DLog(@"\n\ndone and status is: %d and certificate reference: %@\n\n", (int)err, cert);
 }
 
 

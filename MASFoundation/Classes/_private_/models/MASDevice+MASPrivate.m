@@ -65,7 +65,7 @@
     
         if(error)
         {
-            DLog(@"Error attempting to save data: %@", [error localizedDescription]);
+            //DLog(@"Error attempting to save data: %@", [error localizedDescription]);
         }
     }
 }
@@ -123,7 +123,7 @@
     //
     // Certificate Data (in the body)
     //
-    DLog(@"\n\nCert data is: %@\n\n", info[MASResponseInfoBodyInfoKey]);
+    //DLog(@"\n\nCert data is: %@\n\n", info[MASResponseInfoBodyInfoKey]);
     
     NSData *certificateData = info[MASResponseInfoBodyInfoKey];
     if (certificateData)

@@ -335,7 +335,7 @@ static float _systemVersionNumber_;
         [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data forKey:[MASConfiguration.class description] error:&error];
         if(error)
         {
-            DLog(@"Error attempting to save data: %@", [error localizedDescription]);
+            //DLog(@"Error attempting to save data: %@", [error localizedDescription]);
         }
     }
 }
@@ -871,8 +871,9 @@ static float _systemVersionNumber_;
     // Should there be two or more allowed in the list that meet that criteria?  Can it happen?
     if(applicationClientInfoFound.count > 1)
     {
-        DLog(@"Warning: found %ld iOS clients that are enabled, just choosing first in the list",
-             (long)applicationClientInfoFound.count);
+        
+       // DLog(@"Warning: found %ld iOS clients that are enabled, just choosing first in the list",
+             //(long)applicationClientInfoFound.count);
     }
     
     // Return the first found or nil if none

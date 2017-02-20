@@ -208,7 +208,7 @@ static BOOL _newConfigurationDetected_ = NO;
         //
         @try {
             NSArray *gatewayCert = _currentConfiguration.gatewayCertificatesAsDERData;
-            DLog(@"gateway cert : %@", gatewayCert);
+            //DLog(@"gateway cert : %@", gatewayCert);
         }
         @catch (NSException *exception) {
             

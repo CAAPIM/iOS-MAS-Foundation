@@ -8,7 +8,7 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <MASFoundation/MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
 #import "MASProximityLogin.h"
 
 @class MASAuthenticationProvider;

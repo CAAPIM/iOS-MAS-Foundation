@@ -162,7 +162,7 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
         //
         case MASRequestResponseTypeTextPlain:
         {
-            DLog(@"detected text plain");
+            //DLog(@"detected text plain");
             
             MASIHTTPResponseSerializer *serializer = [MASIHTTPResponseSerializer serializer];
             

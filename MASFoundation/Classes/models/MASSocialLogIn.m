@@ -31,7 +31,7 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
 
 @implementation MASSocialLogin
 
-
+#if TARGET_OS_IOS
 - (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider webView:(WKWebView *)webView
 {
     self = [super init];
@@ -79,7 +79,7 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
     return self;
 }
 
-
+#endif
 # pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
@@ -175,13 +175,13 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
 
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(null_unspecified WKNavigation *)navigation
 {
-    DLog(@"server redirect : %@", [webView.URL description]);
+   // DLog(@"server redirect : %@", [webView.URL description]);
     
     NSRange range = [[webView.URL description] rangeOfString:[MASApplication currentApplication].redirectUri.absoluteString];
     
     if (range.length>0){
         
-        DLog(@"request matches the registered the rediect URI");
+        //DLog(@"request matches the registered the rediect URI");
         
         NSMutableDictionary *queryStringDictionary = [[NSMutableDictionary alloc] init];
         NSArray *urlComponentsSeperatedwithQuestionMark = [[webView.URL description] componentsSeparatedByString:@"?"];

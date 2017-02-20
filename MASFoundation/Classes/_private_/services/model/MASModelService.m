@@ -816,9 +816,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock completion)
                 {
-                    DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
-                        userName, password, (cancel ? @"Yes" : @"No"));
-                
+//                    DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
+//                        userName, password, (cancel ? @"Yes" : @"No"));
+//                
                     //
                     // Reset the authenticationProvider as the session id should have been used
                     //
@@ -922,9 +922,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
                 {
-                    DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
-                        authorizationCode, (cancel ? @"Yes" : @"No"));
-                    
+//                    DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
+//                        authorizationCode, (cancel ? @"Yes" : @"No"));
+//                    
                     //
                     // Reset the authenticationProvider as the session id should have been used
                     //
@@ -982,10 +982,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 };
             }
         
-            DLog(@"\n\n\n********************************************************\n\n"
-                "Waiting for credentials response to continue registration"
-                @"\n\n********************************************************\n\n\n");
-            
+//            DLog(@"\n\n\n********************************************************\n\n"
+//                "Waiting for credentials response to continue registration"
+//                @"\n\n********************************************************\n\n\n");
+//            
             //
             // If the UI handling framework is present and will handle this stop here
             //
@@ -1029,8 +1029,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         //
         default:
         {
-            DLog(@"\n\nError detecting unknown registration type: %@\n\n",
-                [MASModelService grantFlowToString:_grantFlow_]);
+            //DLog(@"\n\nError detecting unknown registration type: %@\n\n",
+             //   [MASModelService grantFlowToString:_grantFlow_]);
             
             break;
         }
@@ -1759,7 +1759,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginWithCompletion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
+    //DLog(@"called");
     
     //
     //  Refresh access obj
@@ -1928,8 +1928,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock completion)
              {
-                 DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
-                      userName, password, (cancel ? @"Yes" : @"No"));
+                // DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
+                    //  userName, password, (cancel ? @"Yes" : @"No"));
                  
                  //
                  // Reset the authenticationProvider as the session id should have been used
@@ -1998,8 +1998,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
              {
-                 DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
-                      authorizationCode, (cancel ? @"Yes" : @"No"));
+                 //DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
+                      //authorizationCode, (cancel ? @"Yes" : @"No"));
                  
                  //
                  // Reset the authenticationProvider as the session id should have been used
@@ -2058,10 +2058,10 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              };
          }
          
-         DLog(@"\n\n\n********************************************************\n\n"
-              "Waiting for credentials response to continue registration"
-              @"\n\n********************************************************\n\n\n");
-         
+//         //DLog(@"\n\n\n********************************************************\n\n"
+//              "Waiting for credentials response to continue registration"
+//              @"\n\n********************************************************\n\n\n");
+//         
          //
          // If the UI handling framework is present and will handle this stop here
          //
@@ -2104,7 +2104,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginAnonymouslyWithCompletion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
+    //DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -2264,7 +2264,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginWithAuthorizationCode:(NSString *)code completion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
+    //DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -2511,7 +2511,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
+//DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -2742,7 +2742,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
  */
 - (void)loginAsIdTokenIgnoreFallback:(BOOL)ignoreFallback completion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
+   // DLog(@"called");
     
     //
     //  Refresh access obj
@@ -2979,7 +2979,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
  */
 - (void)loginAsRefreshTokenWithCompletion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
+   // DLog(@"called");
     
     //
     // The application must be registered else stop here

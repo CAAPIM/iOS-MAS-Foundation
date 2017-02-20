@@ -249,7 +249,6 @@
 		A47F12801C1D73530008E3F2 /* MASBluetoothPeripheral.h in Headers */ = {isa = PBXBuildFile; fileRef = A47F127C1C1D73530008E3F2 /* MASBluetoothPeripheral.h */; };
 		A47F12811C1D73530008E3F2 /* MASBluetoothPeripheral.m in Sources */ = {isa = PBXBuildFile; fileRef = A47F127D1C1D73530008E3F2 /* MASBluetoothPeripheral.m */; };
 		A4831AA91BD1A551007B4AE6 /* MASApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831A9B1BD1A551007B4AE6 /* MASApplication.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A4831AAA1BD1A551007B4AE6 /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
 		A4831AAB1BD1A551007B4AE6 /* MASAuthenticationProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831A9D1BD1A551007B4AE6 /* MASAuthenticationProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4831AAC1BD1A551007B4AE6 /* MASAuthenticationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9E1BD1A551007B4AE6 /* MASAuthenticationProvider.m */; };
 		A4831AAD1BD1A551007B4AE6 /* MASConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831A9F1BD1A551007B4AE6 /* MASConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -282,12 +281,224 @@
 		A488CE761C0B97FD00B8B961 /* MASService.m in Sources */ = {isa = PBXBuildFile; fileRef = A488CE741C0B97FD00B8B961 /* MASService.m */; };
 		A4E340EB1B9E9F2000883AD3 /* MASConstantsPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340BE1B9E9F2000883AD3 /* MASConstantsPrivate.h */; };
 		A4E340F91B9E9F2000883AD3 /* MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340CE1B9E9F2000883AD3 /* MAS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A4E340FA1B9E9F2000883AD3 /* MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E340CF1B9E9F2000883AD3 /* MAS.m */; };
 		A4E341011B9E9F2000883AD3 /* MASConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340D61B9E9F2000883AD3 /* MASConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4F671321BAFC345000E2223 /* NSString+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4F671301BAFC345000E2223 /* NSString+MASPrivate.h */; };
 		A4F671331BAFC345000E2223 /* NSString+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */; };
 		A858C6651D0978A6001FB9AD /* MASOTPService.h in Headers */ = {isa = PBXBuildFile; fileRef = A858C6631D0978A6001FB9AD /* MASOTPService.h */; };
 		A858C6661D0978A6001FB9AD /* MASOTPService.m in Sources */ = {isa = PBXBuildFile; fileRef = A858C6641D0978A6001FB9AD /* MASOTPService.m */; };
+		BA55059A1E5314D1001EC43D /* tvOS_MASFoundationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA5505991E5314D1001EC43D /* tvOS_MASFoundationTests.m */; };
+		BA55059C1E5314D1001EC43D /* tvOS MASFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = BA55058E1E5314D0001EC43D /* tvOS MASFoundation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505A31E5314E0001EC43D /* MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340CE1B9E9F2000883AD3 /* MAS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505A41E531533001EC43D /* MASMQTTClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 107389F31C7118F800B7E87E /* MASMQTTClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505A51E531571001EC43D /* MASConstantsPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340BE1B9E9F2000883AD3 /* MASConstantsPrivate.h */; };
+		BA5505A61E5315ED001EC43D /* MASService.h in Headers */ = {isa = PBXBuildFile; fileRef = A488CE731C0B97FD00B8B961 /* MASService.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505A71E5315F9001EC43D /* MASProximityLoginDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = CB14D21B1D0228DB004F772E /* MASProximityLoginDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505A81E531607001EC43D /* MASMQTTMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 107389F51C7118F800B7E87E /* MASMQTTMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505A91E53160F001EC43D /* MASMQTTHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 107389FB1C7119E800B7E87E /* MASMQTTHelper.h */; };
+		BA5505AA1E531618001EC43D /* MASMQTTConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 107389FF1C711A2000B7E87E /* MASMQTTConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505AB1E531623001EC43D /* NSData+MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = A419B39F1C176259008DC88C /* NSData+MAS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505AC1E53162E001EC43D /* MASObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AA51BD1A551007B4AE6 /* MASObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505AD1E531637001EC43D /* MASApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831A9B1BD1A551007B4AE6 /* MASApplication.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505AE1E531641001EC43D /* MASAuthenticationProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831A9D1BD1A551007B4AE6 /* MASAuthenticationProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505AF1E531649001EC43D /* MASAuthenticationProviders.h in Headers */ = {isa = PBXBuildFile; fileRef = A42D02DE1C0E223600AA1F11 /* MASAuthenticationProviders.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B01E531650001EC43D /* MASAuthorizationResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0B58571E258C2A00BC0163 /* MASAuthorizationResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B11E531656001EC43D /* MASConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831A9F1BD1A551007B4AE6 /* MASConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B21E53165F001EC43D /* MASDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AA11BD1A551007B4AE6 /* MASDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B31E531666001EC43D /* MASFile.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AA31BD1A551007B4AE6 /* MASFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B41E53166D001EC43D /* MASUser.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AA71BD1A551007B4AE6 /* MASUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B51E531673001EC43D /* MASGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 1046618C1C0ABDDE00A2A03C /* MASGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B61E53167B001EC43D /* MASSocialLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B71E531682001EC43D /* MASProximityLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B81E531688001EC43D /* MASProximityLoginQRCode.h in Headers */ = {isa = PBXBuildFile; fileRef = CB14D2171D02266D004F772E /* MASProximityLoginQRCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505B91E5316B2001EC43D /* MASFoundation_PrefixHeader.pch in Headers */ = {isa = PBXBuildFile; fileRef = A48CDD381B7D1FDD00ADABC6 /* MASFoundation_PrefixHeader.pch */; };
+		BA5505BE1E532133001EC43D /* MASService.m in Sources */ = {isa = PBXBuildFile; fileRef = A488CE741C0B97FD00B8B961 /* MASService.m */; };
+		BA5505BF1E53213E001EC43D /* MASMQTTClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 107389F41C7118F800B7E87E /* MASMQTTClient.m */; };
+		BA5505C01E532148001EC43D /* MASMQTTMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 107389F61C7118F800B7E87E /* MASMQTTMessage.m */; };
+		BA5505C51E53232B001EC43D /* RNCryptor+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49B11C2F5FC500A4C370 /* RNCryptor+Private.h */; };
+		BA5505C61E532453001EC43D /* MASConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A4E340D61B9E9F2000883AD3 /* MASConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA5505C71E532472001EC43D /* MASMQTTHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 107389FC1C7119E800B7E87E /* MASMQTTHelper.m */; };
+		BA5505C81E53247B001EC43D /* NSData+MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A419B3A01C176259008DC88C /* NSData+MAS.m */; };
+		BA5505C91E532483001EC43D /* MASObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AA61BD1A551007B4AE6 /* MASObject.m */; };
+		BA5505CA1E532493001EC43D /* MASAuthenticationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9E1BD1A551007B4AE6 /* MASAuthenticationProvider.m */; };
+		BA5505CB1E53249A001EC43D /* MASAuthenticationProviders.m in Sources */ = {isa = PBXBuildFile; fileRef = A42D02DF1C0E223600AA1F11 /* MASAuthenticationProviders.m */; };
+		BA5505CC1E5324A0001EC43D /* MASAuthorizationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CB0B58581E258C2A00BC0163 /* MASAuthorizationResponse.m */; };
+		BA5505CD1E5324A7001EC43D /* MASConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AA01BD1A551007B4AE6 /* MASConfiguration.m */; };
+		BA5505CE1E5324AD001EC43D /* MASDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AA21BD1A551007B4AE6 /* MASDevice.m */; };
+		BA5505CF1E5324B3001EC43D /* MASFile.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AA41BD1A551007B4AE6 /* MASFile.m */; };
+		BA5505D01E5324B8001EC43D /* MASUser.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AA81BD1A551007B4AE6 /* MASUser.m */; };
+		BA5505D11E5324BD001EC43D /* MASGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 1046618D1C0ABDDE00A2A03C /* MASGroup.m */; };
+		BA5505D31E5324CA001EC43D /* MASProximityLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */; };
+		BA5505D41E5324D0001EC43D /* MASProximityLoginQRCode.m in Sources */ = {isa = PBXBuildFile; fileRef = CB14D2181D02266D004F772E /* MASProximityLoginQRCode.m */; };
+		BA5505D51E5324DB001EC43D /* L7SBrowserURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = CB273EFE1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h */; };
+		BA5505D61E5324DF001EC43D /* L7SBrowserURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = CB273EFF1DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m */; };
+		BA5505D71E5324E5001EC43D /* MASIKeyChainStore+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1907ED1C1794F400A5EF16 /* MASIKeyChainStore+MASPrivate.h */; };
+		BA5505D81E5324E8001EC43D /* MASIKeyChainStore+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907EE1C1794F400A5EF16 /* MASIKeyChainStore+MASPrivate.m */; };
+		BA5505D91E5324EB001EC43D /* CBCentralManager+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A483C1FF1BE6D0C5007572CE /* CBCentralManager+MASPrivate.h */; };
+		BA5505DA1E5324EF001EC43D /* CBCentralManager+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A483C2001BE6D0C5007572CE /* CBCentralManager+MASPrivate.m */; };
+		BA5505DB1E5324F6001EC43D /* CBPeripheralManager+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A483C1A11BE56BAF007572CE /* CBPeripheralManager+MASPrivate.h */; };
+		BA5505DC1E5324FC001EC43D /* CBPeripheralManager+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A483C1A21BE56BAF007572CE /* CBPeripheralManager+MASPrivate.m */; };
+		BA5505DD1E5324FF001EC43D /* CLLocation+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A417BA4F1BF033C300EC9BCB /* CLLocation+MASPrivate.h */; };
+		BA5505DE1E532503001EC43D /* CLLocation+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A417BA501BF033C300EC9BCB /* CLLocation+MASPrivate.m */; };
+		BA5505DF1E532508001EC43D /* CLLocationManager+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A43BEBB01BE34D7700842522 /* CLLocationManager+MASPrivate.h */; };
+		BA5505E01E53250B001EC43D /* CLLocationManager+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A43BEBB11BE34D7700842522 /* CLLocationManager+MASPrivate.m */; };
+		BA5505E11E53250F001EC43D /* MASIJSONResponseSerializer+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */; };
+		BA5505E21E532512001EC43D /* MASIJSONResponseSerializer+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */; };
+		BA5505E31E532516001EC43D /* NSData+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A47332CD1BBC61F50002A492 /* NSData+MASPrivate.h */; };
+		BA5505E41E53251A001EC43D /* NSData+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A47332CE1BBC61F50002A492 /* NSData+MASPrivate.m */; };
+		BA5505E51E53251E001EC43D /* NSError+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A42A869E1BBDA27F00AE98AC /* NSError+MASPrivate.h */; };
+		BA5505E61E532521001EC43D /* NSError+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A42A869F1BBDA27F00AE98AC /* NSError+MASPrivate.m */; };
+		BA5505E71E532525001EC43D /* NSMutableURLRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */; };
+		BA5505E81E532529001EC43D /* NSMutableURLRequest+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150E6C1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.m */; };
+		BA5505E91E53252D001EC43D /* NSNotificationCenter+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A450BC091BE1570C0030491F /* NSNotificationCenter+MASPrivate.h */; };
+		BA5505EA1E532530001EC43D /* NSNotificationCenter+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A450BC0A1BE1570C0030491F /* NSNotificationCenter+MASPrivate.m */; };
+		BA5505EB1E532533001EC43D /* NSString+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4F671301BAFC345000E2223 /* NSString+MASPrivate.h */; };
+		BA5505EC1E532536001EC43D /* NSString+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */; };
+		BA5505ED1E53253B001EC43D /* MASServiceRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = A42157171BF863480034BDC9 /* MASServiceRegistry.h */; };
+		BA5505EE1E53253F001EC43D /* MASServiceRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = A42157181BF863480034BDC9 /* MASServiceRegistry.m */; };
+		BA5505EF1E532544001EC43D /* MASAccessService.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1907F61C17950700A5EF16 /* MASAccessService.h */; };
+		BA5505F01E532547001EC43D /* MASAccessService.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907F71C17950700A5EF16 /* MASAccessService.m */; };
+		BA5505F71E532567001EC43D /* MASConfigurationService.h in Headers */ = {isa = PBXBuildFile; fileRef = A42157241BF864590034BDC9 /* MASConfigurationService.h */; };
+		BA5505F81E53256A001EC43D /* MASConfigurationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A42157251BF864590034BDC9 /* MASConfigurationService.m */; };
+		BA5505F91E532570001EC43D /* MASFileService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150EE51BF16E5B00037E27 /* MASFileService.h */; };
+		BA5505FA1E532573001EC43D /* MASFileService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150EE61BF16E5B00037E27 /* MASFileService.m */; };
+		BA5505FB1E532579001EC43D /* MASLocationService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150ED71BF16DBE00037E27 /* MASLocationService.h */; };
+		BA5505FC1E53257C001EC43D /* MASLocationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150ED81BF16DBE00037E27 /* MASLocationService.m */; };
+		BA5505FD1E532581001EC43D /* MASNetworkingService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150EC81BF16D9A00037E27 /* MASNetworkingService.h */; };
+		BA5505FE1E532584001EC43D /* MASNetworkingService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150EC91BF16D9A00037E27 /* MASNetworkingService.m */; };
+		BA5505FF1E532589001EC43D /* MASURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = A47F126A1C1D6B4B0008E3F2 /* MASURLRequest.h */; };
+		BA5506001E53258D001EC43D /* MASURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A47F126B1C1D6B4B0008E3F2 /* MASURLRequest.m */; };
+		BA5506011E532592001EC43D /* MASDeleteURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C6A1C1D2467001B3B8A /* MASDeleteURLRequest.h */; };
+		BA5506021E532596001EC43D /* MASDeleteURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C6B1C1D2467001B3B8A /* MASDeleteURLRequest.m */; };
+		BA5506031E53259A001EC43D /* MASGetURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C621C1D1B56001B3B8A /* MASGetURLRequest.h */; };
+		BA5506041E53259D001EC43D /* MASGetURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C631C1D1B56001B3B8A /* MASGetURLRequest.m */; };
+		BA5506051E5325A0001EC43D /* MASPatchURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C721C1D26BA001B3B8A /* MASPatchURLRequest.h */; };
+		BA5506061E5325A3001EC43D /* MASPatchURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */; };
+		BA5506071E5325A6001EC43D /* MASPostURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C661C1D21FB001B3B8A /* MASPostURLRequest.h */; };
+		BA5506081E5325AA001EC43D /* MASPostURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C671C1D21FB001B3B8A /* MASPostURLRequest.m */; };
+		BA5506091E5325AD001EC43D /* MASPutURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C6E1C1D250D001B3B8A /* MASPutURLRequest.h */; };
+		BA55060A1E5325B0001EC43D /* MASPutURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C6F1C1D250D001B3B8A /* MASPutURLRequest.m */; };
+		BA55060B1E5325B7001EC43D /* MASHTTPSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C581C1D14DB001B3B8A /* MASHTTPSessionManager.h */; };
+		BA55060C1E5325BB001EC43D /* MASHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C591C1D14DB001B3B8A /* MASHTTPSessionManager.m */; };
+		BA55060D1E5325C1001EC43D /* MASModelService.h in Headers */ = {isa = PBXBuildFile; fileRef = A458A9861C03897100440464 /* MASModelService.h */; };
+		BA55060E1E5325C4001EC43D /* MASModelService.m in Sources */ = {isa = PBXBuildFile; fileRef = A458A9871C03897100440464 /* MASModelService.m */; };
+		BA55060F1E5325C8001EC43D /* MASOTPService.h in Headers */ = {isa = PBXBuildFile; fileRef = A858C6631D0978A6001FB9AD /* MASOTPService.h */; };
+		BA5506101E5325CB001EC43D /* MASOTPService.m in Sources */ = {isa = PBXBuildFile; fileRef = A858C6641D0978A6001FB9AD /* MASOTPService.m */; };
+		BA5506111E5325D3001EC43D /* MASKeyChainService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150EF71BF16EE200037E27 /* MASKeyChainService.h */; };
+		BA5506121E5325D6001EC43D /* MASKeyChainService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150EF81BF16EE200037E27 /* MASKeyChainService.m */; };
+		BA5506131E5325D9001EC43D /* MASSecurityService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150EF91BF16EE200037E27 /* MASSecurityService.h */; };
+		BA5506141E5325DC001EC43D /* MASSecurityService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150EFA1BF16EE200037E27 /* MASSecurityService.m */; };
+		BA5506151E5325E2001EC43D /* MASAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1907F11C1794FC00A5EF16 /* MASAccess.h */; };
+		BA5506161E5325E5001EC43D /* MASAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907F21C1794FC00A5EF16 /* MASAccess.m */; };
+		BA5506171E5325E8001EC43D /* MASApplication+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AE81BD1A87C007B4AE6 /* MASApplication+MASPrivate.h */; };
+		BA5506181E5325EC001EC43D /* MASApplication+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AE91BD1A87C007B4AE6 /* MASApplication+MASPrivate.m */; };
+		BA5506191E5325F2001EC43D /* MASAuthenticationProvider+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AEA1BD1A87C007B4AE6 /* MASAuthenticationProvider+MASPrivate.h */; };
+		BA55061A1E5325F8001EC43D /* MASAuthenticationProvider+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AEB1BD1A87C007B4AE6 /* MASAuthenticationProvider+MASPrivate.m */; };
+		BA55061B1E5325FC001EC43D /* MASAuthenticationProviders+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A42D02E21C0E240800AA1F11 /* MASAuthenticationProviders+MASPrivate.h */; };
+		BA55061C1E5325FF001EC43D /* MASAuthenticationProviders+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A42D02E31C0E240800AA1F11 /* MASAuthenticationProviders+MASPrivate.m */; };
+		BA55061D1E532603001EC43D /* MASConfiguration+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AF01BD1A8AA007B4AE6 /* MASConfiguration+MASPrivate.h */; };
+		BA55061E1E532607001EC43D /* MASConfiguration+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AF11BD1A8AA007B4AE6 /* MASConfiguration+MASPrivate.m */; };
+		BA55061F1E53260A001EC43D /* MASDevice+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AF41BD1A8CA007B4AE6 /* MASDevice+MASPrivate.h */; };
+		BA5506201E53260D001EC43D /* MASDevice+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AF51BD1A8CA007B4AE6 /* MASDevice+MASPrivate.m */; };
+		BA5506211E532610001EC43D /* MASFile+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AF81BD1A8E8007B4AE6 /* MASFile+MASPrivate.h */; };
+		BA5506221E532613001EC43D /* MASFile+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AF91BD1A8E8007B4AE6 /* MASFile+MASPrivate.m */; };
+		BA5506231E532616001EC43D /* MASUser+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4831AFC1BD1A917007B4AE6 /* MASUser+MASPrivate.h */; };
+		BA5506241E532619001EC43D /* MASUser+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831AFE1BD1A922007B4AE6 /* MASUser+MASPrivate.m */; };
+		BA5506251E53261B001EC43D /* MASGroup+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 10D2D49C1C1686ED00DF8AC4 /* MASGroup+MASPrivate.h */; };
+		BA5506261E53261E001EC43D /* MASGroup+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 10D2D49D1C1686ED00DF8AC4 /* MASGroup+MASPrivate.m */; };
+		BA5506271E532624001EC43D /* MASProximityLoginQRCode+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = CB14D2211D02328C004F772E /* MASProximityLoginQRCode+MASPrivate.h */; };
+		BA5506281E53262A001EC43D /* MASProximityLoginQRCode+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = CB14D2221D02328C004F772E /* MASProximityLoginQRCode+MASPrivate.m */; };
+		BA5506291E53262F001EC43D /* fmemopen.c in Sources */ = {isa = PBXBuildFile; fileRef = A46F491D1C2F5FC500A4C370 /* fmemopen.c */; };
+		BA55062A1E532632001EC43D /* fmemopen.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F491E1C2F5FC500A4C370 /* fmemopen.h */; };
+		BA55062B1E53264A001EC43D /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A031C711C2F00B7E87E /* config.h */; };
+		BA55062C1E53264A001EC43D /* dummypthread.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A041C711C2F00B7E87E /* dummypthread.h */; };
+		BA55062D1E532668001EC43D /* logging_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A051C711C2F00B7E87E /* logging_mosq.c */; };
+		BA55062E1E532668001EC43D /* logging_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A061C711C2F00B7E87E /* logging_mosq.h */; };
+		BA55062F1E532676001EC43D /* memory_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A071C711C2F00B7E87E /* memory_mosq.c */; };
+		BA5506301E532676001EC43D /* memory_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A081C711C2F00B7E87E /* memory_mosq.h */; };
+		BA5506311E532676001EC43D /* messages_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A091C711C2F00B7E87E /* messages_mosq.c */; };
+		BA5506321E532676001EC43D /* messages_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A0A1C711C2F00B7E87E /* messages_mosq.h */; };
+		BA5506331E532676001EC43D /* mosquitto.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A0B1C711C2F00B7E87E /* mosquitto.c */; };
+		BA5506341E532676001EC43D /* mosquitto.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A0C1C711C2F00B7E87E /* mosquitto.h */; };
+		BA5506351E532676001EC43D /* mosquitto_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A0D1C711C2F00B7E87E /* mosquitto_internal.h */; };
+		BA5506361E532676001EC43D /* mqtt3_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A0E1C711C2F00B7E87E /* mqtt3_protocol.h */; };
+		BA5506371E532676001EC43D /* net_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A0F1C711C2F00B7E87E /* net_mosq.c */; };
+		BA5506381E532676001EC43D /* net_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A101C711C2F00B7E87E /* net_mosq.h */; };
+		BA5506391E532676001EC43D /* read_handle.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A111C711C2F00B7E87E /* read_handle.c */; };
+		BA55063A1E532676001EC43D /* read_handle.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A121C711C2F00B7E87E /* read_handle.h */; };
+		BA55063B1E532676001EC43D /* read_handle_client.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A131C711C2F00B7E87E /* read_handle_client.c */; };
+		BA55063C1E532676001EC43D /* read_handle_shared.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A141C711C2F00B7E87E /* read_handle_shared.c */; };
+		BA55063D1E532676001EC43D /* send_client_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A151C711C2F00B7E87E /* send_client_mosq.c */; };
+		BA55063E1E532676001EC43D /* send_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A161C711C2F00B7E87E /* send_mosq.c */; };
+		BA55063F1E532676001EC43D /* send_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A171C711C2F00B7E87E /* send_mosq.h */; };
+		BA5506401E532676001EC43D /* thread_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A181C711C2F00B7E87E /* thread_mosq.c */; };
+		BA5506411E532676001EC43D /* time_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A191C711C2F00B7E87E /* time_mosq.c */; };
+		BA5506421E532676001EC43D /* time_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A1A1C711C2F00B7E87E /* time_mosq.h */; };
+		BA5506431E532676001EC43D /* tls_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A1B1C711C2F00B7E87E /* tls_mosq.c */; };
+		BA5506441E532676001EC43D /* tls_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A1C1C711C2F00B7E87E /* tls_mosq.h */; };
+		BA5506451E532676001EC43D /* util_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A1D1C711C2F00B7E87E /* util_mosq.c */; };
+		BA5506461E532676001EC43D /* util_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A1E1C711C2F00B7E87E /* util_mosq.h */; };
+		BA5506471E532676001EC43D /* will_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10738A1F1C711C2F00B7E87E /* will_mosq.c */; };
+		BA5506481E532676001EC43D /* will_mosq.h in Headers */ = {isa = PBXBuildFile; fileRef = 10738A201C711C2F00B7E87E /* will_mosq.h */; };
+		BA5506491E532683001EC43D /* MASIFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49211C2F5FC500A4C370 /* MASIFileManager.h */; };
+		BA55064A1E532683001EC43D /* MASIFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49221C2F5FC500A4C370 /* MASIFileManager.m */; };
+		BA55064B1E532693001EC43D /* MASIKeyChainStore.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49251C2F5FC500A4C370 /* MASIKeyChainStore.h */; };
+		BA55064C1E532693001EC43D /* MASIKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49261C2F5FC500A4C370 /* MASIKeyChainStore.m */; };
+		BA55064D1E5326A5001EC43D /* MASIHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49291C2F5FC500A4C370 /* MASIHTTPRequestOperation.h */; };
+		BA55064E1E5326A5001EC43D /* MASIHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F492A1C2F5FC500A4C370 /* MASIHTTPRequestOperation.m */; };
+		BA55064F1E5326A5001EC43D /* MASIHTTPRequestOperationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F492B1C2F5FC500A4C370 /* MASIHTTPRequestOperationManager.h */; };
+		BA5506501E5326A5001EC43D /* MASIHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F492C1C2F5FC500A4C370 /* MASIHTTPRequestOperationManager.m */; };
+		BA5506511E5326A5001EC43D /* MASIHTTPSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F492D1C2F5FC500A4C370 /* MASIHTTPSessionManager.h */; };
+		BA5506521E5326A5001EC43D /* MASIHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F492E1C2F5FC500A4C370 /* MASIHTTPSessionManager.m */; };
+		BA5506531E5326A5001EC43D /* MASINetworkActivityLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F492F1C2F5FC500A4C370 /* MASINetworkActivityLogger.h */; };
+		BA5506541E5326A5001EC43D /* MASINetworkActivityLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49301C2F5FC500A4C370 /* MASINetworkActivityLogger.m */; };
+		BA5506551E5326A5001EC43D /* MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49311C2F5FC500A4C370 /* MASINetworking.h */; };
+		BA5506561E5326A5001EC43D /* MASINetworkReachabilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49321C2F5FC500A4C370 /* MASINetworkReachabilityManager.h */; };
+		BA5506571E5326A5001EC43D /* MASINetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49331C2F5FC500A4C370 /* MASINetworkReachabilityManager.m */; };
+		BA5506581E5326A5001EC43D /* MASISecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49341C2F5FC500A4C370 /* MASISecurityPolicy.h */; };
+		BA5506591E5326A5001EC43D /* MASISecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49351C2F5FC500A4C370 /* MASISecurityPolicy.m */; };
+		BA55065A1E5326A5001EC43D /* MASIURLConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49361C2F5FC500A4C370 /* MASIURLConnectionOperation.h */; };
+		BA55065B1E5326A5001EC43D /* MASIURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49371C2F5FC500A4C370 /* MASIURLConnectionOperation.m */; };
+		BA55065C1E5326A5001EC43D /* MASIURLRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49381C2F5FC500A4C370 /* MASIURLRequestSerialization.h */; };
+		BA55065D1E5326A5001EC43D /* MASIURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49391C2F5FC500A4C370 /* MASIURLRequestSerialization.m */; };
+		BA55065E1E5326A5001EC43D /* MASIURLResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F493A1C2F5FC500A4C370 /* MASIURLResponseSerialization.h */; };
+		BA55065F1E5326A5001EC43D /* MASIURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F493B1C2F5FC500A4C370 /* MASIURLResponseSerialization.m */; };
+		BA5506601E5326A5001EC43D /* MASIURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F493C1C2F5FC500A4C370 /* MASIURLSessionManager.h */; };
+		BA5506611E5326A5001EC43D /* MASIURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F493D1C2F5FC500A4C370 /* MASIURLSessionManager.m */; };
+		BA5506621E5326AF001EC43D /* MASINetworkActivityIndicatorManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F493F1C2F5FC500A4C370 /* MASINetworkActivityIndicatorManager.h */; };
+		BA5506641E5326AF001EC43D /* UIActivityIndicatorView+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49411C2F5FC500A4C370 /* UIActivityIndicatorView+MASINetworking.h */; };
+		BA5506651E5326AF001EC43D /* UIActivityIndicatorView+MASINetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49421C2F5FC500A4C370 /* UIActivityIndicatorView+MASINetworking.m */; };
+		BA5506661E5326AF001EC43D /* UIAlertView+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49431C2F5FC500A4C370 /* UIAlertView+MASINetworking.h */; };
+		BA5506681E5326AF001EC43D /* UIButton+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49451C2F5FC500A4C370 /* UIButton+MASINetworking.h */; };
+		BA5506691E5326AF001EC43D /* UIButton+MASINetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49461C2F5FC500A4C370 /* UIButton+MASINetworking.m */; };
+		BA55066A1E5326AF001EC43D /* UIImage+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49471C2F5FC500A4C370 /* UIImage+MASINetworking.h */; };
+		BA55066B1E5326AF001EC43D /* UIImageView+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49481C2F5FC500A4C370 /* UIImageView+MASINetworking.h */; };
+		BA55066C1E5326AF001EC43D /* UIImageView+MASINetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49491C2F5FC500A4C370 /* UIImageView+MASINetworking.m */; };
+		BA55066D1E5326AF001EC43D /* UIKit+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F494A1C2F5FC500A4C370 /* UIKit+MASINetworking.h */; };
+		BA55066E1E5326AF001EC43D /* UIProgressView+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F494B1C2F5FC500A4C370 /* UIProgressView+MASINetworking.h */; };
+		BA55066F1E5326AF001EC43D /* UIProgressView+MASINetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F494C1C2F5FC500A4C370 /* UIProgressView+MASINetworking.m */; };
+		BA5506721E5326AF001EC43D /* UIWebView+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F494F1C2F5FC500A4C370 /* UIWebView+MASINetworking.h */; };
+		BA5506741E5326B8001EC43D /* MASINTULocationManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49531C2F5FC500A4C370 /* MASINTULocationManager+Internal.h */; };
+		BA5506751E5326B8001EC43D /* MASINTULocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49541C2F5FC500A4C370 /* MASINTULocationManager.h */; };
+		BA5506771E5326B8001EC43D /* MASINTULocationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49561C2F5FC500A4C370 /* MASINTULocationRequest.h */; };
+		BA5506781E5326B8001EC43D /* MASINTULocationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49571C2F5FC500A4C370 /* MASINTULocationRequest.m */; };
+		BA5506791E5326B8001EC43D /* MASINTULocationRequestDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49581C2F5FC500A4C370 /* MASINTULocationRequestDefines.h */; };
+		BA55067A1E5326C0001EC43D /* MASIOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F495B1C2F5FC500A4C370 /* MASIOrderedDictionary.h */; };
+		BA55067B1E5326C0001EC43D /* MASIOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F495C1C2F5FC500A4C370 /* MASIOrderedDictionary.m */; };
+		BA55067C1E5326FB001EC43D /* RNCryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49B31C2F5FC500A4C370 /* RNCryptor.h */; };
+		BA55067D1E5326FB001EC43D /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49B41C2F5FC500A4C370 /* RNCryptor.m */; };
+		BA55067E1E5326FB001EC43D /* RNCryptorEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49B51C2F5FC500A4C370 /* RNCryptorEngine.h */; };
+		BA55067F1E5326FB001EC43D /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49B61C2F5FC500A4C370 /* RNCryptorEngine.m */; };
+		BA5506801E5326FB001EC43D /* RNDecryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49B71C2F5FC500A4C370 /* RNDecryptor.h */; };
+		BA5506811E5326FB001EC43D /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49B81C2F5FC500A4C370 /* RNDecryptor.m */; };
+		BA5506821E5326FB001EC43D /* RNEncryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49B91C2F5FC500A4C370 /* RNEncryptor.h */; };
+		BA5506831E5326FB001EC43D /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49BA1C2F5FC500A4C370 /* RNEncryptor.m */; };
+		BA5506851E532FDA001EC43D /* libcrypto_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105B2EC61CA6B3EA0005A2D0 /* libcrypto_iOS.a */; };
+		BA5506861E532FDE001EC43D /* libssl_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105B2EC71CA6B3EA0005A2D0 /* libssl_iOS.a */; };
+		BA5506871E5339C7001EC43D /* MASINTULocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49551C2F5FC500A4C370 /* MASINTULocationManager.m */; };
+		BA5506881E533B26001EC43D /* MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E340CF1B9E9F2000883AD3 /* MAS.m */; };
+		BA5506891E533B27001EC43D /* MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E340CF1B9E9F2000883AD3 /* MAS.m */; };
+		BA55068A1E533CE5001EC43D /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
+		BA55068B1E533CE6001EC43D /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
 		CB0A8ADF1D01F64F00B1DCCC /* MASProximityLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CB0A8AE01D01F64F00B1DCCC /* MASProximityLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */; };
 		CB0B58591E258C2A00BC0163 /* MASAuthorizationResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0B58571E258C2A00BC0163 /* MASAuthorizationResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -328,6 +539,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1059D36F1B61AA3700223267;
 			remoteInfo = MASFoundation;
+		};
+		BA5505961E5314D1001EC43D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1059D3671B61AA3700223267 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA55058B1E5314D0001EC43D;
+			remoteInfo = "tvOS MASFoundation";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -632,6 +850,12 @@
 		A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MASPrivate.m"; sourceTree = "<group>"; };
 		A858C6631D0978A6001FB9AD /* MASOTPService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASOTPService.h; sourceTree = "<group>"; };
 		A858C6641D0978A6001FB9AD /* MASOTPService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASOTPService.m; sourceTree = "<group>"; };
+		BA55058C1E5314D0001EC43D /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = tvOS_MASFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA55058E1E5314D0001EC43D /* tvOS MASFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "tvOS MASFoundation.h"; sourceTree = "<group>"; };
+		BA55058F1E5314D0001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA5505941E5314D0001EC43D /* tvOS_MASFoundationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tvOS_MASFoundationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA5505991E5314D1001EC43D /* tvOS_MASFoundationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = tvOS_MASFoundationTests.m; sourceTree = "<group>"; };
+		BA55059B1E5314D1001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASProximityLogin.h; sourceTree = "<group>"; };
 		CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASProximityLogin.m; sourceTree = "<group>"; };
 		CB0B58571E258C2A00BC0163 /* MASAuthorizationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASAuthorizationResponse.h; sourceTree = "<group>"; };
@@ -682,6 +906,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA5505881E5314D0001EC43D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA5506861E532FDE001EC43D /* libssl_iOS.a in Frameworks */,
+				BA5506851E532FDA001EC43D /* libcrypto_iOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA5505911E5314D0001EC43D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -689,6 +929,8 @@
 			isa = PBXGroup;
 			children = (
 				1059D3721B61AA3700223267 /* MASFoundation */,
+				BA55058D1E5314D0001EC43D /* tvOS MASFoundation */,
+				BA5505981E5314D1001EC43D /* tvOS MASFoundationTests */,
 				1059D37F1B61AA3800223267 /* MASFoundationTests */,
 				1059D3711B61AA3700223267 /* Products */,
 				A4F19ED71C30BD0E00289DE4 /* LICENSE.md */,
@@ -701,6 +943,8 @@
 			children = (
 				1059D3701B61AA3700223267 /* MASFoundation.framework */,
 				1059D37B1B61AA3800223267 /* MASFoundationTests.xctest */,
+				BA55058C1E5314D0001EC43D /* tvOS_MASFoundation.framework */,
+				BA5505941E5314D0001EC43D /* tvOS_MASFoundationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1286,6 +1530,24 @@
 			path = otp;
 			sourceTree = "<group>";
 		};
+		BA55058D1E5314D0001EC43D /* tvOS MASFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				BA55058E1E5314D0001EC43D /* tvOS MASFoundation.h */,
+				BA55058F1E5314D0001EC43D /* Info.plist */,
+			);
+			path = "tvOS MASFoundation";
+			sourceTree = "<group>";
+		};
+		BA5505981E5314D1001EC43D /* tvOS MASFoundationTests */ = {
+			isa = PBXGroup;
+			children = (
+				BA5505991E5314D1001EC43D /* tvOS_MASFoundationTests.m */,
+				BA55059B1E5314D1001EC43D /* Info.plist */,
+			);
+			path = "tvOS MASFoundationTests";
+			sourceTree = "<group>";
+		};
 		CB1907F51C17950700A5EF16 /* access */ = {
 			isa = PBXGroup;
 			children = (
@@ -1469,6 +1731,7 @@
 				105B2F2A1CA6B3EA0005A2D0 /* dso.h in Headers */,
 				A46F4A451C2F5FC500A4C370 /* RNCryptor-Prefix.pch in Headers */,
 				10738A351C711C2F00B7E87E /* send_mosq.h in Headers */,
+				BA5505B91E5316B2001EC43D /* MASFoundation_PrefixHeader.pch in Headers */,
 				105B2F3E1CA6B3EA0005A2D0 /* objects.h in Headers */,
 				A46F49D11C2F5FC500A4C370 /* MASIURLConnectionOperation.h in Headers */,
 				105B2F5C1CA6B3EA0005A2D0 /* ui_compat.h in Headers */,
@@ -1514,6 +1777,124 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA5505891E5314D0001EC43D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA5506581E5326A5001EC43D /* MASISecurityPolicy.h in Headers */,
+				BA5505B71E531682001EC43D /* MASProximityLogin.h in Headers */,
+				BA5505A81E531607001EC43D /* MASMQTTMessage.h in Headers */,
+				BA5505D51E5324DB001EC43D /* L7SBrowserURLProtocol.h in Headers */,
+				BA5505C51E53232B001EC43D /* RNCryptor+Private.h in Headers */,
+				BA5505E51E53251E001EC43D /* NSError+MASPrivate.h in Headers */,
+				BA5506341E532676001EC43D /* mosquitto.h in Headers */,
+				BA5505B11E531656001EC43D /* MASConfiguration.h in Headers */,
+				BA5505E31E532516001EC43D /* NSData+MASPrivate.h in Headers */,
+				BA5506251E53261B001EC43D /* MASGroup+MASPrivate.h in Headers */,
+				BA55061B1E5325FC001EC43D /* MASAuthenticationProviders+MASPrivate.h in Headers */,
+				BA5506131E5325D9001EC43D /* MASSecurityService.h in Headers */,
+				BA5505DB1E5324F6001EC43D /* CBPeripheralManager+MASPrivate.h in Headers */,
+				BA5506791E5326B8001EC43D /* MASINTULocationRequestDefines.h in Headers */,
+				BA5505D71E5324E5001EC43D /* MASIKeyChainStore+MASPrivate.h in Headers */,
+				BA5505F71E532567001EC43D /* MASConfigurationService.h in Headers */,
+				BA5506011E532592001EC43D /* MASDeleteURLRequest.h in Headers */,
+				BA55062A1E532632001EC43D /* fmemopen.h in Headers */,
+				BA55062C1E53264A001EC43D /* dummypthread.h in Headers */,
+				BA55067E1E5326FB001EC43D /* RNCryptorEngine.h in Headers */,
+				BA55067C1E5326FB001EC43D /* RNCryptor.h in Headers */,
+				BA5505B01E531650001EC43D /* MASAuthorizationResponse.h in Headers */,
+				BA5505F91E532570001EC43D /* MASFileService.h in Headers */,
+				BA55065C1E5326A5001EC43D /* MASIURLRequestSerialization.h in Headers */,
+				BA55065A1E5326A5001EC43D /* MASIURLConnectionOperation.h in Headers */,
+				BA5505AB1E531623001EC43D /* NSData+MAS.h in Headers */,
+				BA5505A51E531571001EC43D /* MASConstantsPrivate.h in Headers */,
+				BA5505AA1E531618001EC43D /* MASMQTTConstants.h in Headers */,
+				BA55062E1E532668001EC43D /* logging_mosq.h in Headers */,
+				BA55064B1E532693001EC43D /* MASIKeyChainStore.h in Headers */,
+				BA55063A1E532676001EC43D /* read_handle.h in Headers */,
+				BA5505EB1E532533001EC43D /* NSString+MASPrivate.h in Headers */,
+				BA5505A41E531533001EC43D /* MASMQTTClient.h in Headers */,
+				BA55061F1E53260A001EC43D /* MASDevice+MASPrivate.h in Headers */,
+				BA55066E1E5326AF001EC43D /* UIProgressView+MASINetworking.h in Headers */,
+				BA5506051E5325A0001EC43D /* MASPatchURLRequest.h in Headers */,
+				BA5505B41E53166D001EC43D /* MASUser.h in Headers */,
+				BA5506771E5326B8001EC43D /* MASINTULocationRequest.h in Headers */,
+				BA5506381E532676001EC43D /* net_mosq.h in Headers */,
+				BA5506421E532676001EC43D /* time_mosq.h in Headers */,
+				BA5505AF1E531649001EC43D /* MASAuthenticationProviders.h in Headers */,
+				BA5506621E5326AF001EC43D /* MASINetworkActivityIndicatorManager.h in Headers */,
+				BA55064D1E5326A5001EC43D /* MASIHTTPRequestOperation.h in Headers */,
+				BA5505A61E5315ED001EC43D /* MASService.h in Headers */,
+				BA55061D1E532603001EC43D /* MASConfiguration+MASPrivate.h in Headers */,
+				BA5505E91E53252D001EC43D /* NSNotificationCenter+MASPrivate.h in Headers */,
+				BA5506601E5326A5001EC43D /* MASIURLSessionManager.h in Headers */,
+				BA5506461E532676001EC43D /* util_mosq.h in Headers */,
+				BA5506801E5326FB001EC43D /* RNDecryptor.h in Headers */,
+				BA55060D1E5325C1001EC43D /* MASModelService.h in Headers */,
+				BA55066B1E5326AF001EC43D /* UIImageView+MASINetworking.h in Headers */,
+				BA55063F1E532676001EC43D /* send_mosq.h in Headers */,
+				BA5506721E5326AF001EC43D /* UIWebView+MASINetworking.h in Headers */,
+				BA5506171E5325E8001EC43D /* MASApplication+MASPrivate.h in Headers */,
+				BA5505B51E531673001EC43D /* MASGroup.h in Headers */,
+				BA55067A1E5326C0001EC43D /* MASIOrderedDictionary.h in Headers */,
+				BA5506821E5326FB001EC43D /* RNEncryptor.h in Headers */,
+				BA5506301E532676001EC43D /* memory_mosq.h in Headers */,
+				BA5506531E5326A5001EC43D /* MASINetworkActivityLogger.h in Headers */,
+				BA5505EF1E532544001EC43D /* MASAccessService.h in Headers */,
+				BA5505A91E53160F001EC43D /* MASMQTTHelper.h in Headers */,
+				BA5506481E532676001EC43D /* will_mosq.h in Headers */,
+				BA5506511E5326A5001EC43D /* MASIHTTPSessionManager.h in Headers */,
+				BA5506351E532676001EC43D /* mosquitto_internal.h in Headers */,
+				BA5505E71E532525001EC43D /* NSMutableURLRequest+MASPrivate.h in Headers */,
+				BA5506641E5326AF001EC43D /* UIActivityIndicatorView+MASINetworking.h in Headers */,
+				BA5505FD1E532581001EC43D /* MASNetworkingService.h in Headers */,
+				BA5506491E532683001EC43D /* MASIFileManager.h in Headers */,
+				BA5505E11E53250F001EC43D /* MASIJSONResponseSerializer+MASPrivate.h in Headers */,
+				BA5506751E5326B8001EC43D /* MASINTULocationManager.h in Headers */,
+				BA5506661E5326AF001EC43D /* UIAlertView+MASINetworking.h in Headers */,
+				BA5506551E5326A5001EC43D /* MASINetworking.h in Headers */,
+				BA5505FB1E532579001EC43D /* MASLocationService.h in Headers */,
+				BA5506441E532676001EC43D /* tls_mosq.h in Headers */,
+				BA5506561E5326A5001EC43D /* MASINetworkReachabilityManager.h in Headers */,
+				BA5506111E5325D3001EC43D /* MASKeyChainService.h in Headers */,
+				BA55060B1E5325B7001EC43D /* MASHTTPSessionManager.h in Headers */,
+				BA5505FF1E532589001EC43D /* MASURLRequest.h in Headers */,
+				BA5506741E5326B8001EC43D /* MASINTULocationManager+Internal.h in Headers */,
+				BA5505B21E53165F001EC43D /* MASDevice.h in Headers */,
+				BA5505AD1E531637001EC43D /* MASApplication.h in Headers */,
+				BA5506191E5325F2001EC43D /* MASAuthenticationProvider+MASPrivate.h in Headers */,
+				BA5506091E5325AD001EC43D /* MASPutURLRequest.h in Headers */,
+				BA5505A31E5314E0001EC43D /* MAS.h in Headers */,
+				BA5505DD1E5324FF001EC43D /* CLLocation+MASPrivate.h in Headers */,
+				BA5505D91E5324EB001EC43D /* CBCentralManager+MASPrivate.h in Headers */,
+				BA5506071E5325A6001EC43D /* MASPostURLRequest.h in Headers */,
+				BA55062B1E53264A001EC43D /* config.h in Headers */,
+				BA55066A1E5326AF001EC43D /* UIImage+MASINetworking.h in Headers */,
+				BA55066D1E5326AF001EC43D /* UIKit+MASINetworking.h in Headers */,
+				BA5506321E532676001EC43D /* messages_mosq.h in Headers */,
+				BA5505AC1E53162E001EC43D /* MASObject.h in Headers */,
+				BA5506151E5325E2001EC43D /* MASAccess.h in Headers */,
+				BA5506211E532610001EC43D /* MASFile+MASPrivate.h in Headers */,
+				BA5505B31E531666001EC43D /* MASFile.h in Headers */,
+				BA55059C1E5314D1001EC43D /* tvOS MASFoundation.h in Headers */,
+				BA5505ED1E53253B001EC43D /* MASServiceRegistry.h in Headers */,
+				BA5505DF1E532508001EC43D /* CLLocationManager+MASPrivate.h in Headers */,
+				BA5506361E532676001EC43D /* mqtt3_protocol.h in Headers */,
+				BA5505AE1E531641001EC43D /* MASAuthenticationProvider.h in Headers */,
+				BA5505B61E53167B001EC43D /* MASSocialLogin.h in Headers */,
+				BA5506031E53259A001EC43D /* MASGetURLRequest.h in Headers */,
+				BA5505B81E531688001EC43D /* MASProximityLoginQRCode.h in Headers */,
+				BA55065E1E5326A5001EC43D /* MASIURLResponseSerialization.h in Headers */,
+				BA55060F1E5325C8001EC43D /* MASOTPService.h in Headers */,
+				BA55064F1E5326A5001EC43D /* MASIHTTPRequestOperationManager.h in Headers */,
+				BA5505C61E532453001EC43D /* MASConstants.h in Headers */,
+				BA5506231E532616001EC43D /* MASUser+MASPrivate.h in Headers */,
+				BA5506271E532624001EC43D /* MASProximityLoginQRCode+MASPrivate.h in Headers */,
+				BA5505A71E5315F9001EC43D /* MASProximityLoginDelegate.h in Headers */,
+				BA5506681E5326AF001EC43D /* UIButton+MASINetworking.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1555,6 +1936,42 @@
 			productReference = 1059D37B1B61AA3800223267 /* MASFoundationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		BA55058B1E5314D0001EC43D /* tvOS_MASFoundation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA55059D1E5314D1001EC43D /* Build configuration list for PBXNativeTarget "tvOS_MASFoundation" */;
+			buildPhases = (
+				BA5505871E5314D0001EC43D /* Sources */,
+				BA5505881E5314D0001EC43D /* Frameworks */,
+				BA5505891E5314D0001EC43D /* Headers */,
+				BA55058A1E5314D0001EC43D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tvOS_MASFoundation;
+			productName = "tvOS MASFoundation";
+			productReference = BA55058C1E5314D0001EC43D /* tvOS_MASFoundation.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		BA5505931E5314D0001EC43D /* tvOS_MASFoundationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA5505A01E5314D1001EC43D /* Build configuration list for PBXNativeTarget "tvOS_MASFoundationTests" */;
+			buildPhases = (
+				BA5505901E5314D0001EC43D /* Sources */,
+				BA5505911E5314D0001EC43D /* Frameworks */,
+				BA5505921E5314D0001EC43D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BA5505971E5314D1001EC43D /* PBXTargetDependency */,
+			);
+			name = tvOS_MASFoundationTests;
+			productName = "tvOS MASFoundationTests";
+			productReference = BA5505941E5314D0001EC43D /* tvOS_MASFoundationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1575,6 +1992,14 @@
 					1059D3B91B61C00500223267 = {
 						CreatedOnToolsVersion = 6.4;
 					};
+					BA55058B1E5314D0001EC43D = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+					BA5505931E5314D0001EC43D = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 1059D36A1B61AA3700223267 /* Build configuration list for PBXProject "MASFoundation" */;
@@ -1592,6 +2017,8 @@
 				1059D36F1B61AA3700223267 /* MASFoundation */,
 				1059D37A1B61AA3800223267 /* MASFoundationTests */,
 				1059D3B91B61C00500223267 /* UniversalFrameworkMASFoundation */,
+				BA55058B1E5314D0001EC43D /* tvOS_MASFoundation */,
+				BA5505931E5314D0001EC43D /* tvOS_MASFoundationTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1605,6 +2032,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1059D3791B61AA3800223267 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA55058A1E5314D0001EC43D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA5505921E5314D0001EC43D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1655,7 +2096,6 @@
 				A4150E721BF1643900037E27 /* NSMutableURLRequest+MASPrivate.m in Sources */,
 				A46F49E01C2F5FC500A4C370 /* UIButton+MASINetworking.m in Sources */,
 				A4831AB61BD1A551007B4AE6 /* MASUser.m in Sources */,
-				A4E340FA1B9E9F2000883AD3 /* MAS.m in Sources */,
 				10738A231C711C2F00B7E87E /* logging_mosq.c in Sources */,
 				A46F49DE1C2F5FC500A4C370 /* UIAlertView+MASINetworking.m in Sources */,
 				A4150EFC1BF16EE200037E27 /* MASKeyChainService.m in Sources */,
@@ -1691,13 +2131,14 @@
 				A42D02E11C0E223600AA1F11 /* MASAuthenticationProviders.m in Sources */,
 				CB5E4C691C1D21FB001B3B8A /* MASPostURLRequest.m in Sources */,
 				A47F126D1C1D6B4B0008E3F2 /* MASURLRequest.m in Sources */,
+				BA55068B1E533CE6001EC43D /* MASApplication.m in Sources */,
 				A46F49F01C2F5FC500A4C370 /* MASINTULocationRequest.m in Sources */,
 				A46F49D01C2F5FC500A4C370 /* MASISecurityPolicy.m in Sources */,
 				A4831AF31BD1A8AA007B4AE6 /* MASConfiguration+MASPrivate.m in Sources */,
 				A46F4A4B1C2F5FC500A4C370 /* RNDecryptor.m in Sources */,
+				BA5506881E533B26001EC43D /* MAS.m in Sources */,
 				10738A391C711C2F00B7E87E /* tls_mosq.c in Sources */,
 				A43BEBB31BE34D7700842522 /* CLLocationManager+MASPrivate.m in Sources */,
-				A4831AAA1BD1A551007B4AE6 /* MASApplication.m in Sources */,
 				CB5E4C5B1C1D14DB001B3B8A /* MASHTTPSessionManager.m in Sources */,
 				A46F49BF1C2F5FC500A4C370 /* MASIFileManager.m in Sources */,
 				A46F49C51C2F5FC500A4C370 /* MASIHTTPRequestOperation.m in Sources */,
@@ -1749,6 +2190,117 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA5505871E5314D0001EC43D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA5505F81E53256A001EC43D /* MASConfigurationService.m in Sources */,
+				BA55063D1E532676001EC43D /* send_client_mosq.c in Sources */,
+				BA5505CD1E5324A7001EC43D /* MASConfiguration.m in Sources */,
+				BA55067B1E5326C0001EC43D /* MASIOrderedDictionary.m in Sources */,
+				BA5506291E53262F001EC43D /* fmemopen.c in Sources */,
+				BA5505BF1E53213E001EC43D /* MASMQTTClient.m in Sources */,
+				BA5506831E5326FB001EC43D /* RNEncryptor.m in Sources */,
+				BA5505F01E532547001EC43D /* MASAccessService.m in Sources */,
+				BA55065D1E5326A5001EC43D /* MASIURLRequestSerialization.m in Sources */,
+				BA5505E01E53250B001EC43D /* CLLocationManager+MASPrivate.m in Sources */,
+				BA5506571E5326A5001EC43D /* MASINetworkReachabilityManager.m in Sources */,
+				BA5505E81E532529001EC43D /* NSMutableURLRequest+MASPrivate.m in Sources */,
+				BA5506451E532676001EC43D /* util_mosq.c in Sources */,
+				BA5506781E5326B8001EC43D /* MASINTULocationRequest.m in Sources */,
+				BA55066C1E5326AF001EC43D /* UIImageView+MASINetworking.m in Sources */,
+				BA5506471E532676001EC43D /* will_mosq.c in Sources */,
+				BA5506201E53260D001EC43D /* MASDevice+MASPrivate.m in Sources */,
+				BA55065B1E5326A5001EC43D /* MASIURLConnectionOperation.m in Sources */,
+				BA5506411E532676001EC43D /* time_mosq.c in Sources */,
+				BA5505CA1E532493001EC43D /* MASAuthenticationProvider.m in Sources */,
+				BA55063E1E532676001EC43D /* send_mosq.c in Sources */,
+				BA5505CC1E5324A0001EC43D /* MASAuthorizationResponse.m in Sources */,
+				BA5505CE1E5324AD001EC43D /* MASDevice.m in Sources */,
+				BA55064E1E5326A5001EC43D /* MASIHTTPRequestOperation.m in Sources */,
+				BA55064A1E532683001EC43D /* MASIFileManager.m in Sources */,
+				BA5505CF1E5324B3001EC43D /* MASFile.m in Sources */,
+				BA5506101E5325CB001EC43D /* MASOTPService.m in Sources */,
+				BA5505E61E532521001EC43D /* NSError+MASPrivate.m in Sources */,
+				BA5506431E532676001EC43D /* tls_mosq.c in Sources */,
+				BA5505EC1E532536001EC43D /* NSString+MASPrivate.m in Sources */,
+				BA5506221E532613001EC43D /* MASFile+MASPrivate.m in Sources */,
+				BA5506331E532676001EC43D /* mosquitto.c in Sources */,
+				BA55068A1E533CE5001EC43D /* MASApplication.m in Sources */,
+				BA55067F1E5326FB001EC43D /* RNCryptorEngine.m in Sources */,
+				BA5505C71E532472001EC43D /* MASMQTTHelper.m in Sources */,
+				BA5505D61E5324DF001EC43D /* L7SBrowserURLProtocol.m in Sources */,
+				BA55060A1E5325B0001EC43D /* MASPutURLRequest.m in Sources */,
+				BA5505D01E5324B8001EC43D /* MASUser.m in Sources */,
+				BA55060C1E5325BB001EC43D /* MASHTTPSessionManager.m in Sources */,
+				BA55062F1E532676001EC43D /* memory_mosq.c in Sources */,
+				BA5506021E532596001EC43D /* MASDeleteURLRequest.m in Sources */,
+				BA5505FC1E53257C001EC43D /* MASLocationService.m in Sources */,
+				BA5506501E5326A5001EC43D /* MASIHTTPRequestOperationManager.m in Sources */,
+				BA5506651E5326AF001EC43D /* UIActivityIndicatorView+MASINetworking.m in Sources */,
+				BA5505D81E5324E8001EC43D /* MASIKeyChainStore+MASPrivate.m in Sources */,
+				BA5506691E5326AF001EC43D /* UIButton+MASINetworking.m in Sources */,
+				BA5505BE1E532133001EC43D /* MASService.m in Sources */,
+				BA5506261E53261E001EC43D /* MASGroup+MASPrivate.m in Sources */,
+				BA5505D11E5324BD001EC43D /* MASGroup.m in Sources */,
+				BA5505FA1E532573001EC43D /* MASFileService.m in Sources */,
+				BA5505C81E53247B001EC43D /* NSData+MAS.m in Sources */,
+				BA55061A1E5325F8001EC43D /* MASAuthenticationProvider+MASPrivate.m in Sources */,
+				BA5505C91E532483001EC43D /* MASObject.m in Sources */,
+				BA55064C1E532693001EC43D /* MASIKeyChainStore.m in Sources */,
+				BA5506541E5326A5001EC43D /* MASINetworkActivityLogger.m in Sources */,
+				BA5505FE1E532584001EC43D /* MASNetworkingService.m in Sources */,
+				BA5506081E5325AA001EC43D /* MASPostURLRequest.m in Sources */,
+				BA55061C1E5325FF001EC43D /* MASAuthenticationProviders+MASPrivate.m in Sources */,
+				BA5505D31E5324CA001EC43D /* MASProximityLogin.m in Sources */,
+				BA5506061E5325A3001EC43D /* MASPatchURLRequest.m in Sources */,
+				BA5506591E5326A5001EC43D /* MASISecurityPolicy.m in Sources */,
+				BA5505EE1E53253F001EC43D /* MASServiceRegistry.m in Sources */,
+				BA55060E1E5325C4001EC43D /* MASModelService.m in Sources */,
+				BA5505E41E53251A001EC43D /* NSData+MASPrivate.m in Sources */,
+				BA5506281E53262A001EC43D /* MASProximityLoginQRCode+MASPrivate.m in Sources */,
+				BA5506871E5339C7001EC43D /* MASINTULocationManager.m in Sources */,
+				BA5506391E532676001EC43D /* read_handle.c in Sources */,
+				BA5505EA1E532530001EC43D /* NSNotificationCenter+MASPrivate.m in Sources */,
+				BA5505DA1E5324EF001EC43D /* CBCentralManager+MASPrivate.m in Sources */,
+				BA5506001E53258D001EC43D /* MASURLRequest.m in Sources */,
+				BA55066F1E5326AF001EC43D /* UIProgressView+MASINetworking.m in Sources */,
+				BA5506521E5326A5001EC43D /* MASIHTTPSessionManager.m in Sources */,
+				BA5505CB1E53249A001EC43D /* MASAuthenticationProviders.m in Sources */,
+				BA5506811E5326FB001EC43D /* RNDecryptor.m in Sources */,
+				BA5505C01E532148001EC43D /* MASMQTTMessage.m in Sources */,
+				BA5505DE1E532503001EC43D /* CLLocation+MASPrivate.m in Sources */,
+				BA55065F1E5326A5001EC43D /* MASIURLResponseSerialization.m in Sources */,
+				BA5506311E532676001EC43D /* messages_mosq.c in Sources */,
+				BA5506181E5325EC001EC43D /* MASApplication+MASPrivate.m in Sources */,
+				BA5506041E53259D001EC43D /* MASGetURLRequest.m in Sources */,
+				BA5505DC1E5324FC001EC43D /* CBPeripheralManager+MASPrivate.m in Sources */,
+				BA5506891E533B27001EC43D /* MAS.m in Sources */,
+				BA5506121E5325D6001EC43D /* MASKeyChainService.m in Sources */,
+				BA55063B1E532676001EC43D /* read_handle_client.c in Sources */,
+				BA55067D1E5326FB001EC43D /* RNCryptor.m in Sources */,
+				BA5506141E5325DC001EC43D /* MASSecurityService.m in Sources */,
+				BA55061E1E532607001EC43D /* MASConfiguration+MASPrivate.m in Sources */,
+				BA5506401E532676001EC43D /* thread_mosq.c in Sources */,
+				BA5506241E532619001EC43D /* MASUser+MASPrivate.m in Sources */,
+				BA5506371E532676001EC43D /* net_mosq.c in Sources */,
+				BA5506161E5325E5001EC43D /* MASAccess.m in Sources */,
+				BA55062D1E532668001EC43D /* logging_mosq.c in Sources */,
+				BA5505E21E532512001EC43D /* MASIJSONResponseSerializer+MASPrivate.m in Sources */,
+				BA55063C1E532676001EC43D /* read_handle_shared.c in Sources */,
+				BA5505D41E5324D0001EC43D /* MASProximityLoginQRCode.m in Sources */,
+				BA5506611E5326A5001EC43D /* MASIURLSessionManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA5505901E5314D0001EC43D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA55059A1E5314D1001EC43D /* tvOS_MASFoundationTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1756,6 +2308,11 @@
 			isa = PBXTargetDependency;
 			target = 1059D36F1B61AA3700223267 /* MASFoundation */;
 			targetProxy = 1059D37D1B61AA3800223267 /* PBXContainerItemProxy */;
+		};
+		BA5505971E5314D1001EC43D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA55058B1E5314D0001EC43D /* tvOS_MASFoundation */;
+			targetProxy = BA5505961E5314D1001EC43D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2003,6 +2560,118 @@
 			};
 			name = Release;
 		};
+		BA55059E1E5314D1001EC43D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MASFoundation",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Vendor",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/MASFoundation/Vendor/OpenSSL/include",
+				);
+				INFOPLIST_FILE = "tvOS MASFoundation/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MASFoundation/Vendor/OpenSSL/include/lib",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "CA.tvOS-MASFoundation";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Debug;
+		};
+		BA55059F1E5314D1001EC43D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MASFoundation",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Vendor",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/MASFoundation/Vendor/OpenSSL/include",
+				);
+				INFOPLIST_FILE = "tvOS MASFoundation/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MASFoundation/Vendor/OpenSSL/include/lib",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "CA.tvOS-MASFoundation";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Release;
+		};
+		BA5505A11E5314D1001EC43D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				INFOPLIST_FILE = "tvOS MASFoundationTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "CA.tvOS-MASFoundationTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Debug;
+		};
+		BA5505A21E5314D1001EC43D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				INFOPLIST_FILE = "tvOS MASFoundationTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "CA.tvOS-MASFoundationTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2038,6 +2707,24 @@
 			buildConfigurations = (
 				1059D3BA1B61C00500223267 /* Debug */,
 				1059D3BB1B61C00500223267 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BA55059D1E5314D1001EC43D /* Build configuration list for PBXNativeTarget "tvOS_MASFoundation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA55059E1E5314D1001EC43D /* Debug */,
+				BA55059F1E5314D1001EC43D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BA5505A01E5314D1001EC43D /* Build configuration list for PBXNativeTarget "tvOS_MASFoundationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA5505A11E5314D1001EC43D /* Debug */,
+				BA5505A21E5314D1001EC43D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

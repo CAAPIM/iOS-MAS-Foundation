@@ -307,8 +307,8 @@ static NSArray const *_serviceUUIDs_;
             //
             default:
             {
-                DLog(@"\n\nWarning: detected unsupported lifecycle status: %@\n\n",
-                    [MASService lifecycleStatusToString:self.lifecycleStatus]);
+//                DLog(@"\n\nWarning: detected unsupported lifecycle status: %@\n\n",
+//                    [MASService lifecycleStatusToString:self.lifecycleStatus]);
                 break;
             }
         }
@@ -398,9 +398,9 @@ static NSArray const *_serviceUUIDs_;
                 //
                 if(![service.class serviceUUID])
                 {
-                    DLog(@"\n\nWarning detected MASService class: %@ with unknown UUID: %@\n\n",
-                        service.class, [service.class serviceUUID]);
-                    
+//                    DLog(@"\n\nWarning detected MASService class: %@ with unknown UUID: %@\n\n",
+//                        service.class, [service.class serviceUUID]);
+//                    
                     continue;
                 }
     

@@ -78,7 +78,7 @@
     
     if(error)
     {
-        DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
+       // DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
         return NO;
     }
     

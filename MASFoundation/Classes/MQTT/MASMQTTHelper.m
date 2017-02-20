@@ -22,7 +22,7 @@
     
     if (debugMode) {
         
-        DLog(@"%@",message);
+       // DLog(@"%@",message);
     }
 }
 

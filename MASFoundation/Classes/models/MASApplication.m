@@ -36,17 +36,32 @@ static NSString *const MASApplicationScopeAsStringPropertyKey = @"scopeAsString"
 static NSString *const MASApplicationSecretPropertyKey = @"secret"; // string
 static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
-
+#if TARGET_OS_IOS
 @interface MASApplication ()
     <UIWebViewDelegate>
 {
     id _originalDelegate;
 }
 
-@property (nonatomic, strong, readonly) UIWebView *webView;
 @property (nonatomic, copy) MASCompletionErrorBlock errorBlock;
-
+@property (nonatomic, strong, readonly) UIWebView *webView;
 @end
+
+#endif
+
+#if  TARGET_OS_TV
+
+@interface MASApplication ()
+{
+    id _originalDelegate;
+}
+@property (nonatomic, copy) MASCompletionErrorBlock errorBlock;
+@end
+#endif
+
+
+
+
 
 
 @implementation MASApplication
@@ -207,7 +222,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     }];
 }
 
-
+#if TARGET_OS_IOS
 - (void)enterpriseIconWithImageView:(UIImageView *)imageView completion:(MASCompletionErrorBlock)completion
 {
     //
@@ -259,12 +274,12 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     
     if (completion) completion(YES,nil);
     
-    /*
-    [[NSNotificationCenter defaultCenter] addObserver:self
-        selector:@selector(didReceiveStatusUpdate:)
-        name:L7SDidReceiveStatusUpdateNotification
-        object:nil];
-    */
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//        selector:@selector(didReceiveStatusUpdate:)
+//        name:L7SDidReceiveStatusUpdateNotification
+//        object:nil];
+//    
     
     [webView loadRequest:request];
 }
@@ -365,7 +380,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    DLog(@"didFailLoadWithError %@",error);
+   // DLog(@"didFailLoadWithError %@",error);
     if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)])
     {
         return [_originalDelegate webView:webView didFailLoadWithError:error];
@@ -406,7 +421,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
         //
         YES);
 }
-
+#endif
 
 # pragma mark - NSCoding
 

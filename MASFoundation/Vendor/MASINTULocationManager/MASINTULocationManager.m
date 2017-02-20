@@ -112,12 +112,15 @@ static id _sharedInstance;
         /* iOS 9 requires setting allowsBackgroundLocationUpdates to YES in order to receive background location updates.
          We only set it to YES if the location background mode is enabled for this app, as the documentation suggests it is a
          fatal programmer error otherwise. */
+#if TARGET_OS_IOS
+
         NSArray *backgroundModes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
         if ([backgroundModes containsObject:@"location"]) {
             if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
                 [_locationManager setAllowsBackgroundLocationUpdates:YES];
             }
         }
+#endif
 #endif /* __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_8_4 */
 #endif /* __IPHONE_8_4 */
 
@@ -316,12 +319,17 @@ static id _sharedInstance;
             // Take the max of the maximum desired accuracy for all existing location requests and the desired accuracy of the new request we're currently adding
             maximumDesiredAccuracy = MAX(locationRequest.desiredAccuracy, maximumDesiredAccuracy);
             [self updateWithMaximumDesiredAccuracy:maximumDesiredAccuracy];
-            
+#if TARGET_OS_IOS
+
             [self startUpdatingLocationIfNeeded];
+#endif
         }
             break;
         case MASINTULocationRequestTypeSignificantChanges:
+#if TARGET_OS_IOS
+
             [self startMonitoringSignificantLocationChangesIfNeeded];
+#endif
             break;
     }
     __MASINTU_GENERICS(NSMutableArray, MASINTULocationRequest *) *newLocationRequests = [NSMutableArray arrayWithArray:self.locationRequests];
@@ -356,7 +364,10 @@ static id _sharedInstance;
         }
             break;
         case MASINTULocationRequestTypeSignificantChanges:
+#if TARGET_OS_IOS
+
             [self stopMonitoringSignificantLocationChangesIfPossible];
+#endif
             break;
     }
 }
@@ -390,8 +401,11 @@ static id _sharedInstance;
     if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1 && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
         BOOL hasAlwaysKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] != nil;
         BOOL hasWhenInUseKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] != nil;
-        if (hasAlwaysKey) {
+        if (hasAlwaysKey ) {
+#if TARGET_OS_IOS
+
             [self.locationManager requestAlwaysAuthorization];
+#endif
         } else if (hasWhenInUseKey) {
             [self.locationManager requestWhenInUseAuthorization];
         } else {
@@ -449,6 +463,8 @@ static id _sharedInstance;
 /**
  Inform CLLocationManager to start monitoring significant location changes.
  */
+#if TARGET_OS_IOS
+
 - (void)startMonitoringSignificantLocationChangesIfNeeded
 {
     [self requestAuthorizationIfNeeded];
@@ -491,7 +507,7 @@ static id _sharedInstance;
         self.isMonitoringSignificantLocationChanges = NO;
     }
 }
-
+#endif
 /**
  Checks to see if there are any outstanding locationRequests, and if there are none, informs CLLocationManager to stop sending
  location updates. This is done as soon as location updates are no longer needed in order to conserve the device's battery.

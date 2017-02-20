@@ -169,7 +169,7 @@
     
         if(error)
         {
-            DLog(@"Error attempting to save data: %@", [error localizedDescription]);
+            //DLog(@"Error attempting to save data: %@", [error localizedDescription]);
             return;
         }
     }

@@ -195,7 +195,7 @@
 
 - (void)listAttributes
 {
-    DLog(@"%@",self._attributes);
+   // DLog(@"%@",self._attributes);
 }
 
 @end

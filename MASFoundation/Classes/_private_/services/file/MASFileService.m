@@ -55,7 +55,7 @@
 
         if(error)
         {
-            DLog(@"\n\nError on removing file items: %@\n\n", [error localizedDescription]);
+            //DLog(@"\n\nError on removing file items: %@\n\n", [error localizedDescription]);
         }
     }
     
@@ -152,8 +152,8 @@
     
     if(error)
     {
-        DLog(@"Error reading unsecured item at file path: %@ with message: %@",
-            filePath, [error localizedDescription]);
+        //DLog(@"Error reading unsecured item at file path: %@ with message: %@",
+          //  filePath, [error localizedDescription]);
         return nil;
     }
 
@@ -191,8 +191,8 @@
     
     if(error)
     {
-        DLog(@"Error decrypting secured item at file path: %@ with message: %@",
-            filePath, [error localizedDescription]);
+//        DLog(@"Error decrypting secured item at file path: %@ with message: %@",
+//            filePath, [error localizedDescription]);
         return nil;
     }
     

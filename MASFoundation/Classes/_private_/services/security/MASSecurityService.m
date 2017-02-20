@@ -142,7 +142,7 @@ static MASSecurityService *_sharedService_ = nil;
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPrivateKey);
     if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
-        DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck );
+//        DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck );
     }
 	
 	//
@@ -151,7 +151,7 @@ static MASSecurityService *_sharedService_ = nil;
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPublicKey);
     if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
-        DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
+//        DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
     }
 }
 
@@ -179,7 +179,7 @@ static MASSecurityService *_sharedService_ = nil;
     
     if ((req=X509_REQ_new()) == NULL)
     {
-        DLog(@"Error generating the certificate signing request");
+//        DLog(@"Error generating the certificate signing request");
         return NULL;
     }
     
@@ -245,7 +245,7 @@ static MASSecurityService *_sharedService_ = nil;
     
     if (!X509_REQ_sign(req, privatekey, EVP_sha1()))
     {
-        DLog(@"Error cannot sign request");
+        //DLog(@"Error cannot sign request");
         return NULL;
     }
     
@@ -334,7 +334,7 @@ static MASSecurityService *_sharedService_ = nil;
 	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
     if(!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
     {
-        DLog(@"Error with something really bad went wrong with generating the key pair");
+        //DLog(@"Error with something really bad went wrong with generating the key pair");
     }
     
     //
@@ -472,7 +472,8 @@ static MASSecurityService *_sharedService_ = nil;
 - (MASFile *)getPrivateKey
 {
     NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
-    MASFile *privateKey = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASKey]];
+    
+      MASFile *privateKey = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASKey]];
 
     //
     // If the private key file does not exsist, create one.

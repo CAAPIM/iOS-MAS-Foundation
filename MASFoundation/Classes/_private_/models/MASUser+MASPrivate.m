@@ -70,7 +70,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
         if(error)
         {
-            DLog(@"\n\nError attempting to save data: %@\n\n", [error localizedDescription]);
+            //DLog(@"\n\nError attempting to save data: %@\n\n", [error localizedDescription]);
         }
     }
 }
@@ -78,7 +78,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (void)saveWithUpdatedInfo:(NSDictionary *)info
 {
-    DLog(@"\n\ncalled with info: %@\n\n", info);
+//    DLog(@"\n\ncalled with info: %@\n\n", info);
     
     NSAssert(info, @"info cannot be nil");
    
