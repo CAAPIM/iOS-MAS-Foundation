@@ -215,6 +215,34 @@ typedef NS_ENUM(NSInteger, MASState) {
 
 
 /**
+ *  Enumerated MASFileDirectoryType that indicates which directory to store MASFile into.
+ */
+typedef NS_ENUM(NSInteger, MASFileDirectoryType) {
+
+    /**
+     *  Temporary directory in the application package.
+     */
+    MASFileDirectoryTypeTemporary = -1,
+    /**
+     *  Application Support directory in the application package.
+     */
+    MASFileDirectoryTypeApplicationSupport,
+    /**
+     *  Cache directory in the application package.
+     */
+    MASFileDirectoryTypeCachesDirectory,
+    /**
+     *  Documents directory in the application package.
+     */
+    MASFileDirectoryTypeDocuments,
+    /**
+     *  Library directory in the application package.
+     */
+    MASFileDirectoryTypeLibrary
+};
+
+
+/**
  * The NSString constant indicating the MAS 'start' method has not been called yet.
  */
 static NSString *const _Nonnull MASNotStartedYet = @"MAS not started yet";

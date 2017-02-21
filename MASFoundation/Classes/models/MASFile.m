@@ -28,7 +28,13 @@
 
 + (MASFile *)fileWithName:(NSString *)name contents:(NSData *)contents
 {
-    return [[MASFileService sharedService] fileWithName:name contents:contents];
+    return [[MASFileService sharedService] fileWithName:name contents:contents directoryType:MASFileDirectoryTypeApplicationSupport];
+}
+
+
++ (MASFile *_Nullable)fileWithName:(NSString *_Nonnull)name contents:(NSData *_Nonnull)contents directoryType:(MASFileDirectoryType)directoryType
+{
+    return [[MASFileService sharedService] fileWithName:name contents:contents directoryType:directoryType];
 }
 
 
@@ -50,21 +56,21 @@
 
 # pragma mark - Finding a file
 
-+ (MASFile *)findFileWithName:(NSString *)name;
++ (MASFile *)findFileWithName:(NSString *)name
 {
-    return [[MASFileService sharedService] findFileWithName:name];
+    return [[MASFileService sharedService] findFileWithName:name directoryType:MASFileDirectoryTypeApplicationSupport];
 }
 
 
-+ (MASFile *)findFileWithName:(NSString *)name password:(NSString *)password
++ (MASFile *)findFileWithName:(NSString *)name directoryType:(MASFileDirectoryType)directoryType
 {
-    return [[MASFileService sharedService] findFileWithName:name password:password];
+    return [[MASFileService sharedService] findFileWithName:name directoryType:directoryType];
 }
 
 
-# pragma mark - Secure Storage
+# pragma mark - Save/Delete file
 
-- (BOOL)saveWithPassword:(NSString *)password
+- (BOOL)save
 {
     NSError *error;
     
@@ -72,9 +78,7 @@
     //
     // If it doesn't exist already it creates it, if it does exist it will overwrite it
     //
-    [MASIFileManager writeFileAtPath:self.filePath
-                             content:self.contents
-                               error:&error];
+    [[MASFileService sharedService] writeFileAtDirectoryType:self.directoryType fileName:self.name content:self.contents dataWritingOption:NSDataWritingFileProtectionComplete error:&error];
     
     if(error)
     {
@@ -86,6 +90,43 @@
 }
 
 
+- (BOOL)saveWithDataWritingOption:(NSDataWritingOptions)option
+{
+    NSError *error;
+    
+    // Write to file
+    //
+    // If it doesn't exist already it creates it, if it does exist it will overwrite it
+    //
+    [[MASFileService sharedService] writeFileAtDirectoryType:self.directoryType fileName:self.name content:self.contents dataWritingOption:option error:&error];
+    
+    if(error)
+    {
+        DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
+        return NO;
+    }
+    
+    return YES;
+}
+
+
+- (BOOL)remove
+{
+    //
+    // Remove data at file path
+    //
+    return [[MASFileService sharedService] removeFileAtDirectoryType:self.directoryType fileName:self.name];
+}
+
+
++ (BOOL)removeItemAtFilePath:(NSString *)filePath
+{
+    return [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+}
+
+
+# pragma mark - Temporary file
+
 + (NSString *)storeTemporaryItem:(NSData *)data
 {
     NSString *randomName = [NSString randomStringWithLength:20];
@@ -93,17 +134,11 @@
     //
     // Generate the full file path in the Temporary Directory
     //
-    NSString *filePath = [MASIFileManager pathForTemporaryDirectoryWithPath:randomName];
+    NSString *filePath = [[MASFileService sharedService] getFilePathForFileName:randomName fileDirectoryType:MASFileDirectoryTypeTemporary];
         
-    [MASIFileManager writeFileAtPath:filePath content:data];
+    BOOL wasSuccessful = [[MASFileService sharedService] writeFileAtDirectoryType:MASFileDirectoryTypeTemporary fileName:randomName content:data dataWritingOption:NSDataWritingFileProtectionNone error:nil];
     
-    return filePath;
-}
-
-
-+ (BOOL)removeItemAtFilePath:(NSString *)filePath
-{
-    return [MASIFileManager removeItemAtPath:filePath];
+    return wasSuccessful ? filePath : nil;
 }
 
 @end
