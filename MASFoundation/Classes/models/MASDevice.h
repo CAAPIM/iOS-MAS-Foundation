@@ -163,7 +163,7 @@
  */
 - (void)stopAsBluetoothPeripheral;
 
-
+#endif
 
 ///--------------------------------------
 /// @name Bluetooth Central
@@ -192,5 +192,5 @@
  * Stop the device acting as a bluetooth central.
  */
 - (void)stopAsBluetoothCentral;
-#endif
+
 @end
