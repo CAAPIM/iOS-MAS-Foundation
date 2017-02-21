@@ -153,7 +153,7 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 
 # pragma mark - Bluetooth Peripheral
-#if TARGET_OS_IOS
+//#if TARGET_OS_IOS
 
 - (void)startAsBluetoothPeripheral
 {
@@ -186,7 +186,7 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     [[MASBluetoothService sharedService].central stopScanning];
 }
 
-#endif
+//#endif
 # pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
