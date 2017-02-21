@@ -10,7 +10,6 @@
 
 #import "MASFile.h"
 
-#import "MASIFileManager.h"
 #import "MASFileService.h"
 
 

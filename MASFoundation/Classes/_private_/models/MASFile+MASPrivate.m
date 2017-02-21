@@ -11,7 +11,6 @@
 #import "MASFile+MASPrivate.h"
 
 #import <objc/runtime.h>
-#import "MASIFileManager.h"
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
 #import "MASFileService.h"

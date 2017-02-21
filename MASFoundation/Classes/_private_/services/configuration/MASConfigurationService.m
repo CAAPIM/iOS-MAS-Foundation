@@ -10,8 +10,6 @@
 
 #import "MASConfigurationService.h"
 
-#import "MASIFileManager.h"
-
 
 
 @implementation MASConfigurationService

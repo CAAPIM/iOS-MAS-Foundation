@@ -179,8 +179,6 @@
 		A458A9891C03897100440464 /* MASModelService.m in Sources */ = {isa = PBXBuildFile; fileRef = A458A9871C03897100440464 /* MASModelService.m */; };
 		A46F49BB1C2F5FC500A4C370 /* fmemopen.c in Sources */ = {isa = PBXBuildFile; fileRef = A46F491D1C2F5FC500A4C370 /* fmemopen.c */; };
 		A46F49BC1C2F5FC500A4C370 /* fmemopen.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F491E1C2F5FC500A4C370 /* fmemopen.h */; };
-		A46F49BE1C2F5FC500A4C370 /* MASIFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49211C2F5FC500A4C370 /* MASIFileManager.h */; };
-		A46F49BF1C2F5FC500A4C370 /* MASIFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49221C2F5FC500A4C370 /* MASIFileManager.m */; };
 		A46F49C11C2F5FC500A4C370 /* MASIKeyChainStore.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49251C2F5FC500A4C370 /* MASIKeyChainStore.h */; };
 		A46F49C21C2F5FC500A4C370 /* MASIKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49261C2F5FC500A4C370 /* MASIKeyChainStore.m */; };
 		A46F49C41C2F5FC500A4C370 /* MASIHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49291C2F5FC500A4C370 /* MASIHTTPRequestOperation.h */; };
@@ -520,9 +518,6 @@
 		A458A9871C03897100440464 /* MASModelService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASModelService.m; sourceTree = "<group>"; };
 		A46F491D1C2F5FC500A4C370 /* fmemopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fmemopen.c; sourceTree = "<group>"; };
 		A46F491E1C2F5FC500A4C370 /* fmemopen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fmemopen.h; sourceTree = "<group>"; };
-		A46F49201C2F5FC500A4C370 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		A46F49211C2F5FC500A4C370 /* MASIFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASIFileManager.h; sourceTree = "<group>"; };
-		A46F49221C2F5FC500A4C370 /* MASIFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASIFileManager.m; sourceTree = "<group>"; };
 		A46F49241C2F5FC500A4C370 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A46F49251C2F5FC500A4C370 /* MASIKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASIKeyChainStore.h; sourceTree = "<group>"; };
 		A46F49261C2F5FC500A4C370 /* MASIKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASIKeyChainStore.m; sourceTree = "<group>"; };
@@ -1006,7 +1001,6 @@
 				A46F491D1C2F5FC500A4C370 /* fmemopen.c */,
 				A46F491E1C2F5FC500A4C370 /* fmemopen.h */,
 				10738A011C711C2F00B7E87E /* MQTT */,
-				A46F491F1C2F5FC500A4C370 /* MASIFileManager */,
 				A46F49231C2F5FC500A4C370 /* MASIKeyChainStore */,
 				A46F49271C2F5FC500A4C370 /* MASINetworking */,
 				A46F49511C2F5FC500A4C370 /* MASINTULocationManager */,
@@ -1015,16 +1009,6 @@
 				A46F49B01C2F5FC500A4C370 /* RNCryptor */,
 			);
 			path = Vendor;
-			sourceTree = "<group>";
-		};
-		A46F491F1C2F5FC500A4C370 /* MASIFileManager */ = {
-			isa = PBXGroup;
-			children = (
-				A46F49201C2F5FC500A4C370 /* LICENSE */,
-				A46F49211C2F5FC500A4C370 /* MASIFileManager.h */,
-				A46F49221C2F5FC500A4C370 /* MASIFileManager.m */,
-			);
-			path = MASIFileManager;
 			sourceTree = "<group>";
 		};
 		A46F49231C2F5FC500A4C370 /* MASIKeyChainStore */ = {
@@ -1396,7 +1380,6 @@
 				A46F4A441C2F5FC500A4C370 /* RNCryptor+Private.h in Headers */,
 				105B2F521CA6B3EA0005A2D0 /* ssl.h in Headers */,
 				105B2F381CA6B3EA0005A2D0 /* lhash.h in Headers */,
-				A46F49BE1C2F5FC500A4C370 /* MASIFileManager.h in Headers */,
 				A46F49C11C2F5FC500A4C370 /* MASIKeyChainStore.h in Headers */,
 				CB1907F81C17950700A5EF16 /* MASAccessService.h in Headers */,
 				105B2F251CA6B3EA0005A2D0 /* crypto.h in Headers */,
@@ -1723,7 +1706,6 @@
 				A43BEBB31BE34D7700842522 /* CLLocationManager+MASPrivate.m in Sources */,
 				A4831AAA1BD1A551007B4AE6 /* MASApplication.m in Sources */,
 				CB5E4C5B1C1D14DB001B3B8A /* MASHTTPSessionManager.m in Sources */,
-				A46F49BF1C2F5FC500A4C370 /* MASIFileManager.m in Sources */,
 				A46F49C51C2F5FC500A4C370 /* MASIHTTPRequestOperation.m in Sources */,
 				A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */,
 				A417BA521BF033C300EC9BCB /* CLLocation+MASPrivate.m in Sources */,

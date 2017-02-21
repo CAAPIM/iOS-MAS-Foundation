@@ -10,7 +10,6 @@
 
 #import "MASFileService.h"
 
-#import "MASIFileManager.h"
 #import "MASSecurityService.h"
 
 @interface MASFileService ()
@@ -43,29 +42,6 @@
 + (NSString *)serviceUUID
 {
     return MASFileServiceUUID;
-}
-
-
-- (void)serviceDidReset
-{
-    //DLog(@"called");
-    
-    //
-    // Retrieve application directory
-    //
-    NSString *path = [MASIFileManager pathForApplicationSupportDirectoryWithPath:nil];
-    if(path)
-    {
-        NSError *error;
-        [MASIFileManager removeItemsInDirectoryAtPath:path error:&error];
-
-        if(error)
-        {
-            DLog(@"\n\nError on removing file items: %@\n\n", [error localizedDescription]);
-        }
-    }
-    
-    [super serviceDidReset];
 }
 
 
