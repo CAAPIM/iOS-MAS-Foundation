@@ -135,7 +135,7 @@
 
 
 # pragma mark - Starting and Stopping
-
+#if TARGET_OS_IOS
 - (void)startAdvertising
 {
    //DLog(@"\n\n%@\n\n", [self debugDescription]);
@@ -254,7 +254,7 @@
         initializeCodeBlock();
     }
 }
-
+#endif
 
 - (void)stopAdvertising
 {
