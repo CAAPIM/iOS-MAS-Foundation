@@ -499,6 +499,12 @@
 		BA5506891E533B27001EC43D /* MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E340CF1B9E9F2000883AD3 /* MAS.m */; };
 		BA55068A1E533CE5001EC43D /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
 		BA55068B1E533CE6001EC43D /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
+		BA8E1F8F1E5C444E0058563E /* MASBluetoothService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150EDD1BF16E0F00037E27 /* MASBluetoothService.m */; };
+		BA8E1F901E5C445B0058563E /* MASBluetoothService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150EDC1BF16E0F00037E27 /* MASBluetoothService.h */; };
+		BA8E1F911E5C44650058563E /* MASBluetoothCentral.h in Headers */ = {isa = PBXBuildFile; fileRef = A47F127A1C1D73530008E3F2 /* MASBluetoothCentral.h */; };
+		BA8E1F921E5C446D0058563E /* MASBluetoothCentral.m in Sources */ = {isa = PBXBuildFile; fileRef = A47F127B1C1D73530008E3F2 /* MASBluetoothCentral.m */; };
+		BA8E1F931E5C44740058563E /* MASBluetoothPeripheral.h in Headers */ = {isa = PBXBuildFile; fileRef = A47F127C1C1D73530008E3F2 /* MASBluetoothPeripheral.h */; };
+		BA8E1F941E5C44780058563E /* MASBluetoothPeripheral.m in Sources */ = {isa = PBXBuildFile; fileRef = A47F127D1C1D73530008E3F2 /* MASBluetoothPeripheral.m */; };
 		CB0A8ADF1D01F64F00B1DCCC /* MASProximityLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CB0A8AE01D01F64F00B1DCCC /* MASProximityLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */; };
 		CB0B58591E258C2A00BC0163 /* MASAuthorizationResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = CB0B58571E258C2A00BC0163 /* MASAuthorizationResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1799,6 +1805,7 @@
 				BA5505F71E532567001EC43D /* MASConfigurationService.h in Headers */,
 				BA5506011E532592001EC43D /* MASDeleteURLRequest.h in Headers */,
 				BA55062A1E532632001EC43D /* fmemopen.h in Headers */,
+				BA8E1F911E5C44650058563E /* MASBluetoothCentral.h in Headers */,
 				BA55062C1E53264A001EC43D /* dummypthread.h in Headers */,
 				BA55067E1E5326FB001EC43D /* RNCryptorEngine.h in Headers */,
 				BA55067C1E5326FB001EC43D /* RNCryptor.h in Headers */,
@@ -1817,6 +1824,7 @@
 				BA55061F1E53260A001EC43D /* MASDevice+MASPrivate.h in Headers */,
 				BA55066E1E5326AF001EC43D /* UIProgressView+MASINetworking.h in Headers */,
 				BA5506051E5325A0001EC43D /* MASPatchURLRequest.h in Headers */,
+				BA8E1F901E5C445B0058563E /* MASBluetoothService.h in Headers */,
 				BA5505B41E53166D001EC43D /* MASUser.h in Headers */,
 				BA5506771E5326B8001EC43D /* MASINTULocationRequest.h in Headers */,
 				BA5506381E532676001EC43D /* net_mosq.h in Headers */,
@@ -1869,6 +1877,7 @@
 				BA5505D91E5324EB001EC43D /* CBCentralManager+MASPrivate.h in Headers */,
 				BA5506071E5325A6001EC43D /* MASPostURLRequest.h in Headers */,
 				BA55062B1E53264A001EC43D /* config.h in Headers */,
+				BA8E1F931E5C44740058563E /* MASBluetoothPeripheral.h in Headers */,
 				BA55066A1E5326AF001EC43D /* UIImage+MASINetworking.h in Headers */,
 				BA55066D1E5326AF001EC43D /* UIKit+MASINetworking.h in Headers */,
 				BA5506321E532676001EC43D /* messages_mosq.h in Headers */,
@@ -2220,6 +2229,7 @@
 				BA55064E1E5326A5001EC43D /* MASIHTTPRequestOperation.m in Sources */,
 				BA55064A1E532683001EC43D /* MASIFileManager.m in Sources */,
 				BA5505CF1E5324B3001EC43D /* MASFile.m in Sources */,
+				BA8E1F941E5C44780058563E /* MASBluetoothPeripheral.m in Sources */,
 				BA5506101E5325CB001EC43D /* MASOTPService.m in Sources */,
 				BA5505E61E532521001EC43D /* NSError+MASPrivate.m in Sources */,
 				BA5506431E532676001EC43D /* tls_mosq.c in Sources */,
@@ -2261,6 +2271,7 @@
 				BA5506281E53262A001EC43D /* MASProximityLoginQRCode+MASPrivate.m in Sources */,
 				BA5506871E5339C7001EC43D /* MASINTULocationManager.m in Sources */,
 				BA5506391E532676001EC43D /* read_handle.c in Sources */,
+				BA8E1F8F1E5C444E0058563E /* MASBluetoothService.m in Sources */,
 				BA5505EA1E532530001EC43D /* NSNotificationCenter+MASPrivate.m in Sources */,
 				BA5505DA1E5324EF001EC43D /* CBCentralManager+MASPrivate.m in Sources */,
 				BA5506001E53258D001EC43D /* MASURLRequest.m in Sources */,
@@ -2274,6 +2285,7 @@
 				BA5506311E532676001EC43D /* messages_mosq.c in Sources */,
 				BA5506181E5325EC001EC43D /* MASApplication+MASPrivate.m in Sources */,
 				BA5506041E53259D001EC43D /* MASGetURLRequest.m in Sources */,
+				BA8E1F921E5C446D0058563E /* MASBluetoothCentral.m in Sources */,
 				BA5505DC1E5324FC001EC43D /* CBPeripheralManager+MASPrivate.m in Sources */,
 				BA5506891E533B27001EC43D /* MAS.m in Sources */,
 				BA5506121E5325D6001EC43D /* MASKeyChainService.m in Sources */,
