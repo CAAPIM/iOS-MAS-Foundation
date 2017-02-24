@@ -25,8 +25,6 @@
 		1046618F1C0ABDDE00A2A03C /* MASGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 1046618D1C0ABDDE00A2A03C /* MASGroup.m */; };
 		1059D3761B61AA3800223267 /* MASFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1059D3751B61AA3800223267 /* MASFoundation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1059D3831B61AA3800223267 /* MASFoundationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1059D3821B61AA3800223267 /* MASFoundationTests.m */; };
-		105B2F141CA6B3EA0005A2D0 /* libcrypto_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105B2EC61CA6B3EA0005A2D0 /* libcrypto_iOS.a */; };
-		105B2F151CA6B3EA0005A2D0 /* libssl_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105B2EC71CA6B3EA0005A2D0 /* libssl_iOS.a */; };
 		105B2F161CA6B3EA0005A2D0 /* aes.h in Headers */ = {isa = PBXBuildFile; fileRef = 105B2EC91CA6B3EA0005A2D0 /* aes.h */; };
 		105B2F171CA6B3EA0005A2D0 /* asn1.h in Headers */ = {isa = PBXBuildFile; fileRef = 105B2ECA1CA6B3EA0005A2D0 /* asn1.h */; };
 		105B2F181CA6B3EA0005A2D0 /* asn1_mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 105B2ECB1CA6B3EA0005A2D0 /* asn1_mac.h */; };
@@ -492,13 +490,15 @@
 		BA5506811E5326FB001EC43D /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49B81C2F5FC500A4C370 /* RNDecryptor.m */; };
 		BA5506821E5326FB001EC43D /* RNEncryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49B91C2F5FC500A4C370 /* RNEncryptor.h */; };
 		BA5506831E5326FB001EC43D /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49BA1C2F5FC500A4C370 /* RNEncryptor.m */; };
-		BA5506851E532FDA001EC43D /* libcrypto_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105B2EC61CA6B3EA0005A2D0 /* libcrypto_iOS.a */; };
-		BA5506861E532FDE001EC43D /* libssl_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105B2EC71CA6B3EA0005A2D0 /* libssl_iOS.a */; };
 		BA5506871E5339C7001EC43D /* MASINTULocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49551C2F5FC500A4C370 /* MASINTULocationManager.m */; };
 		BA5506881E533B26001EC43D /* MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E340CF1B9E9F2000883AD3 /* MAS.m */; };
 		BA5506891E533B27001EC43D /* MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E340CF1B9E9F2000883AD3 /* MAS.m */; };
 		BA55068A1E533CE5001EC43D /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
 		BA55068B1E533CE6001EC43D /* MASApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A4831A9C1BD1A551007B4AE6 /* MASApplication.m */; };
+		BA7585CB1E5EB83200F59AE8 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7585C91E5EB83200F59AE8 /* libcrypto.a */; };
+		BA7585CC1E5EB83200F59AE8 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7585CA1E5EB83200F59AE8 /* libssl.a */; };
+		BA7585CD1E5EB84600F59AE8 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7585C91E5EB83200F59AE8 /* libcrypto.a */; };
+		BA7585CE1E5EB84600F59AE8 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7585CA1E5EB83200F59AE8 /* libssl.a */; };
 		BA8E1F8F1E5C444E0058563E /* MASBluetoothService.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150EDD1BF16E0F00037E27 /* MASBluetoothService.m */; };
 		BA8E1F901E5C445B0058563E /* MASBluetoothService.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150EDC1BF16E0F00037E27 /* MASBluetoothService.h */; };
 		BA8E1F911E5C44650058563E /* MASBluetoothCentral.h in Headers */ = {isa = PBXBuildFile; fileRef = A47F127A1C1D73530008E3F2 /* MASBluetoothCentral.h */; };
@@ -585,8 +585,6 @@
 		1059D37B1B61AA3800223267 /* MASFoundationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MASFoundationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1059D3811B61AA3800223267 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1059D3821B61AA3800223267 /* MASFoundationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASFoundationTests.m; sourceTree = "<group>"; };
-		105B2EC61CA6B3EA0005A2D0 /* libcrypto_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto_iOS.a; sourceTree = "<group>"; };
-		105B2EC71CA6B3EA0005A2D0 /* libssl_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl_iOS.a; sourceTree = "<group>"; };
 		105B2EC91CA6B3EA0005A2D0 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		105B2ECA1CA6B3EA0005A2D0 /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
 		105B2ECB1CA6B3EA0005A2D0 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
@@ -862,6 +860,8 @@
 		BA5505941E5314D0001EC43D /* tvOS_MASFoundationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tvOS_MASFoundationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA5505991E5314D1001EC43D /* tvOS_MASFoundationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = tvOS_MASFoundationTests.m; sourceTree = "<group>"; };
 		BA55059B1E5314D1001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA7585C91E5EB83200F59AE8 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
+		BA7585CA1E5EB83200F59AE8 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
 		CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASProximityLogin.h; sourceTree = "<group>"; };
 		CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASProximityLogin.m; sourceTree = "<group>"; };
 		CB0B58571E258C2A00BC0163 /* MASAuthorizationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASAuthorizationResponse.h; sourceTree = "<group>"; };
@@ -900,8 +900,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				105B2F151CA6B3EA0005A2D0 /* libssl_iOS.a in Frameworks */,
-				105B2F141CA6B3EA0005A2D0 /* libcrypto_iOS.a in Frameworks */,
+				BA7585CC1E5EB83200F59AE8 /* libssl.a in Frameworks */,
+				BA7585CB1E5EB83200F59AE8 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -916,8 +916,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA5506861E532FDE001EC43D /* libssl_iOS.a in Frameworks */,
-				BA5506851E532FDA001EC43D /* libcrypto_iOS.a in Frameworks */,
+				BA7585CE1E5EB84600F59AE8 /* libssl.a in Frameworks */,
+				BA7585CD1E5EB84600F59AE8 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -995,8 +995,8 @@
 		105B2EC51CA6B3EA0005A2D0 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				105B2EC61CA6B3EA0005A2D0 /* libcrypto_iOS.a */,
-				105B2EC71CA6B3EA0005A2D0 /* libssl_iOS.a */,
+				BA7585C91E5EB83200F59AE8 /* libcrypto.a */,
+				BA7585CA1E5EB83200F59AE8 /* libssl.a */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -2003,6 +2003,7 @@
 					};
 					BA55058B1E5314D0001EC43D = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = X6BXKLALP7;
 						ProvisioningStyle = Automatic;
 					};
 					BA5505931E5314D0001EC43D = {
@@ -2580,8 +2581,10 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = X6BXKLALP7;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2608,7 +2611,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 10.1;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -2621,6 +2624,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = X6BXKLALP7;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2647,7 +2651,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 10.1;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
