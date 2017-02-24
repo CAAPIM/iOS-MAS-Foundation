@@ -4,7 +4,7 @@
 - Fix the issue where [MAS gatewayISREachable] static property always returns true.
 - Fix the bluetooth permission prompt displays everytime SDK is initialized.  Now bluetooth permission prompt will only display when the bluetooth is actually being used.
 
-### Newe features
+### New features
 
 -
 
