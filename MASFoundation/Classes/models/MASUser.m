@@ -207,6 +207,22 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
++ (void)loginWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion
+{
+    //
+    //  If the user session has already been authenticated, throw an error.
+    //
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        
+        return;
+    }
+    
+    [[MASModelService sharedService] validateCurrentUserAuthenticationWithIdToken:idToken completion:completion];
+}
+
+
 - (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion
 {
     [[MASModelService sharedService] requestUserInfoWithCompletion:completion];

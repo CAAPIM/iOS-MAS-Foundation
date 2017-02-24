@@ -176,6 +176,9 @@ static NSString *_Nonnull const MASPKCECodeChallengeRequestResponseKey = @"code_
 static NSString *_Nonnull const MASPKCECodeChallengeMethodRequestResponseKey = @"code_challenge_method"; // string
 static NSString *_Nonnull const MASPKCEStateRequestResponseKey = @"state"; // string
 
+static NSString *_Nonnull const MASSessionDataRequestResponseKey = @"sessionData"; // string
+static NSString *_Nonnull const MASSubjectKeyHashRequestResponseKey = @"subjectKeyHash"; // string
+
 static NSString *_Nonnull const MASUserAddressRequestResponseKey = @"address"; // string
 static NSString *_Nonnull const MASUserAddressCountryRequestResponseKey = @"country"; // string
 static NSString *_Nonnull const MASUserAddressLocalityRequestResponseKey = @"locality"; // string

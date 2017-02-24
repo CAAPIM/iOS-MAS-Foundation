@@ -68,6 +68,12 @@
 
 
 /**
+ *  A list of trusted public key hasehs for certificate pinning.
+ */
+@property (nonatomic, copy, readonly, nullable) NSArray *trustedCertPinnedPublickKeyHashes;
+
+
+/**
  * The public server certificate of the Gateway guaraneteed to be in DER format.
  */
 @property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *gatewayCertificatesAsDERData;

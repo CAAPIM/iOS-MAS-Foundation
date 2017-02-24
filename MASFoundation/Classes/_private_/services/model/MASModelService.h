@@ -310,4 +310,12 @@
 - (void)validateCurrentUserAuthenticationWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion;
 
 
+/**
+ Validate the current user's session information with id_token.
+ 
+ @param idToken           NSString of id_token
+ @param completion        MASCompletionErrorBlock to notify original caller for the result of the validation process.
+ */
+- (void)validateCurrentUserAuthenticationWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion;
+
 @end

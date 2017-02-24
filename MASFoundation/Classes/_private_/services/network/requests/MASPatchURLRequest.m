@@ -25,6 +25,7 @@
                                 andHeaders:(NSDictionary *)headerInfo
                                requestType:(MASRequestResponseType)requestType
                               responseType:(MASRequestResponseType)responseType
+                                  isPublic:(BOOL)isPublic
 {
     //
     // Adding prefix to the endpoint path
@@ -57,13 +58,13 @@
     NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
     
     //mag-identifier
-    if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
+    if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] && !isPublic)
     {
         mutableHeaderInfo[MASMagIdentifierRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
     }
     
     // Authorization
-    if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey])
+    if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey] && !isPublic)
     {
         mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
     }
