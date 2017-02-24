@@ -15,8 +15,8 @@
 		BA5507611E55A537001EC43D /* SampleTvOSAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA5507601E55A537001EC43D /* SampleTvOSAppTests.m */; };
 		BA55076C1E55A537001EC43D /* SampleTvOSAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */; };
 		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
-		BA7585D01E5EB8D800F59AE8 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7585CF1E5EB8D800F59AE8 /* tvOS_MASFoundation.framework */; };
-		BA7585D11E5EB8D800F59AE8 /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA7585CF1E5EB8D800F59AE8 /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA7586931E60397900F59AE8 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */; };
+		BA7586941E60397900F59AE8 /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +43,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BA7585D11E5EB8D800F59AE8 /* tvOS_MASFoundation.framework in Embed Frameworks */,
+				BA7586941E60397900F59AE8 /* tvOS_MASFoundation.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,7 +67,7 @@
 		BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleTvOSAppUITests.m; sourceTree = "<group>"; };
 		BA55076D1E55A537001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
-		BA7585CF1E5EB8D800F59AE8 /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tvOS_MASFoundation.framework; sourceTree = "<group>"; };
+		BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = simulator/tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,7 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA7585D01E5EB8D800F59AE8 /* tvOS_MASFoundation.framework in Frameworks */,
+				BA7586931E60397900F59AE8 /* tvOS_MASFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,7 +100,7 @@
 		BA55073D1E55A536001EC43D = {
 			isa = PBXGroup;
 			children = (
-				BA7585CF1E5EB8D800F59AE8 /* tvOS_MASFoundation.framework */,
+				BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */,
 				BA5507481E55A536001EC43D /* SampleTvOSApp */,
 				BA55075F1E55A537001EC43D /* SampleTvOSAppTests */,
 				BA55076A1E55A537001EC43D /* SampleTvOSAppUITests */,
@@ -448,6 +448,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/simulator",
 				);
 				INFOPLIST_FILE = SampleTvOSApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -470,6 +471,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/simulator",
 				);
 				INFOPLIST_FILE = SampleTvOSApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
