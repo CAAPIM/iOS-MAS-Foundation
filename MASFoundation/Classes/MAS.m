@@ -53,15 +53,15 @@
 }
 
 
-+ (void)setEnablePKCE:(BOOL)enable
++ (void)enablePKCE:(BOOL)enable
 {
-    [MASAccessService setEnablePKCE:enable];
+    [MASAccessService enablePKCE:enable];
 }
 
 
-+ (BOOL)enablePKCE
++ (BOOL)isPKCEEnabled
 {
-    return [MASAccessService enablePKCE];
+    return [MASAccessService isPKCEEnabled];
 }
 
 

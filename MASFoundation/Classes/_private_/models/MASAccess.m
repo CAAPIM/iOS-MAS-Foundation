@@ -409,7 +409,7 @@
 
 - (void)generateCodeVerifier
 {
-    if ([MASAccessService enablePKCE])
+    if ([MASAccessService isPKCEEnabled])
     {
         _codeVerifier = [NSString randomStringWithLength:43];
     }
@@ -424,7 +424,7 @@
 
 - (NSString *)retrieveCodeVerifier
 {
-    return [MASAccessService enablePKCE] ? _codeVerifier : nil;
+    return [MASAccessService isPKCEEnabled] ? _codeVerifier : nil;
 }
 
 
@@ -436,7 +436,7 @@
 
 - (void)generatePKCEState
 {
-    if ([MASAccessService enablePKCE])
+    if ([MASAccessService isPKCEEnabled])
     {
         _pkceState = [NSString randomStringWithLength:32];
     }
@@ -451,7 +451,7 @@
 
 - (NSString *)retrievePKCEState
 {
-    return [MASAccessService enablePKCE] ? _pkceState : nil;
+    return [MASAccessService isPKCEEnabled] ? _pkceState : nil;
 }
 
 

@@ -65,7 +65,7 @@
  *  @dependency Minimum version of MAG/OTK 4.0 is required to successfully perform PKCE.  If the server side does not support PKCE, client side will still work without PKCE verification.
  *  @param enable BOOL value of indicating whether PKCE is enabled or not.
  */
-+ (void)setEnablePKCE:(BOOL)enable;
++ (void)enablePKCE:(BOOL)enable;
 
 
 
@@ -77,7 +77,7 @@
  *  @dependency Minimum version of MAG/OTK 4.0 is required to successfully perform PKCE.  If the server side does not support PKCE, client side will still work without PKCE verification.
  *  @return BOOL value of indicating whether PKCE is enabled or not.
  */
-+ (BOOL)enablePKCE;
++ (BOOL)isPKCEEnabled;
 
 
 

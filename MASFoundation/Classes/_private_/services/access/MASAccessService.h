@@ -84,7 +84,7 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *
  *  @return return BOOL value indicating PKCE is enabled or not
  */
-+ (BOOL)enablePKCE;
++ (BOOL)isPKCEEnabled;
 
 
 
@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *
  *  @param enable BOOL value indicating PKCE is enabled or not
  */
-+ (void)setEnablePKCE:(BOOL)enable;
++ (void)enablePKCE:(BOOL)enable;
 
 
 
