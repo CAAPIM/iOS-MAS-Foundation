@@ -1,6 +1,6 @@
 # Version 1.3
 
-### Bug fixes
+### Bug fixes 
 - Fixes an issue with dynamically switching between msso config's when one of the configs has location enabled and another msso config has location disabled. If the user declines location services permission when first opening the app, the app would hang when switching msso's back to the config that allowed location. [DE230814]
 - Improved error handling in the case of missing parameters. [US240398]
 - Added nullability annotations to certain interfaces. [US240400]
