@@ -58,6 +58,30 @@
 
 
 /**
+ *  Sets BOOL indicator of PKCE (Proof KEy for Code Exchange) enabled or not for authorization process in Social Login, and Proximity Login.
+ *  By default, PKCE is enabled and enforced in authorization process; it can be opted-out.
+ *
+ *  @since MAS Client SDK 1.4 and MAG/OTK 4.0 on April 2017 release.
+ *  @dependency Minimum version of MAG/OTK 4.0 is required to successfully perform PKCE.  If the server side does not support PKCE, client side will still work without PKCE verification.
+ *  @param enable BOOL value of indicating whether PKCE is enabled or not.
+ */
++ (void)enablePKCE:(BOOL)enable;
+
+
+
+/**
+ *  Gets BOOL indicator of PKCE (Proof KEy for Code Exchange) enabled or not for authorization process in Social Login, and Proximity Login.
+ *  By default, PKCE is enabled and enforced in authorization process; it can be opted-out.
+ *
+ *  @since MAS Client SDK 1.4 and MAG/OTK 4.0 on April 2017 release.
+ *  @dependency Minimum version of MAG/OTK 4.0 is required to successfully perform PKCE.  If the server side does not support PKCE, client side will still work without PKCE verification.
+ *  @return BOOL value of indicating whether PKCE is enabled or not.
+ */
++ (BOOL)isPKCEEnabled;
+
+
+
+/**
  *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
  *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
  *  is not called.

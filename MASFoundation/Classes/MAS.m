@@ -53,6 +53,18 @@
 }
 
 
++ (void)enablePKCE:(BOOL)enable
+{
+    [MASAccessService enablePKCE:enable];
+}
+
+
++ (BOOL)isPKCEEnabled
+{
+    return [MASAccessService isPKCEEnabled];
+}
+
+
 + (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
 {
     [MASModelService setUserLoginBlock:login];

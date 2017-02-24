@@ -173,9 +173,9 @@
                                                
                                                //
                                                // Validate PKCE state value
-                                               // If either one of request or response states is present, validate it; otherwise, ignore
+                                               // Only validates state when it is returned from the server for Proximity Login
                                                //
-                                               if ([responseInfo objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
+                                               if ([responseInfo objectForKey:MASPKCEStateRequestResponseKey])
                                                {
                                                    NSString *responseState = [responseInfo objectForKey:MASPKCEStateRequestResponseKey];
                                                    NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
