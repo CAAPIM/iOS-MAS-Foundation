@@ -45,6 +45,22 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 @implementation MASAccessService
 
+static BOOL _enablePKCE_ = YES;
+
+
+# pragma mark - Properties
+
++ (BOOL)enablePKCE
+{
+    return _enablePKCE_;
+}
+
+
++ (void)setEnablePKCE:(BOOL)enable
+{
+    _enablePKCE_ = enable;
+}
+
 
 # pragma mark - Shared Service
 

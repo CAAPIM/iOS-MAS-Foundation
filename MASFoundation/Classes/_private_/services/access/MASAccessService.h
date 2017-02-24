@@ -77,11 +77,29 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  */
 @property (strong, nonatomic) NSString *accessGroup;
 
+
+
+/**
+ *  Static boolean property indicating PKCE is enabled or not.
+ *
+ *  @return return BOOL value indicating PKCE is enabled or not
+ */
++ (BOOL)enablePKCE;
+
+
+
+/**
+ *  Setter of static boolean property indicating PKCE is enabled or not.
+ *
+ *  @param enable BOOL value indicating PKCE is enabled or not
+ */
++ (void)setEnablePKCE:(BOOL)enable;
+
+
+
 ///--------------------------------------
 /// @name Shared Service
 ///--------------------------------------
-
-
 
 # pragma mark - Shared Service
 

@@ -142,45 +142,48 @@
     NSString *responseState = [kvPairs objectForKey:@"state"];
     NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
     
-    //
-    // If response or request state is nil, invalid request and/or response
-    //
-    if (responseState == nil || requestState == nil)
+    if (responseState || requestState)
     {
         //
-        // return an error
+        // If response or request state is nil, invalid request and/or response
         //
-        if (self.delegate && [self.delegate respondsToSelector:@selector(didReceiveError:)])
+        if (responseState == nil || requestState == nil)
         {
-            [self.delegate didReceiveError:[NSError errorInvalidAuthorization]];
+            //
+            // return an error
+            //
+            if (self.delegate && [self.delegate respondsToSelector:@selector(didReceiveError:)])
+            {
+                [self.delegate didReceiveError:[NSError errorInvalidAuthorization]];
+            }
+            
+            //
+            // Send the notification with the error
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASAuthorizationResponseDidReceiveErrorNotification object:[NSError errorInvalidAuthorization]];
+            
+            return NO;
         }
-        
         //
-        // Send the notification with the error
+        // verify that the state in the response is the same as the state sent in the request
         //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASAuthorizationResponseDidReceiveErrorNotification object:[NSError errorInvalidAuthorization]];
-        
-        return NO;
-    }
-    //
-    // verify that the state in the response is the same as the state sent in the request
-    //
-    else if (![responseState isEqualToString:requestState])
-    {
-        //
-        // return an error
-        //
-        if (self.delegate && [self.delegate respondsToSelector:@selector(didReceiveError:)])
+        else if (![responseState isEqualToString:requestState])
         {
-            [self.delegate didReceiveError:[NSError errorInvalidAuthorization]];
+            //
+            // return an error
+            //
+            if (self.delegate && [self.delegate respondsToSelector:@selector(didReceiveError:)])
+            {
+                [self.delegate didReceiveError:[NSError errorInvalidAuthorization]];
+            }
+            
+            //
+            // Send the notification with the error
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASAuthorizationResponseDidReceiveErrorNotification object:[NSError errorInvalidAuthorization]];
+            
+            return NO;
         }
-        
-        //
-        // Send the notification with the error
-        //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASAuthorizationResponseDidReceiveErrorNotification object:[NSError errorInvalidAuthorization]];
-        
-        return NO;
     }
     
     //
