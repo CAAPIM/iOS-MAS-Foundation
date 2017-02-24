@@ -21,6 +21,6 @@
 
 # pragma mark - Lifecycle
 
-- (id)initWithName:(NSString *)name contents:(NSData *)contents;
+- (id)initWithName:(NSString *)name contents:(NSData *)contents directoryType:(MASFileDirectoryType)directoryType;
 
 @end

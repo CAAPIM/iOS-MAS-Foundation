@@ -11,16 +11,16 @@
 #import "MASFile+MASPrivate.h"
 
 #import <objc/runtime.h>
-#import "MASIFileManager.h"
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
-
+#import "MASFileService.h"
 
 # pragma mark - Property Constants
 
 static NSString *const MASFileNamePropertyKey = @"name"; // string
 static NSString *const MASFileContentsPropertyKey = @"contents"; // data
 static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
+static NSString *const MASFileDirectoryTypePropertyKey = @"directoryType"; // integer
 
 
 @implementation MASFile (MASPrivate)
@@ -28,14 +28,15 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
 
 # pragma mark - Lifecycle
 
-- (id)initWithName:(NSString *)name contents:(NSData *)contents
+- (id)initWithName:(NSString *)name contents:(NSData *)contents directoryType:(MASFileDirectoryType)directoryType
 {
     self = [super init];
     if(self)
     {
         [self setValue:name forKey:@"name"];
-        [self setValue:[MASIFileManager pathForApplicationSupportDirectoryWithPath:self.name] forKey:@"filePath"];
+        [self setValue:[[MASFileService sharedService] getFilePathForFileName:self.name fileDirectoryType:directoryType] forKey:@"filePath"];
         [self setValue:contents forKey:@"contents"];
+        [self setValue:[NSNumber numberWithInteger:directoryType] forKey:@"directoryType"];
     }
     
     return self;
@@ -44,46 +45,6 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
 
 # pragma mark - Saving and Removing Files
 
-- (BOOL)remove
-{
-    //
-    // Remove data at file path
-    //
-    NSError *error;
-    [MASIFileManager removeItemAtPath:self.filePath
-                              error:&error];
-    
-    if(error)
-    {
-        DLog(@"Error removing item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
-        return NO;
-    }
-    
-    return YES;
-}
-
-
-- (BOOL)save
-{
-    NSError *error;
-    
-    //
-    // Write to file
-    //
-    // If it doesn't exist already it creates it, if it does exist it will overwrite it
-    //
-    [MASIFileManager writeFileAtPath:self.filePath
-                           content:self.contents
-                             error:&error];
-    
-    if(error)
-    {
-        DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
-        return NO;
-    }
-    
-    return YES;
-}
 
 
 # pragma mark - NSCoding
@@ -93,6 +54,7 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
     if(self.name) [aCoder encodeObject:self.name forKey:MASFileNamePropertyKey];
     if(self.contents) [aCoder encodeObject:self.contents forKey:MASFileContentsPropertyKey];
     if(self.filePath) [aCoder encodeObject:self.filePath forKey:MASFileFilePathPropertyKey];
+    if(self.directoryType) [aCoder encodeObject:[NSNumber numberWithInteger:self.directoryType] forKey:MASFileDirectoryTypePropertyKey];
 }
 
 
@@ -103,6 +65,8 @@ static NSString *const MASFileFilePathPropertyKey = @"filePath"; // string
         [self setValue:[aDecoder decodeObjectForKey:MASFileNamePropertyKey] forKey:@"name"];
         [self setValue:[aDecoder decodeObjectForKey:MASFileContentsPropertyKey] forKey:@"contents"];
         [self setValue:[aDecoder decodeObjectForKey:MASFileFilePathPropertyKey] forKey:@"filePath"];
+        [self setValue:[aDecoder decodeObjectForKey:MASFileDirectoryTypePropertyKey] forKey:@"directoryType"];
+        
     }
     
     return self;

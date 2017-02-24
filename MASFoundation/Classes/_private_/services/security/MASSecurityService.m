@@ -236,11 +236,6 @@ static MASSecurityService *_sharedService_ = nil;
         // Store private key bits into keychain
         //
         [[MASAccessService sharedService] setAccessValueString:keyContents withAccessValueType:MASAccessValueTypePrivateKeyBits];
-        
-        //
-        // Try to get private key as MASFile to ensure we create the file
-        //
-        [self getPrivateKey];
     }
     
     if (!X509_REQ_sign(req, privatekey, EVP_sha1()))
@@ -432,7 +427,7 @@ static MASSecurityService *_sharedService_ = nil;
         if (signedCertificateData)
         {
             signedCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASSignedCertificate] contents:signedCertificateData];
-            [signedCert saveWithPassword:MASDefaultStuff];
+            [signedCert save];
         }
     }
     
@@ -460,7 +455,7 @@ static MASSecurityService *_sharedService_ = nil;
             if(certificateData)
             {
                 clientCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate] contents:certificateData];
-                [clientCert saveWithPassword:MASDefaultStuff];
+                [clientCert save];
             }
         }
     }
@@ -490,7 +485,7 @@ static MASSecurityService *_sharedService_ = nil;
             // Create MASFile and save. Note: saveWithPassword method will simply ignore the password at the moment.
             //
             privateKey = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASKey] contents:[privateKeyBits dataUsingEncoding:NSUTF8StringEncoding]];
-            [privateKey saveWithPassword:MASDefaultStuff];
+            [privateKey save];
         }
     }
     

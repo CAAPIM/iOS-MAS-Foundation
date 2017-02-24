@@ -3899,12 +3899,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                      }
                                  }
                                  else {
-                                     //
-                                     // Upon successful validation of session, ensure to have all necessary files are generated
-                                     //
-                                     [[MASSecurityService sharedService] getClientCertificate];
-                                     [[MASSecurityService sharedService] getPrivateKey];
-                                     [[MASSecurityService sharedService] getSignedCertificate];
                                      
                                      if(originalCompletion)
                                      {
@@ -3955,12 +3949,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                      }
                                  }
                                  else {
-                                     //
-                                     // Upon successful validation of session, ensure to have all necessary files are generated
-                                     //
-                                     [[MASSecurityService sharedService] getClientCertificate];
-                                     [[MASSecurityService sharedService] getPrivateKey];
-                                     [[MASSecurityService sharedService] getSignedCertificate];
                                      
                                      if(originalCompletion)
                                      {
@@ -4029,12 +4017,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                  }
                              }
                              else {
-                                 //
-                                 // Upon successful validation of session, ensure to have all necessary files are generated
-                                 //
-                                 [[MASSecurityService sharedService] getClientCertificate];
-                                 [[MASSecurityService sharedService] getPrivateKey];
-                                 [[MASSecurityService sharedService] getSignedCertificate];
                                  
                                  if(originalCompletion)
                                  {
