@@ -1,4 +1,4 @@
-# Version 1.3
+# Version 1.3.01
 
 ### Bug fixes 
 - Fixes an issue with dynamically switching between msso config's when one of the configs has location enabled and another msso config has location disabled. If the user declines location services permission when first opening the app, the app would hang when switching msso's back to the config that allowed location. [DE230814]
@@ -14,7 +14,7 @@
 - Client certificate process is newly added.  Mobile SDK will automatically detect the validity of the client certificate and renew it when necessary. [US240412]
 - MASAuthenticationProviders can now be retreived as needed through ```[MASAuthenticationProviders retrieveAuthenticationProvidersWithCompletion:] ```.
 
-# Version 1.2.00-CR3
+# Version 1.2.03
 
 ### Bug fixes
 - Fix the issue where [MAS gatewayISREachable] static property always returns true.
@@ -28,7 +28,7 @@
 
 -
 
-# Version 1.2.00-CR1
+# Version 1.2.01
 
 ### Bug fixes
  
