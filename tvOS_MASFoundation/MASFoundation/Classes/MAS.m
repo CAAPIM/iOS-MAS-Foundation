@@ -118,6 +118,7 @@
 + (void)start:(MASCompletionErrorBlock)completion
 {
     //DLog(@"called");
+    
     [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
     
     //

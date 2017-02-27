@@ -15,8 +15,9 @@
 		BA5507611E55A537001EC43D /* SampleTvOSAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA5507601E55A537001EC43D /* SampleTvOSAppTests.m */; };
 		BA55076C1E55A537001EC43D /* SampleTvOSAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */; };
 		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
-		BA7586931E60397900F59AE8 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */; };
-		BA7586941E60397900F59AE8 /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BAC586E21E643DA800F395B9 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; };
+		BAC586E31E64400E00F395B9 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; };
+		BAC586E41E64400E00F395B9 /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,13 +38,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		BA8E1FEC1E5C5EEE0058563E /* Embed Frameworks */ = {
+		BAC586E51E64400E00F395B9 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BA7586941E60397900F59AE8 /* tvOS_MASFoundation.framework in Embed Frameworks */,
+				BAC586E41E64400E00F395B9 /* tvOS_MASFoundation.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,8 +68,8 @@
 		BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleTvOSAppUITests.m; sourceTree = "<group>"; };
 		BA55076D1E55A537001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
-		BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = simulator/tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
+		BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = SampleTvOSApp/tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +77,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA7586931E60397900F59AE8 /* tvOS_MASFoundation.framework in Frameworks */,
+				BAC586E21E643DA800F395B9 /* tvOS_MASFoundation.framework in Frameworks */,
+				BAC586E31E64400E00F395B9 /* tvOS_MASFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,7 +102,7 @@
 		BA55073D1E55A536001EC43D = {
 			isa = PBXGroup;
 			children = (
-				BA7586911E60396D00F59AE8 /* tvOS_MASFoundation.framework */,
+				BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */,
 				BA5507481E55A536001EC43D /* SampleTvOSApp */,
 				BA55075F1E55A537001EC43D /* SampleTvOSAppTests */,
 				BA55076A1E55A537001EC43D /* SampleTvOSAppUITests */,
@@ -171,7 +173,7 @@
 				BA5507421E55A536001EC43D /* Sources */,
 				BA5507431E55A536001EC43D /* Frameworks */,
 				BA5507441E55A536001EC43D /* Resources */,
-				BA8E1FEC1E5C5EEE0058563E /* Embed Frameworks */,
+				BAC586E51E64400E00F395B9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -229,7 +231,7 @@
 				TargetAttributes = {
 					BA5507451E55A536001EC43D = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 2JJZ96P8P5;
+						DevelopmentTeam = X6BXKLALP7;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -444,16 +446,18 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = SampleTvOSApp/SampleTvOSApp.entitlements;
-				DEVELOPMENT_TEAM = 2JJZ96P8P5;
+				DEVELOPMENT_TEAM = X6BXKLALP7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/simulator",
+					"$(PROJECT_DIR)/device",
+					"$(PROJECT_DIR)/SampleTvOSApp",
 				);
 				INFOPLIST_FILE = SampleTvOSApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ca.SampleTvOSApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SampleTvOSApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -467,16 +471,18 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = SampleTvOSApp/SampleTvOSApp.entitlements;
-				DEVELOPMENT_TEAM = 2JJZ96P8P5;
+				DEVELOPMENT_TEAM = X6BXKLALP7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/simulator",
+					"$(PROJECT_DIR)/device",
+					"$(PROJECT_DIR)/SampleTvOSApp",
 				);
 				INFOPLIST_FILE = SampleTvOSApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ca.SampleTvOSApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SampleTvOSApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";

@@ -138,7 +138,7 @@
 #if TARGET_OS_IOS
 - (void)startAdvertising
 {
-   //DLog(@"\n\n%@\n\n", [self debugDescription]);
+   DLog(@"\n\n%@\n\n", [self debugDescription]);
     
     __block MASBluetoothPeripheral *blockSelf = self;
     

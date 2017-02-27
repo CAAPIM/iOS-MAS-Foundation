@@ -20,11 +20,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-   
-    [self QRcodeLogin];
+       [[NSNotificationCenter defaultCenter] addObserver:self
+                                                selector:@selector(masProximityLogin:)
+                                                 name:@"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification"
+                                               object:nil];
+    
+    [self proximityBLELogin];
    
 }
 
+-(void)masProximityLogin:(NSNotification*)notification
+{
+    
+    
+}
 #pragma -Login methods
 
 -(void) simpleLogin
@@ -79,7 +88,40 @@
     
 }
 
+#pragma -QR Code Login
 
+-(void) QRcodeLogin
+{
+    
+    
+    
+    [MAS startWithDefaultConfiguration:YES completion:^(BOOL completed, NSError * _Nullable error) {
+        //
+        
+        [MASAuthenticationProviders retrieveAuthenticationProvidersWithCompletion:^(id  _Nullable object, NSError * _Nullable error) {
+            MASAuthenticationProvider *qrCodeAuthProvider;
+            
+            for (MASAuthenticationProvider *qr in [object valueForKey:@"providers"]) {
+                if ([qr.identifier  isEqualToString:@"qrcode"]) {
+                    qrCodeAuthProvider = qr;
+                    break;
+                }
+            }
+             [MASDevice setProximityLoginDelegate:self];
+            MASProximityLoginQRCode *qrCodeProximityLogin = [[MASProximityLoginQRCode alloc] initWithAuthenticationProvider:qrCodeAuthProvider];
+            
+            UIImage *qrCodeImage = [qrCodeProximityLogin startDisplayingQRCodeImageForProximityLogin];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_imgView setImage:qrCodeImage];
+            });
+            NSLog(@"------%@", qrCodeImage);
+        }];
+    }];
+    
+    
+    
+}
 
 #pragma-USing proximity Login delegate
 
@@ -168,7 +210,7 @@
 }
 
 
-- (void)didReceiveAuthorizationCode:(NSString *_Nonnull)authorizationCode
+-(void)didReceiveAuthorizationCode:(NSString *_Nonnull)authorizationCode
 {
     
     self.textView.text=authorizationCode;
@@ -180,42 +222,7 @@
 }
 
 
-#pragma -QR Code Login
 
--(void) QRcodeLogin
-{
-    
-    //+ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock _Nullable)completion;
-
-
-    //MASAuthenticationProvider *qrCodeAuthProvider = [[MASAuthenticationProviders currentProviders] retrieveAuthenticationProviderForProximityLogin];
-    
-    [MAS start:^(BOOL completed, NSError * _Nullable error) {
-        //
-        
-        [MASAuthenticationProviders retrieveAuthenticationProvidersWithCompletion:^(id  _Nullable object, NSError * _Nullable error) {
-            MASAuthenticationProvider *qrCodeAuthProvider;
-            
-            for (MASAuthenticationProvider *qr in [object valueForKey:@"providers"]) {
-                if ([qr.identifier  isEqualToString:@"qrcode"]) {
-                    qrCodeAuthProvider = qr;
-                    break;
-                }
-            }
-            MASProximityLoginQRCode *qrCodeProximityLogin = [[MASProximityLoginQRCode alloc] initWithAuthenticationProvider:qrCodeAuthProvider];
-            
-            UIImage *qrCodeImage = [qrCodeProximityLogin startDisplayingQRCodeImageForProximityLogin];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_imgView setImage:qrCodeImage];
-            });
-            NSLog(@"------%@", qrCodeImage);
-        }];
-    }];
-    
-    
-   
-}
 
 
 
