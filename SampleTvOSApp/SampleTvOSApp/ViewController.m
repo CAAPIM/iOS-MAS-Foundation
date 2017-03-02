@@ -13,6 +13,7 @@
 -(void)simpleLogin;
 -(void)proximityBLELogin;
 -(void)QRcodeLogin;
+
 @end
 
 @implementation ViewController
@@ -25,15 +26,19 @@
                                                  name:@"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification"
                                                object:nil];
     
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userAuthenticated:)
+                                                 name:@"MASUserDidAuthenticateNotification"
+                                               object:nil];
+    
+    
     [self QRcodeLogin];
    
 }
 
--(void)masProximityLogin:(NSNotification*)notification
-{
-    
-    
-}
+
 #pragma -Login methods
 
 -(void) simpleLogin
@@ -109,7 +114,7 @@
             }
             
               
-              [MASDevice setProximityLoginDelegate:self];
+              //[MASDevice setProximityLoginDelegate:self];
             
             self.qrCodeProximityLogin = [[MASProximityLoginQRCode alloc] initWithAuthenticationProvider:qrCodeAuthProvider];
             
@@ -227,7 +232,20 @@
 }
 
 
+-(void)masProximityLogin:(NSNotification*)notification
+{
+    if (notification) {
+        //
+    }
+    
+}
 
+-(void)userAuthenticated:(NSNotification*)notification
+{
+    if (notification) {
+        //
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

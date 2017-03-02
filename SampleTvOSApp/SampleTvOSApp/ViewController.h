@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 
 @property (strong, nonatomic) MASProximityLoginQRCode *qrCodeProximityLogin;
-
+-(void)masProximityLogin:(NSNotification*)notification;
+-(void)userAuthenticated:(NSNotification*)notification;
 @end
 
