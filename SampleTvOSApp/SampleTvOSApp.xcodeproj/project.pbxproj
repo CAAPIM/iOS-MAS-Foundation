@@ -457,7 +457,7 @@
 				INFOPLIST_FILE = SampleTvOSApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.SampleTvOSApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.apimca.demo.QRCode;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -482,7 +482,7 @@
 				INFOPLIST_FILE = SampleTvOSApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.SampleTvOSApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.apimca.demo.QRCode;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";

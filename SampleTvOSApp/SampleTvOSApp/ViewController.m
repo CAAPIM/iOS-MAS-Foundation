@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import <tvOS_MASFoundation/tvOS MASFoundation.h>
+
 
 @interface ViewController ()
 -(void)simpleLogin;
@@ -25,7 +25,7 @@
                                                  name:@"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification"
                                                object:nil];
     
-    [self proximityBLELogin];
+    [self QRcodeLogin];
    
 }
 
@@ -107,10 +107,14 @@
                     break;
                 }
             }
-             [MASDevice setProximityLoginDelegate:self];
-            MASProximityLoginQRCode *qrCodeProximityLogin = [[MASProximityLoginQRCode alloc] initWithAuthenticationProvider:qrCodeAuthProvider];
             
-            UIImage *qrCodeImage = [qrCodeProximityLogin startDisplayingQRCodeImageForProximityLogin];
+              
+              [MASDevice setProximityLoginDelegate:self];
+            
+            self.qrCodeProximityLogin = [[MASProximityLoginQRCode alloc] initWithAuthenticationProvider:qrCodeAuthProvider];
+            
+            
+            UIImage *qrCodeImage = [self.qrCodeProximityLogin startDisplayingQRCodeImageForProximityLogin];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_imgView setImage:qrCodeImage];
@@ -214,17 +218,13 @@
 {
     
     self.textView.text=authorizationCode;
+   //[self.qrCodeProximityLogin  stopDisplayingQRCodeImageForProximityLogin];
     
 }
 -(void) didReceiveProximityLoginError:(NSError *)error
 {
     self.textView.text=error.description;
 }
-
-
-
-
-
 
 
 

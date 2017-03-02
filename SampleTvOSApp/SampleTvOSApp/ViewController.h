@@ -7,12 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <tvOS_MASFoundation/MASProximityLoginDelegate.h>
+
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
+
 @interface ViewController : UIViewController<MASProximityLoginDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *imgView;
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 
+@property (strong, nonatomic) MASProximityLoginQRCode *qrCodeProximityLogin;
 
 @end
 
