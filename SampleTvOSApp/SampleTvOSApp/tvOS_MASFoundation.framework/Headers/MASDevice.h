@@ -38,19 +38,19 @@
 /**
  * The MASDevice identifier.
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *identifier;
+@property (nonatomic, copy, readonly) NSString *identifier;
 
 
 /**
  * The MASDevice name.
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *name;
+@property (nonatomic, copy, readonly) NSString *name;
 
 
 /**
  * The MASDevice status.
  */
-@property (nonatomic, copy, readonly, nullable) NSString *status;
+@property (nonatomic, copy, readonly) NSString *status;
 
 
 /**
@@ -62,13 +62,13 @@
 /**
  *  The MASProximityLoginDelegate static property getter
  */
-+ (id<MASProximityLoginDelegate> _Nullable)proximityLoginDelegate;
++ (id<MASProximityLoginDelegate>)proximityLoginDelegate;
 
 
 /**
  *  The MASProximityLoginDelegate static property setter
  */
-+ (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate> _Nonnull)delegate;
++ (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate>)delegate;
 
 
 ///--------------------------------------
@@ -82,7 +82,7 @@
  *
  *  @return Returns a singleton 'MASDevice' object.
  */
-+ (MASDevice *_Nullable)currentDevice;
++ (MASDevice *)currentDevice;
 
 
 
@@ -129,7 +129,7 @@
  *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that 
  *      receives the results.
  */
-- (void)deregisterWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
+- (void)deregisterWithCompletion:(MASCompletionErrorBlock)completion;
 
 
 
@@ -147,7 +147,6 @@
 ///--------------------------------------
 /// @name Bluetooth Peripheral
 ///--------------------------------------
-#if TARGET_OS_IOS
 
 # pragma mark - Bluetooth Peripheral
 
@@ -163,7 +162,7 @@
  */
 - (void)stopAsBluetoothPeripheral;
 
-#endif
+
 
 ///--------------------------------------
 /// @name Bluetooth Central
@@ -184,7 +183,7 @@
  *
  *  @param provider MASAuthenticationProvider to pass authentication information to other devices
  */
-- (void)startAsBluetoothCentralWithAuthenticationProvider:(MASAuthenticationProvider *_Nonnull)provider;
+- (void)startAsBluetoothCentralWithAuthenticationProvider:(MASAuthenticationProvider *)provider;
 
 
 

@@ -36,7 +36,7 @@ bool _encrypted = NO;
     //
     NSString *dataAsString = [[NSString alloc] initWithData:self encoding:NSUTF8StringEncoding];
    
-    //DLog(@"\n\nCertificate data as string: %@\n\n", dataAsString    );
+    //DLogTVOS(@"\n\nCertificate data as string: %@\n\n", dataAsString    );
    
     //
     // Needs certificate prefix?
@@ -72,7 +72,7 @@ bool _encrypted = NO;
         [stringAsArray addObject:MASCertificateEndSuffix];
     }
     
-    //DLog(@"\n\nCertificate data is: %@\n\n", stringAsArray);
+    //DLogTVOS(@"\n\nCertificate data is: %@\n\n", stringAsArray);
     
     return [NSData dataFromCertificateArray:stringAsArray];
 }
@@ -184,6 +184,7 @@ bool _encrypted = NO;
         }
     }
     
+    realloc(bytes, length);
     return [NSData dataWithBytesNoCopy:bytes length:length];
 }
 

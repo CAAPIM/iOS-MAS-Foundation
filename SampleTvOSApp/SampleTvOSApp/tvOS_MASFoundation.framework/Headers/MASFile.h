@@ -8,7 +8,15 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+//#if TARGET_OS_IOS
+//#import <MASFoundation/MASFoundation.h>
+
+
+//#elif TARGET_OS_TV
+//
+//
 #import <tvOS_MASFoundation/tvOS MASFoundation.h>
+//#endif
 
 
 /**
@@ -27,19 +35,19 @@
 /**
  * The name of the file.
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *name;
+@property (nonatomic, copy, readonly) NSString *name;
 
 
 /**
  * The contents of file as NSData.
  */
-@property (nonatomic, strong, readonly, nonnull) NSData *contents;
+@property (nonatomic, strong, readonly) NSData *contents;
 
 
 /**
  * The full file path of the file on disk.
  */
-@property (nonatomic, assign, readonly, nonnull) NSString *filePath;
+@property (nonatomic, assign, readonly) NSString *filePath;
 
 
 
@@ -56,8 +64,8 @@
  *  @param contents The NSData contents of the new file.
  *  @return Returns a new 'MASFile' object.
  */
-+ (MASFile *_Nullable)fileWithName:(NSString *_Nonnull)name
-                          contents:(NSData *_Nonnull)contents;
++ (MASFile *)fileWithName:(NSString *)name
+                 contents:(NSData *)contents;
 
 
 
@@ -79,7 +87,7 @@
  *
  *  @return Returns the MASFile that applies to the name, nil if none.
  */
-+ (MASFile *_Nullable)findFileWithName:(NSString *_Nonnull)name;
++ (MASFile *)findFileWithName:(NSString *)name;
 
 
 
@@ -91,8 +99,8 @@
  *  @return Returns the MASFile that applies to the name and can be 
  *  unlocked by the password, nil if none.
  */
-+ (MASFile *_Nullable)findFileWithName:(NSString *_Nonnull)name
-                              password:(NSString *_Nonnull)password;
++ (MASFile *)findFileWithName:(NSString *)name
+                     password:(NSString *)password;
 
 
 
@@ -108,7 +116,7 @@
  *  @param password The password with which to lock the stored object.
  *  @return Returns YES if success or NO if failure.
  */
-- (BOOL)saveWithPassword:(NSString *_Nonnull)password;
+- (BOOL)saveWithPassword:(NSString *)password;
 
 
 
@@ -118,7 +126,7 @@
  *  @param data The NSData item to store.
  *  @return Returns the NSString file path where it is stored.
  */
-+ (NSString *_Nullable)storeTemporaryItem:(NSData *_Nonnull)data;
++ (NSString *)storeTemporaryItem:(NSData *)data;
 
 
 
@@ -128,6 +136,6 @@
  *  @param filePath The file path to find the data to remove.
  *  @return Returns YES if removed, NO if not.
  */
-+ (BOOL)removeItemAtFilePath:(NSString *_Nonnull)filePath;
++ (BOOL)removeItemAtFilePath:(NSString *)filePath;
 
 @end

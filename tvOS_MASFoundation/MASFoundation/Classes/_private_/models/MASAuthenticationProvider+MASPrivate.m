@@ -14,6 +14,14 @@
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
 
+
+# pragma mark - Property Constants
+
+static NSString *const MASAuthenticationProviderIdentifierPropertyKey = @"identifier"; // string
+static NSString *const MASAuthenticationProviderAuthenticationUrlPropertyKey = @"authenticationUrl"; // string
+static NSString *const MASAuthenticationProviderPollUrlPropertyKey = @"pollUrl"; // string
+
+
 @implementation MASAuthenticationProvider (MASPrivate)
 
 
@@ -21,6 +29,8 @@
 
 - (id)initWithInfo:(NSDictionary *)info
 {
+    //DLog(@"called with updated info: %@", info);
+    
     NSAssert(info, @"info cannot be nil");
     
     self = [super init];
@@ -29,19 +39,19 @@
         //
         // Identifier
         //
-        [self setValue:info[MASIdRequestResponseKey] forKey:@"identifier"];
+        self.identifier = info[MASIdRequestResponseKey];
     
         //
         // Authentication URL
         //
         NSString *authenticationUrlValue = info[MASAuthenticationUrlRequestResponseKey];
-        if (authenticationUrlValue) [self setValue:[NSURL URLWithString:authenticationUrlValue] forKey:@"authenticationUrl"];
+        if (authenticationUrlValue) self.authenticationUrl = [NSURL URLWithString:authenticationUrlValue];
     
         //
         // Poll URL (not all use this)
         //
         NSString *pollUrlValue = info[MASPollUrlRequestResponseKey];
-        if (pollUrlValue) [self setValue:[NSURL URLWithString:pollUrlValue] forKey:@"pollUrl"];
+        if (pollUrlValue) self.pollUrl = [NSURL URLWithString:pollUrlValue];
         
         //
         // Save to storage
@@ -55,6 +65,8 @@
 
 + (MASAuthenticationProvider *)instanceFromStorage;
 {
+    //DLog(@"\n\ncalled%@\n\n");
+    
     MASAuthenticationProvider *provider;
     
     //
@@ -66,12 +78,16 @@
         provider = (MASAuthenticationProvider *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
 
+    //DLog(@"\n\n  found in storage: %@\n\n", [provider debugDescription]);
+    
     return provider;
 }
 
 
 - (void)saveToStorage
 {
+    //DLog(@"\n\ncalled%@\n\n");
+    
     //
     // Save to the keychain
     //
@@ -85,16 +101,89 @@
     
         if(error)
         {
-            //DLog(@"Error attempting to save data: %@", [error localizedDescription]);
+           //tvos  DLog(@"Error attempting to save data: %@", [error localizedDescription]);
             return;
         }
     }
+    
+    //DLog(@"called with info: %@", [self debugDescription]);
 }
 
 
 - (void)reset
 {
     [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASAuthenticationProvider.class description]];
+}
+
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    //DLog(@"\n\ncalled\n\n");
+    
+    [super encodeWithCoder:aCoder];
+    
+    if(self.identifier) [aCoder encodeObject:self.identifier forKey:MASAuthenticationProviderIdentifierPropertyKey];
+    if(self.authenticationUrl) [aCoder encodeObject:self.authenticationUrl forKey:MASAuthenticationProviderAuthenticationUrlPropertyKey];
+    if(self.pollUrl) [aCoder encodeObject:self.pollUrl forKey:MASAuthenticationProviderPollUrlPropertyKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    //DLog(@"\n\ncalled\n\n");
+    
+    self = [super initWithCoder:aDecoder];
+    if(self)
+    {
+        self.identifier = [aDecoder decodeObjectForKey:MASAuthenticationProviderIdentifierPropertyKey];
+        self.authenticationUrl = [aDecoder decodeObjectForKey:MASAuthenticationProviderAuthenticationUrlPropertyKey];
+        self.pollUrl = [aDecoder decodeObjectForKey:MASAuthenticationProviderPollUrlPropertyKey];
+    }
+    
+    return self;
+}
+
+
+# pragma mark - Properties
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
+
+- (NSString *)identifier
+{
+    return objc_getAssociatedObject(self, &MASAuthenticationProviderIdentifierPropertyKey);
+}
+
+
+- (void)setIdentifier:(NSString *)identifier
+{
+    objc_setAssociatedObject(self, &MASAuthenticationProviderIdentifierPropertyKey, identifier, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSURL *)authenticationUrl
+{
+    return objc_getAssociatedObject(self, &MASAuthenticationProviderAuthenticationUrlPropertyKey);
+}
+
+
+- (void)setAuthenticationUrl:(NSURL *)authenticationUrl
+{
+    objc_setAssociatedObject(self, &MASAuthenticationProviderAuthenticationUrlPropertyKey, authenticationUrl, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSURL *)pollUrl
+{
+    return objc_getAssociatedObject(self, &MASAuthenticationProviderPollUrlPropertyKey);
+}
+
+
+- (void)setPollUrl:(NSURL *)pollUrl
+{
+    objc_setAssociatedObject(self, &MASAuthenticationProviderPollUrlPropertyKey, pollUrl, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

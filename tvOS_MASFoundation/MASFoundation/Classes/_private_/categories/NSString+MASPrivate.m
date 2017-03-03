@@ -73,42 +73,6 @@ static NSString *const kMASAlphaNumerics = @"abcdefghijklmnopqrstuvwxyzABCDEFGHI
     return ret;
 }
 
-
-- (NSData *)sha256Data
-{
-    NSData *strData = [self dataUsingEncoding:NSUTF8StringEncoding];
-    NSMutableData *sha256Data = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
-    CC_SHA256(strData.bytes, (CC_LONG)strData.length, sha256Data.mutableBytes);
-    
-    return sha256Data;
-}
-
-
-- (NSString *)base64URL
-{
-    NSData *strData = [self dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *base64URLStr = [strData base64EncodedStringWithOptions:0];
-    
-    base64URLStr = [base64URLStr stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-    base64URLStr = [base64URLStr stringByReplacingOccurrencesOfString:@"+" withString:@"-"];
-    base64URLStr = [base64URLStr stringByReplacingOccurrencesOfString:@"=" withString:@""];
-    
-    return base64URLStr;
-}
-
-
-+ (NSString *)base64URLWithNSData:(NSData *)data
-{
-    NSString *base64URLStr = [data base64EncodedStringWithOptions:0];
-    
-    base64URLStr = [base64URLStr stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-    base64URLStr = [base64URLStr stringByReplacingOccurrencesOfString:@"+" withString:@"-"];
-    base64URLStr = [base64URLStr stringByReplacingOccurrencesOfString:@"=" withString:@""];
-    
-    return base64URLStr;
-}
-
-
 - (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string
 {
     NSMutableString *mutableCopy = [self mutableCopy];

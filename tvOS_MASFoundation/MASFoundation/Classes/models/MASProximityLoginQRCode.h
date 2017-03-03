@@ -8,7 +8,15 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+//#if TARGET_OS_IOS
+//#import <MASFoundation/MASFoundation.h>
+//
+//
+//#elif TARGET_OS_TV
+//
+
 #import <tvOS_MASFoundation/tvOS MASFoundation.h>
+//#endif
 #import "MASProximityLogin.h"
 
 @class MASAuthenticationProvider;
@@ -27,19 +35,19 @@
 /**
  *  Polling interval in seconds for QR Code proximity login
  */
-@property (nonatomic, assign, readonly, nonnull) NSNumber *pollingInterval;
+@property (nonatomic, assign, readonly) NSNumber *pollingInterval;
 
 
 /**
  *  Initial delay in seconds to make polling request for QR Code authorization
  */
-@property (nonatomic, assign, readonly, nonnull) NSNumber *pollingDelay;
+@property (nonatomic, assign, readonly) NSNumber *pollingDelay;
 
 
 /**
  *  Limit for number of polling requests for QR Code authorization
  */
-@property (nonatomic, assign, readonly, nonnull) NSNumber *pollingLimit;
+@property (nonatomic, assign, readonly) NSNumber *pollingLimit;
 
 
 /**
@@ -57,13 +65,13 @@
 /**
  *  NSString of authentication URL
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *authenticationUrl;
+@property (nonatomic, copy, readonly) NSString *authenticationUrl;
 
 
 /**
  *  NSString of polling URL
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *pollUrl;
+@property (nonatomic, copy, readonly) NSString *pollUrl;
 
 
 # pragma mark - Lifecycle
@@ -79,7 +87,7 @@
  *
  *  @return MASProximityLoginQRCode object
  */
-- (instancetype _Nullable)initWithAuthenticationProvider:(MASAuthenticationProvider *_Nonnull)provider initialDelay:(NSNumber *_Nonnull)initDelay pollingInterval:(NSNumber *_Nonnull)pollingInterval pollingLimit:(NSNumber *_Nonnull)pollingLimit;
+- (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider initialDelay:(NSNumber *)initDelay pollingInterval:(NSNumber *)pollingInterval pollingLimit:(NSNumber *)pollingLimit;
 
 
 /**
@@ -94,7 +102,7 @@
  *
  *  @return MASProximityLoginQRCode object
  */
-- (instancetype _Nullable)initWithAuthenticationProvider:(MASAuthenticationProvider *_Nonnull)provider;
+- (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider;
 
 
 # pragma mark - Start/Stop displaying QR Code image
@@ -105,7 +113,7 @@
  *
  *  @return UIImage of QR Code.
  */
-- (UIImage *_Nullable)startDisplayingQRCodeImageForProximityLogin;
+- (UIImage *)startDisplayingQRCodeImageForProximityLogin;
 
 
 /**
@@ -123,6 +131,6 @@
  *  @param authenticateUrl NSString of authenticateUrl.
  *  @param completion      MASCompletionErrorBlock to notify caller for the result.
  */
-+ (void)authorizeAuthenticateUrl:(NSString *_Nonnull)authenticateUrl completion:(MASCompletionErrorBlock _Nullable)completion;
++ (void)authorizeAuthenticateUrl:(NSString *)authenticateUrl completion:(MASCompletionErrorBlock)completion;
 
 @end

@@ -14,6 +14,14 @@
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
 
+
+# pragma mark - Property Constants
+
+static NSString *const MASAuthenticationProvidersPropertyKey = @"providers"; // string
+
+static NSString *const MASAuthenticationProvidersIDPPropertyKey = @"idp"; // string
+
+
 @implementation MASAuthenticationProviders (MASPrivate)
 
 
@@ -21,6 +29,8 @@
 
 - (id)initWithInfo:(NSDictionary *)info
 {
+    //DLog(@"called with updated info: %@", info);
+    
     NSAssert(info, @"info cannot be nil");
     
     self = [super init];
@@ -42,9 +52,9 @@
             [providers addObject:provider];
         }
         
-        [self setValue:providers forKey:@"providers"];
+        self.providers = providers;
         
-        [self setValue:info[MASIDPRequestResponseKey] forKey:@"idp"];
+        self.idp = info[MASIDPRequestResponseKey];
         
         /**
          *  Do not store the authentication provider information into keychain as it will have to be updated as JSON configuration/host is changed
@@ -61,6 +71,8 @@
 
 + (MASAuthenticationProviders *)instanceFromStorage;
 {
+    //DLog(@"\n\ncalled%@\n\n");
+    
     MASAuthenticationProviders *providers;
     
     //
@@ -72,12 +84,16 @@
         providers = (MASAuthenticationProviders *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
 
+    //DLog(@"\n\n  found in storage: %@\n\n", [provider debugDescription]);
+    
     return providers;
 }
 
 
 - (void)saveToStorage
 {
+    //DLog(@"\n\ncalled%@\n\n");
+    
     //
     // Save to the keychain
     //
@@ -91,10 +107,12 @@
     
         if(error)
         {
-            //DLog(@"Error attempting to save data: %@", [error localizedDescription]);
+           //tvos  DLog(@"Error attempting to save data: %@", [error localizedDescription]);
             return;
         }
     }
+    
+    //DLog(@"called with info: %@", [self debugDescription]);
 }
 
 
@@ -107,13 +125,67 @@
     {
         [provider reset];
     }
-    
-    [self setValue:nil forKey:@"providers"];
+    self.providers = nil;
     
     //
     // Remove from the keychain storage
     //
     [[MASIKeyChainStore keyChainStore] removeItemForKey:[MASAuthenticationProviders.class description]];
+}
+
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    //DLog(@"\n\ncalled\n\n");
+    
+    [super encodeWithCoder:aCoder];
+    
+    if(self.providers) [aCoder encodeObject:self.providers forKey:MASAuthenticationProvidersPropertyKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    //DLog(@"\n\ncalled\n\n");
+    
+    self = [super initWithCoder:aDecoder];
+    if(self)
+    {
+        self.providers = [aDecoder decodeObjectForKey:MASAuthenticationProvidersPropertyKey];
+    }
+    
+    return self;
+}
+
+
+# pragma mark - Properties
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
+
+- (NSArray *)providers
+{
+    return objc_getAssociatedObject(self, &MASAuthenticationProvidersPropertyKey);
+}
+
+
+- (void)setProviders:(NSArray *)providers
+{
+    objc_setAssociatedObject(self, &MASAuthenticationProvidersPropertyKey, providers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSString *)idp
+{
+    return objc_getAssociatedObject(self, &MASAuthenticationProvidersIDPPropertyKey);
+}
+
+
+- (void)setIdp:(NSString *)idp
+{
+    objc_setAssociatedObject(self, &MASAuthenticationProvidersIDPPropertyKey, idp, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

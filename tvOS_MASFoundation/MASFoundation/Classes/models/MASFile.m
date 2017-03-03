@@ -66,23 +66,9 @@
 
 - (BOOL)saveWithPassword:(NSString *)password
 {
-    NSError *error;
+    // Overwritten
     
-    // Write to file
-    //
-    // If it doesn't exist already it creates it, if it does exist it will overwrite it
-    //
-    [MASIFileManager writeFileAtPath:self.filePath
-                             content:self.contents
-                               error:&error];
-    
-    if(error)
-    {
-       // DLog(@"Error creating item at file path: %@ with message: %@", self.filePath, [error localizedDescription]);
-        return NO;
-    }
-    
-    return YES;
+    return NO;
 }
 
 
@@ -96,6 +82,8 @@
     NSString *filePath = [MASIFileManager pathForTemporaryDirectoryWithPath:randomName];
         
     [MASIFileManager writeFileAtPath:filePath content:data];
+    
+    //DLog(@"called and returned file path: %@", filePath);
     
     return filePath;
 }

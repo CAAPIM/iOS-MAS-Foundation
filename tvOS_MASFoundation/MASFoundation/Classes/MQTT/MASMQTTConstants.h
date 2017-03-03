@@ -8,8 +8,6 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-NS_ASSUME_NONNULL_BEGIN
-
 #ifndef MASMQTTConstants_h
 #define MASMQTTConstants_h
 
@@ -18,5 +16,3 @@ static BOOL const defaultRatain = NO;
 static NSString *const topicApiVersion = @"1.0";
 
 #endif /* MASMQTTConstants_h */
-
-NS_ASSUME_NONNULL_END

@@ -8,7 +8,15 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+//#if TARGET_OS_IOS
+//#import <MASFoundation/MASFoundation.h>
+//
+//
+//#elif TARGET_OS_TV
+//
+
 #import <tvOS_MASFoundation/tvOS MASFoundation.h>
+//#endif
 
 @class MASAuthenticationProvider;
 
@@ -29,13 +37,13 @@
 /**
  * The MASAuthenticationProvider instances.
  */
-@property (nonatomic, copy, readonly, nullable) NSArray *providers;
+@property (nonatomic, copy, readonly) NSArray *providers;
 
 
 /**
  *  idp value indicates which social media should be available for the device.
  */
-@property (nonatomic, copy, readonly, nullable) NSString *idp;
+@property (nonatomic, copy, readonly) NSString *idp;
 
 
 
@@ -50,7 +58,7 @@
  *
  * @return Returns a singleton 'MASAuthenticationProviders' object.
  */
-+ (MASAuthenticationProviders *_Nullable)currentProviders;
++ (MASAuthenticationProviders *)currentProviders;
 
 
 
@@ -61,7 +69,7 @@
  
  @param completion MASObjectResponseErrorBlock to notify original caller with the results.
  */
-+ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock _Nullable)completion;
++ (void)retrieveAuthenticationProvidersWithCompletion:(MASObjectResponseErrorBlock)completion;
 
 
 
@@ -76,6 +84,6 @@
  *
  *  @return Returns MASAuthenticationProvider for BLE/QA Code Proximity Login.
  */
-- (MASAuthenticationProvider *_Nullable)retrieveAuthenticationProviderForProximityLogin;
+- (MASAuthenticationProvider *)retrieveAuthenticationProviderForProximityLogin;
 
 @end

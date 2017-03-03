@@ -16,9 +16,7 @@
 #import "MASSecurityService.h"
 
 #import <openssl/x509.h>
-
 #if TARGET_OS_IOS
-
 #import <LocalAuthentication/LocalAuthentication.h>
 #endif
 # pragma mark - Property Constants
@@ -323,7 +321,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 }
 
 
-- (BOOL)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
+- (void)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
 {
     
     NSString *storageKey = [self getStorageKeyWithAccessValueType:type];
@@ -355,14 +353,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     if (isSecuredData)
     {
         [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityAfterFirstUnlock authenticationPolicy:0];
-    }
-    
-    if (error)
-    {
-        return NO;
-    }
-    else {
-        return YES;
     }
 }
 
@@ -841,7 +831,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         group = [NSString stringWithFormat:@"%@.%@", [components objectAtIndex:0], groupSuffix];
     }
     
-    //DLog(@"access group generated: %@", group);
+   // DLog(@"access group generated: %@", group);
     CFRelease(result);
     
     return group;
@@ -850,7 +840,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 # pragma mark - Public
 #if TARGET_OS_IOS
-
 - (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error
 {
     NSError *localError = nil;
@@ -923,10 +912,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
         }
         
-        if (error != NULL)
-        {
-            *error = localError;
-        }
+        *error = localError;
     }
     //
     // If it was successful to secure tokens with local authentication, nullify the tokens in unprotected keychain storage
@@ -1035,10 +1021,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         success = YES;
     }
     else {
-        if (error != NULL)
-        {
-            *error = localError;
-        }
+        *error = localError;
     }
     
     return success;

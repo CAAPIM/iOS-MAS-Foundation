@@ -16,6 +16,18 @@
 
 
 ///--------------------------------------
+/// @name Properties
+///--------------------------------------
+
+# pragma mark - Properties
+
+@property (nonatomic, copy, readwrite) NSString *identifier;
+@property (nonatomic, copy, readwrite) NSURL *authenticationUrl;
+@property (nonatomic, copy, readwrite) NSURL *pollUrl;
+
+
+
+///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------
 

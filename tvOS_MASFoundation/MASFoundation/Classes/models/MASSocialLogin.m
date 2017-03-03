@@ -12,9 +12,6 @@
 
 #import <WebKit/WKNavigationDelegate.h>
 
-#import "MASAccessService.h"
-#import "NSError+MASPrivate.h"
-
 
 static NSString *const MASSocialLoginAuthenticationProvider = @"provider"; // string
 static NSString *const MASSocialLoginWebview = @"webview"; // string
@@ -31,7 +28,7 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
 
 @implementation MASSocialLogin
 
-#if TARGET_OS_IOS
+
 - (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider webView:(WKWebView *)webView
 {
     self = [super init];
@@ -79,7 +76,7 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
     return self;
 }
 
-#endif
+
 # pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
@@ -175,13 +172,13 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
 
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(null_unspecified WKNavigation *)navigation
 {
-   // DLog(@"server redirect : %@", [webView.URL description]);
+    //DLogTVOS(@"server redirect : %@", [webView.URL description]);
     
     NSRange range = [[webView.URL description] rangeOfString:[MASApplication currentApplication].redirectUri.absoluteString];
     
     if (range.length>0){
         
-        //DLog(@"request matches the registered the rediect URI");
+        //DLogTVOS(@"request matches the registered the rediect URI");
         
         NSMutableDictionary *queryStringDictionary = [[NSMutableDictionary alloc] init];
         NSArray *urlComponentsSeperatedwithQuestionMark = [[webView.URL description] componentsSeparatedByString:@"?"];
@@ -218,50 +215,6 @@ static NSString *const MASSocialLoginOriginalDelegate = @"originalDelegate"; // 
                 //
                 else {
                     _webView.navigationDelegate = nil;
-                }
-            }
-            
-            //
-            // Validate PKCE state value
-            // If either one of request or response states is present, validate it; otherwise, ignore
-            //
-            if ([queryStringDictionary objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
-            {
-                NSString *responseState = [queryStringDictionary objectForKey:MASPKCEStateRequestResponseKey];
-                NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
-                
-                NSError *pkceError = nil;
-                
-                //
-                // If response or request state is nil, invalid request and/or response
-                //
-                if (responseState == nil || requestState == nil)
-                {
-                    pkceError = [NSError errorInvalidAuthorization];
-                }
-                //
-                // verify that the state in the response is the same as the state sent in the request
-                //
-                else if (![[queryStringDictionary objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
-                {
-                    pkceError = [NSError errorInvalidAuthorization];
-                }
-                
-                //
-                // If the validation fail, notify
-                //
-                if (pkceError)
-                {
-                    
-                    //
-                    // Notify delegate for an error from webview
-                    //
-                    if (_delegate && [_delegate respondsToSelector:@selector(didReceiveError:)])
-                    {
-                        [_delegate didReceiveError:pkceError];
-                    }
-                    
-                    return;
                 }
             }
             

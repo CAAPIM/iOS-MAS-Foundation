@@ -19,15 +19,9 @@
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 
-# pragma mark - Property Constants
-
-static NSString *const MASDeviceIsRegisteredPropertyKey = @"isRegistered"; // bool
-static NSString *const MASDeviceIdentifierPropertyKey = @"identifier"; // string
-static NSString *const MASDeviceNamePropertyKey = @"name"; // string
-static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 
 @implementation MASDevice
-@synthesize isRegistered = _isRegistered;
+
 
 static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
@@ -43,24 +37,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 + (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate>)delegate
 {
     _proximityLoginDelegate_ = delegate;
-}
-
-
-# pragma mark - Properties
-
-- (BOOL)isRegistered
-{
-    //
-    // Obtain key chain items to determine registration status
-    //
-    MASAccessService *accessService = [MASAccessService sharedService];
-    
-    NSString *magIdentifier = [accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    NSData *certificateData = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
-    
-    _isRegistered = (magIdentifier && certificateData);
-    
-    return _isRegistered;
 }
 
 
@@ -92,12 +68,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     // Remove current user object
     //
     [[MASModelService sharedService] clearCurrentUserForLogout];
-    
-    //
-    // Remove PKCE Code Verifier and state
-    //
-    [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-    [[MASAccessService sharedService].currentAccessObj deletePKCEState];
     
     //
     // Remove local & shared keychains
@@ -153,7 +123,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 
 # pragma mark - Bluetooth Peripheral
-//#if TARGET_OS_IOS
 
 - (void)startAsBluetoothPeripheral
 {
@@ -185,31 +154,5 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 {
     [[MASBluetoothService sharedService].central stopScanning];
 }
-
-//#endif
-# pragma mark - NSCoding
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [super encodeWithCoder:aCoder];
-    
-    if(self.identifier) [aCoder encodeObject:self.identifier forKey:MASDeviceIdentifierPropertyKey];
-    if(self.name) [aCoder encodeObject:self.name forKey:MASDeviceNamePropertyKey];
-    if(self.status) [aCoder encodeObject:self.status forKey:MASDeviceStatusPropertyKey];
-}
-
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if(self = [super initWithCoder:aDecoder])
-    {
-        [self setValue:[aDecoder decodeObjectForKey:MASDeviceIdentifierPropertyKey] forKey:@"identifier"];
-        [self setValue:[aDecoder decodeObjectForKey:MASDeviceNamePropertyKey] forKey:@"name"];
-        [self setValue:[aDecoder decodeObjectForKey:MASDeviceStatusPropertyKey] forKey:@"status"];
-    }
-    
-    return self;
-}
-
 
 @end

@@ -8,11 +8,35 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <MASFoundation/MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
 
 
 @interface MASUser (MASPrivate)
     <NSCoding>
+
+
+///--------------------------------------
+/// @name Properties
+///--------------------------------------
+
+# pragma mark - Properties
+
+@property (nonatomic, assign, readonly) BOOL isCurrentUser;
+@property (nonatomic, assign, readonly) BOOL isAuthenticated;
+@property (nonatomic, assign, readonly) BOOL isSessionLocked;
+
+@property (nonatomic, copy, readwrite) NSString *userName;
+@property (nonatomic, copy, readwrite) NSString *familyName;
+@property (nonatomic, copy, readwrite) NSString *givenName;
+@property (nonatomic, copy, readwrite) NSString *formattedName;
+@property (nonatomic, copy, readwrite) NSDictionary *emailAddresses;
+@property (nonatomic, copy, readwrite) NSDictionary *phoneNumbers;
+@property (nonatomic, copy, readwrite) NSDictionary *addresses;
+@property (nonatomic, copy, readwrite) NSDictionary *photos;
+@property (nonatomic, copy, readwrite) NSArray *groups;
+@property (nonatomic, assign, readwrite) BOOL active;
+@property (nonatomic, copy, readonly) NSString *accessToken;
+@property (nonatomic, copy, readwrite) NSMutableDictionary *_attributes;
 
 
 ///--------------------------------------

@@ -9,9 +9,11 @@
 //
 
 #import <tvOS_MASFoundation/tvOS MASFoundation.h>
+
 #if TARGET_OS_IOS
 #import <WebKit/WebKit.h>
 #endif
+
 @protocol MASSocialLoginDelegate <NSObject>
 
 @required

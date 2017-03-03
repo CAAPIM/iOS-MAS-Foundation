@@ -118,7 +118,6 @@
 + (void)start:(MASCompletionErrorBlock)completion
 {
     //DLog(@"called");
-    
     [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
     
     //
@@ -841,16 +840,15 @@
     //
     // Check that network manager is ready, expected to be at this point but lets be sure
     //
-    
-//    if(![[MASNetworkingService sharedService] networkIsReachable])
-//    {
-//        //
-//        // Notify
-//        //
-//        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-//        
-//        return;
-//    }
+    if(![[MASNetworkingService sharedService] networkIsReachable])
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
+        
+        return;
+    }
     
     __block MASResponseInfoErrorBlock blockCompletion = completion;
     
@@ -1373,7 +1371,7 @@
 
 + (void)currentStatusToConsole
 {
-   /* MASServiceRegistry *registry = [MASServiceRegistry sharedRegistry];
+    /*MASServiceRegistry *registry = [MASServiceRegistry sharedRegistry];
     MASConfigurationService *configurationService = [MASConfigurationService sharedService];
     MASBluetoothService *bluetoothService = [MASBluetoothService sharedService];
     MASFileService *fileService = [MASFileService sharedService];
@@ -1381,7 +1379,7 @@
     MASModelService *modelService = [MASModelService sharedService];
     MASNetworkingService *networkingService = [MASNetworkingService sharedService];
     
-   DLog(@"\n\n\n%@\n\n  ****************************** Services Summary ******************************\n\n\n"
+    DLog(@"\n\n\n%@\n\n  ****************************** Services Summary ******************************\n\n\n"
         "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
         (registry ? [registry debugDescription] : @"(Service Registry Not Initialized"),
         (configurationService ? [configurationService debugDescription] : @"(Configuration Service Not Initialized)\n\n"),
@@ -1390,7 +1388,8 @@
         (bluetoothService ? [bluetoothService debugDescription] : @"(Bluetooth Service Not Initialized)\n\n"),
         (modelService ? [modelService debugDescription] : @"(Model Service Not Initialized)\n\n"),
         (fileService ? [fileService debugDescription] : @"(File Service Not Initialized)\n\n"),
-        [[MASAccessService sharedService] debugSecuredDescription]);*/
+        [[MASAccessService sharedService] debugSecuredDescription]);
+     */
 }
 
 #endif

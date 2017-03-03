@@ -8,7 +8,15 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+//#if TARGET_OS_IOS
+//#import <MASFoundation/MASFoundation.h>
+//
+//
+//#elif TARGET_OS_TV
+
+
 #import <tvOS_MASFoundation/tvOS MASFoundation.h>
+
 
 /**
  * The `MASGroup` class is a local representation of group data.
@@ -24,19 +32,19 @@
 /**
  * Group Name
  */
-@property (nonatomic, copy, readwrite, nonnull) NSString *groupName;
+@property (nonatomic, copy, readwrite) NSString *groupName;
 
 
 /**
  *  Group Owner
  */
-@property (nonatomic, copy, readwrite, nullable) NSString *owner;
+@property (nonatomic, copy, readwrite) NSString *owner;
 
 
 /**
  *  Group Members
  */
-@property (nonatomic, copy, readwrite, nullable) NSArray *members;
+@property (nonatomic, copy, readwrite) NSArray *members;
 
 
 # pragma mark - Lifecycle
@@ -48,7 +56,7 @@
  *
  *  @return The instance of the MASGroup object
  */
-- (instancetype _Nullable)initWithInfo:(NSDictionary *_Nonnull)info;
+- (instancetype)initWithInfo:(NSDictionary *)info;
 
 
 
@@ -57,6 +65,6 @@
  *
  *  @return The instance of a new MASGroup object
  */
-+ (MASGroup *_Nullable)group;
++ (MASGroup *)group;
 
 @end

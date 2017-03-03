@@ -98,7 +98,7 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
  *  @param completion MASCompletionErrorBlock returns boolean of consent state and error if there is any
  *  @param deviceName NSString of device name
  */
-- (void)handleBLEProximityLoginUserConsent:(MASCompletionErrorBlock _Nullable)completion deviceName:(NSString *_Nonnull)deviceName;
+- (void)handleBLEProximityLoginUserConsent:(MASCompletionErrorBlock)completion deviceName:(NSString *)deviceName;
 
 
 
@@ -112,7 +112,7 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
  *
  *  @param authorizationCode NSString of authorization code
  */
-- (void)didReceiveAuthorizationCode:(NSString *_Nonnull)authorizationCode;
+- (void)didReceiveAuthorizationCode:(NSString *)authorizationCode;
 
 
 
@@ -130,6 +130,6 @@ typedef NS_ENUM(NSInteger, MASBLEServiceState) {
  *
  *  @param error NSError of BLE proximity login error
  */
-- (void)didReceiveProximityLoginError:(NSError *_Nonnull)error;
+- (void)didReceiveProximityLoginError:(NSError *)error;
 
 @end

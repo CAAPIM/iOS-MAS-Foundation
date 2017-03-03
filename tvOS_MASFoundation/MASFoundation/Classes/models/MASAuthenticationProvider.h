@@ -7,10 +7,15 @@
 //  This software may be modified and distributed under the terms
 //  of the MIT license. See the LICENSE file for details.
 //
+//#if TARGET_OS_IOS
+//#import <MASFoundation/MASFoundation.h>
+//
+//
+//#elif TARGET_OS_TV
+
 
 #import <tvOS_MASFoundation/tvOS MASFoundation.h>
-
-
+//#endif
 /**
  * The `MASAuthenticationProvider` class is a representation of a single provider.
  */
@@ -27,20 +32,20 @@
 /**
  * The MASAuthenticationProvider identifier.
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *identifier;
+@property (nonatomic, copy, readonly) NSString *identifier;
 
 
 /**
  * The MASAuthenticationProvider URL.
  */
-@property (nonatomic, copy, readonly, nonnull) NSURL *authenticationUrl;
+@property (nonatomic, copy, readonly) NSURL *authenticationUrl;
 
 
 /**
  *  The MASAuthenticationProvider polling URL, only applicable to QR codes.  
  *  Nil for social login providers.
  */
-@property (nonatomic, copy, readonly, nullable) NSURL *pollUrl;
+@property (nonatomic, copy, readonly) NSURL *pollUrl;
 
 
 

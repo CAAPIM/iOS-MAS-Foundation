@@ -8,7 +8,7 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <MASFoundation/MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
 
 
 
@@ -119,6 +119,23 @@ static NSString *const MASScopeValueMssoRegister = @"msso_register";
 
 # pragma mark - Properties
 
+@property (nonatomic, assign, readonly) BOOL isRegistered;
+
+@property (nonatomic, copy, readwrite) NSString *organization;
+@property (nonatomic, copy, readwrite) NSString *name;
+@property (nonatomic, copy, readwrite) NSString *detailedDescription;
+@property (nonatomic, copy, readwrite) NSString *identifier;
+@property (nonatomic, copy, readwrite) NSString *environment;
+@property (nonatomic, copy, readwrite) NSURL *redirectUri;
+@property (nonatomic, copy, readwrite) NSString *registeredBy;
+@property (nonatomic, copy, readwrite) NSArray *scope;
+@property (nonatomic, copy, readwrite) NSString *scopeAsString;
+@property (nonatomic, copy, readwrite) NSString *status;
+@property (nonatomic, copy, readwrite) NSString *iconUrl;
+@property (nonatomic, copy, readwrite) NSString *authUrl;
+@property (nonatomic, copy, readwrite) NSString *nativeUrl;
+@property (nonatomic, copy, readwrite) NSDictionary *customProperties;
+@property (nonatomic, assign, readonly) BOOL isAuthenticated;
 @property (nonatomic, assign, readonly) MASAuthenticationStatus authenticationStatus;
 
 

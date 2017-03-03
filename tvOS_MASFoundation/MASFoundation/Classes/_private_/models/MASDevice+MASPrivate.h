@@ -8,11 +8,24 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <MASFoundation/MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
 
 
 @interface MASDevice (MASPrivate)
     <NSCoding>
+
+
+///--------------------------------------
+/// @name Properties
+///--------------------------------------
+
+# pragma mark - Properties
+
+@property (nonatomic, assign, readonly) BOOL isRegistered;
+
+@property (nonatomic, copy, readwrite) NSString *identifier;
+@property (nonatomic, copy, readwrite) NSString *name;
+@property (nonatomic, copy, readwrite) NSString *status;
 
 
 ///--------------------------------------

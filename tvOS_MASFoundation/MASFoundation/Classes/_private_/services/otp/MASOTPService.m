@@ -106,7 +106,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
     {
 //        DLog(@"\n\nOTP credentials block called with oneTimePassword: %@ and cancel: %@\n\n",
 //             oneTimePassword, (cancel ? @"Yes" : @"No"));
-        
+//        
         //
         // Cancelled stop here
         //
@@ -117,7 +117,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if (otpFetchcompletion)
             {
-                otpFetchcompletion(NO, [NSError errorOTPAuthenticationCancelled]);
+                otpFetchcompletion(NO, nil);
             }
             
             //
@@ -125,7 +125,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if(completion)
             {
-                completion(nil, [NSError errorOTPAuthenticationCancelled]);
+                completion(nil, nil);
             }
             
             blockSelf.currentChannels = nil;
@@ -158,8 +158,8 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
     //
     otpGenerationBlock = ^(NSArray *otpChannels, BOOL cancel, MASCompletionErrorBlock otpGenerationcompletion)
     {
-//        DLog(@"\n\nOTP generation block called with otpChannels: %@ and cancel: %@\n\n",
-//             otpChannels, (cancel ? @"Yes" : @"No"));
+       // DLog(@"\n\nOTP generation block called with otpChannels: %@ and cancel: %@\n\n",
+         //    otpChannels, (cancel ? @"Yes" : @"No"));
         
         //
         // Reset the otpChannels
@@ -176,7 +176,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if (otpGenerationcompletion)
             {
-                otpGenerationcompletion(NO, [NSError errorOTPChannelSelectionCancelled]);
+                otpGenerationcompletion(NO, nil);
             }
             
             //
@@ -184,7 +184,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             if(completion)
             {
-                completion(nil, [NSError errorOTPChannelSelectionCancelled]);
+                completion(nil, nil);
             }
             
             blockSelf.currentChannels = nil;
@@ -371,11 +371,11 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
     // Prompt for OTP generated and send OTP to continue original request.
     //
     else if ([magErrorCode hasSuffix:MASApiErrorCodeInvalidOTPProvidedSuffix]) {
-       
+//       
 //        DLog(@"\n\n\n********************************************************\n\n"
 //             "Waiting for one time password to continue request"
 //             @"\n\n********************************************************\n\n\n");
-        
+//        
         //
         // otpError to provide details of the OTP flow handle
         //

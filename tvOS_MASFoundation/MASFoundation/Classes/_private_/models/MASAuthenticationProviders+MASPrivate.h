@@ -22,10 +22,10 @@
 
 # pragma mark - Properties
 
-//@property (nonatomic, copy, readwrite) NSArray *providers;
-//
-//
-//@property (nonatomic, copy, readwrite) NSString *idp;
+@property (nonatomic, copy, readwrite) NSArray *providers;
+
+
+@property (nonatomic, copy, readwrite) NSString *idp;
 
 
 ///--------------------------------------

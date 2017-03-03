@@ -14,16 +14,6 @@
 #import "NSString+MASPrivate.h"
 #import "NSError+MASPrivate.h"
 
-# pragma mark - Property Constants
-
-static NSString *const kMASProximityLoginQRCodeAuthenticationUrlKey = @"authenticationUrl"; // string
-static NSString *const kMASProximityLoginQRCodePollUrlKey = @"pollUrl"; // string
-static NSString *const kMASProximityLoginQRCodePollingDelayKey = @"pollingDelay"; // string
-static NSString *const kMASProximityLoginQRCodePollingIntervalKey = @"pollingInterval"; // string
-static NSString *const kMASProximityLoginQRCodePollingLimitKey = @"pollingLimit"; // string
-static NSString *const kMASProximityLoginQRCodeCurrentPollingCounterKey = @"currentPollingCounter"; // string
-static NSString *const kMASProximityLoginQRCodeIsPollingKey = @"isPolling"; // string
-
 @interface MASProximityLoginQRCode ()
 
 @property (nonatomic, strong) UIImage *qrCodeImage;
@@ -176,50 +166,5 @@ static NSString *const kMASProximityLoginQRCodeIsPollingKey = @"isPolling"; // s
             "        objectId: %@\n        auth url: %@\n        poll url: %@\n        polling delay: %@\n        polling interval: %@\n        polling limit: %@\n",
             [self class], [self objectId], [self authenticationUrl], [self pollUrl], [self pollingDelay], [self pollingInterval], [self pollingLimit]];
 }
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    MASProximityLoginQRCode *qrCode = [super copyWithZone:zone];
-    
-    [qrCode setValue:self.authenticationUrl forKey:@"authenticationUrl"];
-    [qrCode setValue:self.pollUrl forKey:@"pollUrl"];
-    [qrCode setValue:self.pollingDelay forKey:@"pollingDelay"];
-    [qrCode setValue:self.pollingInterval forKey:@"pollingInterval"];
-    [qrCode setValue:self.pollingLimit forKey:@"pollingLimit"];
-    
-    return qrCode;
-}
-
-
-# pragma mark - NSCoding
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [super encodeWithCoder:aCoder]; //ObjectID is encoded in the super class MASObject
-    
-    if (self.authenticationUrl) [aCoder encodeObject:self.authenticationUrl forKey:kMASProximityLoginQRCodeAuthenticationUrlKey];
-    if (self.pollUrl) [aCoder encodeObject:self.pollUrl forKey:kMASProximityLoginQRCodePollUrlKey];
-    if (self.pollingDelay) [aCoder encodeObject:self.pollingDelay forKey:kMASProximityLoginQRCodePollingDelayKey];
-    if (self.pollingInterval) [aCoder encodeObject:self.pollingInterval forKey:kMASProximityLoginQRCodePollingIntervalKey];
-    if (self.pollingLimit) [aCoder encodeObject:self.pollingLimit forKey:kMASProximityLoginQRCodePollingLimitKey];
-}
-
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if(self = [super initWithCoder:aDecoder]) //ObjectID is decoded in the super class MASObject
-    {
-        [self setValue:[aDecoder decodeObjectForKey:kMASProximityLoginQRCodeAuthenticationUrlKey] forKey:@"authenticationUrl"];
-        [self setValue:[aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollUrlKey] forKey:@"pollUrl"];
-        [self setValue:[aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollingDelayKey] forKey:@"pollingDelay"];
-        [self setValue:[aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollingIntervalKey] forKey:@"pollingInterval"];
-        [self setValue:[aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollingLimitKey] forKey:@"pollingLimit"];
-    }
-    
-    return self;
-}
-
 
 @end

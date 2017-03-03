@@ -14,9 +14,8 @@
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
 #import "MASIKeyChainStore.h"
+
 #import "MASDevice+MASPrivate.h"
-#import "NSString+MASPrivate.h"
-#import "NSData+MASPrivate.h"
 
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
@@ -364,6 +363,19 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         return;
     }
     
+    //
+    // If the authenticationProviders were already retrieved and never used, use the old one
+    //
+    if (self.currentProviders)
+    {
+        //
+        // Notify
+        //
+        if (completion) completion(self.currentProviders, nil);
+        
+        return;
+    }
+    
     //DLog(@"\n\nNO detected cached providers, retreiving from server\n\n");
 
     //
@@ -415,37 +427,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     
     // Display
     parameterInfo[MASDisplayRequestResponseKey] = @"social_login";
-    
-    // PKCE Support - generate code verifier
-    [[MASAccessService sharedService].currentAccessObj generateCodeVerifier];
-    
-    // PKCE Support - generate state
-    [[MASAccessService sharedService].currentAccessObj generatePKCEState];
-    
-    // Retrieve code verifier
-    NSString *codeVerifier = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
-    
-    // Retrieve state
-    NSString *pkceState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
-    
-    if (codeVerifier)
-    {
-        // SHA256 the code verifier and encode it with base64url
-        NSString *codeChallenge = [NSString base64URLWithNSData:[codeVerifier sha256Data]];
-        
-        if (codeChallenge)
-        {
-            parameterInfo[MASPKCECodeChallengeRequestResponseKey] = codeChallenge;
-            //
-            // code_challenge_method should be S256 if the code challenge is hashed;
-            //
-            // Otherwise, make code_challenge = code_verifier, and send code_challenge_method as plan, MASPKCECodeChallengeMethodPlainKey
-            //
-            parameterInfo[MASPKCECodeChallengeMethodRequestResponseKey] = MASPKCECodeChallengeMethodSHA256Key;
-            
-            parameterInfo[MASPKCEStateRequestResponseKey] = pkceState;
-        }
-    }
     
     //
     // Trigger the request
@@ -673,13 +654,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             // Clear currentUser object upon log-out
             //
             [blockSelf clearCurrentUserForLogout];
-            
-            //
-            // Remove PKCE Code Verifier and state
-            //
-            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-            
             //
             // KeyChain
             //
@@ -818,7 +792,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 {
 //                    DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
 //                        userName, password, (cancel ? @"Yes" : @"No"));
-//                
+                
                     //
                     // Reset the authenticationProvider as the session id should have been used
                     //
@@ -1029,9 +1003,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         //
         default:
         {
-            //DLog(@"\n\nError detecting unknown registration type: %@\n\n",
-             //   [MASModelService grantFlowToString:_grantFlow_]);
-            
+//            DLog(@"\n\nError detecting unknown registration type: %@\n\n",
+//                [MASModelService grantFlowToString:_grantFlow_]);
+//            
             break;
         }
     }
@@ -1367,17 +1341,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     headerInfo[MASCertFormatRequestResponseKey] = @"pem";
     
     //
-    // If code verifier exists in the memory
-    //
-    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
-    {
-        //
-        // inject it into parameter of the request
-        //
-        headerInfo[MASPKCECodeVerifierHeaderRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
-    }
-    
-    //
     // Parameters
     //
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
@@ -1421,12 +1384,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              
              return;
          }
-         
-         //
-         // Remove PKCE Code Verifier and state
-         //
-         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          //
          // Validate id_token when received from server.
@@ -1759,7 +1716,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginWithCompletion:(MASCompletionErrorBlock)completion
 {
-    //DLog(@"called");
+   //tvos  DLog(@"called");
     
     //
     //  Refresh access obj
@@ -1776,10 +1733,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // If the access token is expired we should use the refresh token to get the access token.
         // If the refresh token is expired we use ID Token to get access and refresh token.
         // If ID Token is invalid or expired we ask the user to enter username and password.
-        // If the current user does not exists, but id_token does, probably from MSSO scenario or id_token given from device registration which we should consume.
         //
         
-        if (self.currentUser || self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser || (!self.currentUser && [MASAccess currentAccess].idToken))
+        if (self.currentUser || self.currentApplication.authenticationStatus == MASAuthenticationStatusLoginWithUser)
         {
             
             [self loginUsingUserCredentials:completion];
@@ -1928,9 +1884,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock completion)
              {
-                // DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
-                    //  userName, password, (cancel ? @"Yes" : @"No"));
-                 
+//                 DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
+//                      userName, password, (cancel ? @"Yes" : @"No"));
+//                 
                  //
                  // Reset the authenticationProvider as the session id should have been used
                  //
@@ -1998,9 +1954,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
              {
-                 //DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
-                      //authorizationCode, (cancel ? @"Yes" : @"No"));
-                 
+//                 DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
+//                      authorizationCode, (cancel ? @"Yes" : @"No"));
+//                 
                  //
                  // Reset the authenticationProvider as the session id should have been used
                  //
@@ -2058,7 +2014,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              };
          }
          
-//         //DLog(@"\n\n\n********************************************************\n\n"
+//         DLog(@"\n\n\n********************************************************\n\n"
 //              "Waiting for credentials response to continue registration"
 //              @"\n\n********************************************************\n\n\n");
 //         
@@ -2104,7 +2060,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginAnonymouslyWithCompletion:(MASCompletionErrorBlock)completion
 {
-    //DLog(@"called");
+  //tvos   DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -2264,7 +2220,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginWithAuthorizationCode:(NSString *)code completion:(MASCompletionErrorBlock)completion
 {
-    //DLog(@"called");
+  //tvos   DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -2387,17 +2343,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeAuthorizationCode;
     
     //
-    // If code verifier exists in the memory
-    //
-    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
-    {
-        //
-        // inject it into parameter of the request
-        //
-        parameterInfo[MASPKCECodeVerifierRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
-    }
-    
-    //
     // Trigger the request
     //
     // Note that security credentials are added automatically by this method
@@ -2434,12 +2379,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          // Validate id_token when received from server.
          //
          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
-         
-         //
-         // Remove PKCE Code Verifier and state once it's validated
-         //
-         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
              [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
@@ -2511,7 +2450,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 
 - (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
 {
-//DLog(@"called");
+    //tvos DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -2657,12 +2596,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             }
             
             //
-            // Remove PKCE Code Verifier and state
-            //
-            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-            
-            //
             // Validate id_token when received from server.
             //
             NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
@@ -2742,7 +2675,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
  */
 - (void)loginAsIdTokenIgnoreFallback:(BOOL)ignoreFallback completion:(MASCompletionErrorBlock)completion
 {
-   // DLog(@"called");
+   //tvos  DLog(@"called");
     
     //
     //  Refresh access obj
@@ -2893,12 +2826,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              
              return;
          }
-        
-         //
-         // Remove PKCE Code Verifier and state
-         //
-         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
          
          //
          // Validate id_token when received from server.
@@ -2979,7 +2906,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
  */
 - (void)loginAsRefreshTokenWithCompletion:(MASCompletionErrorBlock)completion
 {
-   // DLog(@"called");
+   //tvos  DLog(@"called");
     
     //
     // The application must be registered else stop here
@@ -3097,12 +3024,6 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             
                 return;
             }
-            
-            //
-            // Remove PKCE Code Verifier and state
-            //
-            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
         
             //
             // Validate id_token when received from server.

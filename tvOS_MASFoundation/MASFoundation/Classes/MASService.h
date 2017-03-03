@@ -61,7 +61,7 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  *
  * @return Returns the shared MASService singleton.
  */
-+ (instancetype _Nullable)sharedService;
++ (instancetype)sharedService;
 
 
 
@@ -79,7 +79,7 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  *
  * @return Return the UUID assigned to the MASService subclass.
  */
-+ (NSString *_Nullable)serviceUUID;
++ (NSString *)serviceUUID;
 
 
 
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  *
  * @return Returns the MASServiceLifecycleStatus in a human readable string.
  */
-- (NSString *_Nonnull)lifecycleStatusAsString;
+- (NSString *)lifecycleStatusAsString;
 
 
 
@@ -169,7 +169,7 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  * @param status The MASServiceLifecycleStatus.
  * @return Returns the MASServiceLifecycleStatus in a human readable string.
  */
-+ (NSString *_Nonnull)lifecycleStatusToString:(MASServiceLifecycleStatus)status;
++ (NSString *)lifecycleStatusToString:(MASServiceLifecycleStatus)status;
 
 @end
 
@@ -189,7 +189,7 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  *
  * @return Returns an instance of the MASService.
  */
-- (instancetype _Nullable)initProtected;
+- (id)initProtected;
 
 
 
@@ -198,7 +198,7 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  *
  * @param error the NSError that the service experienced.
  */
-- (void)serviceDidFailWithError:(NSError *_Nullable)error;
+- (void)serviceDidFailWithError:(NSError *)error;
 
 
 @end

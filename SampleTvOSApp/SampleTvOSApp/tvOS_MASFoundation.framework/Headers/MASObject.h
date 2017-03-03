@@ -19,20 +19,6 @@
  */
 @interface MASObject : NSObject <NSCopying, NSCoding>
 
-///--------------------------------------
-/// @name Lifecycle
-///--------------------------------------
-
-/**
- *  Init the object with passed attributes in a form of NSDictionary
- *
- *  @param attributes NSDictionary to be used as attributes
- *
- *  @return The instance of the MASObject object
- */
-- (instancetype _Nullable)initWithAttributes:(NSDictionary<NSString *, NSString *> *_Nonnull)attributes;
-
-
 
 ///--------------------------------------
 /// @name Instance Methods
@@ -46,7 +32,7 @@
  *
  *  @return Returns the MASObject that is instantiated with the given class name.
  */
-+ (instancetype _Nullable)objectWithClassName:(NSString *_Nonnull)className;
++ (instancetype)objectWithClassName:(NSString *)className;
 
 
 
@@ -59,8 +45,8 @@
  *
  *  @return Returns the MASObject that is instantiated with the given class name and dictionary.
  */
-+ (instancetype _Nullable)objectWithClassName:(NSString *_Nonnull)className
-                                     withData:(NSDictionary<NSString *, NSString*> *_Nonnull)dictionary;
++ (instancetype)objectWithClassName:(NSString *)className
+                           withData:(NSDictionary *)dictionary;
 
 
 
@@ -71,19 +57,13 @@
 /**
  *  The class name of the object.
  */
-@property (nonatomic, readonly, copy, nonnull) NSString *className;
+@property (nonatomic, readonly, copy) NSString *className;
 
 
 /**
  *  The id of the object.
  */
-@property (nonatomic, readonly, copy, nonnull) NSString *objectId;
-
-
-/**
- *  List of attributes of the object.
- */
-@property (nonatomic, readonly, copy, nonnull) NSMutableDictionary<NSString *, NSString *> *_attributes;
+@property (nonatomic, readonly, copy) NSString *objectId;
 
 
 
@@ -99,7 +79,7 @@
  *
  *  @return The value associated with a given key.
  */
-- (id _Nullable)objectForKey:(id _Nonnull)key;
+- (id)objectForKey:(id)key;
 
 
 
@@ -112,7 +92,7 @@
  *
  *  @param key    The key for `object`. Raises an `NSInvalidArgumentException` if `key` is `nil`.
  */
-- (void)setObject:(id _Nonnull)object forKey:(id <NSCopying> _Nonnull)key;
+- (void)setObject:(id)object forKey:(id <NSCopying>)key;
 
 
 
@@ -125,7 +105,7 @@
  *
  *  @return The value associated with a given key.
  */
-- (id _Nullable)objectForKeyedSubscript:(id _Nonnull)key;
+- (id)objectForKeyedSubscript:(id)key;
 
 
 
@@ -140,7 +120,7 @@
  *
  *  @param key    key The key for `object`. Raises an `NSInvalidArgumentException` if `key` is `nil`.
  */
-- (void)setObject:(id _Nonnull)object forKeyedSubscript:(id <NSCopying> _Nonnull)key;
+- (void)setObject:(id)object forKeyedSubscript:(id <NSCopying>)key;
 
 
 #pragma mark - Print Attributes

@@ -38,7 +38,7 @@ FOUNDATION_EXPORT const unsigned char tvOS_MASFoundationVersionString[];
 #import <tvOS_MASFoundation/MASApplication.h>
 #import <tvOS_MASFoundation/MASAuthenticationProvider.h>
 #import <tvOS_MASFoundation/MASAuthenticationProviders.h>
-#import <tvOS_MASFoundation/MASAuthorizationResponse.h>
+
 #import <tvOS_MASFoundation/MASConfiguration.h>
 #import <tvOS_MASFoundation/MASDevice.h>
 #import <tvOS_MASFoundation/MASFile.h>

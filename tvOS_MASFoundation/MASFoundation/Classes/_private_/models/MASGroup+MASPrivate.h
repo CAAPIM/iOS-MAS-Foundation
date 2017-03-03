@@ -8,12 +8,26 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <MASFoundation/MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
 
 @interface MASGroup (MASPrivate)
 
-// TO BE DELETED!
-// NOT USED ANYMORE
-// ALL IMPLEMENTATION IS DONE DIRECTLY IN THE MASConfiguration model object
+# pragma mark - Properties
+
+@property (nonatomic, copy, readwrite) NSString *groupName;
+@property (nonatomic, copy, readwrite) NSString *owner;
+@property (nonatomic, copy, readwrite) NSArray *members;
+@property (nonatomic, copy, readwrite) NSMutableDictionary *_attributes;
+
+# pragma mark - Lifecycle
+
+/**
+ *  Init the object with passed attributes in a form of NSDictionary
+ *
+ *  @param attributes NSDictionary to be used as attributes
+ *
+ *  @return The instance of the MASGroup object
+ */
+- (instancetype)initWithAttributes:(NSDictionary *)attributes;
 
 @end

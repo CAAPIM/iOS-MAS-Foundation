@@ -13,28 +13,6 @@
 #import "MASConfiguration.h"
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
-#import "MASAccessService.h"
-
-# pragma mark - Property Constants
-
-static NSString *const MASApplicationIsRegisteredPropertyKey = @"isRegistered"; // bool
-static NSString *const MASApplicationOrganizationPropertyKey = @"organization"; // string
-static NSString *const MASApplicationNamePropertyKey = @"name"; // string
-static NSString *const MASApplicationDescriptionPropertyKey = @"description"; // string
-static NSString *const MASApplicationIdentifierPropertyKey = @"identifier"; // string
-static NSString *const MASApplicationEnvironmentPropertyKey = @"environment"; // string
-static NSString *const MASApplicationIconUrlPropertyKey = @"iconUrl"; // string
-static NSString *const MASApplicationAuthUrlPropertyKey = @"authUrl"; // string
-static NSString *const MASApplicationNativeUrlPropertyKey = @"nativeUrl"; // string
-static NSString *const MASApplicationCustomPropertiesPropertyKey = @"customProperties"; // string
-static NSString *const MASApplicationExpirationPropertyKey = @"expiration"; // string
-static NSString *const MASApplicationKeyPropertyKey = @"key"; // string
-static NSString *const MASApplicationRedirectUriPropertyKey = @"redirectUri"; // url
-static NSString *const MASApplicationRegisteredByPropertyKey = @"registeredBy"; // string
-static NSString *const MASApplicationScopePropertyKey = @"scope"; // string
-static NSString *const MASApplicationScopeAsStringPropertyKey = @"scopeAsString"; // string
-static NSString *const MASApplicationSecretPropertyKey = @"secret"; // string
-static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 #if TARGET_OS_IOS
 @interface MASApplication ()
@@ -43,30 +21,14 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     id _originalDelegate;
 }
 
-@property (nonatomic, copy) MASCompletionErrorBlock errorBlock;
 @property (nonatomic, strong, readonly) UIWebView *webView;
-@end
-
-#endif
-
-#if  TARGET_OS_TV
-
-@interface MASApplication ()
-{
-    id _originalDelegate;
-}
 @property (nonatomic, copy) MASCompletionErrorBlock errorBlock;
+
 @end
 #endif
-
-
-
-
-
 
 @implementation MASApplication
-@synthesize isRegistered = _isRegistered;
-@synthesize isAuthenticated = _isAuthenticated;
+
 
 # pragma mark - Current Application
 
@@ -110,95 +72,6 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
         [self redirectUri],[self registeredBy], [self scopeAsString],
         (![self customProperties] ? @"<none>" : [NSString stringWithFormat:@"\n\n%@", [self customProperties]])];
 }
-
-# pragma mark - Properties
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-
-- (BOOL)isRegistered
-{
-    //
-    // Obtain key chain items to determine registration status
-    //
-    MASAccessService *accessService = [MASAccessService sharedService];
-
-    NSNumber *clientExpiration = [accessService getAccessValueNumberWithType:MASAccessValueTypeClientExpiration];
-    NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
-    NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
-
-    _isRegistered = (clientExpiration && clientId && clientSecret && !self.isExpired);
-    return _isRegistered;
-}
-
-- (BOOL)isAuthenticated
-{
-    
-    return [self authenticationStatus] != MASAuthenticationStatusNotLoggedIn;
-}
-
-
-- (MASAuthenticationStatus)authenticationStatus
-{
-    MASAuthenticationStatus currentStatus = MASAuthenticationStatusNotLoggedIn;
-    
-    //
-    // If the device is not registered, whether the user credentials are in keychain or not,
-    // we have to assume that the user is not authenticated.
-    //
-    if (![MASDevice currentDevice].isRegistered)
-    {
-        return currentStatus;
-    }
-    
-    //
-    // Retrieve the items that determine authentication status
-    //
-    MASAccessService *accessService = [MASAccessService sharedService];
-    
-    NSString *accessToken = accessService.currentAccessObj.accessToken;
-    NSString *refreshToken = accessService.currentAccessObj.refreshToken;
-    NSString *idToken = accessService.currentAccessObj.idToken;
-    NSNumber *expiresIn = accessService.currentAccessObj.expiresIn;
-    NSDate *expiresInDate = accessService.currentAccessObj.expiresInDate;
-    
-    //DLog(@"\n\n  access token: %@\n  refresh token: %@\n  expiresIn: %@, expires in date: %@\n\n",
-    //    accessToken, refreshToken, expiresIn, expiresInDate);
-    
-    //
-    // if accessToken, refreshToken, and exprieDate values exist, we understand that the user is authenticated with username and password
-    //
-    if (accessToken && refreshToken && expiresIn)
-    {
-        currentStatus = MASAuthenticationStatusLoginWithUser;
-    }
-    //
-    // if refreshToken is missing, the user has been authenticated anonymously
-    //
-    else if (accessToken && expiresIn){
-        currentStatus = MASAuthenticationStatusLoginAnonymously;
-    }
-    
-    //
-    // Then check if expiration has passed
-    //
-    if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
-    {
-        currentStatus = MASAuthenticationStatusNotLoggedIn;
-        [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
-    }
-    
-    if ((refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil])) && [MASUser currentUser])
-    {
-        currentStatus = MASAuthenticationStatusLoginWithUser;
-    }
-    
-    //DLog(@"\n\nNOW date is: %@, expiration date is: %@ and interval since now: %f\n\n",
-    //    [NSDate date], expiresInDate, [expiresInDate timeIntervalSinceNow]);
-    
-    return currentStatus;
-}
-
 
 
 # pragma mark - Enterprise Apps
@@ -274,12 +147,12 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     
     if (completion) completion(YES,nil);
     
-    
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//        selector:@selector(didReceiveStatusUpdate:)
-//        name:L7SDidReceiveStatusUpdateNotification
-//        object:nil];
-//    
+    /*
+    [[NSNotificationCenter defaultCenter] addObserver:self
+        selector:@selector(didReceiveStatusUpdate:)
+        name:L7SDidReceiveStatusUpdateNotification
+        object:nil];
+    */
     
     [webView loadRequest:request];
 }
@@ -380,7 +253,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-   // DLog(@"didFailLoadWithError %@",error);
+   //tvos  DLog(@"didFailLoadWithError %@",error);
     if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)])
     {
         return [_originalDelegate webView:webView didFailLoadWithError:error];
@@ -408,7 +281,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    DLog(@"shouldStartLoadWithRequest %@",request);
+    //tvos DLog(@"shouldStartLoadWithRequest %@",request);
     return (_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)] ?
         
         //
@@ -422,56 +295,4 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
         YES);
 }
 #endif
-
-# pragma mark - NSCoding
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [super encodeWithCoder:aCoder];
-    
-    if(self.organization) [aCoder encodeObject:self.organization forKey:MASApplicationOrganizationPropertyKey];
-    if(self.name) [aCoder encodeObject:self.name forKey:MASApplicationNamePropertyKey];
-    if(self.detailedDescription) [aCoder encodeObject:self.detailedDescription forKey:MASApplicationDescriptionPropertyKey];
-    if(self.identifier) [aCoder encodeObject:self.identifier forKey:MASApplicationIdentifierPropertyKey];
-    if(self.environment) [aCoder encodeObject:self.environment forKey:MASApplicationEnvironmentPropertyKey];
-    if(self.redirectUri) [aCoder encodeObject:self.redirectUri forKey:MASApplicationRedirectUriPropertyKey];
-    if(self.registeredBy) [aCoder encodeObject:self.registeredBy forKey:MASApplicationRegisteredByPropertyKey];
-    if(self.scope) [aCoder encodeObject:self.scope forKey:MASApplicationScopePropertyKey];
-    if(self.scopeAsString) [aCoder encodeObject:self.scopeAsString forKey:MASApplicationScopeAsStringPropertyKey];
-    if(self.status) [aCoder encodeObject:self.status forKey:MASApplicationStatusPropertyKey];
-    if(self.iconUrl) [aCoder encodeObject:self.iconUrl forKey:MASApplicationIconUrlPropertyKey];
-    if(self.authUrl) [aCoder encodeObject:self.authUrl forKey:MASApplicationAuthUrlPropertyKey];
-    if(self.nativeUrl) [aCoder encodeObject:self.nativeUrl forKey:MASApplicationNativeUrlPropertyKey];
-    if(self.customProperties) [aCoder encodeObject:self.customProperties forKey:MASApplicationCustomPropertiesPropertyKey];
-}
-
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    
-    if(self)
-    {
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationOrganizationPropertyKey] forKey:@"organization"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationNamePropertyKey] forKey:@"name"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationDescriptionPropertyKey] forKey:@"detailedDescription"];
-        
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationIdentifierPropertyKey] forKey:@"identifier"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationEnvironmentPropertyKey] forKey:@"environment"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationRedirectUriPropertyKey] forKey:@"redirectUri"];
-        
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationRegisteredByPropertyKey] forKey:@"registeredBy"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationScopePropertyKey] forKey:@"scope"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationScopeAsStringPropertyKey] forKey:@"scopeAsString"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationStatusPropertyKey] forKey:@"status"];
-        
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationIconUrlPropertyKey] forKey:@"iconUrl"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationAuthUrlPropertyKey] forKey:@"authUrl"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationNativeUrlPropertyKey] forKey:@"nativeUrl"];
-        [self setValue:[aDecoder decodeObjectForKey:MASApplicationCustomPropertiesPropertyKey] forKey:@"customProperties"];
-    }
-    
-    return self;
-}
-
 @end

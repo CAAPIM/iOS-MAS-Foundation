@@ -480,12 +480,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
-+ (NSError *)errorApplicationRedirectUriInvalid
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeApplicationRedirectUriInvalid errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
 + (NSError *)errorConfigurationLoadingFailedFileNotFound:(NSString *)fileName
 {
     //
@@ -659,12 +653,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
-+ (NSError *)errorInvalidAuthorization
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidAuthorization errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
 + (NSError *)errorUserAlreadyAuthenticated
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeUserAlreadyAuthenticated errorDomain:MASFoundationErrorDomainLocal];
@@ -692,18 +680,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 + (NSError *)errorLoginProcessCancelled
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeLoginProcessCancel errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
-+ (NSError *)errorOTPChannelSelectionCancelled
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeOTPChannelSelectionCancelled errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
-+ (NSError *)errorOTPAuthenticationCancelled
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeOTPAuthenticationCancelled errorDomain:MASFoundationErrorDomainLocal];
 }
 
 
@@ -930,8 +906,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeOTPExpired: return @"The OTP has expired.";
         case MASFoundationErrorCodeOTPRetryLimitExceeded: return @"You have exceeded the maximum number of invalid attempts. Please try after some time.";
         case MASFoundationErrorCodeOTPRetryBarred: return @"Your account is blocked. Try after some time.";
-        case MASFoundationErrorCodeOTPChannelSelectionCancelled: return @"OTP channel selection has been cancelled by user.";
-        case MASFoundationErrorCodeOTPAuthenticationCancelled: return @"OTP authentication has been cancelled by user.";
             
         //
         // Application
@@ -939,7 +913,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeApplicationAlreadyRegistered: return @"The application is already registered with valid credentials";
         case MASFoundationErrorCodeApplicationInvalid: return @"The application has invalid credentials";
         case MASFoundationErrorCodeApplicationNotRegistered: return @"The application is not registered";
-        case MASFoundationErrorCodeApplicationRedirectUriInvalid: return @"redirect_uri is invalid";
         case MASFoundationErrorCodeApplicationInvalidMagIdentifer: return @"Given mag-identifer is invalid.";
         
         //
@@ -995,11 +968,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         
         case MASFoundationErrorCodeResponseSerializationFailedToParseResponse: return @"Invalid response format - failed to parse response";
         
-        //
-        // Authorization
-        //
-        case MASFoundationErrorCodeInvalidAuthorization: return @"The authorization failed due to invalid state.";
-            
         //
         // User
         //

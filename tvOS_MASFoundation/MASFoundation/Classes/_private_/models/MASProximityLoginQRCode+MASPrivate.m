@@ -11,9 +11,18 @@
 #import "MASProximityLoginQRCode+MASPrivate.h"
 
 #import <objc/runtime.h>
-#import "MASAccessService.h"
 #import "MASNetworkingService.h"
 #import "NSError+MASPrivate.h"
+
+# pragma mark - Property Constants
+
+static NSString *const kMASProximityLoginQRCodeAuthenticationUrlKey = @"authenticationUrl"; // string
+static NSString *const kMASProximityLoginQRCodePollUrlKey = @"pollUrl"; // string
+static NSString *const kMASProximityLoginQRCodePollingDelayKey = @"pollingDelay"; // string
+static NSString *const kMASProximityLoginQRCodePollingIntervalKey = @"pollingInterval"; // string
+static NSString *const kMASProximityLoginQRCodePollingLimitKey = @"pollingLimit"; // string
+static NSString *const kMASProximityLoginQRCodeCurrentPollingCounterKey = @"currentPollingCounter"; // string
+static NSString *const kMASProximityLoginQRCodeIsPollingKey = @"isPolling"; // string
 
 @implementation MASProximityLoginQRCode (MASPrivate)
 
@@ -29,12 +38,12 @@
         return nil;
     }
     
-    [self setValue:authUrl forKey:@"authenticationUrl"];
-    [self setValue:pollingUrl forKey:@"pollUrl"];
-    [self setValue:initDelay forKey:@"pollingDelay"];
-    [self setValue:pollingInterval forKey:@"pollingInterval"];
-    [self setValue:pollingLimit forKey:@"pollingLimit"];
-
+    self.authenticationUrl = authUrl;
+    self.pollUrl = pollingUrl;
+    self.pollingDelay = initDelay;
+    self.pollingInterval = pollingInterval;
+    self.pollingLimit = pollingLimit;
+    
     return self;
 }
 
@@ -65,7 +74,7 @@
         UIGraphicsEndImageContext();
         CGImageRelease(cgImage);
         
-        [self setValue:[NSNumber numberWithBool:YES] forKey:@"isPolling"];
+        self.isPolling = YES;
         
         //
         // Start polling
@@ -97,7 +106,7 @@
 
 - (void)stopPrivateDisplayingQRCodeImageForProximityLogin
 {
-    [self setValue:[NSNumber numberWithBool:NO] forKey:@"isPolling"];
+    self.isPolling = NO;
     
     //
     // Send notification that polling stopped
@@ -132,7 +141,7 @@
     //
     // Increment the polling counter
     //
-    [self setValue:[NSNumber numberWithInt:self.currentPollingCounter+1] forKey:@"currentPollingCounter"];
+    self.currentPollingCounter++;
     
     NSString *pollPath = [self.pollUrl stringByReplacingOccurrencesOfString:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString withString:@""];
     
@@ -170,59 +179,6 @@
                                                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromProximityLoginNotification object:pollError];
                                            }
                                            else {
-                                               
-                                               //
-                                               // Validate PKCE state value
-                                               // If either one of request or response states is present, validate it; otherwise, ignore
-                                               //
-                                               if ([responseInfo objectForKey:MASPKCEStateRequestResponseKey] || [[MASAccessService sharedService].currentAccessObj retrievePKCEState])
-                                               {
-                                                   NSString *responseState = [responseInfo objectForKey:MASPKCEStateRequestResponseKey];
-                                                   NSString *requestState = [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
-                                                   
-                                                   NSError *pkceError = nil;
-                                                   
-                                                   //
-                                                   // If response or request state is nil, invalid request and/or response
-                                                   //
-                                                   if (responseState == nil || requestState == nil)
-                                                   {
-                                                       pkceError = [NSError errorInvalidAuthorization];
-                                                   }
-                                                   //
-                                                   // verify that the state in the response is the same as the state sent in the request
-                                                   //
-                                                   else if (![[responseInfo objectForKey:MASPKCEStateRequestResponseKey] isEqualToString:[[MASAccessService sharedService].currentAccessObj retrievePKCEState]])
-                                                   {
-                                                       pkceError = [NSError errorInvalidAuthorization];
-                                                   }
-                                                   
-                                                   //
-                                                   // If the validation fail, notify
-                                                   //
-                                                   if (pkceError)
-                                                   {
-                                                       //
-                                                       // Stop polling and displaying the QR Code image
-                                                       //
-                                                       [blockSelf stopPrivateDisplayingQRCodeImageForProximityLogin];
-                                                       
-                                                       //
-                                                       // If MASDevice's BLE delegate is set, and method is implemented, notify the delegate
-                                                       //
-                                                       if ([MASDevice proximityLoginDelegate] && [[MASDevice proximityLoginDelegate] respondsToSelector:@selector(didReceiveProximityLoginError:)])
-                                                       {
-                                                           [[MASDevice proximityLoginDelegate] didReceiveProximityLoginError:pkceError];
-                                                       }
-                                                       
-                                                       //
-                                                       // Send the notification with authorization code
-                                                       //
-                                                       [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidReceiveErrorFromProximityLoginNotification object:pkceError];
-                                                       
-                                                       return;
-                                                   }
-                                               }
                                                
                                                //
                                                // Retrieve authorization code
@@ -275,5 +231,139 @@
                                            }
                                        }];
 }
+
+
+# pragma mark - Properties
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
+
+- (NSString *)authenticationUrl
+{
+    return objc_getAssociatedObject(self, &kMASProximityLoginQRCodeAuthenticationUrlKey);
+}
+
+
+- (void)setAuthenticationUrl:(NSString *)authenticationUrl
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodeAuthenticationUrlKey, authenticationUrl, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSString *)pollUrl
+{
+    return objc_getAssociatedObject(self, &kMASProximityLoginQRCodePollUrlKey);
+}
+
+
+- (void)setPollUrl:(NSString *)pollUrl
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodePollUrlKey, pollUrl, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSNumber *)pollingDelay
+{
+    return objc_getAssociatedObject(self, &kMASProximityLoginQRCodePollingDelayKey);
+}
+
+
+- (void)setPollingDelay:(NSNumber *)pollingDelay
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodePollingDelayKey, pollingDelay, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSNumber *)pollingInterval
+{
+    return objc_getAssociatedObject(self, &kMASProximityLoginQRCodePollingIntervalKey);
+}
+
+
+- (void)setPollingInterval:(NSNumber *)pollingInterval
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodePollingIntervalKey, pollingInterval, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (NSNumber *)pollingLimit
+{
+    return objc_getAssociatedObject(self, &kMASProximityLoginQRCodePollingLimitKey);
+}
+
+
+- (void)setPollingLimit:(NSNumber *)pollingLimit
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodePollingLimitKey, pollingLimit, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (int)currentPollingCounter
+{
+    return [objc_getAssociatedObject(self, &kMASProximityLoginQRCodeCurrentPollingCounterKey) intValue];
+}
+
+
+- (void)setCurrentPollingCounter:(int)currentPollingCounter
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodeCurrentPollingCounterKey, [NSNumber numberWithInt:currentPollingCounter], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+
+- (BOOL)isPolling
+{
+    return [objc_getAssociatedObject(self, &kMASProximityLoginQRCodeIsPollingKey) boolValue];
+}
+
+
+- (void)setIsPolling:(BOOL)isPolling
+{
+    objc_setAssociatedObject(self, &kMASProximityLoginQRCodeIsPollingKey, [NSNumber numberWithBool:isPolling], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    MASProximityLoginQRCode *qrCode = [super copyWithZone:zone];
+    
+    qrCode.authenticationUrl = self.authenticationUrl;
+    qrCode.pollUrl = self.pollUrl;
+    qrCode.pollingDelay = self.pollingDelay;
+    qrCode.pollingInterval = self.pollingInterval;
+    qrCode.pollingLimit = self.pollingLimit;
+    
+    return qrCode;
+}
+
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder]; //ObjectID is encoded in the super class MASObject
+    
+    if (self.authenticationUrl) [aCoder encodeObject:self.authenticationUrl forKey:kMASProximityLoginQRCodeAuthenticationUrlKey];
+    if (self.pollUrl) [aCoder encodeObject:self.pollUrl forKey:kMASProximityLoginQRCodePollUrlKey];
+    if (self.pollingDelay) [aCoder encodeObject:self.pollingDelay forKey:kMASProximityLoginQRCodePollingDelayKey];
+    if (self.pollingInterval) [aCoder encodeObject:self.pollingInterval forKey:kMASProximityLoginQRCodePollingIntervalKey];
+    if (self.pollingLimit) [aCoder encodeObject:self.pollingLimit forKey:kMASProximityLoginQRCodePollingLimitKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if(self = [super initWithCoder:aDecoder]) //ObjectID is decoded in the super class MASObject
+    {
+        self.authenticationUrl = [aDecoder decodeObjectForKey:kMASProximityLoginQRCodeAuthenticationUrlKey];
+        self.pollUrl = [aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollUrlKey];
+        self.pollingDelay = [aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollingDelayKey];
+        self.pollingInterval = [aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollingIntervalKey];
+        self.pollingLimit = [aDecoder decodeObjectForKey:kMASProximityLoginQRCodePollingLimitKey];
+    }
+    
+    return self;
+}
+
 
 @end
