@@ -120,7 +120,7 @@
     //
     //  Check if a file exists at the given file name and directory type, return nil if not.
     //
-    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath])
     {
         return nil;
     }
@@ -187,11 +187,7 @@
     //  Construct full path including file name
     //
     NSString *fullPath = [self getFilePathForFileName:fileName fileDirectoryType:directoryType];
-    
-    //
-    //  Retrieve directory path
-    //
-    NSString *directoryPath = [[MASFileService getFilePathDirectories] objectForKey:[MASFileService directoryTypeToString:directoryType]];
+    NSString *directoryPath = [fullPath stringByReplacingOccurrencesOfString:[fullPath lastPathComponent] withString:@""];
     
     //
     //  If directory path does not exist, create one
@@ -203,7 +199,7 @@
     {
         BOOL didCreateDir = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:error];
         
-        if (!didCreateDir || error)
+        if (!didCreateDir)
         {
             return NO;
         }
