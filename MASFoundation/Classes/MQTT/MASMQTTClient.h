@@ -70,6 +70,13 @@ typedef void (^MQTTSubscriptionCompletionHandler)(NSArray *grantedQos);
 
 
 /**
+ * A standard (BOOL completed, NSError *error) block.
+ */
+typedef void (^MQTTCompletionErrorBlock)(BOOL completed, NSError *_Nullable error);
+
+
+
+/**
  *  MQTTMessageHandler
  *
  *  @param message The MASMQTTMessage object
@@ -334,7 +341,7 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  *  @param completionHandler The completionHandler code block
  */
 - (void)unsubscribeFromTopic:(NSString *)topic
-       withCompletionHandler:(void(^)(void))completionHandler;
+       withCompletionHandler:(MQTTCompletionErrorBlock)completionHandler;
 
 @end
 
