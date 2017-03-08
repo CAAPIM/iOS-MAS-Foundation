@@ -46,7 +46,7 @@
     
     
     
-   
+    //[self.txtFUserName becomeFirstResponder];
     
     
     
@@ -72,8 +72,9 @@
                                     else
                                     {
                                         
-                                        ViewControllerMovie *mv=[[ViewControllerMovie alloc]init];
-                                    [self presentViewController:mv animated:YES completion:nil];
+                                        ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+                                        
+                                        [self presentViewController:movieVC animated:YES completion:nil];
                                         
                                     }
                                     
@@ -120,15 +121,26 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     NSLog(@"textFieldShouldReturn:");
-//    if (textField.tag == 1) {
-//        [_txtFPassWord becomeFirstResponder];
-//        
-//    }
-//    else {
-//        [textField resignFirstResponder];
-//    }
+    if (textField.tag == 2) {
+        
+        [self  setNeedsFocusUpdate];
+        self.updateFocusIfNeeded;
+    }
+    
+    
     return YES;
 }
+
+
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+    
+    if (context.previouslyFocusedView != nil) {
+        
+      
+    }
+}
+
 
 -(void)userFailToAuthenticate:(NSNotification*)notification
 {
@@ -140,11 +152,9 @@
 - (IBAction)btnClkLogin:(UIButton*)sender {
     
     
-    ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
-   
-    [self presentViewController:movieVC animated:YES completion:nil];
     
-    //[self loginWithUserNamePassword:self.txtFUserName.text passWord:self.txtFPassWord.text];
+    
+    [self loginWithUserNamePassword:self.txtFUserName.text passWord:self.txtFPassWord.text];
 }
 
 - (IBAction)btnClkCancel:(UIButton*)sender {

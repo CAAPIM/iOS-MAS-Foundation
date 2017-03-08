@@ -7,7 +7,7 @@
 //
 
 #import "QRCodeLoginController.h"
-
+#import "ViewControllerMovie.h"
 @interface QRCodeLoginController ()
 
 @end
@@ -104,8 +104,13 @@
                              actionWithTitle:@"Continue"
                              style:UIAlertActionStyleDefault
                              handler:^(UIAlertAction * action){
-                                 [self presentViewController:nil animated:YES completion:nil];
-                             }];
+                                 
+                                 ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+                                 
+                                 [self presentViewController:movieVC animated:YES completion:nil];
+                                 
+
+                                }];
         UIAlertAction* cancel = [UIAlertAction
                                  actionWithTitle:@"Cancel"
                                  style:UIAlertActionStyleDefault
@@ -125,4 +130,12 @@
     }
     
 }
+
+-(void)userAuthenticated:(NSNotification*)notification
+{
+    if (notification) {
+        //
+    }
+}
+
 @end

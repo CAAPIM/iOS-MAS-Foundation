@@ -20,6 +20,7 @@
 		BAA7CC551E6E92E3003144C5 /* QRCodeLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC541E6E92E3003144C5 /* QRCodeLoginController.m */; };
 		BAA7CC581E6E9315003144C5 /* BLELoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC571E6E9315003144C5 /* BLELoginController.m */; };
 		BAA7CC5B1E6E9632003144C5 /* SimpleLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */; };
+		BAA7CC5F1E7024AF003144C5 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */; };
 		BAC586E21E643DA800F395B9 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; };
 		BAC586E41E64400E00F395B9 /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -113,6 +114,8 @@
 		BAA7CC571E6E9315003144C5 /* BLELoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLELoginController.m; sourceTree = "<group>"; };
 		BAA7CC591E6E9632003144C5 /* SimpleLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleLoginController.h; sourceTree = "<group>"; };
 		BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleLoginController.m; sourceTree = "<group>"; };
+		BAA7CC5D1E7024AF003144C5 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewController.h; sourceTree = "<group>"; };
+		BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewController.m; sourceTree = "<group>"; };
 		BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = SampleTvOSApp/tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -168,6 +171,8 @@
 		BA5507481E55A536001EC43D /* SampleTvOSApp */ = {
 			isa = PBXGroup;
 			children = (
+				BAA7CC5D1E7024AF003144C5 /* WelcomeViewController.h */,
+				BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */,
 				BAA7CC591E6E9632003144C5 /* SimpleLoginController.h */,
 				BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */,
 				BAA7CC531E6E92E3003144C5 /* QRCodeLoginController.h */,
@@ -408,6 +413,7 @@
 			files = (
 				BA55074E1E55A536001EC43D /* AppDelegate.m in Sources */,
 				BAA7CC511E6D9F16003144C5 /* Movie.m in Sources */,
+				BAA7CC5F1E7024AF003144C5 /* WelcomeViewController.m in Sources */,
 				BAA7CC551E6E92E3003144C5 /* QRCodeLoginController.m in Sources */,
 				BA55074B1E55A536001EC43D /* main.m in Sources */,
 				BAA7CC4C1E6D983F003144C5 /* ViewControllerMovie.m in Sources */,

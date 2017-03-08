@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="wMK-sq-AwX">
     <device id="appleTV" orientation="landscape">
         <adaptation id="light"/>
     </device>
@@ -149,10 +149,10 @@
             </objects>
             <point key="canvasLocation" x="-743" y="1589"/>
         </scene>
-        <!--View Controller-->
+        <!--Welcome View Controller-->
         <scene sceneID="VcF-Rx-1Hf">
             <objects>
-                <viewController id="wMK-sq-AwX" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WelcomeViewController" id="wMK-sq-AwX" customClass="WelcomeViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="gFl-r1-TXK"/>
                         <viewControllerLayoutGuide type="bottom" id="TRL-Nu-Lvn"/>
@@ -162,33 +162,62 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wuF-ee-lSo">
-                                <rect key="frame" x="322" y="173" width="195" height="83"/>
+                                <rect key="frame" x="322" y="202" width="596" height="83"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.60809101276618871" green="1" blue="0.94103588067861887" alpha="0.30781804078014185" colorSpace="calibratedRGB"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Username/Password"/>
+                                <connections>
+                                    <action selector="clkUsernamePwd:" destination="wMK-sq-AwX" eventType="primaryActionTriggered" id="bU4-DP-tUr"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ZM-gy-5kZ">
-                                <rect key="frame" x="687" y="170" width="195" height="86"/>
+                                <rect key="frame" x="322" y="309" width="596" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.60809101276618871" green="1" blue="0.94103588067861887" alpha="0.30781804078014185" colorSpace="calibratedRGB"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Button"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wgN-wO-lBk">
-                                <rect key="frame" x="687" y="360" width="195" height="86"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="QRCode"/>
+                                <connections>
+                                    <action selector="clkQRcode:" destination="wMK-sq-AwX" eventType="primaryActionTriggered" id="kqv-Fe-ted"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b04-DS-ksp">
-                                <rect key="frame" x="322" y="360" width="195" height="86"/>
+                                <rect key="frame" x="322" y="419" width="596" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.60809101276618871" green="1" blue="0.94103588067861887" alpha="0.30781804078014185" colorSpace="calibratedRGB"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Bluetooth Pairing"/>
+                                <connections>
+                                    <action selector="clkBLE:" destination="wMK-sq-AwX" eventType="primaryActionTriggered" id="7QC-Wu-sxs"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Welcome ! Choose your login Option." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zWF-6Z-xIE">
+                                <rect key="frame" x="175" y="19" width="895" height="124"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                                <color key="textColor" red="1" green="0.13398954700678867" blue="0.36525596371002778" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wgN-wO-lBk">
+                                <rect key="frame" x="322" y="529" width="596" height="86"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.60809101276618871" green="1" blue="0.94103588067861887" alpha="0.30781804078014185" colorSpace="calibratedRGB"/>
+                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
+                                <state key="normal" title="Facebook"/>
+                                <connections>
+                                    <action selector="clkFacebook:" destination="wMK-sq-AwX" eventType="primaryActionTriggered" id="slg-fC-daH"/>
+                                </connections>
                             </button>
                         </subviews>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="1244" height="700"/>
+                    <connections>
+                        <outlet property="btnBLE" destination="b04-DS-ksp" id="Ppl-Du-H0z"/>
+                        <outlet property="btnFacebook" destination="wgN-wO-lBk" id="gtE-EU-tFI"/>
+                        <outlet property="btnQRcode" destination="8ZM-gy-5kZ" id="L8X-7L-OSO"/>
+                        <outlet property="btnUserNamePwd" destination="wuF-ee-lSo" id="mba-MX-1Qq"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ddP-qe-cb3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -206,9 +235,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="1244" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="Password" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YRX-R7-Uha">
-                                <rect key="frame" x="301.16213093190163" y="326.99999999999955" width="633" height="48"/>
+                            <textField tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YRX-R7-Uha">
+                                <rect key="frame" x="301.16213093190163" y="326.99999999999955" width="633" height="58"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                 <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" secureTextEntry="YES"/>
@@ -216,36 +247,46 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="Z2o-Uk-ruS"/>
                                 </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="io9-ve-sqh">
-                                <rect key="frame" x="306" y="446" width="311" height="86"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="io9-ve-sqh">
+                                <rect key="frame" x="306" y="482" width="311" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.20759686388204701" green="0.30499999729744454" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Login"/>
+                                <state key="normal">
+                                    <attributedString key="attributedTitle">
+                                        <fragment content="Login"/>
+                                    </attributedString>
+                                </state>
                                 <connections>
                                     <action selector="btnClkLogin:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="a6m-su-cIM"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hgf-Sl-JgI">
-                                <rect key="frame" x="677" y="446" width="262" height="86"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hgf-Sl-JgI">
+                                <rect key="frame" x="677" y="482" width="262" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.20759686390000001" green="0.30499999729999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="cancel"/>
+                                <state key="normal">
+                                    <attributedString key="attributedTitle">
+                                        <fragment content="cancel"/>
+                                    </attributedString>
+                                </state>
                                 <connections>
                                     <action selector="btnClkCancel:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="nsI-HX-xbI"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="User Name" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
+                            <textField opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="User Name" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
                                 <rect key="frame" x="301.16213093190163" y="177" width="633" height="48"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES"/>
+                                <textInputTraits key="textInputTraits" keyboardAppearance="light" enablesReturnKeyAutomatically="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="SBT-CD-Izu"/>
                                 </connections>
                             </textField>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="1244" height="700"/>

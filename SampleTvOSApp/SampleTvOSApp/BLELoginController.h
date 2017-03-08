@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BLELoginController : UIViewController
+#import <tvOS_MASFoundation/tvOS MASFoundation.h>
+@interface BLELoginController : UIViewController<MASProximityLoginDelegate>
 
 @end
