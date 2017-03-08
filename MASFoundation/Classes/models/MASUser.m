@@ -207,7 +207,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-+ (void)loginWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion
++ (void)loginWithIdToken:(NSString *_Nonnull)idToken tokenType:(NSString *_Nonnull)tokenType completion:(MASCompletionErrorBlock _Nullable)completion
 {
     //
     //  If the user session has already been authenticated, throw an error.
@@ -219,7 +219,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         return;
     }
     
-    [[MASModelService sharedService] validateCurrentUserAuthenticationWithIdToken:idToken completion:completion];
+    [[MASModelService sharedService] validateCurrentUserAuthenticationWithIdToken:idToken tokenType:tokenType completion:completion];
 }
 
 

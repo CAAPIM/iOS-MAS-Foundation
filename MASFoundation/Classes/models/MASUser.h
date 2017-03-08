@@ -225,10 +225,11 @@
  This will create an [MASUser currentUser] upon a successful result.
  
  @param idToken    The id_token for the user.
+ @param tokenType   Token type of id_token.
  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
  available via [MASUser currentUser] has been updated with the new information.
  */
-+ (void)loginWithIdToken:(NSString *_Nonnull)idToken completion:(MASCompletionErrorBlock _Nullable)completion;
++ (void)loginWithIdToken:(NSString *_Nonnull)idToken tokenType:(NSString *_Nonnull)tokenType completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
