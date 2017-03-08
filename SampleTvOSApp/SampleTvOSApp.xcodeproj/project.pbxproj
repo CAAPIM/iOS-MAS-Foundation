@@ -14,6 +14,7 @@
 		BA5507611E55A537001EC43D /* SampleTvOSAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA5507601E55A537001EC43D /* SampleTvOSAppTests.m */; };
 		BA55076C1E55A537001EC43D /* SampleTvOSAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */; };
 		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
+		BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BAA7CC4C1E6D983F003144C5 /* ViewControllerMovie.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */; };
 		BAA7CC511E6D9F16003144C5 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC4E1E6D9F16003144C5 /* Movie.m */; };
 		BAA7CC521E6D9F16003144C5 /* MovieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC501E6D9F16003144C5 /* MovieCollectionViewCell.m */; };
@@ -21,8 +22,6 @@
 		BAA7CC581E6E9315003144C5 /* BLELoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC571E6E9315003144C5 /* BLELoginController.m */; };
 		BAA7CC5B1E6E9632003144C5 /* SimpleLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */; };
 		BAA7CC5F1E7024AF003144C5 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */; };
-		BAC586E21E643DA800F395B9 /* tvOS_MASFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; };
-		BAC586E41E64400E00F395B9 /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,34 +39,6 @@
 			remoteGlobalIDString = BA5507451E55A536001EC43D;
 			remoteInfo = SampleTvOSApp;
 		};
-		BAA7CC101E6D7B78003144C5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1059D3701B61AA3700223267;
-			remoteInfo = MASFoundation;
-		};
-		BAA7CC121E6D7B78003144C5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1059D37B1B61AA3800223267;
-			remoteInfo = MASFoundationTests;
-		};
-		BAA7CC141E6D7B78003144C5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BA55058C1E5314D0001EC43D;
-			remoteInfo = tvOS_MASFoundation;
-		};
-		BAA7CC161E6D7B78003144C5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BA5505941E5314D0001EC43D;
-			remoteInfo = tvOS_MASFoundationTests;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -77,7 +48,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BAC586E41E64400E00F395B9 /* tvOS_MASFoundation.framework in Embed Frameworks */,
+				BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,8 +71,7 @@
 		BA55076D1E55A537001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
-		BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MASFoundation.xcodeproj; path = ../tvOS_MASFoundation/MASFoundation.xcodeproj; sourceTree = "<group>"; };
-		BAA7CC441E6D827B003144C5 /* SampleTvOSApp-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SampleTvOSApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 		BAA7CC4A1E6D983F003144C5 /* ViewControllerMovie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerMovie.h; sourceTree = "<group>"; };
 		BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerMovie.m; sourceTree = "<group>"; };
 		BAA7CC4D1E6D9F16003144C5 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Movie.h; sourceTree = "<group>"; };
@@ -116,7 +86,6 @@
 		BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleLoginController.m; sourceTree = "<group>"; };
 		BAA7CC5D1E7024AF003144C5 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewController.h; sourceTree = "<group>"; };
 		BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewController.m; sourceTree = "<group>"; };
-		BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = SampleTvOSApp/tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +93,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BAC586E21E643DA800F395B9 /* tvOS_MASFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,13 +116,11 @@
 		BA55073D1E55A536001EC43D = {
 			isa = PBXGroup;
 			children = (
-				BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */,
-				BAC586E11E643DA800F395B9 /* tvOS_MASFoundation.framework */,
+				BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */,
 				BA5507481E55A536001EC43D /* SampleTvOSApp */,
 				BA55075F1E55A537001EC43D /* SampleTvOSAppTests */,
 				BA55076A1E55A537001EC43D /* SampleTvOSAppUITests */,
 				BA5507471E55A536001EC43D /* Products */,
-				BAA7CC441E6D827B003144C5 /* SampleTvOSApp-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -221,17 +187,6 @@
 				BA55076D1E55A537001EC43D /* Info.plist */,
 			);
 			path = SampleTvOSAppUITests;
-			sourceTree = "<group>";
-		};
-		BAA7CC091E6D7B77003144C5 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BAA7CC111E6D7B78003144C5 /* MASFoundation.framework */,
-				BAA7CC131E6D7B78003144C5 /* MASFoundationTests.xctest */,
-				BAA7CC151E6D7B78003144C5 /* tvOS_MASFoundation.framework */,
-				BAA7CC171E6D7B78003144C5 /* tvOS_MASFoundationTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -333,12 +288,6 @@
 			mainGroup = BA55073D1E55A536001EC43D;
 			productRefGroup = BA5507471E55A536001EC43D /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = BAA7CC091E6D7B77003144C5 /* Products */;
-					ProjectRef = BAA7CC081E6D7B77003144C5 /* MASFoundation.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				BA5507451E55A536001EC43D /* SampleTvOSApp */,
@@ -347,37 +296,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		BAA7CC111E6D7B78003144C5 /* MASFoundation.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MASFoundation.framework;
-			remoteRef = BAA7CC101E6D7B78003144C5 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BAA7CC131E6D7B78003144C5 /* MASFoundationTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MASFoundationTests.xctest;
-			remoteRef = BAA7CC121E6D7B78003144C5 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BAA7CC151E6D7B78003144C5 /* tvOS_MASFoundation.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = tvOS_MASFoundation.framework;
-			remoteRef = BAA7CC141E6D7B78003144C5 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BAA7CC171E6D7B78003144C5 /* tvOS_MASFoundationTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = tvOS_MASFoundationTests.xctest;
-			remoteRef = BAA7CC161E6D7B78003144C5 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BA5507441E55A536001EC43D /* Resources */ = {

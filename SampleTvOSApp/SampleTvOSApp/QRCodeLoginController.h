@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <tvOS_MASFoundation/tvOS MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 @interface QRCodeLoginController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UIImageView *imgView;

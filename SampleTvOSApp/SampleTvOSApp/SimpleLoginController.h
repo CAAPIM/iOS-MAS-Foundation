@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <tvOS_MASFoundation/tvOS MASFoundation.h>
+#import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 
 @interface SimpleLoginController : UIViewController<MASProximityLoginDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *imgView;
