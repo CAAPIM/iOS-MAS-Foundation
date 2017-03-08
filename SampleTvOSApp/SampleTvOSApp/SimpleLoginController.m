@@ -1,26 +1,26 @@
 //
-//  ViewController.m
+//  SimpleLoginController
 //  SampleTvOSApp
 //
 //  Created by Akshay on 16/02/17.
 //  Copyright © 2017 CA. All rights reserved.
 //
 
-#import "ViewController.h"
 
+#import "SimpleLoginController.h"
+#import "ViewControllerMovie.h"
+@interface SimpleLoginController ()
 
-@interface ViewController ()
--(void)simpleLogin;
--(void)proximityBLELogin;
--(void)QRcodeLogin;
 
 @end
 
-@implementation ViewController
+@implementation SimpleLoginController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    //proximity
        [[NSNotificationCenter defaultCenter] addObserver:self
                                                 selector:@selector(masProximityLogin:)
                                                  name:@"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification"
@@ -32,14 +32,132 @@
                                              selector:@selector(userAuthenticated:)
                                                  name:@"MASUserDidAuthenticateNotification"
                                                object:nil];
+    //UserName/password
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userAuthenticated:)
+                                                 name:@"MASUserDidAuthenticateNotification"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userFailToAuthenticate:)
+                                                 name:@"MASUserDidFailToAuthenticateNotification"
+                                               object:nil];
     
     
-    [self QRcodeLogin];
+    
+    
+    
+   
+    
+    
+    
    
 }
 
 
 #pragma -Login methods
+
+-(void)loginWithUserNamePassword:(NSString*)UserName passWord:(NSString*)PassWord
+{
+    
+    [MAS setGrantFlow:MASGrantFlowPassword];
+    
+    [MAS startWithDefaultConfiguration:YES
+                            completion:^(BOOL completed, NSError * _Nullable error) {
+                                
+                                
+                                [MASUser loginWithUserName:UserName password:PassWord completion:^(BOOL completed, NSError *error) {
+                                    
+                                    if(error)
+                                    self.textView.text=error.description;
+                                    else
+                                    {
+                                        
+                                        ViewControllerMovie *mv=[[ViewControllerMovie alloc]init];
+                                    [self presentViewController:mv animated:YES completion:nil];
+                                        
+                                    }
+                                    
+                                }];
+                            }];
+    
+    
+    
+    
+    
+    
+}
+
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    NSLog(@"touchesBegan:withEvent:");
+    [self.view endEditing:YES];
+    [super touchesBegan:touches withEvent:event];
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+    NSLog(@"textFieldShouldBeginEditing");
+    textField.backgroundColor = [UIColor colorWithRed:220.0f/255.0f green:220.0f/255.0f blue:220.0f/255.0f alpha:1.0f];
+    return YES;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField{
+    NSLog(@"textFieldDidBeginEditing");
+}
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField{
+    NSLog(@"textFieldShouldEndEditing");
+    textField.backgroundColor = [UIColor whiteColor];
+    return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField{
+    NSLog(@"textFieldDidEndEditing");
+}
+
+- (BOOL)textFieldShouldClear:(UITextField *)textField{
+    NSLog(@"textFieldShouldClear:");
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    NSLog(@"textFieldShouldReturn:");
+//    if (textField.tag == 1) {
+//        [_txtFPassWord becomeFirstResponder];
+//        
+//    }
+//    else {
+//        [textField resignFirstResponder];
+//    }
+    return YES;
+}
+
+-(void)userFailToAuthenticate:(NSNotification*)notification
+{
+    if (notification) {
+        //
+    }
+}
+
+- (IBAction)btnClkLogin:(UIButton*)sender {
+    
+    
+    ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+   
+    [self presentViewController:movieVC animated:YES completion:nil];
+    
+    //[self loginWithUserNamePassword:self.txtFUserName.text passWord:self.txtFPassWord.text];
+}
+
+- (IBAction)btnClkCancel:(UIButton*)sender {
+    //go to back screen
+}
+
+-(void)userAuthenticated:(NSNotification*)notification
+{
+    if (notification) {
+        //
+    }
+}
+
 
 -(void) simpleLogin
 {
@@ -61,9 +179,9 @@
     [MAS startWithDefaultConfiguration:YES completion:^(BOOL completed, NSError * _Nullable error) {
         
         
-//        [[MASDevice currentDevice] deregisterWithCompletion:^(BOOL completed, NSError * _Nullable error){
-//            
-//            [[MASDevice currentDevice] resetLocally];
+        [[MASDevice currentDevice] deregisterWithCompletion:^(BOOL completed, NSError * _Nullable error){
+            
+            [[MASDevice currentDevice] resetLocally];
         
             [MAS getFrom:@"/protected/resource/products" withParameters:nil andHeaders:nil completion:^(NSDictionary<NSString *, id> * _Nullable responseInfo, NSError * _Nullable error) {
                 NSLog(@"%@",error);
@@ -71,12 +189,13 @@
                 
                 
             }];
-       // }];
+        }];
     }];
 }
 
 
 #pragma -BLE Login
+
 -(void)proximityBLELogin
 {
     [MAS startWithDefaultConfiguration:YES completion:^(BOOL completed, NSError * _Nullable error) {
@@ -123,6 +242,9 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_imgView setImage:qrCodeImage];
+                
+                
+
             });
             NSLog(@"------%@", qrCodeImage);
         }];
@@ -136,9 +258,9 @@
 
 - (void)handleBLEProximityLoginUserConsent:(MASCompletionErrorBlock)completion deviceName:(NSString *)deviceName
 {
-//    __block MASCompletionErrorBlock blockCompletion = completion;
-//    
-//    // Construct AlertController
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    // Construct AlertController
 //    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"BLE Proximity Login"
 //                                                                             message:[NSString stringWithFormat:@"Grant a permission to share your session with %@?", deviceName]
 //                                                                      preferredStyle:UIAlertControllerStyleAlert];
@@ -235,17 +357,41 @@
 -(void)masProximityLogin:(NSNotification*)notification
 {
     if (notification) {
+        
+       
+        
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"MAS Proximity Login"
+                                                                                 message:@"The session was shared successfully!"
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        // Construct Grant action
+        UIAlertAction* ok = [UIAlertAction
+                             actionWithTitle:@"Continue"
+                             style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction * action){
+                                 [self presentViewController:nil animated:YES completion:nil];
+                             }];
+        UIAlertAction* cancel = [UIAlertAction
+                                 actionWithTitle:@"Cancel"
+                                 style:UIAlertActionStyleDefault
+                                 handler:nil];       // Add grant action
+        
+       
+        
+        [alertController addAction:ok];
+        
+        
+        // Add deny action
+        [alertController addAction:cancel];
+        // Present Alert
+        [self presentViewController:alertController animated:YES completion:nil];
+        
         //
     }
     
 }
 
--(void)userAuthenticated:(NSNotification*)notification
-{
-    if (notification) {
-        //
-    }
-}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
