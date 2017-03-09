@@ -539,9 +539,16 @@
         //
         //  If enrolment URL does not contain subjectKeyHash or client_id, SDK cannot proceed the enrollment process
         //
-        if (![[urlParameters allKeys] containsObject:MASClientIdentifierRequestResponseKey] || ![[urlParameters allKeys] containsObject:MASSubjectKeyHashRequestResponseKey])
+        if (![[urlParameters allKeys] containsObject:MASSubjectKeyHashRequestResponseKey])
         {
-        
+            //
+            //
+            //
+            if (completion)
+            {
+                completion(NO, [NSError errorInvalidEnrollmentURL]);
+            }
+            
             return;
         }
         
