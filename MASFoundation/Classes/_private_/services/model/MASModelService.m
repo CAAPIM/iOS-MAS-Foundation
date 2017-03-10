@@ -1477,7 +1477,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-- (void)registerDeviceWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion
+- (void)registerDeviceWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
 {
     //
     // Detect if device is already registered, if so stop here
@@ -1507,11 +1507,13 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
     
-    // id_token
-    if (idToken)
+    // Authorization with 'Authorization' header key
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@", idToken];
+    if(idToken) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
+    
+    if (tokenType)
     {
-        headerInfo[MASIdTokenHeaderRequestResponseKey] = idToken;
-        headerInfo[MASIdTokenTypeHeaderRequestResponseKey] = @""; // TBD
+        headerInfo[MASAuthorizationTypeRequestResponseKey] = tokenType;
     }
     
     // Client Authorization
@@ -1541,7 +1543,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     MASSecurityService *securityService = [MASSecurityService sharedService];
     [securityService deleteAsymmetricKeys];
     [securityService generateKeypair];
-    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:idToken]; // TBD
+    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"socialLogin"];
     
     if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
     
@@ -2890,7 +2892,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-- (void)loginWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion
+- (void)loginWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
 {
     //
     //  Refresh access obj
@@ -2993,10 +2995,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     }
     
     // Grant_type
-    NSString *grantType = [MASAccessService sharedService].currentAccessObj.idTokenType;
-    if (grantType)
+    if (tokenType)
     {
-        parameterInfo[MASGrantTypeRequestResponseKey] = grantType;
+        parameterInfo[MASGrantTypeRequestResponseKey] = tokenType;
     }
     
     //
@@ -4115,7 +4116,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-- (void)validateCurrentUserAuthenticationWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion
+- (void)validateCurrentUserAuthenticationWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
 {
     __block MASCompletionErrorBlock blockCompletion = completion;
     
@@ -4139,13 +4140,13 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             //
             if ([MASDevice currentDevice] && [MASDevice currentDevice].isRegistered)
             {
-                [self loginWithIdToken:idToken completion:completion];
+                [self loginWithIdToken:idToken tokenType:tokenType completion:completion];
             }
             //
             // If the device is not registered, register the device with authorization code
             //
             else {
-                [self registerDeviceWithIdToken:idToken completion:^(BOOL completed, NSError *error) {
+                [self registerDeviceWithIdToken:idToken tokenType:tokenType completion:^(BOOL completed, NSError *error) {
                     
                     //
                     // Register the device

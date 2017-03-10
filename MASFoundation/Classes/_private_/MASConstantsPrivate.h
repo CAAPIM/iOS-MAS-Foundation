@@ -123,6 +123,7 @@ static NSString *_Nonnull const MASApplicationNativeUrlRequestResponseKey = @"na
 static NSString *_Nonnull const MASAssertionRequestResponseKey = @"assertion"; // string
 static NSString *_Nonnull const MASAuthenticationUrlRequestResponseKey = @"auth_url"; // string
 static NSString *_Nonnull const MASAuthorizationRequestResponseKey = @"authorization"; // string
+static NSString *_Nonnull const MASAuthorizationTypeRequestResponseKey = @"x-authorization-type"; // string
 static NSString *_Nonnull const MASCertFormatRequestResponseKey = @"cert-format"; // string
 static NSString *_Nonnull const MASCertificateRequestResponseKey = @"certificate"; // string
 static NSString *_Nonnull const MASCertificateSigningRequestResponseKey = @"certificateSigningRequest"; // string
