@@ -345,6 +345,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorInvalidEnrollmentURL
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidEnrollmentURL errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorInvalidOTPChannelSelectionBlock
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeInvalidOTPChannelSelectionBlock errorDomain:MASFoundationErrorDomainLocal];
@@ -921,6 +927,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeInvalidNSURL: return @"Invalid NSURL object. File URL cannot be nil";
         case MASFoundationErrorCodeInvalidUserLoginBlock: return @"SDK is attempting to invoke MASDeviceRegistrationWithUserCredentialsBlock, but the block has not defined.  The block is mandatory for user credential flow if you have decided to not use MASUI.";
         case MASFoundationErrorCodeMASIsNotStarted: return @"MAS SDK has not been started.";
+        case MASFoundationErrorCodeInvalidEnrollmentURL: return @"Invalid Enrollment URL; URL is missing some information.";
             
         //
         // OTP

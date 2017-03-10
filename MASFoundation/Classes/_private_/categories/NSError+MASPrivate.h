@@ -178,6 +178,15 @@
 
 
 /**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidEnrollmentURL.
+ *
+ *  @return Retruns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error code MASFoundationErrorCodeInvalidEnrollmentURL.
+ */
++ (NSError *)errorInvalidEnrollmentURL;
+
+
+/**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidNSDictionary.
  *
  *  @return Retruns an NSError instance with the domain MASFoundationErrorDomainLocal and
