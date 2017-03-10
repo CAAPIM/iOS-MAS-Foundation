@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
-#import <tvOS_MASFoundation/tvOS_MASFoundation.h>
+
 #import "Movie.h"
 #define COLLECTION_VIEW_PADDING 60
 @interface ViewControllerMovie : UIViewController

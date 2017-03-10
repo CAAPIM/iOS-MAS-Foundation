@@ -15,12 +15,14 @@
 		BA55076C1E55A537001EC43D /* SampleTvOSAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */; };
 		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
 		BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA90D00F1E7121F500C222FB /* SVProgressHUDTVOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */; };
+		BA90D0101E71227400C222FB /* SimpleLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */; };
+		BA90D0111E71235300C222FB /* SVProgressHUDTVOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BAA7CC4C1E6D983F003144C5 /* ViewControllerMovie.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */; };
 		BAA7CC511E6D9F16003144C5 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC4E1E6D9F16003144C5 /* Movie.m */; };
 		BAA7CC521E6D9F16003144C5 /* MovieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC501E6D9F16003144C5 /* MovieCollectionViewCell.m */; };
 		BAA7CC551E6E92E3003144C5 /* QRCodeLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC541E6E92E3003144C5 /* QRCodeLoginController.m */; };
 		BAA7CC581E6E9315003144C5 /* BLELoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC571E6E9315003144C5 /* BLELoginController.m */; };
-		BAA7CC5B1E6E9632003144C5 /* SimpleLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */; };
 		BAA7CC5F1E7024AF003144C5 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +50,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				BA90D0111E71235300C222FB /* SVProgressHUDTVOS.framework in Embed Frameworks */,
 				BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -72,6 +75,7 @@
 		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
 		BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tvOS_MASFoundation.framework; sourceTree = "<group>"; };
+		BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVProgressHUDTVOS.framework; path = ../SVProgressHUDTVOS.framework; sourceTree = "<group>"; };
 		BAA7CC4A1E6D983F003144C5 /* ViewControllerMovie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerMovie.h; sourceTree = "<group>"; };
 		BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerMovie.m; sourceTree = "<group>"; };
 		BAA7CC4D1E6D9F16003144C5 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Movie.h; sourceTree = "<group>"; };
@@ -93,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA90D00F1E7121F500C222FB /* SVProgressHUDTVOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +169,7 @@
 		BA5507491E55A536001EC43D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */,
 				BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */,
 				BA55077E1E55A734001EC43D /* msso_config.json */,
 				BA55074A1E55A536001EC43D /* main.m */,
@@ -257,6 +263,7 @@
 				TargetAttributes = {
 					BA5507451E55A536001EC43D = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 2JJZ96P8P5;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -337,7 +344,7 @@
 				BAA7CC4C1E6D983F003144C5 /* ViewControllerMovie.m in Sources */,
 				BAA7CC521E6D9F16003144C5 /* MovieCollectionViewCell.m in Sources */,
 				BAA7CC581E6E9315003144C5 /* BLELoginController.m in Sources */,
-				BAA7CC5B1E6E9632003144C5 /* SimpleLoginController.m in Sources */,
+				BA90D0101E71227400C222FB /* SimpleLoginController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,7 +488,7 @@
 				CODE_SIGN_ENTITLEMENTS = SampleTvOSApp/SampleTvOSApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2JJZ96P8P5;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -513,7 +520,7 @@
 				CODE_SIGN_ENTITLEMENTS = SampleTvOSApp/SampleTvOSApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2JJZ96P8P5;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

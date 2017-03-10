@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
+#import <SVProgressHUDTVOS/SVProgressHUD.h>
 @interface BLELoginController : UIViewController<MASProximityLoginDelegate>
 
 @end

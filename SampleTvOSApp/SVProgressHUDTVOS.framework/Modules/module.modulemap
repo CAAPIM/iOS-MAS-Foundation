@@ -1,0 +1,6 @@
+framework module SVProgressHUDTVOS {
+  umbrella header "SVProgressHUDTVOS.h"
+
+  export *
+  module * { export * }
+}

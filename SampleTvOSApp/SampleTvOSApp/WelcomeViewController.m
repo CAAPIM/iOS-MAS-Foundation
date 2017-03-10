@@ -51,6 +51,7 @@
 }
 - (IBAction)clkBLE:(id)sender {
     BLELoginController *VC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"BLELoginController"];
+    [self presentViewController:VC animated:YES completion:nil];
 }
 - (IBAction)clkFacebook:(id)sender {
 }

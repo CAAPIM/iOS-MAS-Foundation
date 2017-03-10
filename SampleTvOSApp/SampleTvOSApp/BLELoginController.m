@@ -7,6 +7,7 @@
 //
 
 #import "BLELoginController.h"
+#import "ViewControllerMovie.h"
 
 @interface BLELoginController ()
 
@@ -17,6 +18,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveAuthorizationCode:) name:MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification  object:nil];
+   [[MASDevice currentDevice] startAsBluetoothCentral];
+    [self proximityBLELogin];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -25,14 +29,27 @@
 }
 -(void)proximityBLELogin
 {
+    
+    [SVProgressHUD show];
     [MAS startWithDefaultConfiguration:YES completion:^(BOOL completed, NSError * _Nullable error) {
-        [MASDevice setProximityLoginDelegate:self];
+        //
         
-        [[MASDevice currentDevice] startAsBluetoothCentral];
-        
-        // [[MASDevice currentDevice] startAsBluetoothCentralWithAuthenticationProvider:<#(MASAuthenticationProvider * _Nonnull)#>];
-        
+        [MASAuthenticationProviders retrieveAuthenticationProvidersWithCompletion:^(id  _Nullable object, NSError * _Nullable error) {
+            MASAuthenticationProvider *AuthProvider;
+            
+            for (MASAuthenticationProvider *qr in [object valueForKey:@"providers"]) {
+                if ([qr.identifier  isEqualToString:@"qrcode"]) {
+                AuthProvider = qr;
+                    break;
+                }
+            }
+            
+            [[MASDevice currentDevice]startAsBluetoothCentralWithAuthenticationProvider:AuthProvider];
+            
+           
+            }];
     }];
+
     
     
     
@@ -84,11 +101,44 @@
     
     
 }
+
+
 -(void)didReceiveAuthorizationCode:(NSString *_Nonnull)authorizationCode
 {
     
     if(authorizationCode)
     {
+        [SVProgressHUD dismiss];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"MAS Proximity Login"
+                                                                                 message:@"The session was shared successfully!"
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        // Construct Grant action
+        UIAlertAction* ok = [UIAlertAction
+                             actionWithTitle:@"Continue"
+                             style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction * action){
+                                 
+                                 ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+                                 
+                                 [self presentViewController:movieVC animated:YES completion:nil];
+                                 
+                                 
+                             }];
+        UIAlertAction* cancel = [UIAlertAction
+                                 actionWithTitle:@"Cancel"
+                                 style:UIAlertActionStyleDefault
+                                 handler:nil];       // Add grant action
+        
+        
+        
+        [alertController addAction:ok];
+        
+        
+        // Add deny action
+        [alertController addAction:cancel];
+        // Present Alert
+        [self presentViewController:alertController animated:YES completion:nil];
+        
         //
     }
     
@@ -96,9 +146,12 @@
 }
 -(void) didReceiveProximityLoginError:(NSError *)error
 {
-   
+    [SVProgressHUD dismiss];
 }
-
+- (void)handleBLEProximityLoginUserConsent:(MASCompletionErrorBlock)completion deviceName:(NSString *)deviceName
+{
+    
+}
 /*
 #pragma mark - Navigation
 

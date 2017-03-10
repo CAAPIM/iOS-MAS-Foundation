@@ -52,7 +52,7 @@
 -(void) QRcodeLogin
 {
     
-    
+    [SVProgressHUD show];
     
     [MAS startWithDefaultConfiguration:YES completion:^(BOOL completed, NSError * _Nullable error) {
         //
@@ -78,7 +78,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_imgView setImage:qrCodeImage];
                 
-                
+                [SVProgressHUD dismiss];
                 
             });
             NSLog(@"------%@", qrCodeImage);

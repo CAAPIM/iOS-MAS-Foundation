@@ -30,6 +30,7 @@
 }
 #pragma mark - Data
 - (void)fetchMovies {
+    
     [[Movie sharedInstance] fetchMovies:^(NSArray *movies)
     
     

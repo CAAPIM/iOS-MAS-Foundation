@@ -7,6 +7,8 @@
 //
 
 #import "Movie.h"
+
+#import <SVProgressHUDTVOS/SVProgressHUD.h>
 #define FEED_URL @"http://api.themoviedb.org/3/movie/popular?api_key=431765c61508f0b0fee87fd4a6c8edd8"
 #define IMAGE_URL @"https://image.tmdb.org/t/p/w500"
 @implementation Movie
@@ -22,7 +24,7 @@
 - (void)fetchMovies:(void (^)(NSArray *movies))success failure:(void (^)(NSError *error))failure {
     
     NSURL *url = [NSURL URLWithString:FEED_URL];
-    
+    [SVProgressHUD show];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setTimeoutInterval:30.0f];
     
@@ -50,13 +52,13 @@
                         
                         [returnArray addObject:movie];
                     }
-                    
+                     [SVProgressHUD dismiss];
                     success(returnArray);
                     
                 } else if (error != nil) {
                     
                     NSLog(@"Error: %@", error);
-                    
+                    [SVProgressHUD dismiss];
                     failure(error);
                     
                 }
@@ -66,13 +68,13 @@
         } else if ([data length] == 0 && error == nil){
             
             NSLog(@"Empty Response");
-            
+             [SVProgressHUD dismiss];
             failure(error);
             
         } else if (error != nil){
             
             NSLog(@"An error occured: %@", error);
-            
+             [SVProgressHUD dismiss];
             failure(error);
             
         }

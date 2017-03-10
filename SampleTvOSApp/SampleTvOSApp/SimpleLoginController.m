@@ -12,6 +12,7 @@
 @interface SimpleLoginController ()
 
 
+
 @end
 
 @implementation SimpleLoginController
@@ -48,7 +49,7 @@
     
     //[self.txtFUserName becomeFirstResponder];
     
-    
+   
     
    
 }
@@ -121,13 +122,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     NSLog(@"textFieldShouldReturn:");
-    if (textField.tag == 2) {
-        
-        [self  setNeedsFocusUpdate];
-        self.updateFocusIfNeeded;
-    }
-    
-    
+   
     return YES;
 }
 
@@ -137,7 +132,7 @@
     
     if (context.previouslyFocusedView != nil) {
         
-      
+        
     }
 }
 
