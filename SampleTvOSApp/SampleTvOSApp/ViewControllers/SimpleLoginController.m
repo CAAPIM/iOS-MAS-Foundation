@@ -9,6 +9,7 @@
 
 #import "SimpleLoginController.h"
 #import "ViewControllerMovie.h"
+#import <SVProgressHUDTVOS/SVProgressHUD.h>
 @interface SimpleLoginController ()
 
 
@@ -59,7 +60,7 @@
 
 -(void)loginWithUserNamePassword:(NSString*)UserName passWord:(NSString*)PassWord
 {
-    
+    [SVProgressHUD show];
     [MAS setGrantFlow:MASGrantFlowPassword];
     
     [MAS startWithDefaultConfiguration:YES
@@ -67,7 +68,7 @@
                                 
                                 
                                 [MASUser loginWithUserName:UserName password:PassWord completion:^(BOOL completed, NSError *error) {
-                                    
+                                    [SVProgressHUD dismiss];
                                     if(error)
                                     self.textView.text=error.description;
                                     else

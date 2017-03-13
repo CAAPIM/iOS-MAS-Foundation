@@ -16,14 +16,14 @@
 		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
 		BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BA90D00F1E7121F500C222FB /* SVProgressHUDTVOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */; };
-		BA90D0101E71227400C222FB /* SimpleLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */; };
 		BA90D0111E71235300C222FB /* SVProgressHUDTVOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BAA7CC4C1E6D983F003144C5 /* ViewControllerMovie.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */; };
-		BAA7CC511E6D9F16003144C5 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC4E1E6D9F16003144C5 /* Movie.m */; };
-		BAA7CC521E6D9F16003144C5 /* MovieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC501E6D9F16003144C5 /* MovieCollectionViewCell.m */; };
-		BAA7CC551E6E92E3003144C5 /* QRCodeLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC541E6E92E3003144C5 /* QRCodeLoginController.m */; };
-		BAA7CC581E6E9315003144C5 /* BLELoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC571E6E9315003144C5 /* BLELoginController.m */; };
-		BAA7CC5F1E7024AF003144C5 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */; };
+		BA90D0201E72C0FB00C222FB /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D0141E72C0FB00C222FB /* Movie.m */; };
+		BA90D0211E72C0FB00C222FB /* BLELoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D0171E72C0FB00C222FB /* BLELoginController.m */; };
+		BA90D0221E72C0FB00C222FB /* QRCodeLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D0191E72C0FB00C222FB /* QRCodeLoginController.m */; };
+		BA90D0231E72C0FB00C222FB /* SimpleLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D01B1E72C0FB00C222FB /* SimpleLoginController.m */; };
+		BA90D0251E72C0FB00C222FB /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D01F1E72C0FB00C222FB /* WelcomeViewController.m */; };
+		BA90D0291E72C11500C222FB /* MovieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D0281E72C11500C222FB /* MovieCollectionViewCell.m */; };
+		BA90D02C1E72C17A00C222FB /* ViewControllerMovie.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D02B1E72C17A00C222FB /* ViewControllerMovie.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,22 +74,22 @@
 		BA55076D1E55A537001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
-		BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tvOS_MASFoundation.framework; sourceTree = "<group>"; };
+		BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = ../tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 		BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVProgressHUDTVOS.framework; path = ../SVProgressHUDTVOS.framework; sourceTree = "<group>"; };
-		BAA7CC4A1E6D983F003144C5 /* ViewControllerMovie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerMovie.h; sourceTree = "<group>"; };
-		BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerMovie.m; sourceTree = "<group>"; };
-		BAA7CC4D1E6D9F16003144C5 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Movie.h; sourceTree = "<group>"; };
-		BAA7CC4E1E6D9F16003144C5 /* Movie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Movie.m; sourceTree = "<group>"; };
-		BAA7CC4F1E6D9F16003144C5 /* MovieCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieCollectionViewCell.h; sourceTree = "<group>"; };
-		BAA7CC501E6D9F16003144C5 /* MovieCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovieCollectionViewCell.m; sourceTree = "<group>"; };
-		BAA7CC531E6E92E3003144C5 /* QRCodeLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRCodeLoginController.h; sourceTree = "<group>"; };
-		BAA7CC541E6E92E3003144C5 /* QRCodeLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRCodeLoginController.m; sourceTree = "<group>"; };
-		BAA7CC561E6E9315003144C5 /* BLELoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLELoginController.h; sourceTree = "<group>"; };
-		BAA7CC571E6E9315003144C5 /* BLELoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLELoginController.m; sourceTree = "<group>"; };
-		BAA7CC591E6E9632003144C5 /* SimpleLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleLoginController.h; sourceTree = "<group>"; };
-		BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleLoginController.m; sourceTree = "<group>"; };
-		BAA7CC5D1E7024AF003144C5 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewController.h; sourceTree = "<group>"; };
-		BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewController.m; sourceTree = "<group>"; };
+		BA90D0131E72C0FB00C222FB /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Movie.h; sourceTree = "<group>"; };
+		BA90D0141E72C0FB00C222FB /* Movie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Movie.m; sourceTree = "<group>"; };
+		BA90D0161E72C0FB00C222FB /* BLELoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLELoginController.h; sourceTree = "<group>"; };
+		BA90D0171E72C0FB00C222FB /* BLELoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLELoginController.m; sourceTree = "<group>"; };
+		BA90D0181E72C0FB00C222FB /* QRCodeLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRCodeLoginController.h; sourceTree = "<group>"; };
+		BA90D0191E72C0FB00C222FB /* QRCodeLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRCodeLoginController.m; sourceTree = "<group>"; };
+		BA90D01A1E72C0FB00C222FB /* SimpleLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleLoginController.h; sourceTree = "<group>"; };
+		BA90D01B1E72C0FB00C222FB /* SimpleLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleLoginController.m; sourceTree = "<group>"; };
+		BA90D01E1E72C0FB00C222FB /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewController.h; sourceTree = "<group>"; };
+		BA90D01F1E72C0FB00C222FB /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewController.m; sourceTree = "<group>"; };
+		BA90D0271E72C11500C222FB /* MovieCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieCollectionViewCell.h; sourceTree = "<group>"; };
+		BA90D0281E72C11500C222FB /* MovieCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovieCollectionViewCell.m; sourceTree = "<group>"; };
+		BA90D02A1E72C17A00C222FB /* ViewControllerMovie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerMovie.h; sourceTree = "<group>"; };
+		BA90D02B1E72C17A00C222FB /* ViewControllerMovie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerMovie.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,7 +121,6 @@
 		BA55073D1E55A536001EC43D = {
 			isa = PBXGroup;
 			children = (
-				BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */,
 				BA5507481E55A536001EC43D /* SampleTvOSApp */,
 				BA55075F1E55A537001EC43D /* SampleTvOSAppTests */,
 				BA55076A1E55A537001EC43D /* SampleTvOSAppUITests */,
@@ -142,26 +141,14 @@
 		BA5507481E55A536001EC43D /* SampleTvOSApp */ = {
 			isa = PBXGroup;
 			children = (
-				BAA7CC5D1E7024AF003144C5 /* WelcomeViewController.h */,
-				BAA7CC5E1E7024AF003144C5 /* WelcomeViewController.m */,
-				BAA7CC591E6E9632003144C5 /* SimpleLoginController.h */,
-				BAA7CC5A1E6E9632003144C5 /* SimpleLoginController.m */,
-				BAA7CC531E6E92E3003144C5 /* QRCodeLoginController.h */,
-				BAA7CC541E6E92E3003144C5 /* QRCodeLoginController.m */,
-				BAA7CC561E6E9315003144C5 /* BLELoginController.h */,
-				BAA7CC571E6E9315003144C5 /* BLELoginController.m */,
-				BAA7CC4A1E6D983F003144C5 /* ViewControllerMovie.h */,
-				BAA7CC4B1E6D983F003144C5 /* ViewControllerMovie.m */,
+				BA90D0151E72C0FB00C222FB /* ViewControllers */,
+				BA90D0121E72C0FB00C222FB /* Models */,
 				BA55074C1E55A536001EC43D /* AppDelegate.h */,
-				BAA7CC4D1E6D9F16003144C5 /* Movie.h */,
-				BAA7CC4E1E6D9F16003144C5 /* Movie.m */,
-				BAA7CC4F1E6D9F16003144C5 /* MovieCollectionViewCell.h */,
-				BAA7CC501E6D9F16003144C5 /* MovieCollectionViewCell.m */,
 				BA55074D1E55A536001EC43D /* AppDelegate.m */,
 				BA5507521E55A537001EC43D /* Main.storyboard */,
-				BA5507551E55A537001EC43D /* Assets.xcassets */,
-				BA5507571E55A537001EC43D /* Info.plist */,
+				BA90D0261E72C11500C222FB /* CollectionView */,
 				BA5507491E55A536001EC43D /* Supporting Files */,
+				BA5507551E55A537001EC43D /* Assets.xcassets */,
 			);
 			path = SampleTvOSApp;
 			sourceTree = "<group>";
@@ -169,6 +156,8 @@
 		BA5507491E55A536001EC43D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BA5507571E55A537001EC43D /* Info.plist */,
+				BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */,
 				BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */,
 				BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */,
 				BA55077E1E55A734001EC43D /* msso_config.json */,
@@ -193,6 +182,41 @@
 				BA55076D1E55A537001EC43D /* Info.plist */,
 			);
 			path = SampleTvOSAppUITests;
+			sourceTree = "<group>";
+		};
+		BA90D0121E72C0FB00C222FB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BA90D0131E72C0FB00C222FB /* Movie.h */,
+				BA90D0141E72C0FB00C222FB /* Movie.m */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BA90D0151E72C0FB00C222FB /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				BA90D0161E72C0FB00C222FB /* BLELoginController.h */,
+				BA90D0171E72C0FB00C222FB /* BLELoginController.m */,
+				BA90D0181E72C0FB00C222FB /* QRCodeLoginController.h */,
+				BA90D0191E72C0FB00C222FB /* QRCodeLoginController.m */,
+				BA90D01A1E72C0FB00C222FB /* SimpleLoginController.h */,
+				BA90D01B1E72C0FB00C222FB /* SimpleLoginController.m */,
+				BA90D01E1E72C0FB00C222FB /* WelcomeViewController.h */,
+				BA90D01F1E72C0FB00C222FB /* WelcomeViewController.m */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BA90D0261E72C11500C222FB /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				BA90D02A1E72C17A00C222FB /* ViewControllerMovie.h */,
+				BA90D02B1E72C17A00C222FB /* ViewControllerMovie.m */,
+				BA90D0271E72C11500C222FB /* MovieCollectionViewCell.h */,
+				BA90D0281E72C11500C222FB /* MovieCollectionViewCell.m */,
+			);
+			path = CollectionView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -337,14 +361,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA55074E1E55A536001EC43D /* AppDelegate.m in Sources */,
-				BAA7CC511E6D9F16003144C5 /* Movie.m in Sources */,
-				BAA7CC5F1E7024AF003144C5 /* WelcomeViewController.m in Sources */,
-				BAA7CC551E6E92E3003144C5 /* QRCodeLoginController.m in Sources */,
+				BA90D02C1E72C17A00C222FB /* ViewControllerMovie.m in Sources */,
+				BA90D0231E72C0FB00C222FB /* SimpleLoginController.m in Sources */,
+				BA90D0221E72C0FB00C222FB /* QRCodeLoginController.m in Sources */,
+				BA90D0211E72C0FB00C222FB /* BLELoginController.m in Sources */,
+				BA90D0251E72C0FB00C222FB /* WelcomeViewController.m in Sources */,
+				BA90D0201E72C0FB00C222FB /* Movie.m in Sources */,
 				BA55074B1E55A536001EC43D /* main.m in Sources */,
-				BAA7CC4C1E6D983F003144C5 /* ViewControllerMovie.m in Sources */,
-				BAA7CC521E6D9F16003144C5 /* MovieCollectionViewCell.m in Sources */,
-				BAA7CC581E6E9315003144C5 /* BLELoginController.m in Sources */,
-				BA90D0101E71227400C222FB /* SimpleLoginController.m in Sources */,
+				BA90D0291E72C11500C222FB /* MovieCollectionViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
