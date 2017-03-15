@@ -16,6 +16,8 @@
 @property (strong, nonatomic) NSMutableArray *movies;
 @property (strong, nonatomic) Movie *movie;
 @property (weak, nonatomic) IBOutlet UIButton *btnLogout;
+@property(nonatomic, assign) BOOL bVar;
+
 - (IBAction)actLogout:(id)sender;
 
 @end

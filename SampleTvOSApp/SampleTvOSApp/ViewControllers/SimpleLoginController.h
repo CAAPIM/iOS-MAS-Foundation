@@ -10,25 +10,27 @@
 
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 
-@interface SimpleLoginController : UIViewController<MASProximityLoginDelegate,UITextFieldDelegate>
+@interface SimpleLoginController : UIViewController<UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *imgView;
 @property (weak, nonatomic) IBOutlet UIButton *btnCancel;
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet UIButton *btnLogin;
+@property (weak, nonatomic) IBOutlet UIButton *btnLogout;
+- (IBAction)clkLogout:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UITextField *txtFPassWord;
 @property (strong, nonatomic) MASProximityLoginQRCode *qrCodeProximityLogin;
 @property (weak, nonatomic) IBOutlet UITextField *txtFUserName;
--(void)masProximityLogin:(NSNotification*)notification;
--(void)userAuthenticated:(NSNotification*)notification;
--(void)userFailToAuthenticate:(NSNotification*)notification;
+//-(void)masProximityLogin:(NSNotification*)notification;
+//-(void)userAuthenticated:(NSNotification*)notification;
+//-(void)userFailToAuthenticate:(NSNotification*)notification;
 - (IBAction)btnClkLogin:(id)sender;
 - (IBAction)btnClkCancel:(id)sender;
 
--(void)simpleLogin;
--(void)proximityBLELogin;
--(void)QRcodeLogin;
+//-(void)simpleLogin;
+//-(void)proximityBLELogin;
+//-(void)QRcodeLogin;
 -(void)loginWithUserNamePassword:(NSString*)UserName passWord:(NSString*)PassWord;
 
 @end

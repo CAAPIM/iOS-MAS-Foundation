@@ -18,6 +18,12 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>FacebookAppID</key>
+	<string>155839534505153</string>
+	<key>FacebookClientToken</key>
+	<string>c01a581e731a7f8ec1fb7f0cc414d008</string>
+	<key>FacebookDisplayName</key>
+	<string>SampleApp</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

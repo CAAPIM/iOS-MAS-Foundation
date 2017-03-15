@@ -21,24 +21,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="1244" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="PgV-IP-Wa4">
-                                <rect key="frame" x="100" y="100" width="1044" height="550"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="PgV-IP-Wa4">
+                                <rect key="frame" x="0.0" y="0.0" width="1244" height="700"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="DxD-jh-KSm">
-                                    <size key="itemSize" width="385" height="485"/>
+                                    <size key="itemSize" width="385" height="585"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MovieCell" id="Xrm-yU-N03" customClass="MovieCollectionViewCell">
-                                        <rect key="frame" x="0.0" y="33" width="385" height="485"/>
+                                        <rect key="frame" x="0.0" y="58" width="385" height="585"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="385" height="485"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="385" height="585"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="thor_the_dark_world_movie_posters_l" adjustsImageWhenAncestorFocused="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vVN-pb-27g">
-                                                    <rect key="frame" x="35" y="10" width="315" height="467"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="thor_the_dark_world_movie_posters_l" adjustsImageWhenAncestorFocused="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vVN-pb-27g">
+                                                    <rect key="frame" x="35" y="38" width="315" height="467"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="467" id="3Cu-uf-VDN"/>
                                                     </constraints>
@@ -73,20 +73,6 @@
                                     <outlet property="delegate" destination="6K2-E2-OXD" id="QqI-Jn-RHB"/>
                                 </connections>
                             </collectionView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ffo-Zi-rld">
-                                <rect key="frame" x="920" y="0.0" width="304" height="86"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="1" green="0.13398954699999999" blue="0.36525596370000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal">
-                                    <attributedString key="attributedTitle">
-                                        <fragment content="Logout"/>
-                                    </attributedString>
-                                </state>
-                                <connections>
-                                    <action selector="actLogout:" destination="6K2-E2-OXD" eventType="primaryActionTriggered" id="IJK-Qz-89F"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -99,7 +85,6 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="1244" height="700"/>
                     <connections>
-                        <outlet property="btnLogout" destination="Ffo-Zi-rld" id="yWH-OP-q3a"/>
                         <outlet property="collectionView" destination="PgV-IP-Wa4" id="Of3-RX-klE"/>
                     </connections>
                 </viewController>
@@ -118,9 +103,23 @@
                     <view key="view" contentMode="scaleToFill" id="Fvc-MH-1MY">
                         <rect key="frame" x="0.0" y="0.0" width="1244" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BWB-9d-99h">
+                                <rect key="frame" x="1009" y="0.0" width="235" height="86"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
+                                <state key="normal" title="LogOut"/>
+                                <connections>
+                                    <action selector="clkLogout:" destination="y5v-3g-8JA" eventType="primaryActionTriggered" id="ZAL-67-LgF"/>
+                                </connections>
+                            </button>
+                        </subviews>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="1244" height="700"/>
+                    <connections>
+                        <outlet property="btnLogout" destination="BWB-9d-99h" id="seR-Ba-LwQ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Vd-6Q-Gsl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -142,12 +141,30 @@
                                 <rect key="frame" x="543" y="271" width="59" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E4x-xd-P0a">
+                                <rect key="frame" x="186" y="20" width="773" height="130"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                <color key="textColor" red="0.16565300685392162" green="0.46230775523560208" blue="0.13547050069133887" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9yB-6a-s7O">
+                                <rect key="frame" x="993" y="0.0" width="251" height="86"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
+                                <state key="normal" title="LogOut"/>
+                                <connections>
+                                    <action selector="clkLogout:" destination="8dJ-iE-NXG" eventType="primaryActionTriggered" id="oHS-Qt-mnL"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="1244" height="700"/>
                     <connections>
+                        <outlet property="btnLogout" destination="9yB-6a-s7O" id="e4c-en-cuO"/>
                         <outlet property="imgView" destination="FOk-zR-Ule" id="jGv-MH-V1H"/>
+                        <outlet property="lblMessage" destination="E4x-xd-P0a" id="ntW-O2-ZLL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QSe-OY-0ha" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -280,7 +297,7 @@
                                     <action selector="btnClkCancel:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="nsI-HX-xbI"/>
                                 </connections>
                             </button>
-                            <textField tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User Name" minimumFontSize="20" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
+                            <textField tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User Name" minimumFontSize="20" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
                                 <rect key="frame" x="301" y="133" width="633" height="58"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -292,6 +309,15 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="SBT-CD-Izu"/>
                                 </connections>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aTh-kQ-0mq">
+                                <rect key="frame" x="498" y="0.0" width="239" height="86"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
+                                <state key="normal" title="LogOut"/>
+                                <connections>
+                                    <action selector="clkLogout:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="FR6-Dc-JGP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -300,6 +326,7 @@
                     <connections>
                         <outlet property="btnCancel" destination="Hgf-Sl-JgI" id="Hqe-lZ-0Oo"/>
                         <outlet property="btnLogin" destination="io9-ve-sqh" id="3wY-Dj-HG5"/>
+                        <outlet property="btnLogout" destination="aTh-kQ-0mq" id="06b-Dd-m6h"/>
                         <outlet property="txtFPassWord" destination="YRX-R7-Uha" id="bj5-nO-Odp"/>
                         <outlet property="txtFUserName" destination="U6X-ur-qUV" id="sIC-G7-49T"/>
                     </connections>

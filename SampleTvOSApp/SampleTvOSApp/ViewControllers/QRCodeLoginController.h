@@ -10,7 +10,10 @@
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 #import <SVProgressHUDTVOS/SVProgressHUD.h>
 @interface QRCodeLoginController : UIViewController
+@property (weak, nonatomic) IBOutlet UILabel *lblMessage;
 
+@property (weak, nonatomic) IBOutlet UIButton *btnLogout;
+- (IBAction)clkLogout:(id)sender;
 @property (weak, nonatomic) IBOutlet UIImageView *imgView;
 @property (strong, nonatomic) MASProximityLoginQRCode *qrCodeProximityLogin;
 -(void)masProximityLogin:(NSNotification*)notification;

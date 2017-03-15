@@ -39,17 +39,17 @@
             
             for (MASAuthenticationProvider *qr in [object valueForKey:@"providers"]) {
                 if ([qr.identifier  isEqualToString:@"qrcode"]) {
-                AuthProvider = qr;
+                    AuthProvider = qr;
                     break;
                 }
             }
             
             [[MASDevice currentDevice]startAsBluetoothCentralWithAuthenticationProvider:AuthProvider];
             
-           
-            }];
+            
+        }];
     }];
-
+    
     
     
     
@@ -162,4 +162,10 @@
 }
 */
 
+- (IBAction)clkLogout:(id)sender {
+    
+   // [self.qrCodeProximityLogin stopDisplayingQRCodeImageForProximityLogin];
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 @end

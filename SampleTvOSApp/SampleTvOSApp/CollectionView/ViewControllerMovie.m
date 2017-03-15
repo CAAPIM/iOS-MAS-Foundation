@@ -10,19 +10,24 @@
 #import "MovieCollectionViewCell.h"
 #import "Movie.h"
 #import "ViewControllerMovie.h"
-@interface ViewControllerMovie ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+@interface ViewControllerMovie ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UIFocusEnvironment>
 
 @end
-
+//bool bVar=TRUE;
 @implementation ViewControllerMovie
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.bVar=TRUE;
     self.movies = [NSMutableArray new];
-    
+   
     [self fetchMovies];
     // Do any additional setup after loading the view.
+    
+    
 }
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -82,6 +87,35 @@
     
     return cell;
 }
+- (BOOL)canBecomeFocused {
+    return YES;
+}
+
+//-(NSArray*)preferredFocusEnvironments
+//{
+//    
+//    
+//    return @[self.btnLogout,self.collectionView];
+//}
+
+
+- (void)collectionView:(UICollectionView *)collectionView didUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator NS_AVAILABLE_IOS(9_0)
+{
+
+    
+
+}
+
+
+//-(UIView *)preferredFocusedView
+//{
+//    if(!self.bVar)
+//
+//        return self.btnLogout;
+//    else
+//        return nil;
+//}
+
 
 
 #pragma mark - GestureRecognizer
@@ -102,17 +136,11 @@
 #pragma mark - Focus
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     
-    if (context.previouslyFocusedView != nil) {
-        
-        MovieCollectionViewCell *cell = (MovieCollectionViewCell *)context.previouslyFocusedView;
-       // cell.titleLabel.font = [UIFont systemFontOfSize:17];
-    }
+    if(context.nextFocusedView==nil)
+    {
     
-    if (context.nextFocusedView != nil) {
-        
-        MovieCollectionViewCell *cell = (MovieCollectionViewCell *)context.nextFocusedView;
-        //cell.titleLabel.font = [UIFont boldSystemFontOfSize:17];
     }
+       
 }
 
 
@@ -125,6 +153,20 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
 }
+ 
+ //
+ 
+ if (context.previouslyFocusedView != nil) {
+ 
+ MovieCollectionViewCell *cell = (MovieCollectionViewCell *)context.previouslyFocusedView;
+ // cell.titleLabel.font = [UIFont systemFontOfSize:17];
+ }
+ 
+ if (context.nextFocusedView != nil) {
+ 
+ MovieCollectionViewCell *cell = (MovieCollectionViewCell *)context.nextFocusedView;
+ //cell.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+ }
 */
 
 - (IBAction)actLogout:(id)sender {

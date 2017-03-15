@@ -14,6 +14,8 @@
 		BA5507611E55A537001EC43D /* SampleTvOSAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA5507601E55A537001EC43D /* SampleTvOSAppTests.m */; };
 		BA55076C1E55A537001EC43D /* SampleTvOSAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */; };
 		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
+		BA830DFB1E76C7D900892ACB /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA830DF91E76C7D800892ACB /* FBSDKCoreKit.framework */; };
+		BA830DFC1E76C7D900892ACB /* FBSDKTVOSKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA830DFA1E76C7D900892ACB /* FBSDKTVOSKit.framework */; };
 		BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BA90D00F1E7121F500C222FB /* SVProgressHUDTVOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */; };
 		BA90D0111E71235300C222FB /* SVProgressHUDTVOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -24,6 +26,7 @@
 		BA90D0251E72C0FB00C222FB /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D01F1E72C0FB00C222FB /* WelcomeViewController.m */; };
 		BA90D0291E72C11500C222FB /* MovieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D0281E72C11500C222FB /* MovieCollectionViewCell.m */; };
 		BA90D02C1E72C17A00C222FB /* ViewControllerMovie.m in Sources */ = {isa = PBXBuildFile; fileRef = BA90D02B1E72C17A00C222FB /* ViewControllerMovie.m */; };
+		BAC022551E76B068002A6236 /* FBLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC022541E76B068002A6236 /* FBLoginViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +76,8 @@
 		BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleTvOSAppUITests.m; sourceTree = "<group>"; };
 		BA55076D1E55A537001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
+		BA830DF91E76C7D800892ACB /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		BA830DFA1E76C7D900892ACB /* FBSDKTVOSKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKTVOSKit.framework; path = ../FBSDKTVOSKit.framework; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
 		BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOS_MASFoundation.framework; path = ../tvOS_MASFoundation.framework; sourceTree = "<group>"; };
 		BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVProgressHUDTVOS.framework; path = ../SVProgressHUDTVOS.framework; sourceTree = "<group>"; };
@@ -90,6 +95,8 @@
 		BA90D0281E72C11500C222FB /* MovieCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovieCollectionViewCell.m; sourceTree = "<group>"; };
 		BA90D02A1E72C17A00C222FB /* ViewControllerMovie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerMovie.h; sourceTree = "<group>"; };
 		BA90D02B1E72C17A00C222FB /* ViewControllerMovie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerMovie.m; sourceTree = "<group>"; };
+		BAC022531E76B068002A6236 /* FBLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBLoginViewController.h; sourceTree = "<group>"; };
+		BAC022541E76B068002A6236 /* FBLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBLoginViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +105,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA90D00F1E7121F500C222FB /* SVProgressHUDTVOS.framework in Frameworks */,
+				BA830DFB1E76C7D900892ACB /* FBSDKCoreKit.framework in Frameworks */,
+				BA830DFC1E76C7D900892ACB /* FBSDKTVOSKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,7 +157,6 @@
 				BA5507521E55A537001EC43D /* Main.storyboard */,
 				BA90D0261E72C11500C222FB /* CollectionView */,
 				BA5507491E55A536001EC43D /* Supporting Files */,
-				BA5507551E55A537001EC43D /* Assets.xcassets */,
 			);
 			path = SampleTvOSApp;
 			sourceTree = "<group>";
@@ -157,6 +165,9 @@
 			isa = PBXGroup;
 			children = (
 				BA5507571E55A537001EC43D /* Info.plist */,
+				BA5507551E55A537001EC43D /* Assets.xcassets */,
+				BA830DF91E76C7D800892ACB /* FBSDKCoreKit.framework */,
+				BA830DFA1E76C7D900892ACB /* FBSDKTVOSKit.framework */,
 				BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */,
 				BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */,
 				BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */,
@@ -204,6 +215,8 @@
 				BA90D01B1E72C0FB00C222FB /* SimpleLoginController.m */,
 				BA90D01E1E72C0FB00C222FB /* WelcomeViewController.h */,
 				BA90D01F1E72C0FB00C222FB /* WelcomeViewController.m */,
+				BAC022531E76B068002A6236 /* FBLoginViewController.h */,
+				BAC022541E76B068002A6236 /* FBLoginViewController.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -364,6 +377,7 @@
 				BA90D02C1E72C17A00C222FB /* ViewControllerMovie.m in Sources */,
 				BA90D0231E72C0FB00C222FB /* SimpleLoginController.m in Sources */,
 				BA90D0221E72C0FB00C222FB /* QRCodeLoginController.m in Sources */,
+				BAC022551E76B068002A6236 /* FBLoginViewController.m in Sources */,
 				BA90D0211E72C0FB00C222FB /* BLELoginController.m in Sources */,
 				BA90D0251E72C0FB00C222FB /* WelcomeViewController.m in Sources */,
 				BA90D0201E72C0FB00C222FB /* Movie.m in Sources */,

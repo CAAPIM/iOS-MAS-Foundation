@@ -10,7 +10,7 @@
 #import "SimpleLoginController.h"
 #import "QRCodeLoginController.h"
 #import "BLELoginController.h"
-
+#import "FBLoginViewController.h"
 @interface WelcomeViewController ()
 
 @end
@@ -54,5 +54,9 @@
     [self presentViewController:VC animated:YES completion:nil];
 }
 - (IBAction)clkFacebook:(id)sender {
+    
+    FBLoginViewController *VC=[[FBLoginViewController alloc]init];
+    [self presentViewController:VC animated:YES completion:nil];
+    
 }
 @end

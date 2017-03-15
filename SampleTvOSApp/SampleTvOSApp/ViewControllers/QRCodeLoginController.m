@@ -16,6 +16,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.imgView.image=nil;
     //proximity
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(masProximityLogin:)
@@ -52,7 +53,7 @@
 -(void) QRcodeLogin
 {
     
-    [SVProgressHUD show];
+    [SVProgressHUD showWithStatus:@"Wait..."];
     
     [MAS startWithDefaultConfiguration:YES completion:^(BOOL completed, NSError * _Nullable error) {
         //
@@ -76,9 +77,10 @@
             UIImage *qrCodeImage = [self.qrCodeProximityLogin startDisplayingQRCodeImageForProximityLogin];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [_imgView setImage:qrCodeImage];
+                [self.imgView setImage:qrCodeImage];
                 
                 [SVProgressHUD dismiss];
+                [self.lblMessage setText:@"Please Scan This QRCode"];
                 
             });
             NSLog(@"------%@", qrCodeImage);
@@ -138,4 +140,12 @@
     }
 }
 
+- (IBAction)clkLogout:(id)sender {
+    
+     [self.qrCodeProximityLogin stopDisplayingQRCodeImageForProximityLogin];
+    
+    self.imgView.image=nil;
+   
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 @end

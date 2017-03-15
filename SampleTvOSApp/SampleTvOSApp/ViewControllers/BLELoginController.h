@@ -11,5 +11,7 @@
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 #import <SVProgressHUDTVOS/SVProgressHUD.h>
 @interface BLELoginController : UIViewController<MASProximityLoginDelegate>
+@property (weak, nonatomic) IBOutlet UIButton *btnLogout;
+- (IBAction)clkLogout:(id)sender;
 
 @end
