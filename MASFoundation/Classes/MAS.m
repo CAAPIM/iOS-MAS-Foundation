@@ -874,18 +874,6 @@
         }
     }
  
-    //
-    // Check that network service is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
     
     //
     // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
@@ -1024,18 +1012,6 @@
         }
     }
     
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
     
     //
     // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
@@ -1181,18 +1157,6 @@
         }
     }
     
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
     
     //
     // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
@@ -1332,18 +1296,6 @@ withParameters:(NSDictionary *)parameterInfo
         }
     }
     
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
     
     //
     // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
@@ -1481,19 +1433,6 @@ withParameters:(nullable NSDictionary *)parameterInfo
             
             return;
         }
-    }
-    
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
     }
     
     
