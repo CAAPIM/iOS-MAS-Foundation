@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 #import <SVProgressHUDTVOS/SVProgressHUD.h>
-@interface QRCodeLoginController : UIViewController
+@interface QRCodeLoginController : UIViewController<MASSocialLoginDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *lblMessage;
 
 @property (weak, nonatomic) IBOutlet UIButton *btnLogout;

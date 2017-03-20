@@ -8,7 +8,11 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+#if TARGET_OS_TVOS
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
+#else
+#import <MASFoundation/MASFoundation.h>
+#endif
 
 
 @interface MASUser (MASPrivate)

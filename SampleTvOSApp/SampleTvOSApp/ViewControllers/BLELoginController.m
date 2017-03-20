@@ -165,7 +165,7 @@
 - (IBAction)clkLogout:(id)sender {
     
    // [self.qrCodeProximityLogin stopDisplayingQRCodeImageForProximityLogin];
-    
+    [SVProgressHUD dismiss];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 @end

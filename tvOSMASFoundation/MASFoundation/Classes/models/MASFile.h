@@ -8,16 +8,11 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-//#if TARGET_OS_IOS
-//#import <MASFoundation/MASFoundation.h>
-
-
-//#elif TARGET_OS_TV
-//
-//
+#if TARGET_OS_TVOS
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
-//#endif
-
+#else
+#import <MASFoundation/MASFoundation.h>
+#endif
 
 /**
  * The `MASFile` class is a local representation of file data.

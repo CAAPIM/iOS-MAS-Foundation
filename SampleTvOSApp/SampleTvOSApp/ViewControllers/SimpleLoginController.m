@@ -46,18 +46,42 @@ bool bVar=TRUE;
                         
     if(completed)
     {
-       [[MASDevice currentDevice] resetLocally];
+       
         [MASUser loginWithUserName:UserName password:PassWord completion:^(BOOL completed, NSError *error)
          {
              [SVProgressHUD dismiss];
              if(error)
                  self.textView.text=error.description;
-             else
+             else 
              {
+                 ///
                  
-                 ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+                 UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"TVOS APP"
+                                                                                          message:@"Logged in Successfully"
+                                                                                   preferredStyle:UIAlertControllerStyleAlert];
+                 // Construct Grant action
+                 UIAlertAction* ok = [UIAlertAction
+                                      actionWithTitle:@"Ok"
+                                      style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction * _Nonnull action) {
+                                          ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+                                          
+                                          [self presentViewController:movieVC animated:YES completion:nil];
+                                      }];
+                    // Add grant action
                  
-                 [self presentViewController:movieVC animated:YES completion:nil];
+                 
+                 
+                 [alertController addAction:ok];
+                 
+                 
+                 // Add deny action
+                 //[alertController addAction:cancel];
+                 // Present Alert
+                 [self presentViewController:alertController animated:YES completion:nil];
+                 
+                 ///
+                
                  
              }
              
@@ -205,7 +229,7 @@ bool bVar=TRUE;
 
 
 - (IBAction)clkLogout:(id)sender {
-    
+     [SVProgressHUD dismiss];
      [self dismissViewControllerAnimated:YES completion:nil];
 //    [[MASUser currentUser] logoutWithCompletion:^(BOOL completed, NSError *error)
 //    {

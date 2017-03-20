@@ -28,6 +28,7 @@
 
 - (void)deviceLoginButtonDidCancel:(FBSDKDeviceLoginButton *)button
 {
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -43,6 +44,7 @@
 
 - (void)deviceLoginButtonDidLogOut:(FBSDKDeviceLoginButton *)button
 {
+    [FBSDKAccessToken setCurrentAccessToken:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

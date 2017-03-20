@@ -18,6 +18,7 @@
     [super viewDidLoad];
     self.imgView.image=nil;
     //proximity
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveAuthorizationCode:) name:MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification  object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(masProximityLogin:)
                                                  name:@"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification"
@@ -69,7 +70,7 @@
             }
             
             
-            //[MASDevice setProximityLoginDelegate:self];
+          //  [MASDevice setProximityLoginDelegate:self];
             
             self.qrCodeProximityLogin = [[MASProximityLoginQRCode alloc] initWithAuthenticationProvider:qrCodeAuthProvider];
             
@@ -132,6 +133,47 @@
     }
     
 }
+-(void)didReceiveAuthorizationCode:(NSString *_Nonnull)authorizationCode
+{
+    
+    if(authorizationCode)
+    {
+        [SVProgressHUD dismiss];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"MAS Proximity Login"
+                                                                                 message:@"The session was shared successfully!"
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        // Construct Grant action
+        UIAlertAction* ok = [UIAlertAction
+                             actionWithTitle:@"Continue"
+                             style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction * action){
+                                 
+                                 ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"MovieViewController"];
+                                 
+                                 [self presentViewController:movieVC animated:YES completion:nil];
+                                 
+                                 
+                             }];
+        UIAlertAction* cancel = [UIAlertAction
+                                 actionWithTitle:@"Cancel"
+                                 style:UIAlertActionStyleDefault
+                                 handler:nil];       // Add grant action
+        
+        
+        
+        [alertController addAction:ok];
+        
+        
+        // Add deny action
+        [alertController addAction:cancel];
+        // Present Alert
+        [self presentViewController:alertController animated:YES completion:nil];
+        
+        //
+    }
+    
+    
+}
 
 -(void)userAuthenticated:(NSNotification*)notification
 {
@@ -141,7 +183,15 @@
 }
 
 - (IBAction)clkLogout:(id)sender {
+     [SVProgressHUD dismiss];
     
+        [[MASUser currentUser] logoutWithCompletion:^(BOOL completed, NSError *error)
+        {
+            if(!error)
+            {
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
+        }];
      [self.qrCodeProximityLogin stopDisplayingQRCodeImageForProximityLogin];
     
     self.imgView.image=nil;

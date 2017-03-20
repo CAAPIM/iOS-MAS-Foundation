@@ -74,7 +74,7 @@
         "ble": {
             "msso_ble_service_uuid": "980c2f36-bde3-11e4-8dfc-aa07a5b093db",
             "msso_ble_characteristic_uuid": "980c34cc-bde3-11e4-8dfc-aa07a5b093db",
-            "msso_ble_rssi": -35
+            "msso_ble_rssi": -55
         }
     },
     "custom": {

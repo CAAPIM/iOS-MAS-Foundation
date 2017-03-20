@@ -8,7 +8,11 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+#if TARGET_OS_TVOS
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
+#else
+#import <MASFoundation/MASFoundation.h>
+#endif
 
 #if TARGET_OS_IOS
 #import <WebKit/WebKit.h>
@@ -55,7 +59,8 @@
 
 
 /**
- *  The 'MASSocialLogin' class is a helper class to utilize WKWebView object for social network authentication.
+ *  The 'MASSocialLogin' class is a helper class to u
+ tilize WKWebView object for social network authentication.
  *  The WKNavigationDelegate will be re-delegated to this class during authentication process, and will be assigned back to the original delegation.
  */
 @interface MASSocialLogin : MASObject
