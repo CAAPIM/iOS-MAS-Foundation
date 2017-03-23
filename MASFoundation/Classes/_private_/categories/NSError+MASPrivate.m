@@ -559,6 +559,25 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorStringFormatWithDescription:(NSString *)description code:(MASFoundationErrorCode)code
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *format = [self descriptionForFoundationErrorCode:code];
+    NSString *localDescription = [NSString stringWithFormat:format, description];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    return [self errorForFoundationCode:code info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorDeviceAlreadyRegistered
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeDeviceAlreadyRegistered errorDomain:MASFoundationErrorDomainLocal];
@@ -1067,6 +1086,13 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code proximity login authentication failed with specific information on userInfo.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for proximity login.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL: return @"Invalid authorization url.";
+          
+        //
+        // JWT
+        //
+        case MASFoundationErrorCodeJWTInvalidClaimKey: return @"JWT claim key (%@) is already reserved.";
+        case MASFoundationErrorCodeJWTInvalidPrivateKey: return @"JWT build failure due to missing or invalid private key.";
+        case MASFoundationErrorCodeJWTInvalidContentType: return @"Invalid content-type for JWT.";
             
         //
         // Default

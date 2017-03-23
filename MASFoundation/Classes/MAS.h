@@ -11,6 +11,7 @@
 @import Foundation;
 
 #import "MASConstants.h"
+#import "MASJWTClaim.h"
 
 
 /**
@@ -930,6 +931,16 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
      isPublic:(BOOL)isPublic
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
+
+///--------------------------------------
+/// @name JWT Signing
+///--------------------------------------
+
+# pragma mark - JWT Signing
+
++ (NSString * _Nullable)signWithContent:(id _Nonnull)content error:(NSError *__nullable __autoreleasing *__nullable)error;
++ (NSString * _Nullable)signWithContent:(id _Nonnull)content withExpiresIn:(NSInteger)expiredIn error:(NSError *__nullable __autoreleasing *__nullable)error;
++ (NSString * _Nullable)signWithContent:(id _Nonnull)content withJWTClaims:(MASJWTClaim * _Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error;
 
 
 #ifdef DEBUG

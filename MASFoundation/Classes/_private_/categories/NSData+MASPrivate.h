@@ -68,6 +68,14 @@
 
 + (NSData *)sign:(NSString *)data key:(NSString *)key;
 
+
+/**
+ *  Determines MIME type of NSData
+ *
+ *  @returns Returns NSString value of NSData's mimeType
+ */
+- (NSString *)mimeType;
+
 #pragma mark - Encryption Methods
 
 /**
