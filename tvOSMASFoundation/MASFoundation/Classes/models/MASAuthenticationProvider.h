@@ -7,7 +7,7 @@
 //  This software may be modified and distributed under the terms
 //  of the MIT license. See the LICENSE file for details.
 //
-#if TARGET_OS_TVOS
+#if TARGET_OS_TV
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 #else
 #import <MASFoundation/MASFoundation.h>
@@ -15,6 +15,8 @@
 /**
  * The `MASAuthenticationProvider` class is a representation of a single provider.
  */
+
+
 @interface MASAuthenticationProvider : MASObject
 
 

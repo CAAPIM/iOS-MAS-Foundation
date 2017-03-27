@@ -8,7 +8,7 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#if TARGET_OS_TVOS
+#if TARGET_OS_TV
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
 #else
 #import <MASFoundation/MASFoundation.h>
