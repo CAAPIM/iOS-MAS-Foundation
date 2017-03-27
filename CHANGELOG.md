@@ -1,3 +1,19 @@
+# Version 4.0.00
+
+### Bug fixes
+- Fixes BLE requirement OS prompt appears on SDK initialization; BLE requirement prompt should appear when SDK actually accesses BLE services. [US284889]
+- Fixes some of nullability warnings on public classes. [US284893]
+- Fixes the issue on [MAS gatewayIsReachable] boolean property where it always returned true. [DE272367]
+- Fixes the issue where SDK was not able to make CRUD operation right after the SDK is initialized due to the "The network is not started yet." [DE282382]
+ 
+### New features
+- Introduces new way of dynamically initializing SDK with enrollment URL. With this feature, application or system administrator can generate an URL specified to a user, so that the user can initialize SDK without having an application with built in `msso_config.json` deployed with the application. Server configuration and application level's implementation is required. [US287274]
+- Introduces new way of performing social login through SDK.  SDK now performs social login with `SFSafariViewController` to ensure better security, and adopt morden way of performing oAuth web authentication. Please refer to `MASAuthorizationResponse` class to understand the new flow of social login with `SFSafariViewController`.[US279228]
+- Introduces new protection on authorization process with Proof Key for Code Exchange by OAuth Public Clients.  By default, PKCE process is enabled, and it can be disabled; however, it is strongly recommended to not disable it unless there is a specific use case. [US269506]
+
+### Deprecated Methods
+- `MASSocialLogin` class is deprecated. Please use `SFSafariViewController` to display social login web URL from `MASAuthenticationProvider` and use `MASAuthorizationResponse` class to handle incoming response from `SFSafariViewController`. [US279228]
+
 # Version 1.3.01
 
 ### Bug fixes 

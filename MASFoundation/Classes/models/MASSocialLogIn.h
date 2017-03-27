@@ -12,6 +12,7 @@
 
 #import <WebKit/WebKit.h>
 
+DEPRECATED_ATTRIBUTE
 @protocol MASSocialLoginDelegate <NSObject>
 
 @required
@@ -20,8 +21,10 @@
  *  Delegation method to notify with authorization code when the authentication process is done.
  *
  *  @param code NSString of authorization code
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-- (void)didReceiveAuthorizationCode:(NSString *)code;
+- (void)didReceiveAuthorizationCode:(NSString *)code DEPRECATED_ATTRIBUTE;
 
 
 
@@ -31,22 +34,28 @@
  *  Delegation method to notify when an error is encountered during the authentication process.
  *
  *  @param error NSError object of the encountered error
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-- (void)didReceiveError:(NSError *)error;
+- (void)didReceiveError:(NSError *)error DEPRECATED_ATTRIBUTE;
 
 
 
 /**
  *  Delegation method to notify when WKWebView starts loading.
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-- (void)didStartLoadingWebView;
+- (void)didStartLoadingWebView DEPRECATED_ATTRIBUTE;
 
 
 
 /**
  *  Delegation method to notify when WKWebView stops loading.
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-- (void)didStopLoadingWebView;
+- (void)didStopLoadingWebView DEPRECATED_ATTRIBUTE;
 
 @end
 
@@ -55,20 +64,27 @@
 /**
  *  The 'MASSocialLogin' class is a helper class to utilize WKWebView object for social network authentication.
  *  The WKNavigationDelegate will be re-delegated to this class during authentication process, and will be assigned back to the original delegation.
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
+DEPRECATED_ATTRIBUTE
 @interface MASSocialLogin : MASObject
 
 
 /**
  *  MASAuthentication property for social login
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-@property (nonatomic, strong) MASAuthenticationProvider *provider;
+@property (nonatomic, strong) MASAuthenticationProvider *provider DEPRECATED_ATTRIBUTE;
 
 
 /**
  *  MASSocialLoginDelegate property for delegation of MASSocialLogin protocols
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-@property (nonatomic, weak) id<MASSocialLoginDelegate> delegate;
+@property (nonatomic, weak) id<MASSocialLoginDelegate> delegate DEPRECATED_ATTRIBUTE;
 
 
 
@@ -79,8 +95,10 @@
  *  @param webView  WKWebView to process the social login
  *
  *  @return MASSocialLogin object
+ *
+ *  @deprecated Use `SFSafariViewController` and `MASAuthorizationResponse` with MASAuthenticationProvider to present social login view instead.
  */
-- (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider webView:(WKWebView *)webView;
+- (instancetype)initWithAuthenticationProvider:(MASAuthenticationProvider *)provider webView:(WKWebView *)webView DEPRECATED_ATTRIBUTE;
 
 @end
 
