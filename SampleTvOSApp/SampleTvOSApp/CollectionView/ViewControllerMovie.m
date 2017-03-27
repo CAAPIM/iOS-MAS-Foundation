@@ -10,6 +10,8 @@
 #import "MovieCollectionViewCell.h"
 #import "Movie.h"
 #import "ViewControllerMovie.h"
+#import "WelcomeViewController.h"
+#import <SVProgressHUDTVOS/SVProgressHUD.h>
 @interface ViewControllerMovie ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UIFocusEnvironment>
 
 @end
@@ -36,11 +38,13 @@
 #pragma mark - Data
 - (void)fetchMovies {
     
+    [SVProgressHUD showWithStatus:@"Loading.."];
+    [SVProgressHUD setBackgroundColor:[UIColor redColor]];
     [[Movie sharedInstance] fetchMovies:^(NSArray *movies)
     
     
     {
-        
+        [SVProgressHUD dismiss];
         self.movies = [NSMutableArray arrayWithArray:movies];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -55,6 +59,7 @@
 }
 
 #pragma -CollectionView Protocol Methods
+
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     CGFloat height = (CGRectGetHeight(self.view.frame)-(2*COLLECTION_VIEW_PADDING))/2;
@@ -77,6 +82,7 @@
     cell.indexPath = indexPath;
     
     Movie *movie = [self.movies objectAtIndex:indexPath.row];
+    
     [cell updateCellForMovie:movie];
     
     if (cell.gestureRecognizers.count == 0) {
@@ -119,16 +125,17 @@
 
 
 #pragma mark - GestureRecognizer
+
 - (void)tappedMovie:(UITapGestureRecognizer *)gesture {
     
     if (gesture.view != nil) {
         
-        MovieCollectionViewCell* cell = (MovieCollectionViewCell *)gesture.view;
-        Movie *movie = [self.movies objectAtIndex:cell.indexPath.row];
+//        MovieCollectionViewCell* cell = (MovieCollectionViewCell *)gesture.view;
+//        Movie *movie = [self.movies objectAtIndex:cell.indexPath.row];
         
-       // ViewControllerMovie *movieVC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"Movie"];
-        //movieVC.movie = movie;
-        //[self presentViewController:movieVC animated:YES completion: nil];
+        WelcomeViewController *VC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
+        
+        [self presentViewController:VC animated:YES completion: nil];
     }
     
 }

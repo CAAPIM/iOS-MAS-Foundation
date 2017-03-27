@@ -7,18 +7,16 @@
 //  This software may be modified and distributed under the terms
 //  of the MIT license. See the LICENSE file for details.
 //
-//#if TARGET_OS_IOS
-//#import <MASFoundation/MASFoundation.h>
-//
-//
-//#elif TARGET_OS_TV
-
-
+#if TARGET_OS_TV
 #import <tvOS_MASFoundation/tvOS_MASFoundation.h>
-//#endif
+#else
+#import <MASFoundation/MASFoundation.h>
+#endif
 /**
  * The `MASAuthenticationProvider` class is a representation of a single provider.
  */
+
+
 @interface MASAuthenticationProvider : MASObject
 
 
