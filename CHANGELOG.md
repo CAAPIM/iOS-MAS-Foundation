@@ -1,10 +1,10 @@
 # Version 4.0.00
 
 ### Bug fixes
-- Fixes BLE requirement OS prompt appears on SDK initialization; BLE requirement prompt should appear when SDK actually accesses BLE services. [US284889]
-- Fixes some of nullability warnings on public classes. [US284893]
-- Fixes the issue on [MAS gatewayIsReachable] boolean property where it always returned true. [DE272367]
-- Fixes the issue where SDK was not able to make CRUD operation right after the SDK is initialized due to the "The network is not started yet." [DE282382]
+- The BLE OS prompt was displaying on SDK initialization. Now the prompt appears only when the SDK actually accesses BLE services.  [US284889]
+- Fixes to nullability warnings on public classes. [US284893]
+- [MAS gatewayIsReachable] boolean property always returned true. [DE272367]
+- SDK was unable to make CRUD operations after SDK initialization because "The network is not started yet." [DE282382]
  
 ### New features
 - Introduces new way of dynamically initializing SDK with enrollment URL. With this feature, application or system administrator can generate an URL specified to a user, so that the user can initialize SDK without having an application with built in `msso_config.json` deployed with the application. Server configuration and application level's implementation is required. [US287274]
