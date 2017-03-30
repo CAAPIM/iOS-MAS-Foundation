@@ -132,10 +132,12 @@
         
 //        MovieCollectionViewCell* cell = (MovieCollectionViewCell *)gesture.view;
 //        Movie *movie = [self.movies objectAtIndex:cell.indexPath.row];
-        
+        if(![MASUser currentUser].isAuthenticated)
+        {
         WelcomeViewController *VC = (id)[self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
         
         [self presentViewController:VC animated:YES completion: nil];
+        }
     }
     
 }

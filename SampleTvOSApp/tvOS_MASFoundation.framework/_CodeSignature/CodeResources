@@ -14,11 +14,11 @@
 		</data>
 		<key>Headers/MASAuthenticationProvider.h</key>
 		<data>
-		giqNnEuS2bLeyWfhuImC3K0QiF8=
+		u50uNO5y6C1Z4q2wbEQxjchgF2M=
 		</data>
 		<key>Headers/MASAuthenticationProviders.h</key>
 		<data>
-		kpB7cIZuJiNVB6xVi53HKDx2WHA=
+		bX8idtOGLTM+oocbfEfJk30w9tc=
 		</data>
 		<key>Headers/MASConfiguration.h</key>
 		<data>
@@ -34,11 +34,11 @@
 		</data>
 		<key>Headers/MASFile.h</key>
 		<data>
-		1l6PkAcbz0Vo4RlWkSolWUs9Mws=
+		mVGp2QboK2A6kD87ykuQGucFHMo=
 		</data>
 		<key>Headers/MASGroup.h</key>
 		<data>
-		BKs1Wx9Cq76wZJFJv72Hdx8hJJo=
+		tqC79nJEf+OGm9TjbJnA7ixx7mY=
 		</data>
 		<key>Headers/MASMQTTClient.h</key>
 		<data>
@@ -66,7 +66,7 @@
 		</data>
 		<key>Headers/MASProximityLoginQRCode.h</key>
 		<data>
-		/YCI8pGrY0jQavHassumwHqhgkM=
+		XlKm+UxAz0eisAsM2dr4vzXjz7M=
 		</data>
 		<key>Headers/MASService.h</key>
 		<data>
@@ -74,7 +74,7 @@
 		</data>
 		<key>Headers/MASSocialLogin.h</key>
 		<data>
-		k/52wGa66wdh9j+IA185c5GfI5M=
+		bKpSWrZEmw4cES89z4sN1GPeAy4=
 		</data>
 		<key>Headers/MASUser.h</key>
 		<data>
@@ -90,7 +90,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		uKjYYQhy/emcQC+izhDrbmDWd10=
+		coZSqTXoweseHo5i/0lJh6vb1+s=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -125,22 +125,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			giqNnEuS2bLeyWfhuImC3K0QiF8=
+			u50uNO5y6C1Z4q2wbEQxjchgF2M=
 			</data>
 			<key>hash2</key>
 			<data>
-			K8dDPPVxAzKUIZMb7ukiL1RJ6S9GvVVnEZ/yNtEoCQs=
+			gVG+AVdd9vjX6QS6+Cl4j6iVGnsJPd++G36ma8MEodg=
 			</data>
 		</dict>
 		<key>Headers/MASAuthenticationProviders.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			kpB7cIZuJiNVB6xVi53HKDx2WHA=
+			bX8idtOGLTM+oocbfEfJk30w9tc=
 			</data>
 			<key>hash2</key>
 			<data>
-			urbeBc35t1CbACR4VkVWRjR9g4tEjBNL43JqiklUxXU=
+			BKpFE6PW0adn6UyS9y7hZTnc0K2dig8Ps56b2ewDGWM=
 			</data>
 		</dict>
 		<key>Headers/MASConfiguration.h</key>
@@ -180,22 +180,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			1l6PkAcbz0Vo4RlWkSolWUs9Mws=
+			mVGp2QboK2A6kD87ykuQGucFHMo=
 			</data>
 			<key>hash2</key>
 			<data>
-			j4fiGc5YA1Eri1rYULvw6z8Od/jfzuSzeNwkALlUA9c=
+			O/Vqkfr33B53Rg16ioL3/FekkGKW1D9qT1YOWMj24oE=
 			</data>
 		</dict>
 		<key>Headers/MASGroup.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			BKs1Wx9Cq76wZJFJv72Hdx8hJJo=
+			tqC79nJEf+OGm9TjbJnA7ixx7mY=
 			</data>
 			<key>hash2</key>
 			<data>
-			FzllekDY+HiwcUPnEtiHjTrdpVcqb/xz9UFQziCYBKU=
+			5aiiR5Xlibitb74TsQWPvI/S48Ov3pp08EMv/ILq5Mc=
 			</data>
 		</dict>
 		<key>Headers/MASMQTTClient.h</key>
@@ -268,11 +268,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			/YCI8pGrY0jQavHassumwHqhgkM=
+			XlKm+UxAz0eisAsM2dr4vzXjz7M=
 			</data>
 			<key>hash2</key>
 			<data>
-			0v0LI1vWXB7Qx5d7iW7LbzgEyrsRg39n3FQguO8lEl4=
+			dr0FKGkunehHF1O5sMALJWht+q4KgrahKleBcbqJI6E=
 			</data>
 		</dict>
 		<key>Headers/MASService.h</key>
@@ -290,11 +290,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			k/52wGa66wdh9j+IA185c5GfI5M=
+			bKpSWrZEmw4cES89z4sN1GPeAy4=
 			</data>
 			<key>hash2</key>
 			<data>
-			mJLSghVIO/+uXPUA7rWU6vUrGJwgdxL1V9C6HfFkGDo=
+			MPpfikuyhVKXLP/N6PyB5ofR9hYxSA00PxN8OOZXWtk=
 			</data>
 		</dict>
 		<key>Headers/MASUser.h</key>

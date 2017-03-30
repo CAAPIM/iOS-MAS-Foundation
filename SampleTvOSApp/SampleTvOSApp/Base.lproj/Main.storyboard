@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="wMK-sq-AwX">
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6K2-E2-OXD">
     <device id="appleTV" orientation="landscape">
         <adaptation id="light"/>
     </device>
@@ -108,7 +108,7 @@
                                 <rect key="frame" x="1009" y="0.0" width="235" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="LogOut"/>
+                                <state key="normal" title="Back"/>
                                 <connections>
                                     <action selector="clkLogout:" destination="y5v-3g-8JA" eventType="primaryActionTriggered" id="ZAL-67-LgF"/>
                                 </connections>
@@ -152,7 +152,7 @@
                                 <rect key="frame" x="993" y="0.0" width="251" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="LogOut"/>
+                                <state key="normal" title="Back"/>
                                 <connections>
                                     <action selector="clkLogout:" destination="8dJ-iE-NXG" eventType="primaryActionTriggered" id="oHS-Qt-mnL"/>
                                 </connections>
