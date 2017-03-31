@@ -55,9 +55,9 @@ bool bVar=TRUE;
              else 
              {
                  ///
-                 
+                 NSString * str=[NSString stringWithFormat:@"%@, %@",[UserName  uppercaseString],@"Logged in Successfully"];
                  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"TVOS APP"
-                                                                                          message:@"Logged in Successfully"
+                                                                                          message:str
                                                                                    preferredStyle:UIAlertControllerStyleAlert];
                  // Construct Grant action
                  UIAlertAction* ok = [UIAlertAction

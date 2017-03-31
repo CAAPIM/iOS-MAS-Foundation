@@ -1,29 +1,43 @@
 {
     "server": {
-        "hostname": "magstaging.ca.com",
+        "hostname": "mag40.ca.com",
         "port": 8443,
         "prefix": "blr",
         "server_certs": [
                          [
-                          "-----BEGIN CERTIFICATE-----", "MIIC/DCCAeSgAwIBAgIIQxcfMIwAz3swDQYJKoZIhvcNAQEMBQAwHDEaMBgGA1UEAxMRbWFnc3Rh", "Z2luZy5jYS5jb20wHhcNMTYxMTI4MDkwMzA1WhcNMjYxMTI2MDkwMzA1WjAcMRowGAYDVQQDExFt", "YWdzdGFnaW5nLmNhLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJZQJ5jrsuOf", "DmhZPDPccPcwfJBSgBwKFNsWYyUhv7XJNjKUCeClwZA6ZpgYatVtjiY7x8uqYEGb76y81tyrbBSR", "D5pePl6EhkwyAfeqrhlu36QtC5mCDtJPcuXa5KhTZ/noQE7M1h0BRnDA2nOag4nkDTK/ghu4ApQm", "LDN7bv12+ctLJYRvceIsedi8IrWHt9KpyS4QlrxVHqswjDYd/LqK46RodM4u2Q5lD/tMXzWXsNar", "Gmn9Oowcj6iMn0Iep1VZDOiIBqfYYepNZFKhLDPn75DeBH6nLkWCwE9gHChQUPREI2ib6e6lAY3q", "5EwEACqrYjBwGgYFeUggbqXS3icCAwEAAaNCMEAwHQYDVR0OBBYEFCp7irRjECV6dmfIie4VaKS/", "DzyFMB8GA1UdIwQYMBaAFCp7irRjECV6dmfIie4VaKS/DzyFMA0GCSqGSIb3DQEBDAUAA4IBAQBQ", "rXSGrrcfS1pZxN4mRue+sIt6n1kfZEpp3alMuA4h6ZDoQ7KWuuYDHunFrfDIQIbuITKjttBYra6z", "Yhui8FJd+tAO730LN4S+mztlGTnoFoqD2H5wk+7Wu+6ROGfcsF1yMmLDlJAXY+dWZ0FuMYKvBIn4", "kLGpdnac9GmdigmrFHLUsHJlRerzseln66JIf8ocOn5wmJz9cGORH4BeSEcSa0fRvz/sXR/3V3AU", "OUxgttZzGa65FaoejMVtwIg7+WsRM06cfbAznd0C+86LMQ21CuzcuDWUcfPelnDqyWOft8t/M+1O", "V9aHdvAsztJfooSNabWUhciSxNv5Tm5GUkfB", "-----END CERTIFICATE-----"
+                          "-----BEGIN CERTIFICATE-----",
+                          "MIIC8jCCAdqgAwIBAgIIMlsxAa58FgYwDQYJKoZIhvcNAQEMBQAwFzEVMBMGA1UEAxMMbWFnNDAu",
+                          "Y2EuY29tMB4XDTE3MDMwMjE5NDE0NFoXDTI3MDIyODE5NDE0NFowFzEVMBMGA1UEAxMMbWFnNDAu",
+                          "Y2EuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApSm6mJ1AXaU4cwNDt34eXyrJ",
+                          "ILQpzgiNbkWNwMMn0kEoQPKFVBPoMiTp4blAigK8Rb7q/LpgE8OcikfK0FXOCSri4OakAQ8GDQer",
+                          "IqDCtFgC0ypXBLFICcieNctUsNu6Wuo2vha1jmW8MBa7vYn0eg0ygkCBqBw5ZLXTcwKh9Rvw2p9W",
+                          "Rx4ux9CXcn7JW45vym0MxLk69Hw3J0oX6+YERB58Pzkj4fouHoSPn5ho3bdT5TTS5wHRx2vYgNt0",
+                          "9w7KOJFBizCko2KET6lRzSCxfKJdrIECwFDGumeK1nqqKnY3JYSo2oPXO58Uu9lMry8kcb4HeThT",
+                          "Dn7LQWorMBs1gQIDAQABo0IwQDAdBgNVHQ4EFgQU5CHxyLNWv50DUNznYT5J7jQ2KhMwHwYDVR0j",
+                          "BBgwFoAU5CHxyLNWv50DUNznYT5J7jQ2KhMwDQYJKoZIhvcNAQEMBQADggEBAA+ZUf7qtEoSfZRU",
+                          "sDUjvXvpfzgxMVGNwU00GGNfnI2Ode4VgS4guQrxHCo186zQiiw6VyzKeM21gscY0TEwmHvLQdyU",
+                          "ZjF1dcOlQDJlz3vPdj+wNAB2cVfTetT62NrlzOcl89BXs6uYh/sM32lgaeOk12uQpAvCxE0Geg8e",
+                          "pLR3QtaBMN+dwQklBJT1vHhKR9BLhMJbMB+Th1wDvjBPrR+Lbk9/ELjyJxhQ9b6/I6jGIRpYLwj/",
+                          "C+ym9YbA8KNWmAulLEaFID144Gcy3201L50DGdaEg1z+jSeqYxfiSFPAWw0syR4TcdDBIqyvmZH3",
+                          "iOvYI3cXO7l60nkv70bD9w0=",
+                          "-----END CERTIFICATE-----"
                           ]
                          ]
     },
     "oauth": {
         "client": {
-            "organization": "CA Inc",
-            "description": "It is used to test MAS Identity",
-            "client_name": "MAS_Identity",
+            "organization": "CA Tech",
+            "description": "What is the app used for?",
+            "client_name": "CordovaRegression",
             "client_type": "confidential",
             "registered_by": "admin",
             "client_custom": {},
             "client_ids": [
-                           
                            {
-                           "client_id": "90419356-8d33-43e7-ad54-9b2a77a21461",
+                           "client_id": "447dee43-a416-4abf-80e3-5cb22983b3ad",
                            "client_secret": "",
                            "scope": "openid profile email phone address user_role mas_messaging mas_storage msso msso_register msso_client_register mas_identity_retrieve_users mas_identity_retrieve_groups mas_identity_create_users mas_identity_delete_users mas_identity_update_users mas_identity_create_groups mas_identity_update_groups mas_identity_delete_groups",
-                           "redirect_uri": "https://ios.ssosdk.ca.com/ios",
+                           "redirect_uri": "https://android.ssosdk.ca.com/android",
                            "environment": "ALL",
                            "status": "ENABLED",
                            "registered_by": "admin",
@@ -74,7 +88,7 @@
         "ble": {
             "msso_ble_service_uuid": "980c2f36-bde3-11e4-8dfc-aa07a5b093db",
             "msso_ble_characteristic_uuid": "980c34cc-bde3-11e4-8dfc-aa07a5b093db",
-            "msso_ble_rssi": -55
+            "msso_ble_rssi": -80
         }
     },
     "custom": {

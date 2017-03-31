@@ -257,7 +257,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1244" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="  Password" minimumFontSize="20" background="textfield" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YRX-R7-Uha">
+                            <textField tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="   Password" minimumFontSize="20" background="textfield" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YRX-R7-Uha">
                                 <rect key="frame" x="303" y="268" width="588" height="108"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -297,7 +297,7 @@
                                     <action selector="btnClkCancel:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="nsI-HX-xbI"/>
                                 </connections>
                             </button>
-                            <textField tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" placeholder="   User Name" minimumFontSize="20" background="textfield" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
+                            <textField tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" placeholder="    User Name" minimumFontSize="20" background="textfield" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
                                 <rect key="frame" x="303" y="131" width="588" height="108"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
