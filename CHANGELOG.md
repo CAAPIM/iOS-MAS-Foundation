@@ -1,4 +1,4 @@
-# Version 4.0.00
+# Version 1.4.00
 
 ### Bug fixes
 - The BLE OS prompt was displaying on SDK initialization. Now the prompt appears only when the SDK actually accesses BLE services.  [US284889]
