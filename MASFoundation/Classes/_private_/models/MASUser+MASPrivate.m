@@ -19,17 +19,6 @@
 
 # pragma mark - Property Constants
 
-static NSString *const MASUserObjectIdPropertyKey = @"objectId"; // string
-static NSString *const MASUserUserNamePropertyKey = @"userName"; // string
-static NSString *const MASUserFamilyNamePropertyKey = @"familyName"; // string
-static NSString *const MASUserGivenNamePropertyKey = @"givenName"; // string
-static NSString *const MASUserFormattedNamePropertyKey = @"formattedName"; // string
-static NSString *const MASUserEmailAddressesPropertyKey = @"emailAddresses"; // string
-static NSString *const MASUserPhoneNumbersPropertyKey = @"phoneNumbers"; // string
-static NSString *const MASUserAddressesPropertyKey = @"addresses"; // string
-static NSString *const MASUserPhotosPropertyKey = @"photos"; // string
-static NSString *const MASUserGroupsPropertyKey = @"groups"; // string
-static NSString *const MASUserActivePropertyKey = @"active"; // bool
 static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 @implementation MASUser (MASPrivate)
@@ -51,8 +40,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 + (MASUser *)instanceFromStorage
 {
-    //DLog(@"n\ncalled\n\n");
-    
     MASUser *user;
     
     //
@@ -70,8 +57,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (void)saveToStorage
 {
-    //DLog(@"\n\ncalled\n\n");
-    
     //
     // Save to the keychain
     //
@@ -88,8 +73,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
             DLog(@"\n\nError attempting to save data: %@\n\n", [error localizedDescription]);
         }
     }
-    
-    //DLog(@"\n\nstored user(x): %@\n\n", [self debugDescription]);
 }
 
 
@@ -113,27 +96,27 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Uid --> ObjectId
     //
     NSString *uid = bodyInfo[MASUserPreferredNameRequestResponseKey];
-    if(uid && ![uid isKindOfClass:[NSNull class]]) self.objectId = uid;
+    if(uid && ![uid isKindOfClass:[NSNull class]]) [self setValue:uid forKey:@"objectId"];
     
     //
     // Preferred UserName
     //
     NSString *userName = bodyInfo[MASUserPreferredNameRequestResponseKey];
-    if(userName && ![userName isKindOfClass:[NSNull class]]) self.userName = userName;
+    if(userName && ![userName isKindOfClass:[NSNull class]]) [self setValue:userName forKey:@"userName"];
     
     //
     // Family Name
     //
     NSString *familyName = bodyInfo[MASUserFamilyNameRequestResponseKey];
-    self.familyName = (familyName && ![familyName isKindOfClass:[NSNull class]] ?
-        familyName : nil);
+    [self setValue:(familyName && ![familyName isKindOfClass:[NSNull class]] ?
+                    familyName : nil) forKey:@"familyName"];
     
     //
     // Given Name
     //
     NSString *givenName = bodyInfo[MASUserGivenNameRequestResponseKey];
-    self.givenName = (givenName && ![givenName isKindOfClass:[NSNull class]] ?
-        givenName : @"");
+    [self setValue:(givenName && ![givenName isKindOfClass:[NSNull class]] ?
+                    givenName : @"") forKey:@"givenName"];
 
     //
     // Formatted Name
@@ -152,7 +135,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         [mutableCopy appendString:self.familyName];
     }
     
-    if(mutableCopy.length > 0) self.formattedName = mutableCopy;
+    if(mutableCopy.length > 0) [self setValue:mutableCopy forKey:@"formattedName"];
     
     //
     // Email Addresses
@@ -160,7 +143,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSString *emailValue = bodyInfo[MASUserEmailRequestResponseKey];
     if(emailValue && ![emailValue isKindOfClass:[NSNull class]])
     {
-        self.emailAddresses = @{ MASInfoTypeWork : emailValue };
+        [self setValue:@{ MASInfoTypeWork : emailValue } forKey:@"emailAddresses"];
     }
     
     //
@@ -169,7 +152,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSString *phoneValue = bodyInfo[MASUserPhoneRequestResponseKey];
     if(phoneValue && ![phoneValue isKindOfClass:[NSNull class]])
     {
-        self.phoneNumbers = @{ MASInfoTypeWork : phoneValue };
+        [self setValue:@{ MASInfoTypeWork : phoneValue } forKey:@"phoneNumbers"];
     }
     
     //
@@ -178,7 +161,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSDictionary *addressInfo = bodyInfo[MASUserAddressRequestResponseKey];
     if(addressInfo && ![addressInfo isKindOfClass:[NSNull class]])
     {
-        self.addresses = @{ MASInfoTypeWork : addressInfo };
+        [self setValue:@{ MASInfoTypeWork : addressInfo } forKey:@"addresses"];
     }
     
     //
@@ -190,7 +173,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         NSURL *imageUrl = [NSURL URLWithString:imageUriAsString];
         NSData *imageData = [NSData dataWithContentsOfURL:imageUrl];
         
-        self.photos = @{ MASInfoTypeThumbnail : [UIImage imageWithData:imageData] };
+        [self setValue:@{ MASInfoTypeThumbnail : [UIImage imageWithData:imageData] } forKey:@"photos"];
     }
     
     //
@@ -213,7 +196,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // All attributes as dictionary
     //
-    self._attributes    = [[NSMutableDictionary alloc] initWithDictionary:info];
+    [self setValue:[[NSMutableDictionary alloc] initWithDictionary:info] forKey:@"_attributes"];
+//    self._attributes    = [[NSMutableDictionary alloc] initWithDictionary:info];
     
     
     //
@@ -239,245 +223,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-# pragma mark - NSCoding
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    //DLog(@"\n\ncalled\n\n");
-    
-    [super encodeWithCoder:aCoder];
-    
-    if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
-    if(self.familyName) [aCoder encodeObject:self.familyName forKey:MASUserFamilyNamePropertyKey];
-    if(self.givenName) [aCoder encodeObject:self.givenName forKey:MASUserGivenNamePropertyKey];
-    if(self.formattedName) [aCoder encodeObject:self.formattedName forKey:MASUserFormattedNamePropertyKey];
-    if(self.emailAddresses) [aCoder encodeObject:self.emailAddresses forKey:MASUserEmailAddressesPropertyKey];
-    if(self.phoneNumbers) [aCoder encodeObject:self.phoneNumbers forKey:MASUserPhoneNumbersPropertyKey];
-    if(self.addresses) [aCoder encodeObject:self.addresses forKey:MASUserAddressesPropertyKey];
-    if(self.photos) [aCoder encodeObject:self.photos forKey:MASUserPhotosPropertyKey];
-    if(self.groups) [aCoder encodeObject:self.groups forKey:MASUserGroupsPropertyKey];
-    if(self.active) [aCoder encodeBool:self.active forKey:MASUserActivePropertyKey];
-}
-
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    //DLog(@"\n\ncalled\n\n");
-    
-    if(self = [super initWithCoder:aDecoder])
-    {
-        self.userName = [aDecoder decodeObjectForKey:MASUserUserNamePropertyKey];
-        self.familyName = [aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey];
-        self.givenName = [aDecoder decodeObjectForKey:MASUserGivenNamePropertyKey];
-        self.formattedName = [aDecoder decodeObjectForKey:MASUserFormattedNamePropertyKey];
-        self.emailAddresses = [aDecoder decodeObjectForKey:MASUserEmailAddressesPropertyKey];
-        self.phoneNumbers = [aDecoder decodeObjectForKey:MASUserPhoneNumbersPropertyKey];
-        self.addresses = [aDecoder decodeObjectForKey:MASUserAddressesPropertyKey];
-        self.photos = [aDecoder decodeObjectForKey:MASUserPhotosPropertyKey];
-        self.groups = [aDecoder decodeObjectForKey:MASUserGroupsPropertyKey];
-        self.active = [aDecoder decodeBoolForKey:MASUserActivePropertyKey];
-    }
-    
-    return self;
-}
-
-
 # pragma mark - Properties
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-
-- (BOOL)isCurrentUser
-{
-    //
-    // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
-
-    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
-}
-
-
-// Special case which is determined by other fields
-- (BOOL)isAuthenticated
-{
-//    DLog(@"\n\ncalled and current user status is: %@ so returning: %@\n\n",
-//        [self userStatusAsString], ([self status] != MASUserStatusNotLoggedIn) ? @"Yes" : @"No");
-    
-    //
-    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
-    
-    //
-    // if the user status is not MASUserStatusNotLoggedIn,
-    // the user is authenticated either anonymously or with username and password
-    //
-    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
-}
-
-
-- (BOOL)isSessionLocked
-{
-    
-    //
-    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
-    
-    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
-    {
-        return [MASAccess currentAccess].isSessionLocked;
-    }
-    else {
-        return NO;
-    }
-}
-
-
-- (NSString *)objectId
-{
-    return objc_getAssociatedObject(self, &MASUserObjectIdPropertyKey);
-}
-
-
-- (void)setObjectId:(NSString *)objectId
-{
-    objc_setAssociatedObject(self, &MASUserObjectIdPropertyKey, objectId, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)userName
-{
-    return objc_getAssociatedObject(self, &MASUserUserNamePropertyKey);
-}
-
-
-- (void)setUserName:(NSString *)userName
-{
-    objc_setAssociatedObject(self, &MASUserUserNamePropertyKey, userName, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)familyName
-{
-    return objc_getAssociatedObject(self, &MASUserFamilyNamePropertyKey);
-}
-
-
-- (void)setFamilyName:(NSString *)familyName
-{
-    objc_setAssociatedObject(self, &MASUserFamilyNamePropertyKey, familyName, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)givenName
-{
-    return objc_getAssociatedObject(self, &MASUserGivenNamePropertyKey);
-}
-
-
-- (void)setGivenName:(NSString *)givenName
-{
-    objc_setAssociatedObject(self, &MASUserGivenNamePropertyKey, givenName, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSString *)formattedName
-{
-    return objc_getAssociatedObject(self, &MASUserFormattedNamePropertyKey);
-}
-
-
-- (void)setFormattedName:(NSString *)formattedName
-{
-    objc_setAssociatedObject(self, &MASUserFormattedNamePropertyKey, formattedName, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSDictionary *)emailAddresses
-{
-    return objc_getAssociatedObject(self, &MASUserEmailAddressesPropertyKey);
-}
-
-
-- (void)setEmailAddresses:(NSDictionary *)emailAddresses
-{
-    objc_setAssociatedObject(self, &MASUserEmailAddressesPropertyKey, emailAddresses, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSDictionary *)phoneNumbers
-{
-    return objc_getAssociatedObject(self, &MASUserPhoneNumbersPropertyKey);
-}
-
-
-- (void)setPhoneNumbers:(NSDictionary *)phoneNumbers
-{
-    objc_setAssociatedObject(self, &MASUserPhoneNumbersPropertyKey, phoneNumbers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSDictionary *)addresses
-{
-    return objc_getAssociatedObject(self, &MASUserAddressesPropertyKey);
-}
-
-
-- (void)setAddresses:(NSDictionary *)addresses
-{
-    objc_setAssociatedObject(self, &MASUserAddressesPropertyKey, addresses, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSDictionary *)photos
-{
-    return objc_getAssociatedObject(self, &MASUserPhotosPropertyKey);
-}
-
-
-- (void)setPhotos:(NSDictionary *)photos
-{
-    objc_setAssociatedObject(self, &MASUserPhotosPropertyKey, photos, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (NSArray *)groups
-{
-    return objc_getAssociatedObject(self, &MASUserGroupsPropertyKey);
-}
-
-
-- (void)setGroups:(NSArray *)groups
-{
-    objc_setAssociatedObject(self, &MASUserGroupsPropertyKey, groups, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-- (BOOL)active
-{
-    NSNumber *activeNumber = objc_getAssociatedObject(self, &MASUserActivePropertyKey);
-    
-    return [activeNumber boolValue];
-}
-
-
-- (void)setActive:(BOOL)active
-{
-    objc_setAssociatedObject(self, &MASUserActivePropertyKey, [NSNumber numberWithBool:active], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSDictionary *)_attributes
-{
-    return objc_getAssociatedObject(self, &MASUserAttributesPropertyKey);
-}
-
-- (void)set_attributes:(NSDictionary *)attributes
-{
-    objc_setAssociatedObject(self, &MASUserAttributesPropertyKey, attributes, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
 
 - (void)setWasLoggedOffAndSave:(BOOL)wasLoggedOff
 {
@@ -494,30 +240,11 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-- (NSString *)accessToken
-{
-    NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
-    
-    if (accessToken)
-    {
-        return accessToken;
-    }
-    else {
-        return nil;
-    }
-}
-
-
-#pragma clang diagnostic pop
-
-
 # pragma mark - Public
 
 + (NSString *)authorizationBasicHeaderValueWithUsername:(NSString *)userName
                                                password:(NSString *)password
 {
-    //DLog(@"called and userName: %@ and password: %@", userName, password);
-   
     NSString *authStr = [NSString stringWithFormat:@"%@:%@", userName, password];
     NSData *authData = [authStr dataUsingEncoding:NSUTF8StringEncoding];
     

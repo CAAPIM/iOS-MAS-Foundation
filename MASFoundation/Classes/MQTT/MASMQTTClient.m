@@ -225,7 +225,7 @@ static MASMQTTClient *_sharedClient = nil;
     NSParameterAssert(!retain || retain == YES);
     
     const char *cstrTopic = [willTopic cStringUsingEncoding:NSUTF8StringEncoding];
-    mosquitto_will_set(mosq, cstrTopic, payload.length, payload.bytes, willQos, retain);
+    mosquitto_will_set(mosq, cstrTopic, (int)payload.length, payload.bytes, willQos, retain);
 }
 
 
@@ -390,11 +390,12 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
     _sharedClient = (__bridge MASMQTTClient *)obj;
     
     NSNumber *mid = [NSNumber numberWithInt:message_id];
-    void (^completionHandler)(void) = [_sharedClient.unsubscriptionHandlers objectForKey:mid];
+//    void (^completionHandler)(void) = [_sharedClient.unsubscriptionHandlers objectForKey:mid];
+    void (^completionHandler)(BOOL completed, NSError *_Nullable error) = [_sharedClient.unsubscriptionHandlers objectForKey:mid];
     
     if (completionHandler) {
         
-        completionHandler();
+        completionHandler(YES, nil);
         
         [_sharedClient.subscriptionHandlers removeObjectForKey:mid];
     }
@@ -612,7 +613,7 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     
     int mid;
     
-    mosquitto_publish(mosq, &mid, cstrTopic, payload.length, payload.bytes, qos, retain);
+    mosquitto_publish(mosq, &mid, cstrTopic, (int)payload.length, payload.bytes, qos, retain);
     
     if (completionHandler) {
         
@@ -672,16 +673,31 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
 
 
 - (void)unsubscribeFromTopic:(NSString *)topic
-       withCompletionHandler:(void(^)(void))completionHandler
+       withCompletionHandler:(MQTTCompletionErrorBlock)completionHandler
 {
     const char *cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
     int mid;
+    int result;
+    result = mosquitto_unsubscribe(mosq, &mid, cstrTopic);
     
-    mosquitto_unsubscribe(mosq, &mid, cstrTopic);
-    
-    if (completionHandler) {
+    if (result == 4) {
         
-        [self.unsubscriptionHandlers setObject:[completionHandler copy] forKey:[NSNumber numberWithInteger:mid]];
+        //Build the error message based on the returned int value
+        
+        if (completionHandler) {
+            
+            NSError *error = [NSError errorWithDomain:@"com.ca.MASFoundation.localError:ErrorDomain"
+                                                 code:911001
+                                             userInfo:@{ NSLocalizedDescriptionKey:@"MQTT error. No connection available" }];
+            
+            completionHandler(NO, error);
+        }
+    }
+    else {
+        if (completionHandler) {
+            
+            [self.unsubscriptionHandlers setObject:[completionHandler copy] forKey:[NSNumber numberWithInteger:mid]];
+        }
     }
 }
 

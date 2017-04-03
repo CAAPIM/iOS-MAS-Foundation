@@ -23,6 +23,12 @@ static NSString *const MASAuthenticationProviderLinkedInId = @"linkedin"; // str
 static NSString *const MASAuthenticationProviderQrCodeId = @"qrcode"; // string
 static NSString *const MASAuthenticationProviderSalesforceId = @"salesforce"; // string
 
+# pragma mark - Property Constants
+
+static NSString *const MASAuthenticationProviderIdentifierPropertyKey = @"identifier"; // string
+static NSString *const MASAuthenticationProviderAuthenticationUrlPropertyKey = @"authenticationUrl"; // string
+static NSString *const MASAuthenticationProviderPollUrlPropertyKey = @"pollUrl"; // string
+
 
 @implementation MASAuthenticationProvider
 
@@ -98,5 +104,32 @@ static NSString *const MASAuthenticationProviderSalesforceId = @"salesforce"; //
 {
     return [self.identifier isEqualToString:(MASAuthenticationProviderSalesforceId)];
 }
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    
+    if(self.identifier) [aCoder encodeObject:self.identifier forKey:MASAuthenticationProviderIdentifierPropertyKey];
+    if(self.authenticationUrl) [aCoder encodeObject:self.authenticationUrl forKey:MASAuthenticationProviderAuthenticationUrlPropertyKey];
+    if(self.pollUrl) [aCoder encodeObject:self.pollUrl forKey:MASAuthenticationProviderPollUrlPropertyKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    
+    if(self)
+    {
+        [self setValue:[aDecoder decodeObjectForKey:MASAuthenticationProviderIdentifierPropertyKey] forKey:@"identifier"];
+        [self setValue:[aDecoder decodeObjectForKey:MASAuthenticationProviderAuthenticationUrlPropertyKey] forKey:@"authenticationUrl"];
+        [self setValue:[aDecoder decodeObjectForKey:MASAuthenticationProviderPollUrlPropertyKey] forKey:@"pollUrl"];
+    }
+    
+    return self;
+}
+
 
 @end

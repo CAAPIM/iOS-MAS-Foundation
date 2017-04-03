@@ -13,6 +13,8 @@
 
 #import "MASMQTTMessage.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #pragma mark - MQTT Connection Return Codes & Messages
 
 /**
@@ -64,6 +66,13 @@ typedef NS_ENUM(NSUInteger,MQTTConnectionReturnCode)
  *  @param grantedQos The array of QoS
  */
 typedef void (^MQTTSubscriptionCompletionHandler)(NSArray *grantedQos);
+
+
+
+/**
+ * A standard (BOOL completed, NSError *error) block.
+ */
+typedef void (^MQTTCompletionErrorBlock)(BOOL completed, NSError *_Nullable error);
 
 
 
@@ -332,6 +341,8 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  *  @param completionHandler The completionHandler code block
  */
 - (void)unsubscribeFromTopic:(NSString *)topic
-       withCompletionHandler:(void(^)(void))completionHandler;
+       withCompletionHandler:(MQTTCompletionErrorBlock)completionHandler;
 
 @end
+
+NS_ASSUME_NONNULL_END

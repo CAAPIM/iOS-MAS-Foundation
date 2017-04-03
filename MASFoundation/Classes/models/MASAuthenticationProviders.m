@@ -13,6 +13,10 @@
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 
+# pragma mark - Property Constants
+
+static NSString *const MASAuthenticationProvidersPropertyKey = @"providers"; // string
+static NSString *const MASAuthenticationProvidersIDPPropertyKey = @"idp"; // string
 
 @implementation MASAuthenticationProviders
 
@@ -99,5 +103,29 @@
     
     return authProvider;
 }
+
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    
+    if(self.providers) [aCoder encodeObject:self.providers forKey:MASAuthenticationProvidersPropertyKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    
+    if(self)
+    {
+        [self setValue:[aDecoder decodeObjectForKey:MASAuthenticationProvidersPropertyKey] forKey:@"providers"];
+    }
+    
+    return self;
+}
+
 
 @end

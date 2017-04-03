@@ -16,23 +16,11 @@
 
 
 ///--------------------------------------
-/// @name Properties
-///--------------------------------------
-
-# pragma mark - Properties
-
-@property (nonatomic, copy, readwrite) NSString *name;
-@property (nonatomic, strong, readwrite) NSData *contents;
-@property (nonatomic, assign, readwrite) NSString *filePath;
-
-
-
-///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------
 
 # pragma mark - Lifecycle
 
-- (id)initWithName:(NSString *)name contents:(NSData *)contents;
+- (id)initWithName:(NSString *)name contents:(NSData *)contents directoryType:(MASFileDirectoryType)directoryType;
 
 @end

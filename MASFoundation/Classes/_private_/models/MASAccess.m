@@ -15,6 +15,14 @@
 #import "MASIKeyChainStore.h"
 
 
+@interface MASAccess ()
+
+@property (nonatomic, strong) NSString *codeVerifier;
+@property (nonatomic, strong) NSString *pkceState;
+
+@end
+
+
 @implementation MASAccess
 
 @synthesize scope = _scope;
@@ -390,6 +398,60 @@
     _scope = nil;
     _scopeAsString = nil;
     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+}
+
+
+///--------------------------------------
+/// @name Code Verifier - PKCE support
+///--------------------------------------
+
+# pragma mark - Code Verifier - PKCE support
+
+- (void)generateCodeVerifier
+{
+    if ([MASAccessService isPKCEEnabled])
+    {
+        _codeVerifier = [NSString randomStringWithLength:43];
+    }
+}
+
+
+- (void)deleteCodeVerifier
+{
+    _codeVerifier = nil;
+}
+
+
+- (NSString *)retrieveCodeVerifier
+{
+    return [MASAccessService isPKCEEnabled] ? _codeVerifier : nil;
+}
+
+
+///--------------------------------------
+/// @name PKCE State - PKCE support
+///--------------------------------------
+
+# pragma mark - PKCE State - PKCE support
+
+- (void)generatePKCEState
+{
+    if ([MASAccessService isPKCEEnabled])
+    {
+        _pkceState = [NSString randomStringWithLength:32];
+    }
+}
+
+
+- (void)deletePKCEState
+{
+    _pkceState = nil;
+}
+
+
+- (NSString *)retrievePKCEState
+{
+    return [MASAccessService isPKCEEnabled] ? _pkceState : nil;
 }
 
 

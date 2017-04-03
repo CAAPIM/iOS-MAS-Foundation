@@ -1,6 +1,22 @@
-# Version 1.3
+# Version 1.4.00
 
 ### Bug fixes
+- The BLE OS prompt was displaying on SDK initialization. Now the prompt appears only when the SDK actually accesses BLE services.  [US284889]
+- Fixes to nullability warnings on public classes. [US284893]
+- [MAS gatewayIsReachable] boolean property always returned true. [DE272367]
+- SDK was unable to make CRUD operations after SDK initialization because "The network is not started yet." [DE282382]
+ 
+### New features
+- Introduces new way of dynamically initializing SDK with enrollment URL. With this feature, application or system administrator can generate an URL specified to a user, so that the user can initialize SDK without having an application with built in `msso_config.json` deployed with the application. Server configuration and application level's implementation is required. [US287274]
+- Introduces new way of performing social login through SDK.  SDK now performs social login with `SFSafariViewController` to ensure better security, and adopt morden way of performing oAuth web authentication. Please refer to `MASAuthorizationResponse` class to understand the new flow of social login with `SFSafariViewController`.[US279228]
+- Introduces new protection on authorization process with Proof Key for Code Exchange by OAuth Public Clients.  By default, PKCE process is enabled, and it can be disabled; however, it is strongly recommended to not disable it unless there is a specific use case. [US269506]
+
+### Deprecated Methods
+- `MASSocialLogin` class is deprecated. Please use `SFSafariViewController` to display social login web URL from `MASAuthenticationProvider` and use `MASAuthorizationResponse` class to handle incoming response from `SFSafariViewController`. [US279228]
+
+# Version 1.3.01
+
+### Bug fixes 
 - Fixes an issue with dynamically switching between msso config's when one of the configs has location enabled and another msso config has location disabled. If the user declines location services permission when first opening the app, the app would hang when switching msso's back to the config that allowed location. [DE230814]
 - Improved error handling in the case of missing parameters. [US240398]
 - Added nullability annotations to certain interfaces. [US240400]
@@ -14,7 +30,21 @@
 - Client certificate process is newly added.  Mobile SDK will automatically detect the validity of the client certificate and renew it when necessary. [US240412]
 - MASAuthenticationProviders can now be retreived as needed through ```[MASAuthenticationProviders retrieveAuthenticationProvidersWithCompletion:] ```.
 
-# Version 1.2.00-CR1
+# Version 1.2.03
+
+### Bug fixes
+- Fix the issue where [MAS gatewayISREachable] static property always returns true.
+- Fix the bluetooth permission prompt displays everytime SDK is initialized.  Now bluetooth permission prompt will only display when the bluetooth is actually being used.
+
+### New features
+
+-
+
+### Deprecated methods
+
+-
+
+# Version 1.2.01
 
 ### Bug fixes
  

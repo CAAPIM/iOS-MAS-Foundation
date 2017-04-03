@@ -42,7 +42,7 @@
 }
 
 
-- (id)initProtected
+- (instancetype)initProtected
 {
     if(self = [super init])
     {

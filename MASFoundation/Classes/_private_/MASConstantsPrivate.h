@@ -22,7 +22,6 @@
 #import "MASApplication+MASPrivate.h"
 #import "MASAuthenticationProvider+MASPrivate.h"
 #import "MASAuthenticationProviders+MASPrivate.h"
-#import "MASConfiguration+MASPrivate.h"
 #import "MASDevice+MASPrivate.h"
 #import "MASFile+MASPrivate.h"
 #import "MASIJSONResponseSerializer+MASPrivate.h"
@@ -68,6 +67,9 @@ static NSString *_Nonnull const MASKey = @"MAS.key";
 static NSString *_Nonnull const MASHeaderErrorKey = @"x-ca-err";
 
 static NSString *_Nonnull const MASIdTokenTypeToValidateConstant = @"urn:ietf:params:oauth:grant-type:jwt-bearer"; // string
+
+static NSString *_Nonnull const MASPKCECodeChallengeMethodSHA256Key = @"S256"; // string
+static NSString *_Nonnull const MASPKCECodeChallengeMethodPlainKey = @"plain"; // string
 
 // Client certificate expiration advanced renew timeframe in days
 static int const MASClientCertificateAdvancedRenewTimeframe = 30;
@@ -121,6 +123,7 @@ static NSString *_Nonnull const MASApplicationNativeUrlRequestResponseKey = @"na
 static NSString *_Nonnull const MASAssertionRequestResponseKey = @"assertion"; // string
 static NSString *_Nonnull const MASAuthenticationUrlRequestResponseKey = @"auth_url"; // string
 static NSString *_Nonnull const MASAuthorizationRequestResponseKey = @"authorization"; // string
+static NSString *_Nonnull const MASAuthorizationTypeRequestResponseKey = @"x-authorization-type"; // string
 static NSString *_Nonnull const MASCertFormatRequestResponseKey = @"cert-format"; // string
 static NSString *_Nonnull const MASCertificateRequestResponseKey = @"certificate"; // string
 static NSString *_Nonnull const MASCertificateSigningRequestResponseKey = @"certificateSigningRequest"; // string
@@ -168,6 +171,14 @@ static NSString *_Nonnull const MASStatusRequestResponseKey = @"status"; // stri
 static NSString *_Nonnull const MASTokenRequestResponseKey = @"token"; // string
 static NSString *_Nonnull const MASTokenTypeHintRequestResponseKey = @"token_type_hint"; // string
 static NSString *_Nonnull const MASTokenTypeRequestResponseKey = @"token_type"; // string
+static NSString *_Nonnull const MASPKCECodeVerifierRequestResponseKey = @"code_verifier"; // string
+static NSString *_Nonnull const MASPKCECodeVerifierHeaderRequestResponseKey = @"code-verifier"; // string
+static NSString *_Nonnull const MASPKCECodeChallengeRequestResponseKey = @"code_challenge"; // string
+static NSString *_Nonnull const MASPKCECodeChallengeMethodRequestResponseKey = @"code_challenge_method"; // string
+static NSString *_Nonnull const MASPKCEStateRequestResponseKey = @"state"; // string
+
+static NSString *_Nonnull const MASSessionDataRequestResponseKey = @"sessionData"; // string
+static NSString *_Nonnull const MASSubjectKeyHashRequestResponseKey = @"subjectKeyHash"; // string
 
 static NSString *_Nonnull const MASUserAddressRequestResponseKey = @"address"; // string
 static NSString *_Nonnull const MASUserAddressCountryRequestResponseKey = @"country"; // string
@@ -307,6 +318,12 @@ typedef void (^MASLocationMonitorBlock)(CLLocation *_Nonnull location, MASLocati
  * The SessionDataTask completion block that will receive the reponse, the response object and/or error if applicable.
  */
 typedef void (^MASSessionDataTaskCompletionBlock)(NSURLResponse *_Nonnull response, id _Nonnull responseObject, NSError *_Nonnull error);
+
+
+/**
+ * Void code block.
+ */
+typedef void (^MASVoidCodeBlock)(void);
 
 
 //

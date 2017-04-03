@@ -513,22 +513,9 @@
     query[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleWhenUnlocked;
     
     SecKeyRef keyData = nil;
-    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,(CFTypeRef *) &keyData);
+    SecItemCopyMatching((__bridge CFDictionaryRef)query,(CFTypeRef *) &keyData);
     
-    if (status == errSecSuccess) {
-        
-        if (keyData)
-        {
-            return keyData;
-        }
-        else {
-            
-            return nil;
-        }
-    }
-    else {
-        return nil;
-    }
+    return keyData;
 }
 
 

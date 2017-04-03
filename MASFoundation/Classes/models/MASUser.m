@@ -14,9 +14,23 @@
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 
+# pragma mark - Property Constants
+
+static NSString *const MASUserObjectIdPropertyKey = @"objectId"; // string
+static NSString *const MASUserUserNamePropertyKey = @"userName"; // string
+static NSString *const MASUserFamilyNamePropertyKey = @"familyName"; // string
+static NSString *const MASUserGivenNamePropertyKey = @"givenName"; // string
+static NSString *const MASUserFormattedNamePropertyKey = @"formattedName"; // string
+static NSString *const MASUserEmailAddressesPropertyKey = @"emailAddresses"; // string
+static NSString *const MASUserPhoneNumbersPropertyKey = @"phoneNumbers"; // string
+static NSString *const MASUserAddressesPropertyKey = @"addresses"; // string
+static NSString *const MASUserPhotosPropertyKey = @"photos"; // string
+static NSString *const MASUserGroupsPropertyKey = @"groups"; // string
+static NSString *const MASUserActivePropertyKey = @"active"; // bool
+static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 @implementation MASUser
-
+@synthesize accessToken = _accessToken;
 
 # pragma mark - Current User
 
@@ -98,6 +112,67 @@
 }
 
 
+# pragma mark - Properties
+
+- (NSString *)accessToken
+{
+    _accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
+    
+    if (_accessToken) {
+        
+        return _accessToken;
+    }
+    else {
+        
+        return nil;
+    }
+}
+
+
+- (BOOL)isCurrentUser
+{
+    //
+    // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
+}
+
+
+// Special case which is determined by other fields
+- (BOOL)isAuthenticated
+{
+    //
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    //
+    // if the user status is not MASUserStatusNotLoggedIn,
+    // the user is authenticated either anonymously or with username and password
+    //
+    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
+}
+
+
+- (BOOL)isSessionLocked
+{
+    //
+    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
+    //
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    
+    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
+    {
+        return [MASAccess currentAccess].isSessionLocked;
+    }
+    else {
+        return NO;
+    }
+}
+
+
 # pragma mark - Login & Logoff
 
 + (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
@@ -129,6 +204,22 @@
     }
     
     [[MASModelService sharedService] validateCurrentUserAuthenticationWithAuthorizationCode:authorizationCode completion:completion];
+}
+
+
++ (void)loginWithIdToken:(NSString *_Nonnull)idToken tokenType:(NSString *_Nonnull)tokenType completion:(MASCompletionErrorBlock _Nullable)completion
+{
+    //
+    //  If the user session has already been authenticated, throw an error.
+    //
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        
+        return;
+    }
+    
+    [[MASModelService sharedService] validateCurrentUserAuthenticationWithIdToken:idToken tokenType:tokenType completion:completion];
 }
 
 
@@ -180,6 +271,68 @@
             [[MASModelService sharedService] logoutWithCompletion:completion];
         }
     }
+}
+
+# pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    MASUser *user = [[MASUser alloc] init];
+    
+    [user setValue:self.objectId forKey:@"objectId"];
+    [user setValue:self.userName forKey:@"userName"];
+    [user setValue:self.familyName forKey:@"familyName"];
+    [user setValue:self.givenName forKey:@"givenName"];
+    [user setValue:self.formattedName forKey:@"formattedName"];
+    [user setValue:self.emailAddresses forKey:@"emailAddresses"];
+    [user setValue:self.phoneNumbers forKey:@"phoneNumbers"];
+    [user setValue:self.addresses forKey:@"addresses"];
+    [user setValue:self.groups forKey:@"groups"];
+    [user setValue:[NSNumber numberWithBool:self.active] forKey:@"active"];
+    [user setValue:self.photos forKey:@"photos"];
+    
+    return user;
+}
+
+# pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder]; //ObjectID is encoded in the super class MASObject
+    
+    if(self.userName) [aCoder encodeObject:self.userName forKey:MASUserUserNamePropertyKey];
+    if(self.familyName) [aCoder encodeObject:self.familyName forKey:MASUserFamilyNamePropertyKey];
+    if(self.givenName) [aCoder encodeObject:self.givenName forKey:MASUserGivenNamePropertyKey];
+    if(self.formattedName) [aCoder encodeObject:self.formattedName forKey:MASUserFormattedNamePropertyKey];
+    if(self.emailAddresses) [aCoder encodeObject:self.emailAddresses forKey:MASUserEmailAddressesPropertyKey];
+    if(self.phoneNumbers) [aCoder encodeObject:self.phoneNumbers forKey:MASUserPhoneNumbersPropertyKey];
+    if(self.addresses) [aCoder encodeObject:self.addresses forKey:MASUserAddressesPropertyKey];
+    if(self.photos) [aCoder encodeObject:self.photos forKey:MASUserPhotosPropertyKey];
+    if(self.groups) [aCoder encodeObject:self.groups forKey:MASUserGroupsPropertyKey];
+    if(self.active) [aCoder encodeBool:self.active forKey:MASUserActivePropertyKey];
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if(self = [super initWithCoder:aDecoder]) //ObjectID is decoded in the super class MASObject
+        
+    {
+        [self setValue:[aDecoder decodeObjectForKey:MASUserUserNamePropertyKey] forKey:@"userName"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey] forKey:@"familyName"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserGivenNamePropertyKey] forKey:@"givenName"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserFormattedNamePropertyKey] forKey:@"formattedName"];
+        
+        [self setValue:[aDecoder decodeObjectForKey:MASUserPhotosPropertyKey] forKey:@"photos"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserEmailAddressesPropertyKey] forKey:@"emailAddresses"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserPhoneNumbersPropertyKey] forKey:@"phoneNumbers"];
+        [self setValue:[aDecoder decodeObjectForKey:MASUserAddressesPropertyKey] forKey:@"addresses"];
+        
+        [self setValue:[aDecoder decodeObjectForKey:MASUserGroupsPropertyKey] forKey:@"groups"];
+        [self setValue:[NSNumber numberWithBool:[aDecoder decodeBoolForKey:MASUserActivePropertyKey]] forKey:@"active"];
+    }
+    
+    return self;
 }
 
 @end

@@ -45,6 +45,22 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 @implementation MASAccessService
 
+static BOOL _isPKCEEnabled_ = YES;
+
+
+# pragma mark - Properties
+
++ (BOOL)isPKCEEnabled
+{
+    return _isPKCEEnabled_;
+}
+
+
++ (void)enablePKCE:(BOOL)enable
+{
+    _isPKCEEnabled_ = enable;
+}
+
 
 # pragma mark - Shared Service
 
@@ -320,7 +336,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 }
 
 
-- (void)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
+- (BOOL)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type error:(NSError * __nullable __autoreleasing * __nullable)error
 {
     
     NSString *storageKey = [self getStorageKeyWithAccessValueType:type];
@@ -352,6 +368,14 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
     if (isSecuredData)
     {
         [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityAfterFirstUnlock authenticationPolicy:0];
+    }
+    
+    if (error)
+    {
+        return NO;
+    }
+    else {
+        return YES;
     }
 }
 
@@ -911,7 +935,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
             [self setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
         }
         
-        *error = localError;
+        if (error != NULL)
+        {
+            *error = localError;
+        }
     }
     //
     // If it was successful to secure tokens with local authentication, nullify the tokens in unprotected keychain storage
@@ -1020,7 +1047,10 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
         success = YES;
     }
     else {
-        *error = localError;
+        if (error != NULL)
+        {
+            *error = localError;
+        }
     }
     
     return success;

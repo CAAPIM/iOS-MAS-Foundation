@@ -10,8 +10,13 @@
 
 #import "MASFileService.h"
 
-#import "MASIFileManager.h"
 #import "MASSecurityService.h"
+
+@interface MASFileService ()
+
+@property (nonatomic, strong) NSDictionary *filePathDirectories;
+
+@end
 
 
 @implementation MASFileService
@@ -37,29 +42,6 @@
 + (NSString *)serviceUUID
 {
     return MASFileServiceUUID;
-}
-
-
-- (void)serviceDidReset
-{
-    //DLog(@"called");
-    
-    //
-    // Retrieve application directory
-    //
-    NSString *path = [MASIFileManager pathForApplicationSupportDirectoryWithPath:nil];
-    if(path)
-    {
-        NSError *error;
-        [MASIFileManager removeItemsInDirectoryAtPath:path error:&error];
-
-        if(error)
-        {
-            DLog(@"\n\nError on removing file items: %@\n\n", [error localizedDescription]);
-        }
-    }
-    
-    [super serviceDidReset];
 }
 
 
@@ -119,89 +101,245 @@
 
 # pragma mark - Creating a New File
 
-- (MASFile *)fileWithName:(NSString *)name contents:(NSData *)contents
+- (MASFile *)fileWithName:(NSString *)name contents:(NSData *)contents directoryType:(MASFileDirectoryType)directoryType
 {
-    return [[MASFile alloc] initWithName:name contents:contents];
+    return [[MASFile alloc] initWithName:name contents:contents directoryType:directoryType];
 }
 
 
 # pragma mark - Finding a File
 
-- (MASFile *)findFileWithName:(NSString *)name
+- (MASFile *)findFileWithName:(NSString *)name directoryType:(MASFileDirectoryType)directoryType
 {
-    //DLog(@"\ncalled with file name: %@\n", name);
-    
-    //
-    // Generate the full file path
-    //
-    NSString *filePath = [MASIFileManager pathForApplicationSupportDirectoryWithPath:name];
-    
-    //
-    // Check if a file exists at the given path, return nil if not.
-    //
-    if(![MASIFileManager existsItemAtPath:filePath])
-    {
-        return nil;
-    }
-    
-    //
-    // Read the data at the file path
-    //
-    NSError *error;
-    NSData *data = [MASIFileManager readFileAtPathAsData:filePath error:&error];
-    
-    if(error)
-    {
-        DLog(@"Error reading unsecured item at file path: %@ with message: %@",
-            filePath, [error localizedDescription]);
-        return nil;
-    }
 
     //
-    // Reserialize from data, could throw an exception if this is a secured MASFile
+    //  Generate the full file path
     //
-    MASFile *file = [[MASFile alloc] initWithName:name contents:data];
+    NSString *filePath = [[MASFileService sharedService] getFilePathForFileName:name fileDirectoryType:directoryType];
+    
+    //
+    //  Check if a file exists at the given file name and directory type, return nil if not.
+    //
+    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath])
+    {
+        return nil;
+    }
+    
+    //
+    //  Read file data from the path, and check if the data is readable
+    //
+    NSError *error;
+    NSData *fileData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMapped error:&error];
+    
+    if (error)
+    {
+        return nil;
+    }
+    
+    //
+    //  Reserialize from data
+    //
+    MASFile *file = [[MASFile alloc] initWithName:name contents:fileData directoryType:directoryType];
     
     return file;
 }
 
 
-- (MASFile *)findFileWithName:(NSString *)name password:(NSString *)password
+- (NSString *)getFilePathForFileName:(NSString *)fileName fileDirectoryType:(MASFileDirectoryType)fileDirectoryType
 {
-    //DLog(@"\ncalled with file name: %@ and password: %@\n", name, password);
-    
-    //
-    // Generate the full file path
-    //
-    NSString *filePath = [MASIFileManager pathForApplicationSupportDirectoryWithPath:name];
-    
-    //
-    // Check if a file exists at the given path, return nil if not.
-    //
-    if(![MASIFileManager existsItemAtPath:filePath])
+    if (!fileName || [fileName length] == 0)
     {
         return nil;
     }
     
-    //
-    // Read the data at the file path
-    //
-    NSError *error;
-    NSData *data = [MASIFileManager readFileAtPathAsData:filePath error:&error];
+    NSString *baseDirectoryPath = nil;
     
-    if(error)
+    NSDictionary *directories = [MASFileService getFilePathDirectories];
+    
+    if ([[directories allKeys] containsObject:[MASFileService directoryTypeToString:fileDirectoryType]])
     {
-        DLog(@"Error decrypting secured item at file path: %@ with message: %@",
-            filePath, [error localizedDescription]);
-        return nil;
+        baseDirectoryPath = [directories objectForKey:[MASFileService directoryTypeToString:fileDirectoryType]];
     }
     
-    //
-    // Reserialize from data, could throw an exception if
-    //
-    MASFile *file = [[MASFile alloc] initWithName:name contents:data];
-    
-    return file;
+    return [baseDirectoryPath stringByAppendingPathComponent:fileName];
 }
+
+
+# pragma mark - Wrtie/remove a file
+
+- (BOOL)removeFileAtDirectoryType:(MASFileDirectoryType)directoryType fileName:(NSString *)fileName
+{
+    //
+    //  Construct full path including file name
+    //
+    NSString *fullPath = [self getFilePathForFileName:fileName fileDirectoryType:directoryType];
+    
+    return [[NSFileManager defaultManager] removeItemAtPath:fullPath error:nil];
+}
+
+
+- (BOOL)writeFileAtDirectoryType:(MASFileDirectoryType)directoryType fileName:(NSString *)fileName content:(NSObject *)content dataWritingOption:(NSDataWritingOptions)dataWritingOption error:(NSError **)error
+{
+    
+    BOOL wasSuccessful = NO;
+    
+    //
+    //  Construct full path including file name
+    //
+    NSString *fullPath = [self getFilePathForFileName:fileName fileDirectoryType:directoryType];
+    NSString *directoryPath = [fullPath stringByReplacingOccurrencesOfString:[fullPath lastPathComponent] withString:@""];
+    
+    //
+    //  If directory path does not exist, create one
+    //
+    BOOL isDir;
+    BOOL doesExist = [[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir];
+    
+    if (!doesExist && !isDir)
+    {
+        BOOL didCreateDir = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:error];
+        
+        if (!didCreateDir)
+        {
+            return NO;
+        }
+    }
+    
+    
+    if([content isKindOfClass:[NSMutableArray class]])
+    {
+        [((NSMutableArray *)content) writeToFile:fullPath atomically:YES];
+    }
+    else if([content isKindOfClass:[NSArray class]])
+    {
+        [((NSArray *)content) writeToFile:fullPath atomically:YES];
+    }
+    else if([content isKindOfClass:[NSMutableData class]])
+    {
+        [((NSMutableData *)content) writeToFile:fullPath options:dataWritingOption error:error];
+    }
+    else if([content isKindOfClass:[NSData class]])
+    {
+        [((NSData *)content) writeToFile:fullPath options:dataWritingOption error:error];
+    }
+    else if([content isKindOfClass:[NSMutableDictionary class]])
+    {
+        [((NSMutableDictionary *)content) writeToFile:fullPath atomically:YES];
+    }
+    else if([content isKindOfClass:[NSDictionary class]])
+    {
+        [((NSDictionary *)content) writeToFile:fullPath atomically:YES];
+    }
+    else if([content isKindOfClass:[NSJSONSerialization class]])
+    {
+        [((NSDictionary *)content) writeToFile:fullPath atomically:YES];
+    }
+    else if([content isKindOfClass:[NSMutableString class]])
+    {
+        [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fullPath options:dataWritingOption error:error];
+    }
+    else if([content isKindOfClass:[NSString class]])
+    {
+        [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fullPath options:dataWritingOption error:error];
+    }
+    else if([content isKindOfClass:[UIImage class]])
+    {
+        [UIImagePNGRepresentation((UIImage *)content) writeToFile:fullPath options:dataWritingOption error:error];
+    }
+    else if([content conformsToProtocol:@protocol(NSCoding)])
+    {
+        [NSKeyedArchiver archiveRootObject:content toFile:fullPath];
+    }
+    else {
+        
+        return NO;
+    }
+    
+    return wasSuccessful;
+}
+
+
+# pragma mark - Private
+
++ (NSString *)directoryTypeToString:(MASFileDirectoryType)directoryType
+{
+    NSString *directoryTypeAsString;
+    
+    switch (directoryType) {
+        case MASFileDirectoryTypeApplicationSupport:
+            directoryTypeAsString = @"applicationSupport";
+            break;
+            
+        case MASFileDirectoryTypeCachesDirectory:
+            directoryTypeAsString = @"caches";
+            break;
+            
+        case MASFileDirectoryTypeDocuments:
+            directoryTypeAsString = @"documents";
+            break;
+            
+        case MASFileDirectoryTypeLibrary:
+            directoryTypeAsString = @"library";
+            break;
+            
+        case MASFileDirectoryTypeTemporary:
+            directoryTypeAsString = @"temporary";
+            break;
+            
+        default:
+            directoryTypeAsString = @"applicationSupport";
+            break;
+    }
+    
+    return directoryTypeAsString;
+}
+
+
++ (NSMutableDictionary *)getFilePathDirectories
+{
+    static NSMutableDictionary *directories;
+    static dispatch_once_t once;
+    
+    //
+    //  Extract file path for NSSearchPathDirectory only once
+    //
+    dispatch_once(&once, ^{
+        
+        if (!directories)
+        {
+            directories = [NSMutableDictionary dictionary];
+        }
+        
+        NSArray *libPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        if ([libPaths lastObject])
+        {
+            [directories setObject:[libPaths lastObject] forKey:[self directoryTypeToString:MASFileDirectoryTypeLibrary]];
+        }
+        
+        NSArray *docPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        if ([docPaths lastObject])
+        {
+            [directories setObject:[docPaths lastObject] forKey:[self directoryTypeToString:MASFileDirectoryTypeDocuments]];
+        }
+        
+        NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        if ([cachePaths lastObject])
+        {
+            [directories setObject:[cachePaths lastObject] forKey:[self directoryTypeToString:MASFileDirectoryTypeCachesDirectory]];
+        }
+        
+        NSArray *appSupportPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+        if ([appSupportPaths lastObject])
+        {
+            [directories setObject:[appSupportPaths lastObject] forKey:[self directoryTypeToString:MASFileDirectoryTypeApplicationSupport]];
+        }
+        
+        [directories setObject:NSTemporaryDirectory() forKey:[self directoryTypeToString:MASFileDirectoryTypeTemporary]];
+        
+    });
+    
+    return directories;
+}
+
 
 @end

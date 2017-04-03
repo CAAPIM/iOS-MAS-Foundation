@@ -35,7 +35,7 @@
  *
  *  @param fileName The NSString name of the configuration file.
  */
-+ (void)setConfigurationFileName:(nonnull NSString *)fileName;
++ (void)setConfigurationFileName:(NSString *_Nonnull)fileName;
 
 
 
@@ -58,13 +58,37 @@
 
 
 /**
+ *  Sets BOOL indicator of PKCE (Proof KEy for Code Exchange) enabled or not for authorization process in Social Login, and Proximity Login.
+ *  By default, PKCE is enabled and enforced in authorization process; it can be opted-out.
+ *
+ *  @since MAS Client SDK 1.4 and MAG/OTK 4.0 on April 2017 release.
+ *  @dependency Minimum version of MAG/OTK 4.0 is required to successfully perform PKCE.  If the server side does not support PKCE, client side will still work without PKCE verification.
+ *  @param enable BOOL value of indicating whether PKCE is enabled or not.
+ */
++ (void)enablePKCE:(BOOL)enable;
+
+
+
+/**
+ *  Gets BOOL indicator of PKCE (Proof KEy for Code Exchange) enabled or not for authorization process in Social Login, and Proximity Login.
+ *  By default, PKCE is enabled and enforced in authorization process; it can be opted-out.
+ *
+ *  @since MAS Client SDK 1.4 and MAG/OTK 4.0 on April 2017 release.
+ *  @dependency Minimum version of MAG/OTK 4.0 is required to successfully perform PKCE.  If the server side does not support PKCE, client side will still work without PKCE verification.
+ *  @return BOOL value of indicating whether PKCE is enabled or not.
+ */
++ (BOOL)isPKCEEnabled;
+
+
+
+/**
  *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
  *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
  *  is not called.
  *
  *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
  */
-+ (void)setUserLoginBlock:(nullable MASUserLoginWithUserCredentialsBlock)login;
++ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login;
 
 
 
@@ -73,7 +97,7 @@
  *
  *  @param OTPChannelSelector The MASOTPChannelSelectionBlock to receive the request for OTP channels.
  */
-+ (void)setOTPChannelSelectionBlock:(nullable MASOTPChannelSelectionBlock) OTPChannelSelector;
++ (void)setOTPChannelSelectionBlock:(MASOTPChannelSelectionBlock _Nullable)OTPChannelSelector;
 
 
 
@@ -82,7 +106,7 @@
  *
  *  @param oneTimePassword The MASOTPCredentialsBlock to receive the request for OTP credentials.
  */
-+ (void)setOTPCredentialsBlock:(nullable MASOTPCredentialsBlock)oneTimePassword;
++ (void)setOTPCredentialsBlock:(MASOTPCredentialsBlock _Nullable)oneTimePassword;
 
 
 
@@ -101,7 +125,7 @@
  *
  *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
  */
-+ (void)setGatewayMonitor:(nullable MASGatewayMonitorStatusBlock)monitor;
++ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
 
 
 
@@ -159,7 +183,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)start:(nullable MASCompletionErrorBlock)completion;
++ (void)start:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -191,7 +215,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithDefaultConfiguration:(BOOL)shouldUseDefault completion:(nullable MASCompletionErrorBlock)completion;
++ (void)startWithDefaultConfiguration:(BOOL)shouldUseDefault completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -219,13 +243,20 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithJSON:(nonnull NSDictionary *)jsonConfiguration completion:(nullable MASCompletionErrorBlock)completion;
++ (void)startWithJSON:(NSDictionary *_Nonnull)jsonConfiguration completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
 /**
- *  Starts the lifecycle of the MAS processes with given JSON configuration file path.
- *  This method will overwrite JSON configuration (if they are different) that was stored in keychain.
+ *  Starts the lifecycle of the MAS processes with given JSON configuration file path, enrolment URL or nil.
+ *  This method will overwrite JSON configuration (if they are different) that was stored in keychain when configuration file path or enrolment URL is provided.
+ *  When URL is recognized as nil, this method will initialize SDK by using last used JSON configuration that is stored in keychain storage,
+ *  or load JSON configuration from defined default configuration file name.
+ *
+ *  Enrolment URL is an URL from gateway containing some of credentials required to establish secure connection. 
+ *  The gateway must be configured to generate and handle enrolment process with client side SDK.
+ *  The enrolment URL can be retrieved in many ways which has to be configured properly along with the gateway in regards of the enrolment process.
+ *  MASFoundation SDK does not request, or retrieve the enrolment URL by itself.
  *
  *  Although an asynchronous block callback parameter is provided for response usage,
  *  optionally you can set that to nil and the caller can observe the lifecycle
@@ -242,12 +273,12 @@
  *      MASApplicationDidFailToRegisterNotification
  *      MASApplicationDidRegisterNotification
  *
- *  @param url       NSURL of JSON configuration file path.
+ *  @param url       NSURL of JSON configuration file path or enrolment URL.
  *  @param completion An MASCompletionErrorBlock type (BOOL completed, NSError *error) that will
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)startWithURL:(nonnull NSURL *)url completion:(nullable MASCompletionErrorBlock)completion;
++ (void)startWithURL:(NSURL *_Nullable)url completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -268,7 +299,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-+ (void)stop:(nullable MASCompletionErrorBlock)completion;
++ (void)stop:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -298,7 +329,7 @@
  *
  *  @return Returns the gateway monitoring status as a human readable NSString.
  */
-+ (nonnull NSString *)gatewayMonitoringStatusAsString;
++ (NSString *_Nonnull)gatewayMonitoringStatusAsString;
 
 
 
@@ -314,10 +345,22 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -325,10 +368,10 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)deleteFrom:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)deleteFrom:(NSString *_Nonnull)endPointPath
+    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+        completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -338,9 +381,20 @@
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  This version defaults the request/response content type encoding to JSON.
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -350,62 +404,168 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)deleteFrom:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
++ (void)deleteFrom:(NSString *_Nonnull)endPointPath
+    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
-        completion:(nullable MASResponseInfoErrorBlock)completion;
+        completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
 /**
- *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
+ *  Request method for an HTTP DELETE call from the Gateway.  This type of HTTP Method type
  *  places it's parameters within the NSURL itself as an HTTP query extension as so:
  *
  *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
  *
- *  This version defaults the request/response content type encoding to JSON.
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
- *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
- *      query portion of the URL.
- *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
- *      header.
- *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
- *      receive the JSON response object or an NSError object if there is a failure.
- */
-+ (void)getFrom:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
-        completion:(nullable MASResponseInfoErrorBlock)completion;
-
-
-
-/**
- *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
- *  places it's parameters within the NSURL itself as an HTTP query extension as so:
- *
- *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
- *
- *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
  *      header.
  *  @param requestType The mime type content encoding expected for the parameter encoding.
  *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)getFrom:(nonnull NSString *)endPointPath
-     withParameters:(nullable NSDictionary *)parameterInfo
-         andHeaders:(nullable NSDictionary *)headerInfo
++ (void)deleteFrom:(NSString *_Nonnull)endPointPath
+    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
        requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
-         completion:(nullable MASResponseInfoErrorBlock)completion;
+          isPublic:(BOOL)isPublic
+        completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the NSURL itself as an HTTP query extension as so:
+ *
+ *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  This version defaults the request/response content type encoding to JSON.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)getFrom:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the NSURL itself as an HTTP query extension as so:
+ *
+ *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)getFrom:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the NSURL itself as an HTTP query extension as so:
+ *
+ *      https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)getFrom:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -417,10 +577,22 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -428,10 +600,10 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)patchTo:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)patchTo:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -443,8 +615,20 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -454,12 +638,55 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)patchTo:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
-      requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)patchTo:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the HTTP body in www-form-url-encoded format:
+ *
+ *      <body>
+ *          <type=value&type2=value2&...>
+ *      </body>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)patchTo:(NSString *_Nonnull)endPointPath
+ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -471,10 +698,22 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -482,10 +721,10 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)postTo:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerinfo
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)postTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -497,8 +736,20 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
@@ -508,12 +759,55 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)postTo:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerinfo
-      requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)postTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+    completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP POST call to the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the HTTP body in www-form-url-encoded format:
+ *
+ *      <body>
+ *          <type=value&type2=value2&...>
+ *      </body>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerinfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)postTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+    completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -525,10 +819,22 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  This version defaults the request/response content type encoding to JSON.
  *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -536,10 +842,10 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)putTo:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)putTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+   completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 
@@ -551,8 +857,20 @@
  *          <type=value&type2=value2&...>
  *      </body>
  *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
  *  @param endPointPath The specific end point path fragment NSString to append to the base
- *      Gateway URL.
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
  *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
  *      query portion of the URL.
  *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
@@ -562,12 +880,55 @@
  *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
  *      receive the JSON response object or an NSError object if there is a failure.
  */
-+ (void)putTo:(nonnull NSString *)endPointPath
-    withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerInfo
-      requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)putTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+   completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
+/**
+ *  Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
+ *  places it's parameters within the HTTP body in www-form-url-encoded format:
+ *
+ *      <body>
+ *          <type=value&type2=value2&...>
+ *      </body>
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  @param endPointPath The specific end point path fragment NSString to append to the base
+ *      Gateway URL.  endPointPath value can also be defined as full URL format; in this case, SDK must be configured to perform SSL pinning with public key hashes
+ *      which can be configured in JSON configuration.
+ *  @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+ *      query portion of the URL.
+ *  @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+ *      header.
+ *  @param requestType The mime type content encoding expected for the parameter encoding.
+ *  @param responseType The mime type expected in the body of the response.
+ *  @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
+ *      receive the JSON response object or an NSError object if there is a failure.
+ */
++ (void)putTo:(NSString *_Nonnull)endPointPath
+withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
+   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+   completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
 

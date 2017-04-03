@@ -20,6 +20,13 @@
 #import "MASOTPService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
+#import "NSURL+MASPrivate.h"
+
+#import "MASHTTPSessionManager.h"
+#import "MASSecurityPolicy.h"
+#import "MASGetURLRequest.h"
+#import "NSURL+MASPrivate.h"
+#import "NSString+MASPrivate.h"
 
 #import "L7SBrowserURLProtocol.h"
 
@@ -43,6 +50,18 @@
 + (MASGrantFlow)grantFlow
 {
     return [MASModelService grantFlow];
+}
+
+
++ (void)enablePKCE:(BOOL)enable
+{
+    [MASAccessService enablePKCE:enable];
+}
+
+
++ (BOOL)isPKCEEnabled
+{
+    return [MASAccessService isPKCEEnabled];
 }
 
 
@@ -72,8 +91,23 @@
 
 + (MASState)MASState
 {
-    MASState currentState = MASStateNotInitialized;
+    //
+    //  By default, SDK state is set to "not configured" which means no configuration found.
+    //
+    MASState currentState = MASStateNotConfigured;
     
+    //
+    //  If SDK is able to locate the configuration either from the local file system based on the default config file name, or
+    //  in keychain storage, SDK is configured, but has not initialized yet.
+    //
+    if ([MASConfigurationService getDefaultConfigurationAsDictionary] || [MASConfiguration instanceFromStorage])
+    {
+        currentState = MASStateNotInitialized;
+    }
+    
+    //
+    //  If service registry state is match with one of the following, adhere the service registry state.
+    //
     switch ([MASServiceRegistry sharedRegistry].state) {
         case MASRegistryStateWillStart:
         currentState = MASStateWillStart;
@@ -396,7 +430,7 @@
     //
     if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop || !shouldReloadConfiguration)
     {
-        if (shouldReloadConfiguration || (!currentConfiguration && jsonConfiguration))
+        if (jsonConfiguration)
         {
             //
             // Set JSON configuration object.
@@ -473,161 +507,259 @@
 + (void)startWithURL:(NSURL *)url completion:(MASCompletionErrorBlock)completion
 {
     //
-    // Return an error if URL is nil
+    // If URL is not specified, initialize SDK with the last active configuration
     //
     if (!url)
     {
-        completion(NO, [NSError errorInvalidNSURL]);
-        
-        return;
-    }
-    
-    //
-    // Convert file URL into NSData
-    //
-    NSData *jsonData = [[NSFileManager defaultManager] contentsAtPath:[url path]];
-    NSString *fileName = [[[url path] componentsSeparatedByString:@"/"] lastObject];
-    NSDictionary *jsonConfiguration = nil;
-    
-    //
-    // Convert NSData into NSDictionary of JSON configuration object
-    //
-    if (!jsonData)
-    {
-        if (completion)
+        //
+        //  If SDK was already initialized, stop SDK first.
+        //
+        if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop)
         {
-            completion(NO, [NSError errorConfigurationLoadingFailedFileNotFound:fileName]);
+            [MAS start:completion];
         }
-        
-        return;
+        else {
+            
+            [MAS stop:^(BOOL completed, NSError * _Nullable error) {
+               
+                [MAS start:completion];
+            }];
+        }
     }
-    else {
-        
-        NSError *error = nil;
-        jsonConfiguration = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+    //
+    //  If URL is recognized as enrolment URL with http or https protocol, initialize SDK with given enrolment URL.
+    //
+    else if (url.host)
+    {
+        //
+        //  Extract URL parameters from enrolment URL
+        //
+        NSMutableDictionary *urlParameters = [[url extractQueryParameters] mutableCopy];
         
         //
-        // If an error is encountered while parsing NSData into NSDictionary
+        //  If enrolment URL does not contain subjectKeyHash or client_id, SDK cannot proceed the enrollment process
         //
-        if (error)
+        if (![[urlParameters allKeys] containsObject:MASSubjectKeyHashRequestResponseKey])
         {
+            //
+            //
+            //
             if (completion)
             {
-                completion(NO, [NSError errorConfigurationLoadingFailedJsonSerialization:fileName description:[error localizedDescription]]);
+                completion(NO, [NSError errorInvalidEnrollmentURL]);
             }
             
             return;
         }
-    }
-    
-    BOOL shouldReloadConfiguration = YES;
-    BOOL shouldBroadcastNotification = NO;
-    
-    //
-    // To ensure developer initialize SDK with this method where [MASConfiguration currentConfiguration] is not available,
-    // retrieve the configuration from the keychain storage directly.
-    //
-    MASConfiguration *currentConfiguration = [MASConfiguration instanceFromStorage];
-    
-    if (currentConfiguration)
-    {
-        shouldReloadConfiguration = ![currentConfiguration compareWithCurrentConfiguration:jsonConfiguration];
         
-        if (shouldReloadConfiguration)
-        {
-            shouldBroadcastNotification = [currentConfiguration detectServerChangeWithCurrentConfiguration:jsonConfiguration];
-        }
-    }
-    
-    if (shouldBroadcastNotification)
-    {
         //
-        // Broadcast the notification if SDK detects server change.
+        //  Extract the subjectKeyHash value, and remove it from URL parameter
         //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
-    }
-    
-    
-    __block MASCompletionErrorBlock blockCompletion = completion;
-    __block BOOL blockShouldBroadcastNotification = shouldBroadcastNotification;
-    __block BOOL blockShouldReloadConfiguration = shouldReloadConfiguration;
-    
-    //
-    // If SDK hasn't started yet or did fully stop, start the SDK.
-    //
-    if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop || !shouldReloadConfiguration)
-    {
-        if (shouldReloadConfiguration || (!currentConfiguration && jsonConfiguration))
-        {
-            //
-            // Set JSON configuration object.
-            //
-            [MASConfigurationService setNewConfigurationObject:jsonConfiguration];
-        }
+        __block NSString *subjectKeyHash = [[urlParameters objectForKey:MASSubjectKeyHashRequestResponseKey] URLDecode];
+        [urlParameters removeObjectForKey:MASSubjectKeyHashRequestResponseKey];
         
-        [MAS start:^(BOOL completed, NSError *error) {
+        //
+        //  Constrcut baseURL with given scheme, host, and port
+        //
+        NSString *baseURL = [NSString stringWithFormat:@"%@://%@%@",url.scheme,url.host,url.port ? [NSString stringWithFormat:@":%@", url.port] : @""];
+
+        //
+        //  Construct an individual HTTPSessionManager as MASNetworkingService is not initialized at the moment, and it will be used for temporarily
+        //  and define authentication challenge block for SSL pinning
+        //
+        __block MASHTTPSessionManager *sessionManager = [[MASHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
+        
+        [sessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession * _Nonnull session, NSURLAuthenticationChallenge * _Nonnull challenge, NSURLCredential *__autoreleasing  _Nullable * _Nullable credential) {
+
+            NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
             
-            if (blockShouldBroadcastNotification)
+            //
+            //  enrolmentURL can only successfully pin SSL with subjectKeyHash, otherwise, the request will be cancelled
+            //
+            MASSecurityPolicy *masSecurityPolicy = [MASSecurityPolicy policyWithMASPinningMode:MASSSLPinningModePublicKeyHash];
+            if ([masSecurityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:@[subjectKeyHash] forDomain:challenge.protectionSpace.host])
             {
-                //
-                // Broadcast the notification if SDK detects server change.
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
+                disposition = NSURLSessionAuthChallengeUseCredential;
+                *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
             }
             
-            if (blockCompletion)
+            return disposition;
+        }];
+
+        //
+        //  Invoke enrolmentURL which will return entire JSON configuration file
+        //
+        [sessionManager GET:url.relativePath parameters:urlParameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+            
+            //
+            //  If the JSON configuration is successfully retrieved, initialize SDK with JSON
+            //
+            NSDictionary *configurationObject = (NSDictionary *)responseObject;
+            [MAS startWithJSON:configurationObject completion:completion];
+            
+        } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+            
+            //
+            //  If the request fails, parse the error object, and notify the block
+            //
+            if (completion)
             {
-                blockCompletion(completed, error);
+                completion(NO, [NSError errorFromApiResponseInfo:nil andError:error]);
             }
         }];
     }
     //
-    // If SDK is still running or not fully stop, trigger stop process and re-start the SDK once it's fully stopped.
+    //  If URL is not nil, and not recognized as valid http URL, it is recognized as local system file URL
     //
     else {
+     
+        //
+        // Convert file URL into NSData
+        //
+        NSData *jsonData = [[NSFileManager defaultManager] contentsAtPath:[url path]];
+        NSString *fileName = [[[url path] componentsSeparatedByString:@"/"] lastObject];
+        NSDictionary *jsonConfiguration = nil;
         
-        __block NSDictionary *blockJsonConfiguration = jsonConfiguration;
-        
-        [MAS stop:^(BOOL completed, NSError *error) {
+        //
+        // Convert NSData into NSDictionary of JSON configuration object
+        //
+        if (!jsonData)
+        {
+            if (completion)
+            {
+                completion(NO, [NSError errorConfigurationLoadingFailedFileNotFound:fileName]);
+            }
             
-            if (blockShouldReloadConfiguration)
+            return;
+        }
+        else {
+            
+            NSError *error = nil;
+            jsonConfiguration = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+            
+            //
+            // If an error is encountered while parsing NSData into NSDictionary
+            //
+            if (error)
+            {
+                if (completion)
+                {
+                    completion(NO, [NSError errorConfigurationLoadingFailedJsonSerialization:fileName description:[error localizedDescription]]);
+                }
+                
+                return;
+            }
+        }
+        
+        BOOL shouldReloadConfiguration = YES;
+        BOOL shouldBroadcastNotification = NO;
+        
+        //
+        // To ensure developer initialize SDK with this method where [MASConfiguration currentConfiguration] is not available,
+        // retrieve the configuration from the keychain storage directly.
+        //
+        MASConfiguration *currentConfiguration = [MASConfiguration instanceFromStorage];
+        
+        if (currentConfiguration)
+        {
+            shouldReloadConfiguration = ![currentConfiguration compareWithCurrentConfiguration:jsonConfiguration];
+            
+            if (shouldReloadConfiguration)
+            {
+                shouldBroadcastNotification = [currentConfiguration detectServerChangeWithCurrentConfiguration:jsonConfiguration];
+            }
+        }
+        
+        if (shouldBroadcastNotification)
+        {
+            //
+            // Broadcast the notification if SDK detects server change.
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASWillSwitchGatewayServerNotification object:nil];
+        }
+        
+        
+        __block MASCompletionErrorBlock blockCompletion = completion;
+        __block BOOL blockShouldBroadcastNotification = shouldBroadcastNotification;
+        __block BOOL blockShouldReloadConfiguration = shouldReloadConfiguration;
+        
+        //
+        // If SDK hasn't started yet or did fully stop, start the SDK.
+        //
+        if ([MAS MASState] == MASStateNotInitialized || [MAS MASState] == MASStateDidStop || !shouldReloadConfiguration)
+        {
+            if (shouldReloadConfiguration || (!currentConfiguration && jsonConfiguration))
             {
                 //
                 // Set JSON configuration object.
                 //
-                [MASConfigurationService setNewConfigurationObject:blockJsonConfiguration];
-                
+                [MASConfigurationService setNewConfigurationObject:jsonConfiguration];
             }
             
-            //
-            // If there is no error
-            //
-            if (completed && error == nil)
-            {
-                [MAS start:^(BOOL completed, NSError *error) {
+            [MAS start:^(BOOL completed, NSError *error) {
+                
+                if (blockShouldBroadcastNotification)
+                {
+                    //
+                    // Broadcast the notification if SDK detects server change.
+                    //
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
+                }
+                
+                if (blockCompletion)
+                {
+                    blockCompletion(completed, error);
+                }
+            }];
+        }
+        //
+        // If SDK is still running or not fully stop, trigger stop process and re-start the SDK once it's fully stopped.
+        //
+        else {
+            
+            __block NSDictionary *blockJsonConfiguration = jsonConfiguration;
+            
+            [MAS stop:^(BOOL completed, NSError *error) {
+                
+                if (blockShouldReloadConfiguration)
+                {
+                    //
+                    // Set JSON configuration object.
+                    //
+                    [MASConfigurationService setNewConfigurationObject:blockJsonConfiguration];
                     
-                    if (blockShouldBroadcastNotification)
-                    {
-                        //
-                        // Broadcast the notification if SDK detects server change.
-                        //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
-                    }
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(completed, error);
-                    }
-                }];
-            }
-            //
-            // If there is an error and completion block exists
-            //
-            else if(blockCompletion)
-            {
-                blockCompletion(completed, error);
-            }
-        }];
+                }
+                
+                //
+                // If there is no error
+                //
+                if (completed && error == nil)
+                {
+                    [MAS start:^(BOOL completed, NSError *error) {
+                        
+                        if (blockShouldBroadcastNotification)
+                        {
+                            //
+                            // Broadcast the notification if SDK detects server change.
+                            //
+                            [[NSNotificationCenter defaultCenter] postNotificationName:MASDidSwitchGatewayServerNotification object:nil];
+                        }
+                        
+                        if (blockCompletion)
+                        {
+                            blockCompletion(completed, error);
+                        }
+                    }];
+                }
+                //
+                // If there is an error and completion block exists
+                //
+                else if(blockCompletion)
+                {
+                    blockCompletion(completed, error);
+                }
+            }];
+        }
     }
 }
 
@@ -682,11 +814,12 @@
         completion:(MASResponseInfoErrorBlock)completion
 {
     [self deleteFrom:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeJson
+      withParameters:parameterInfo
+          andHeaders:headerInfo
+         requestType:MASRequestResponseTypeJson
         responseType:MASRequestResponseTypeJson
-        completion:completion];
+            isPublic:NO
+          completion:completion];
 }
 
 
@@ -695,6 +828,24 @@
         andHeaders:(NSDictionary *)headerInfo
        requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
+        completion:(MASResponseInfoErrorBlock)completion
+{
+    [self deleteFrom:endPoint
+      withParameters:parameterInfo
+          andHeaders:headerInfo
+         requestType:requestType
+        responseType:responseType
+            isPublic:NO
+          completion:completion];
+}
+
+
++ (void)deleteFrom:(NSString *)endPoint
+    withParameters:(NSDictionary *)parameterInfo
+        andHeaders:(NSDictionary *)headerInfo
+       requestType:(MASRequestResponseType)requestType
+      responseType:(MASRequestResponseType)responseType
+          isPublic:(BOOL)isPublic
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
@@ -723,446 +874,540 @@
         }
     }
  
+    
     //
-    // Check that network service is ready, expected to be at this point but lets be sure
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
+    if (!isPublic)
     {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
+        __block MASResponseInfoErrorBlock blockCompletion = completion;
         
-        return;
+        //
+        //  Validate if new scope has been requested in header
+        //
+        [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
+            //
+            // Retrieve a mutable version of the header info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
+            
+            // Client Authorization
+            NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+            if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+            
+            //
+            // Retrieve a mutable version of the parameter info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
+            
+            // todo: add any parameter stuff necessary
+            
+            //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
+            
+            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+                
+                if (error == nil)
+                {
+                    //
+                    // Pass through the call to the network manager
+                    //
+                    [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                                      withParameters:mutableParameterInfo
+                                                          andHeaders:mutableHeaderInfo
+                                                         requestType:requestType
+                                                        responseType:responseType
+                                                            isPublic:isPublic
+                                                          completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
+                }
+                else {
+                    
+                    if (blockCompletion)
+                    {
+                        blockCompletion(nil, error);
+                    }
+                }
+            }];
+        }];
+    }
+    else {
+        
+        [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                          withParameters:parameterInfo
+                                              andHeaders:headerInfo
+                                             requestType:requestType
+                                            responseType:responseType
+                                                isPublic:isPublic
+                                              completion:completion];
+    }
+}
+
+
++ (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    [self getFrom:endPoint
+   withParameters:parameterInfo
+       andHeaders:headerInfo
+      requestType:MASRequestResponseTypeJson
+     responseType:MASRequestResponseTypeJson
+         isPublic:NO
+       completion:completion];
+}
+
+
++ (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    [self getFrom:endPoint
+   withParameters:parameterInfo
+       andHeaders:headerInfo
+      requestType:requestType
+     responseType:responseType
+         isPublic:NO
+       completion:completion];
+}
+
+
++ (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    // Check for endpoint
+    //
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
     }
     
-    __block MASResponseInfoErrorBlock blockCompletion = completion;
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
     
     //
-    //  Validate if new scope has been requested in header
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
-        //
-        // Retrieve a mutable version of the header info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
-        
-        // Client Authorization
-        NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-        if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    if (!isPublic)
+    {
+        __block MASResponseInfoErrorBlock blockCompletion = completion;
         
         //
-        // Retrieve a mutable version of the parameter info, create a new one if nil
+        //  Validate if new scope has been requested in header
         //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
-        
-        // todo: add any parameter stuff necessary
-        
-        //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
-        
-        [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-           
-            if (error == nil)
+        [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
+            
+            if (!completed || error)
             {
                 //
-                // Pass through the call to the network manager
+                // Notify
                 //
-                [[MASNetworkingService sharedService] deleteFrom:endPoint
+                if(completion) completion(nil, [NSError errorNetworkNotStarted]);
+                
+                return;
+            }
+            //
+            // Retrieve a mutable version of the header info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
+            
+            //
+            // Retrieve a mutable version of the parameter info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
+            
+            // todo: add any parameter stuff necessary
+            
+            //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
+            
+            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+                
+                if (error == nil)
+                {
+                    //
+                    // Pass through the call to the network manager
+                    //
+                    [[MASNetworkingService sharedService] getFrom:endPoint
+                                                   withParameters:mutableParameterInfo
+                                                       andHeaders:mutableHeaderInfo
+                                                      requestType:requestType
+                                                     responseType:responseType
+                                                         isPublic:isPublic
+                                                       completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
+                    
+                }
+                else {
+                    
+                    if (blockCompletion)
+                    {
+                        blockCompletion(nil, error);
+                    }
+                }
+            }];
+        }];
+    }
+    else {
+        
+        [[MASNetworkingService sharedService] getFrom:endPoint
+                                       withParameters:parameterInfo
+                                           andHeaders:headerInfo
+                                          requestType:requestType
+                                         responseType:responseType
+                                             isPublic:isPublic
+                                           completion:completion];
+    }
+}
+
+
++ (void)patchTo:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    [self patchTo:endPoint
+   withParameters:parameterInfo
+       andHeaders:headerInfo
+      requestType:MASRequestResponseTypeJson
+     responseType:MASRequestResponseTypeJson
+         isPublic:NO
+       completion:completion];
+}
+
+
++ (void)patchTo:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    [self patchTo:endPoint
+   withParameters:parameterInfo
+       andHeaders:headerInfo
+      requestType:requestType
+     responseType:responseType
+         isPublic:NO
+       completion:completion];
+}
+
+
++ (void)patchTo:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    // Check for endpoint
+    //
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    
+    //
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
+    //
+    if (!isPublic)
+    {
+        __block MASResponseInfoErrorBlock blockCompletion = completion;
+        
+        //
+        //  Validate if new scope has been requested in header
+        //
+        [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
+            //
+            // Retrieve a mutable version of the header info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
+            
+            // Client Authorization
+            NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+            if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+            
+            //
+            // Retrieve a mutable version of the parameter info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
+            
+            // todo: add any parameter stuff necessary
+            
+            //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
+            
+            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+                
+                if (error == nil)
+                {
+                    //
+                    // Pass through the call to the network manager
+                    //
+                    [[MASNetworkingService sharedService] patchTo:endPoint
+                                                   withParameters:mutableParameterInfo
+                                                       andHeaders:mutableHeaderInfo
+                                                      requestType:requestType
+                                                     responseType:responseType
+                                                         isPublic:isPublic
+                                                       completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
+                    
+                }
+                else {
+                    
+                    if (blockCompletion)
+                    {
+                        blockCompletion(nil, error);
+                    }
+                }
+            }];
+        }];
+    }
+    else {
+        
+        [[MASNetworkingService sharedService] patchTo:endPoint
+                                       withParameters:parameterInfo
+                                           andHeaders:headerInfo
+                                          requestType:requestType
+                                         responseType:responseType
+                                             isPublic:isPublic
+                                           completion:completion];
+    }
+}
+
+
++ (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+    completion:(MASResponseInfoErrorBlock)completion
+{
+    [self postTo:endPoint
+  withParameters:parameterInfo
+      andHeaders:headerInfo
+     requestType:MASRequestResponseTypeJson
+    responseType:MASRequestResponseTypeJson
+        isPublic:NO
+      completion:completion];
+}
+
+
++ (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+    completion:(MASResponseInfoErrorBlock)completion
+{
+    [self postTo:endPoint
+  withParameters:parameterInfo
+      andHeaders:headerInfo
+     requestType:requestType
+    responseType:responseType
+        isPublic:NO
+      completion:completion];
+}
+
+
++ (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+    completion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    // Check for endpoint
+    //
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    
+    //
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
+    //
+    if (!isPublic)
+    {
+        __block MASResponseInfoErrorBlock blockCompletion = completion;
+        
+        //
+        //  Validate if new scope has been requested in header
+        //
+        [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
+            //
+            // Retrieve a mutable version of the header info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
+            
+            // Client Authorization
+            NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+            if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+            
+            //
+            // Retrieve a mutable version of the parameter info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
+            
+            // todo: add any parameter stuff necessary
+            
+            //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
+            
+            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+                
+                if (error == nil)
+                {
+                    //
+                    // Pass through the call to the network manager
+                    //
+                    [[MASNetworkingService sharedService] postTo:endPoint
                                                   withParameters:mutableParameterInfo
                                                       andHeaders:mutableHeaderInfo
                                                      requestType:requestType
                                                     responseType:responseType
-                                                      completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-            }
-            else {
-                
-                if (blockCompletion)
-                {
-                    blockCompletion(nil, error);
+                                                        isPublic:isPublic
+                                                      completion:[self parseTargetAPIErrorForCompletionBlock:completion]];
+                    
                 }
-            }
-        }];
-    }];
-}
-
-
-+ (void)getFrom:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-        completion:(MASResponseInfoErrorBlock)completion
-{
-    [self getFrom:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeJson
-        responseType:MASRequestResponseTypeJson
-        completion:completion];
-}
-
-
-+ (void)getFrom:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-       requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(MASResponseInfoErrorBlock)completion
-{
-    //
-    // Check for endpoint
-    //
-    if (!endPoint)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorInvalidEndpoint]);
-            
-            return;
-        }
-    }
-    
-    //
-    // Check if MAS has been started.
-    //
-    if ([MAS MASState] != MASStateDidStart)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorMASIsNotStarted]);
-            
-            return;
-        }
-    }
-    
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
-    
-    __block MASResponseInfoErrorBlock blockCompletion = completion;
-    
-    //
-    //  Validate if new scope has been requested in header
-    //
-    [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
-        
-        if (!completed || error)
-        {
-            //
-            // Notify
-            //
-            if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-            
-            return;
-        }
-        //
-        // Retrieve a mutable version of the header info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
-        
-        //
-        // Retrieve a mutable version of the parameter info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
-        
-        // todo: add any parameter stuff necessary
-        
-        //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
-        
-        [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-            
-            if (error == nil)
-            {
-                //
-                // Pass through the call to the network manager
-                //
-                [[MASNetworkingService sharedService] getFrom:endPoint
-                                               withParameters:mutableParameterInfo
-                                                   andHeaders:mutableHeaderInfo
-                                                  requestType:requestType
-                                                 responseType:responseType
-                                                   completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                
-            }
-            else {
-                
-                if (blockCompletion)
-                {
-                    blockCompletion(nil, error);
+                else {
+                    
+                    if (blockCompletion)
+                    {
+                        blockCompletion(nil, error);
+                    }
                 }
-            }
+            }];
         }];
-    }];
-}
-
-
-+ (void)patchTo:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-        completion:(MASResponseInfoErrorBlock)completion
-{
-    [self patchTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeJson
-        responseType:MASRequestResponseTypeJson
-        completion:completion];
-}
-
-
-+ (void)patchTo:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-       requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(MASResponseInfoErrorBlock)completion
-{
-    //
-    // Check for endpoint
-    //
-    if (!endPoint)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorInvalidEndpoint]);
-            
-            return;
-        }
     }
-    
-    //
-    // Check if MAS has been started.
-    //
-    if ([MAS MASState] != MASStateDidStart)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorMASIsNotStarted]);
-            
-            return;
-        }
+    else {
+        
+        [[MASNetworkingService sharedService] postTo:endPoint
+                                      withParameters:parameterInfo
+                                          andHeaders:headerInfo
+                                         requestType:requestType
+                                        responseType:responseType
+                                            isPublic:isPublic
+                                          completion:completion];
     }
-    
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
-    
-    __block MASResponseInfoErrorBlock blockCompletion = completion;
-    
-    //
-    //  Validate if new scope has been requested in header
-    //
-    [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
-        //
-        // Retrieve a mutable version of the header info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
-        
-        // Client Authorization
-        NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-        if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-        
-        //
-        // Retrieve a mutable version of the parameter info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
-        
-        // todo: add any parameter stuff necessary
-        
-        //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
-        
-        [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-            
-            if (error == nil)
-            {
-                //
-                // Pass through the call to the network manager
-                //
-                [[MASNetworkingService sharedService] patchTo:endPoint
-                                               withParameters:mutableParameterInfo
-                                                   andHeaders:mutableHeaderInfo
-                                                  requestType:requestType
-                                                 responseType:responseType
-                                                   completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                
-            }
-            else {
-                
-                if (blockCompletion)
-                {
-                    blockCompletion(nil, error);
-                }
-            }
-        }];
-    }];
-}
-
-
-+ (void)postTo:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-        completion:(MASResponseInfoErrorBlock)completion
-{
-    //DLog(@"called");
-    
-    [self postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeJson
-        responseType:MASRequestResponseTypeJson
-        completion:completion];
-}
-
-
-+ (void)postTo:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-       requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(MASResponseInfoErrorBlock)completion
-{
-    //
-    // Check for endpoint
-    //
-    if (!endPoint)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorInvalidEndpoint]);
-            
-            return;
-        }
-    }
-    
-    //
-    // Check if MAS has been started.
-    //
-    if ([MAS MASState] != MASStateDidStart)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorMASIsNotStarted]);
-            
-            return;
-        }
-    }
-    
-    //
-    // Check that network manager is ready, expected to be at this point but lets be sure
-    //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
-    
-    __block MASResponseInfoErrorBlock blockCompletion = completion;
-    
-    //
-    //  Validate if new scope has been requested in header
-    //
-    [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
-        //
-        // Retrieve a mutable version of the header info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
-        
-        // Client Authorization
-        NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-        if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-        
-        //
-        // Retrieve a mutable version of the parameter info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
-        
-        // todo: add any parameter stuff necessary
-        
-        //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
-        
-        [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-            
-            if (error == nil)
-            {
-                //
-                // Pass through the call to the network manager
-                //
-                [[MASNetworkingService sharedService] postTo:endPoint
-                                              withParameters:mutableParameterInfo
-                                                  andHeaders:mutableHeaderInfo
-                                                 requestType:requestType
-                                                responseType:responseType
-                                                  completion:[self parseTargetAPIErrorForCompletionBlock:completion]];
-                
-            }
-            else {
-                
-                if (blockCompletion)
-                {
-                    blockCompletion(nil, error);
-                }
-            }
-        }];
-    }];
 }
 
 
 + (void)putTo:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-        completion:(MASResponseInfoErrorBlock)completion
+withParameters:(NSDictionary *)parameterInfo
+   andHeaders:(NSDictionary *)headerInfo
+   completion:(MASResponseInfoErrorBlock)completion
 {
     [self putTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeJson
-        responseType:MASRequestResponseTypeJson
-        completion:completion];
+ withParameters:parameterInfo
+     andHeaders:headerInfo
+    requestType:MASRequestResponseTypeJson
+   responseType:MASRequestResponseTypeJson
+       isPublic:NO
+     completion:completion];
 }
 
 
 + (void)putTo:(NSString *)endPoint
-    withParameters:(NSDictionary *)parameterInfo
-        andHeaders:(NSDictionary *)headerInfo
-       requestType:(MASRequestResponseType)requestType
-      responseType:(MASRequestResponseType)responseType
-        completion:(MASResponseInfoErrorBlock)completion
+withParameters:(NSDictionary *)parameterInfo
+   andHeaders:(NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+   completion:(MASResponseInfoErrorBlock)completion
+{
+    [self putTo:endPoint
+ withParameters:parameterInfo
+     andHeaders:headerInfo
+    requestType:requestType
+   responseType:responseType
+       isPublic:NO
+     completion:completion];
+}
+
+
++ (void)putTo:(nonnull NSString *)endPoint
+withParameters:(nullable NSDictionary *)parameterInfo
+   andHeaders:(nullable NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+   completion:(nullable MASResponseInfoErrorBlock)completion
 {
     //
     // Check for endpoint
@@ -1190,73 +1435,80 @@
         }
     }
     
+    
     //
-    // Check that network manager is ready, expected to be at this point but lets be sure
+    // If the request is private API request, do the validation regardless of the server is primary gateway or not, and inject credentials as the request is defined as private
     //
-    if(![[MASNetworkingService sharedService] networkIsReachable])
+    if (!isPublic)
     {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorNetworkNotStarted]);
-        
-        return;
-    }
-    
-    __block MASResponseInfoErrorBlock blockCompletion = completion;
-    
-    //
-    //  Validate if new scope has been requested in header
-    //
-    [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
-       
-        //
-        // Retrieve a mutable version of the header info, create a new one if nil
-        //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
-        
-        // Client Authorization
-        NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-        if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+        __block MASResponseInfoErrorBlock blockCompletion = completion;
         
         //
-        // Retrieve a mutable version of the parameter info, create a new one if nil
+        //  Validate if new scope has been requested in header
         //
-        // We must guarantee standard security headers are added here
-        //
-        MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
-        
-        // todo: add any parameter stuff necessary
-        
-        //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
-        
-        [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+        [MAS validateScopeForRequest:headerInfo completion:^(BOOL completed, NSError *error) {
             
-            if (error == nil)
-            {
-                //
-                // Pass through the call to the network manager
-                //
-                [[MASNetworkingService sharedService] putTo:endPoint
-                                             withParameters:mutableParameterInfo
-                                                 andHeaders:mutableHeaderInfo
-                                                requestType:requestType
-                                               responseType:responseType
-                                                 completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
+            //
+            // Retrieve a mutable version of the header info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableHeaderInfo = (!headerInfo ? [MASIMutableOrderedDictionary new] : [headerInfo mutableCopy]);
+            
+            // Client Authorization
+            NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+            if(clientAuthorization) mutableHeaderInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+            
+            //
+            // Retrieve a mutable version of the parameter info, create a new one if nil
+            //
+            // We must guarantee standard security headers are added here
+            //
+            MASIMutableOrderedDictionary *mutableParameterInfo = (!parameterInfo ? [MASIMutableOrderedDictionary new] : [parameterInfo mutableCopy]);
+            
+            // todo: add any parameter stuff necessary
+            
+            //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
+            
+            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
                 
-            }
-            else {
-                
-                if (blockCompletion)
+                if (error == nil)
                 {
-                    blockCompletion(nil, error);
+                    //
+                    // Pass through the call to the network manager
+                    //
+                    [[MASNetworkingService sharedService] putTo:endPoint
+                                                 withParameters:mutableParameterInfo
+                                                     andHeaders:mutableHeaderInfo
+                                                    requestType:requestType
+                                                   responseType:responseType
+                                                       isPublic:isPublic
+                                                     completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
+                    
                 }
-            }
+                else {
+                    
+                    if (blockCompletion)
+                    {
+                        blockCompletion(nil, error);
+                    }
+                }
+            }];
         }];
+    }
+    //
+    // If the request is a public API request, or not made to the primary gateway, bypass the validation process
+    //
+    else {
         
-    }];
+        [[MASNetworkingService sharedService] putTo:endPoint
+                                     withParameters:parameterInfo
+                                         andHeaders:headerInfo
+                                        requestType:requestType
+                                       responseType:responseType
+                                           isPublic:isPublic
+                                         completion:completion];
+    }
 }
 
 
@@ -1283,7 +1535,7 @@
 
 + (void)validateScopeForRequest:(NSDictionary *)mutableHeader completion:(MASCompletionErrorBlock)originalCompletion
 {
-
+    
     //
     //  If no header defined, skip the validation
     //
@@ -1380,15 +1632,15 @@
     MASNetworkingService *networkingService = [MASNetworkingService sharedService];
     
     DLog(@"\n\n\n%@\n\n  ****************************** Services Summary ******************************\n\n\n"
-        "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
-        (registry ? [registry debugDescription] : @"(Service Registry Not Initialized"),
-        (configurationService ? [configurationService debugDescription] : @"(Configuration Service Not Initialized)\n\n"),
-        (networkingService ? [networkingService debugDescription] : @"(Networking Service Not Initialized)\n\n"),
-        (locationService ? [locationService debugDescription] : @"(Location Service Not Initialized)\n\n"),
-        (bluetoothService ? [bluetoothService debugDescription] : @"(Bluetooth Service Not Initialized)\n\n"),
-        (modelService ? [modelService debugDescription] : @"(Model Service Not Initialized)\n\n"),
-        (fileService ? [fileService debugDescription] : @"(File Service Not Initialized)\n\n"),
-        [[MASAccessService sharedService] debugSecuredDescription]);
+         "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
+         (registry ? [registry debugDescription] : @"(Service Registry Not Initialized"),
+         (configurationService ? [configurationService debugDescription] : @"(Configuration Service Not Initialized)\n\n"),
+         (networkingService ? [networkingService debugDescription] : @"(Networking Service Not Initialized)\n\n"),
+         (locationService ? [locationService debugDescription] : @"(Location Service Not Initialized)\n\n"),
+         (bluetoothService ? [bluetoothService debugDescription] : @"(Bluetooth Service Not Initialized)\n\n"),
+         (modelService ? [modelService debugDescription] : @"(Model Service Not Initialized)\n\n"),
+         (fileService ? [fileService debugDescription] : @"(File Service Not Initialized)\n\n"),
+         [[MASAccessService sharedService] debugSecuredDescription]);
 }
 
 #endif
