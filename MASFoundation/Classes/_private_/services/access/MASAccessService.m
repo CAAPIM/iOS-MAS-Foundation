@@ -105,7 +105,7 @@ static BOOL _isPKCEEnabled_ = YES;
     
     _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
     
-    if ([MASConfiguration currentConfiguration].ssoEnabled)
+    if ([MASConfiguration currentConfiguration].ssoEnabled && [self isAccessGroupAccessible])
     {
         
         //
@@ -803,7 +803,32 @@ static BOOL _isPKCEEnabled_ = YES;
             break;
     }
     
+    if (![self isAccessGroupAccessible])
+    {
+        accessTypeToString = [NSString stringWithFormat:@"_%@", accessTypeToString];
+    }
+    
     return accessTypeToString;
+}
+
+
+- (BOOL)isAccessGroupAccessible
+{
+    NSString *sharedService = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, kMASAccessSharedStorageServiceName];
+    NSString *tmpDataKey = self.accessGroup;
+    
+    NSError *sharedKeychainError;
+    
+    BOOL isAccessGroupAvailable = [MASIKeyChainStore setString:self.accessGroup forKey:tmpDataKey service:sharedService accessGroup:self.accessGroup error:&sharedKeychainError];
+    
+    if (!isAccessGroupAvailable || sharedKeychainError != nil)
+    {
+        return NO;
+    }
+    else {
+        [MASIKeyChainStore removeItemForKey:tmpDataKey service:sharedService accessGroup:self.accessGroup];
+        return YES;
+    }
 }
 
 
