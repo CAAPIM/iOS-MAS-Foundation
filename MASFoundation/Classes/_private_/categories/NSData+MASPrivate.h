@@ -36,6 +36,10 @@
 
 
 
++ (NSData *)converKeyRefToNSData:(SecKeyRef)keyRef;
+
+
+
 /**
  * Encode the incoming data string with Base64 encoding.
  *

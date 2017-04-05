@@ -11,7 +11,7 @@
 @import Foundation;
 
 #import "MASConstants.h"
-#import "MASJWTClaim.h"
+#import "MASClaims.h"
 
 
 /**
@@ -938,9 +938,31 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
 
 # pragma mark - JWT Signing
 
-+ (NSString * _Nullable)signWithContent:(id _Nonnull)content error:(NSError *__nullable __autoreleasing *__nullable)error;
-+ (NSString * _Nullable)signWithContent:(id _Nonnull)content withExpiresIn:(NSInteger)expiredIn error:(NSError *__nullable __autoreleasing *__nullable)error;
-+ (NSString * _Nullable)signWithContent:(id _Nonnull)content withJWTClaims:(MASJWTClaim * _Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error;
+
+
+/**
+ Signs MASClaims object with default private key from device registration against primary gateway.
+ Some of read-write claims, such as exp, content, and/or contentType, should properly be prepared.
+
+ @param claims MASClaims object containing claims for JWT
+ @param error NSERror error reference object that returns any error occurred during JWT construction.
+ @return NSString of JWT token.
+ */
++ (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error;
+
+
+
+
+/**
+ Signs MASClaims object with custom private key in NSData format. Private key should be in NSData format and should have been signed using RS256 algorithm.
+ Some of read-write claims, such as exp, content, and/or contentType, should properly be prepared.
+ 
+ @param claims MASClaims object containing claims for JWT
+ @param privateKey Custom private key in NSData format signed using RS256 algorithm.
+ @param error NSERror error reference object that returns any error occurred during JWT construction.
+ @return NSString of JWT token.
+ */
++ (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error;
 
 
 #ifdef DEBUG

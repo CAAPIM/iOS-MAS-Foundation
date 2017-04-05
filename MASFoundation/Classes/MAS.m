@@ -14,8 +14,8 @@
 #import "MASBluetoothService.h"
 #import "MASConfigurationService.h"
 #import "MASConstantsPrivate.h"
+#import "MASClaims+MASPrivate.h"
 #import "MASFileService.h"
-#import "MASJWTClaim+MASPrivate.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
 #import "MASOTPService.h"
@@ -1621,53 +1621,11 @@ withParameters:(nullable NSDictionary *)parameterInfo
 
 # pragma mark - JWT Signing
 
-+ (NSString *)signWithContent:(id)content error:(NSError *__autoreleasing *)error
++ (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error
 {
-    return [self signWithContent:content withExpiresIn:(10*60) error:error];
-}
-
-
-+ (NSString *)signWithContent:(id)content withExpiresIn:(NSInteger)expiredIn error:(NSError *__autoreleasing *)error
-{
-    NSString *contentType = nil;
-    NSError *signingError;
-    
-    if ([content isKindOfClass:[NSData class]])
-    {
-        contentType = [(NSData *)content mimeType];
-    }
-    else if ([content isKindOfClass:[NSString class]])
-    {
-        contentType = @"text/plain";
-    }
-    else if ([content isKindOfClass:[NSArray class]])
-    {
-        contentType = @"application/json";
-    }
-    else if ([content isKindOfClass:[NSDictionary class]])
-    {
-        contentType = @"application/json";
-    }
-    else {
-        
-        if (error)
-        {
-            *error = [NSError errorWithDomain:MASFoundationErrorDomainLocal code:MASFoundationErrorCodeJWTInvalidContentType userInfo:nil];
-        }
-        
-        return nil;
-    }
-    
-    if (![MASApplication currentApplication].isRegistered)
-    {
-        if (error)
-        {
-            *error = [NSError errorApplicationNotRegistered];
-        }
-        
-        return nil;
-    }
-    
+    //
+    //  Check device registration status
+    //
     if (![MASDevice currentDevice].isRegistered)
     {
         if (error)
@@ -1678,51 +1636,21 @@ withParameters:(nullable NSDictionary *)parameterInfo
         return nil;
     }
     
-    MASJWTClaim *claims = [MASJWTClaim new];
-    claims.aud = [[MASConfiguration currentConfiguration].gatewayUrl absoluteString];
-    
     //
-    //  Prepare iss
+    //  Retrieve private key from registered device's client certificate
     //
-    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    NSString *clientId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId];
-    claims.iss = [NSString stringWithFormat:@"device://%@/%@", magIdentifier, clientId];
-    
-    if ([MASUser currentUser] && [MASUser currentUser].objectId)
-    {
-        claims.sub = [MASUser currentUser].objectId;
-    }
-    else {
-        claims.sub = [MASApplication currentApplication].name;
-    }
-    
-    claims.exp = [[[NSDate date] dateByAddingTimeInterval:expiredIn] timeIntervalSince1970];
-    
-    //
-    //  Prepare jti - randomly generated UUID
-    //
-    claims.jti = [[NSUUID UUID] UUIDString];
-    
-    //
-    //  Set content/content-type claim
-    //
-    [claims setValue:content forClaimKey:@"content" error:&signingError];
-    [claims setValue:contentType forClaimKey:@"content-type" error:&signingError];
-    
-    if (signingError)
-    {
-        *error = signingError;
-        return nil;
-    }
-    else {
-        
-        return [claims buildWithErrorRef:error];
-    }
+    SecKeyRef pemPrivateRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithType:MASAccessValueTypePrivateKey];
+    NSData *privateKeyData = [NSData converKeyRefToNSData:pemPrivateRef];
+ 
+    return [self signWithClaims:claims privateKey:privateKeyData error:error];
 }
 
 
-+ (NSString * _Nullable)signWithContent:(id _Nonnull)content withJWTClaims:(MASJWTClaim * _Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error
++ (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error
 {
+    //
+    //  Check if the client registration status
+    //
     if (![MASApplication currentApplication].isRegistered)
     {
         if (error)
@@ -1733,6 +1661,9 @@ withParameters:(nullable NSDictionary *)parameterInfo
         return nil;
     }
     
+    //
+    //  Check device registration status
+    //
     if (![MASDevice currentDevice].isRegistered)
     {
         if (error)
@@ -1743,7 +1674,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
         return nil;
     }
     
-    return [claims buildWithErrorRef:error];
+    return [claims buildWithPrivateKey:privateKey error:error];
 }
 
 

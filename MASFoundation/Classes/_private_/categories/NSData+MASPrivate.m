@@ -86,6 +86,52 @@ bool _encrypted = NO;
 }
 
 
++ (NSData *)converKeyRefToNSData:(SecKeyRef)keyRef
+{
+    //            Below two lines of codes will replace the rest of PrivateKey conversion which is only available on iOS 10 or above.
+    //            Will discuss when we will deprecate and replace the codes.
+    //
+    //            CFDataRef publicKeyDataRef = SecKeyCopyExternalRepresentation(publicKey, NULL);
+    //            publicKeyData = (NSData *)CFBridgingRelease(publicKeyDataRef);
+    
+    NSData *keyData = nil;
+    NSString *temporaryAppTag = @"MASKeyTemporaryTag";
+    
+    //
+    //  SecKeyCopyExternalRepresentation is only availabe on iOS 10 or above; therefore, to extract NSData out of SecKeyRef,
+    //  we have to store the SecKeyRef into keychain, and remove it
+    //
+    
+    //
+    //  adding public key into keychain storage
+    //
+    NSMutableDictionary *storeKey = [NSMutableDictionary dictionary];
+    [storeKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+    [storeKey setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly forKey:(__bridge id)kSecAttrAccessible];
+    [storeKey setObject:(__bridge id)(kCFBooleanTrue) forKey:(__bridge id)kSecReturnData];
+    [storeKey setObject:(__bridge id)keyRef forKey:(__bridge id)kSecValueRef];
+    [storeKey setObject:temporaryAppTag forKey:(__bridge id)kSecAttrApplicationTag];
+    
+    //
+    //  retreive the public key from the keychain as CFDataRef type
+    //
+    if (SecItemAdd((__bridge CFDictionaryRef)storeKey, (void *)&keyData) == errSecSuccess)
+    {
+        //
+        //  make sure to delete the keychain data when it's successfully retrieved
+        //
+        NSMutableDictionary *removeKey = [NSMutableDictionary dictionary];
+        [removeKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+        [removeKey setObject:(__bridge id)(kCFBooleanFalse) forKey:(__bridge id)kSecReturnData];
+        [removeKey setObject:temporaryAppTag forKey:(__bridge id)kSecAttrApplicationTag];
+        
+        SecItemDelete((__bridge CFDictionaryRef)removeKey);
+    }
+    
+    return keyData;
+}
+
+
 + (id)dataWithBase64EncodedString:(NSString *)dataAsString
 {
     //DLog(@"\n\ncalled with data as string:\n\n%@\n\n from:\n\n%@\n\n", dataAsString, [NSThread callStackSymbols]);
