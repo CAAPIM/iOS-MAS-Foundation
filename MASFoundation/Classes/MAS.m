@@ -1674,6 +1674,19 @@ withParameters:(nullable NSDictionary *)parameterInfo
         return nil;
     }
     
+    //
+    //  Validate MASClaims object
+    //
+    if (claims == nil)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeJWTInvalidClaims errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return nil;
+    }
+    
     return [claims buildWithPrivateKey:privateKey error:error];
 }
 

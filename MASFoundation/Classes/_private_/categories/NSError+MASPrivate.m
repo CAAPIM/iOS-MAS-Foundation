@@ -1090,9 +1090,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         // JWT
         //
-        case MASFoundationErrorCodeJWTInvalidClaimKey: return @"JWT claim key (%@) is already reserved.";
-        case MASFoundationErrorCodeJWTInvalidPrivateKey: return @"JWT build failure due to missing or invalid private key.";
-        case MASFoundationErrorCodeJWTInvalidContentType: return @"Invalid content-type for JWT.";
+        case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
             
         //
         // Default

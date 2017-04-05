@@ -459,9 +459,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     //  JWT
     //
-    MASFoundationErrorCodeJWTInvalidClaimKey = 170001,
-    MASFoundationErrorCodeJWTInvalidPrivateKey = 170002,
-    MASFoundationErrorCodeJWTInvalidContentType = 170003,
+    MASFoundationErrorCodeJWTInvalidClaims = 170001,
     
     MASFoundationErrorCodeCount = -999999
 };
