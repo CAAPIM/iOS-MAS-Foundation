@@ -14,6 +14,7 @@
 #import "MASBluetoothService.h"
 #import "MASConfigurationService.h"
 #import "MASConstantsPrivate.h"
+#import "MASClaims+MASPrivate.h"
 #import "MASFileService.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
@@ -25,6 +26,7 @@
 #import "MASHTTPSessionManager.h"
 #import "MASSecurityPolicy.h"
 #import "MASGetURLRequest.h"
+#import "NSData+MASPrivate.h"
 #import "NSURL+MASPrivate.h"
 #import "NSString+MASPrivate.h"
 
@@ -1614,6 +1616,78 @@ withParameters:(nullable NSDictionary *)parameterInfo
     }
     
     return;
+}
+
+
+# pragma mark - JWT Signing
+
++ (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error
+{
+    //
+    //  Check device registration status
+    //
+    if (![MASDevice currentDevice].isRegistered)
+    {
+        if (error)
+        {
+            *error = [NSError errorDeviceNotRegistered];
+        }
+        
+        return nil;
+    }
+    
+    //
+    //  Retrieve private key from registered device's client certificate
+    //
+    SecKeyRef pemPrivateRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithType:MASAccessValueTypePrivateKey];
+    NSData *privateKeyData = [NSData converKeyRefToNSData:pemPrivateRef];
+ 
+    return [self signWithClaims:claims privateKey:privateKeyData error:error];
+}
+
+
++ (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error
+{
+    //
+    //  Check if the client registration status
+    //
+    if (![MASApplication currentApplication].isRegistered)
+    {
+        if (error)
+        {
+            *error = [NSError errorApplicationNotRegistered];
+        }
+        
+        return nil;
+    }
+    
+    //
+    //  Check device registration status
+    //
+    if (![MASDevice currentDevice].isRegistered)
+    {
+        if (error)
+        {
+            *error = [NSError errorDeviceNotRegistered];
+        }
+        
+        return nil;
+    }
+    
+    //
+    //  Validate MASClaims object
+    //
+    if (claims == nil)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeJWTInvalidClaims errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return nil;
+    }
+    
+    return [claims buildWithPrivateKey:privateKey error:error];
 }
 
 

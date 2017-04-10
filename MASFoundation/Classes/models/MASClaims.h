@@ -1,0 +1,103 @@
+//
+//  MASClaims.h
+//  MASFoundation
+//
+//  Created by Hun Go on 2017-04-04.
+//  Copyright © 2017 CA Technologies. All rights reserved.
+//
+
+#import "MASObject.h"
+
+/**
+ MASClaims class is a helper class to build JWT signed with key pairs.
+ */
+@interface MASClaims : MASObject
+
+///--------------------------------------
+/// @name Properties
+///--------------------------------------
+
+# pragma mark - Properties
+
+
+/**
+ iss identifies the principal that issued the JWT
+ 
+ @discussion iss is in format of device://{mag-identifier}/{client_id} where both mag-identifier and client_id are known to the primary gateway.
+ */
+@property (nonatomic, strong, nullable, readonly) NSString *iss;
+
+
+/**
+ aud identifies the recipients that the JWT is inteded for
+ 
+ @discussion aud is an audience of the JWT where the audience is URL of primary gateway.
+ */
+@property (nonatomic, strong, nullable, readonly) NSString *aud;
+
+
+/**
+ sub identifies the principal that is subject of the JWT
+ 
+ @discussion sub is an subject of the JWT that is either authenticated user's username or registered client's client name where both are known to the primary gateway.
+ */
+@property (nonatomic, strong, nullable, readonly) NSString *sub;
+
+
+/**
+ exp identifies the expiration timestamp of JWT
+ 
+ @discussion exp is unix timestamp of expiration for JWT.
+ */
+@property (assign, readwrite) NSInteger exp;
+
+
+/**
+ iat identifies the issued timestamp of JWT
+ 
+ @discussion iat is an issued timestamp when the JWT was built.  iat will be nil in MASClaims object until JWT is built.
+ */
+@property (assign, readonly) NSInteger iat;
+
+
+/**
+ jti identifies a unique identifier for the JWT
+ 
+ @discussion jti is an unique identifier of JWT.
+ */
+@property (nonatomic, strong, nullable, readonly) NSString *jti;
+
+
+/**
+ content will be identified as private claim for the custom contents in payload
+ 
+ @discussion content is an content that will be part of JWT's payload.  
+ @remark content can only be in NSString, NSDictionary, or NSArray format. Make sure to convert NSData into base64encoded string.
+ */
+@property (nonatomic, strong, nullable, readwrite) id content;
+
+
+/**
+ contentType will be identified as private claim for the custom contents' content-type in payload
+ 
+ @discussion contentType is a MIME type of the contents.
+ */
+@property (nonatomic, strong, nullable, readwrite) NSString *contentType;
+
+
+///--------------------------------------
+/// @name Properties
+///--------------------------------------
+
+# pragma mark - LifeCycle
+
+
+/**
+ Designated initializer for MASClaims object.
+ This initializer will construct MASClaims object with auto-populated some of claims values.
+
+ @return MASClaims object with auto populated some of claims.
+ */
++ (MASClaims *_Nullable)claims;
+
+@end

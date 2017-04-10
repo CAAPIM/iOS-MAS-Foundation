@@ -254,6 +254,16 @@
 
 
 /**
+ *  Create MASFoundationErrorDomainLocal NSError for a specified error code.
+ *
+ *  @param description error description that will be part of string format
+ *
+ *  @return Returns an NSerror instance with the domain MASFoundationErrorDomainLocal and the specified error code.
+ */
++ (NSError *)errorStringFormatWithDescription:(NSString *)description code:(MASFoundationErrorCode)code;
+
+
+/**
  * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeDeviceAlreadyRegistered.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and

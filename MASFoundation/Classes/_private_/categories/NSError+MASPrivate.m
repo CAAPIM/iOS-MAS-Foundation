@@ -559,6 +559,25 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorStringFormatWithDescription:(NSString *)description code:(MASFoundationErrorCode)code
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *format = [self descriptionForFoundationErrorCode:code];
+    NSString *localDescription = [NSString stringWithFormat:format, description];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    return [self errorForFoundationCode:code info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorDeviceAlreadyRegistered
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeDeviceAlreadyRegistered errorDomain:MASFoundationErrorDomainLocal];
@@ -1067,6 +1086,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code proximity login authentication failed with specific information on userInfo.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for proximity login.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL: return @"Invalid authorization url.";
+          
+        //
+        // JWT
+        //
+        case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
             
         //
         // Default

@@ -456,6 +456,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeOTPChannelSelectionCancelled = 160201,
     MASFoundationErrorCodeOTPAuthenticationCancelled = 160202,
     
+    //
+    //  JWT
+    //
+    MASFoundationErrorCodeJWTInvalidClaims = 170001,
+    
     MASFoundationErrorCodeCount = -999999
 };
 
