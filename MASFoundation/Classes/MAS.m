@@ -1624,6 +1624,19 @@ withParameters:(nullable NSDictionary *)parameterInfo
 + (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error
 {
     //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (error)
+        {
+            *error = [NSError errorMASIsNotStarted];
+        }
+        
+        return nil;
+    }
+    
+    //
     //  Check device registration status
     //
     if (![MASDevice currentDevice].isRegistered)
@@ -1648,6 +1661,19 @@ withParameters:(nullable NSDictionary *)parameterInfo
 
 + (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error
 {
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (error)
+        {
+            *error = [NSError errorMASIsNotStarted];
+        }
+        
+        return nil;
+    }
+    
     //
     //  Check if the client registration status
     //
