@@ -40,6 +40,8 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 @property (strong, nonatomic, readwrite) NSString *gatewayHostName;
 @property (strong, nonatomic, readwrite) NSString *gatewayIdentifier;
 
+@property (assign) BOOL isSharedKeychainEnabled;
+
 @end
 
 
@@ -678,6 +680,9 @@ static BOOL _isPKCEEnabled_ = YES;
         case MASAccessValueTypeIsDeviceLocked:
             storageKey = kMASAccessSharedStorageKey;
             break;
+        case MASAccessValueTypeMASUserObjectData:
+            storageKey = kMASAccessSharedStorageKey;
+            break;
         default:
             //
             // MASAccessValueTypeUknonw
@@ -796,6 +801,8 @@ static BOOL _isPKCEEnabled_ = YES;
         case MASAccessValueTypeIsDeviceLocked:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeIsDeviceLocked"];
             break;
+        case MASAccessValueTypeMASUserObjectData:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayHostName, @"kMASAccessValueTypeMASUserObjectData"];
         default:
             //
             // MASAccessValueTypeUknonw
@@ -812,27 +819,34 @@ static BOOL _isPKCEEnabled_ = YES;
 }
 
 
+#pragma mark - accessGroup
+
 - (BOOL)isAccessGroupAccessible
 {
-    NSString *sharedService = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, kMASAccessSharedStorageServiceName];
-    NSString *tmpDataKey = self.accessGroup;
     
-    NSError *sharedKeychainError;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        
+        NSString *sharedService = [NSString stringWithFormat:@"kMASFoundationSharedKeyChainAccess.%@", kMASAccessSharedStorageServiceName];
+        NSString *tmpDataKey = self.accessGroup;
+        
+        NSError *sharedKeychainError;
+        
+        BOOL isAccessGroupAvailable = [MASIKeyChainStore setString:self.accessGroup forKey:tmpDataKey service:sharedService accessGroup:self.accessGroup error:&sharedKeychainError];
+        
+        if (!isAccessGroupAvailable || sharedKeychainError != nil)
+        {
+            _isSharedKeychainEnabled = NO;
+        }
+        else {
+            [MASIKeyChainStore removeItemForKey:tmpDataKey service:sharedService accessGroup:self.accessGroup];
+            _isSharedKeychainEnabled = YES;
+        }
+    });
     
-    BOOL isAccessGroupAvailable = [MASIKeyChainStore setString:self.accessGroup forKey:tmpDataKey service:sharedService accessGroup:self.accessGroup error:&sharedKeychainError];
-    
-    if (!isAccessGroupAvailable || sharedKeychainError != nil)
-    {
-        return NO;
-    }
-    else {
-        [MASIKeyChainStore removeItemForKey:tmpDataKey service:sharedService accessGroup:self.accessGroup];
-        return YES;
-    }
+    return _isSharedKeychainEnabled;
 }
 
-
-#pragma mark - accessGroup
 
 - (NSString *)accessGroup
 {

@@ -45,7 +45,9 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Attempt to retrieve from keychain
     //
-    NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString accessGroup:[MASAccessService sharedService].accessGroup] dataForKey:[MASUser.class description]];
+    
+    NSData *data = [[MASAccessService sharedService] getAccessValueDataWithType:MASAccessValueTypeMASUserObjectData];
+    
     if(data)
     {
         user = (MASUser *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -63,15 +65,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
     if(data)
     {
-        NSError *error;
-        [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString accessGroup:[MASAccessService sharedService].accessGroup] setData:data
-                                                                                                                         forKey:[self.class description]
-                                                                                                                          error:&error];
-    
-        if(error)
-        {
-            DLog(@"\n\nError attempting to save data: %@\n\n", [error localizedDescription]);
-        }
+        [[MASAccessService sharedService] setAccessValueData:data withAccessValueType:MASAccessValueTypeMASUserObjectData];
     }
 }
 
@@ -211,7 +205,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 {
     [self resetPartial];
     
-    [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[self.class description]];
+    [[MASAccessService sharedService] setAccessValueData:nil withAccessValueType:MASAccessValueTypeMASUserObjectData];
 }
 
 - (void)resetPartial

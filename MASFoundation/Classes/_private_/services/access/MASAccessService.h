@@ -48,7 +48,8 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
     MASAccessValueTypeSignedPublicCertificateExpirationDate,
     MASAccessValueTypeTokenExpiration,
     MASAccessValueTypeTokenType,
-    MASAccessValueTypeTrustedServerCertificate
+    MASAccessValueTypeTrustedServerCertificate,
+    MASAccessValueTypeMASUserObjectData,
 };
 
 
