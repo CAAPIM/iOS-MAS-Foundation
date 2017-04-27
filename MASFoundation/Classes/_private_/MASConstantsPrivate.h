@@ -51,6 +51,7 @@ static NSString *_Nonnull const MASOTPServiceUUID = @"1dcd2f44-bdc2-449c-9ffc-08
 static NSString const *_Nonnull MASDebugServiceUUID = @"018c9134-688e-4f47-ace9-f18b4430ca42";
 static NSString const *_Nonnull MASProximityServiceUUID = @"88ed8292-9d60-4d2a-9d50-7e9158c83096";
 static NSString const *_Nonnull MASUIServiceUUID = @"c15a0126-fe71-46bb-98f0-f87966b3beb4";
+static NSString const *_Nonnull MASFIDOServiceUUID = @"ec364184-da98-4f43-8b0b-9dd4ee799746";
 
 
 // Defaults

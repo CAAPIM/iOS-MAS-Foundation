@@ -803,6 +803,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             //
             __block MASBasicCredentialsBlock basicCredentialsBlock;
             __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
+//            __block MASIdTokenCredentialsBlock idTokenBlock;
+            __block MASUserLoginCompletionBlock loginCompletionBlock;
             __block MASModelService *blockSelf = self;
             __block MASCompletionErrorBlock completionBlock = completion;
             
@@ -981,6 +983,149 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                     }];
                 };
             }
+            
+            //
+            // FIDO Credentials Supported
+            //
+//            if([[MASApplication currentApplication] isScopeTypeMssoSupported])
+//            {
+//                //
+//                // IdToken Credentials Block
+//                //
+//                idTokenBlock = ^(NSString *idToken, NSString *idTokenType, BOOL cancel,  MASCompletionErrorBlock completion)
+//                {
+//                    DLog(@"\n\nidToken credentials block called with idToken: %@ idTokenType: %@ and cancel: %@\n\n",
+//                         idToken, idTokenType, (cancel ? @"Yes" : @"No"));
+//                    
+//                    //
+//                    // Reset the authenticationProvider as the session id should have been used
+//                    //
+//                    blockSelf.currentProviders = nil;
+//                    
+//                    //
+//                    // Cancelled stop here
+//                    //
+//                    if(cancel)
+//                    {
+//                        //
+//                        // Notify
+//                        //
+//                        if (completion)
+//                        {
+//                            completion(NO, [NSError errorLoginProcessCancelled]);
+//                        }
+//                        
+//                        if (completionBlock)
+//                        {
+//                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+//                        }
+//                        
+//                        return;
+//                    }
+//                    
+//                    //
+//                    // Attempt to register the device with the credentials
+//                    //
+//                    [blockSelf registerDeviceWithIdToken:idToken
+//                                               tokenType:idTokenType
+//                                              completion:
+//                     ^(BOOL completed, NSError * _Nullable error) {
+//                        
+//                        //
+//                        // Error
+//                        //
+//                        if(error)
+//                        {
+//                            //
+//                            // Notify
+//                            //
+//                            if (completionBlock) completionBlock(NO, error);
+//                            
+//                            if (completion) completion(NO, error);
+//                            
+//                            return;
+//                        }
+//                        
+//                        //
+//                        // Notify
+//                        //
+//                        if(completionBlock) completionBlock(YES, nil);
+//                        
+//                        if (completion) completion(YES, nil);
+//                    }];
+//                };
+//            }
+            
+            if ([[MASApplication currentApplication] isScopeTypeMssoSupported]) {
+                
+                loginCompletionBlock = ^(BOOL completed, NSError *_Nullable error,
+                                         BOOL cancel, MASCompletionErrorBlock completion) {
+                    
+                    DLog(@"\n\nUser Login Completion block called with completed: %@, error:%@ and cancel: %@\n\n",
+                         (completed ? @"Yes" : @"No"), error, (cancel ? @"Yes" : @"No"));
+                    
+                    //
+                    // Reset the authenticationProvider as the session id should have been used
+                    //
+                    blockSelf.currentProviders = nil;
+                    
+                    //
+                    // Cancelled stop here
+                    //
+                    if(cancel)
+                    {
+                        //
+                        // Notify
+                        //
+                        if (completion)
+                        {
+                            completion(NO, [NSError errorLoginProcessCancelled]);
+                        }
+                        
+                        if (completionBlock)
+                        {
+                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                        }
+                        
+                        return;
+                    }
+                    
+                    if (completed && !error) {
+                        
+                        //
+                        // Notify
+                        //
+                        if (completion)
+                        {
+                            completion(YES, nil);
+                        }
+                        
+                        if (completionBlock)
+                        {
+                            completionBlock(YES, nil);
+                        }
+                        
+                        return;
+                    }
+                    else {
+                        
+                        //
+                        // Notify
+                        //
+                        if (completion)
+                        {
+                            completion(NO, error);
+                        }
+                        
+                        if (completionBlock)
+                        {
+                            completionBlock(NO, error);
+                        }
+                        
+                        return;
+                    }
+                };
+            }
         
             DLog(@"\n\n\n********************************************************\n\n"
                 "Waiting for credentials response to continue registration"
@@ -1007,7 +1152,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                 //
                 dispatch_async(dispatch_get_main_queue(),^
                 {
-                    _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
+                    _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock, loginCompletionBlock);
                 });
             }
             else {
@@ -2072,6 +2217,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
          //
          __block MASBasicCredentialsBlock basicCredentialsBlock;
          __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
+//         __block MASIdTokenCredentialsBlock idTokenBlock;
+         __block MASUserLoginCompletionBlock loginCompletionBlock;
          __block MASModelService *blockSelf = self;
          __block MASCompletionErrorBlock completionBlock = completion;
          
@@ -2215,6 +2362,147 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              };
          }
          
+         //
+         // FIDO Credentials Supported
+         //
+//         if([[MASApplication currentApplication] isScopeTypeMssoSupported])
+//         {
+//             //
+//             // Authorization Code Credentials Block
+//             //
+//             idTokenBlock = ^(NSString *idToken, NSString *idTokenType, BOOL cancel,  MASCompletionErrorBlock completion)
+//             {
+//                 DLog(@"\n\nidToken credentials block called with idToken: %@ idTokenType: %@ and cancel: %@\n\n",
+//                      idToken, idTokenType, (cancel ? @"Yes" : @"No"));
+//                 
+//                 //
+//                 // Reset the authenticationProvider as the session id should have been used
+//                 //
+//                 blockSelf.currentProviders = nil;
+//                 
+//                 //
+//                 // Cancelled stop here
+//                 //
+//                 if(cancel)
+//                 {
+//                     //
+//                     // Notify
+//                     //
+//                     if (completion)
+//                     {
+//                         completion(NO, [NSError errorLoginProcessCancelled]);
+//                     }
+//                     
+//                     if (completionBlock)
+//                     {
+//                         completionBlock(NO, [NSError errorLoginProcessCancelled]);
+//                     }
+//                     
+//                     return;
+//                 }
+//                 
+//                 //
+//                 // Attempt to log in the user with the idToken
+//                 //
+//                 [blockSelf loginWithIdToken:idToken tokenType:idTokenType completion:^(BOOL completed, NSError * _Nullable error) {
+//                     
+//                     //
+//                     // Error
+//                     //
+//                     if(error)
+//                     {
+//                         //
+//                         // Notify
+//                         //
+//                         if (completionBlock) completionBlock(NO, error);
+//                         
+//                         if (completion) completion(NO, error);
+//                         
+//                         return;
+//                     }
+//                     
+//                     //
+//                     // Notify
+//                     //
+//                     if(completionBlock) completionBlock(YES, nil);
+//                     
+//                     if (completion) completion(YES, nil);
+//                     
+//                 }];
+//             };
+//         }
+         
+         if ([[MASApplication currentApplication] isScopeTypeMssoSupported]) {
+             
+             loginCompletionBlock = ^(BOOL completed, NSError *_Nullable error,
+                                      BOOL cancel, MASCompletionErrorBlock completion) {
+                 
+                 DLog(@"\n\nUser Login Completion block called with completed: %@, error:%@ and cancel: %@\n\n",
+                      (completed ? @"Yes" : @"No"), error, (cancel ? @"Yes" : @"No"));
+                 
+                 //
+                 // Reset the authenticationProvider as the session id should have been used
+                 //
+                 blockSelf.currentProviders = nil;
+                 
+                 //
+                 // Cancelled stop here
+                 //
+                 if(cancel)
+                 {
+                     //
+                     // Notify
+                     //
+                     if (completion)
+                     {
+                         completion(NO, [NSError errorLoginProcessCancelled]);
+                     }
+                     
+                     if (completionBlock)
+                     {
+                         completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                     }
+                     
+                     return;
+                 }
+                 
+                 if (completed && !error) {
+                     
+                     //
+                     // Notify
+                     //
+                     if (completion)
+                     {
+                         completion(YES, nil);
+                     }
+                     
+                     if (completionBlock)
+                     {
+                         completionBlock(YES, nil);
+                     }
+                     
+                     return;
+                 }
+                 else {
+                     
+                     //
+                     // Notify
+                     //
+                     if (completion)
+                     {
+                         completion(NO, error);
+                     }
+                     
+                     if (completionBlock)
+                     {
+                         completionBlock(NO, error);
+                     }
+                     
+                     return;
+                 }
+             };
+         }
+         
          DLog(@"\n\n\n********************************************************\n\n"
               "Waiting for credentials response to continue registration"
               @"\n\n********************************************************\n\n\n");
@@ -2240,7 +2528,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
              //
              dispatch_async(dispatch_get_main_queue(),^
                             {
-                                _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
+                                _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock, loginCompletionBlock);
                             });
          }
          else {

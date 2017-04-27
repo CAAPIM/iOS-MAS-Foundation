@@ -68,9 +68,19 @@ typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authoriz
 
 
 /**
+ * The Authorization Code Credentials (NSString *authorizationCode, BOOL cancel, MAScompletionErrorBlock) block.
+ */
+//typedef void (^MASIdTokenCredentialsBlock)(NSString *_Nonnull idToken, NSString *_Nonnull tokenType, BOOL cancel, MASCompletionErrorBlock _Nullable);
+
+typedef void (^MASUserLoginCompletionBlock)(BOOL completed, NSError *_Nullable error, BOOL cancel, MASCompletionErrorBlock _Nullable);
+
+
+/**
  * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
  */
-typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock);
+//typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock, MASIdTokenCredentialsBlock _Nonnull idTokenBlock);
+
+typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock, MASUserLoginCompletionBlock _Nonnull loginCompletionBlock);
 
 
 /**
