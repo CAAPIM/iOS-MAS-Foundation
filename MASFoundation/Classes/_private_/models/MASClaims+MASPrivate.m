@@ -18,8 +18,6 @@
 
 @interface MASClaims ()
 
-@property (assign, readwrite) NSInteger iat;
-
 @end
 
 
@@ -31,7 +29,7 @@
     //
     //  Prepare iat at current timestamp
     //
-    [self setValue:[NSNumber numberWithInteger:[[NSDate date] timeIntervalSince1970]] forKey:@"iat"];
+    [self setValue:[NSDate date] forKey:@"iat"];
     
     NSMutableDictionary *payload = [NSMutableDictionary dictionary];
     
@@ -68,19 +66,24 @@
         [payload setObject:self.sub forKey:@"sub"];
     }
     
-    if (self.exp)
-    {
-        [payload setObject:[NSNumber numberWithInteger:self.exp] forKey:@"exp"];
-    }
-    
     if (self.jti)
     {
         [payload setObject:self.jti forKey:@"jti"];
     }
     
+    if (self.exp)
+    {
+        [payload setObject:[NSNumber numberWithInteger:[self.exp timeIntervalSince1970]] forKey:@"exp"];
+    }
+    
     if (self.iat)
     {
-        [payload setObject:[NSNumber numberWithInteger:self.iat] forKey:@"iat"];
+        [payload setObject:[NSNumber numberWithInteger:[self.iat timeIntervalSince1970]] forKey:@"iat"];
+    }
+    
+    if (self.nbf)
+    {
+        [payload setObject:[NSNumber numberWithInteger:[self.nbf timeIntervalSince1970]] forKey:@"nbf"];
     }
     
     if (self.content)
@@ -92,6 +95,14 @@
     {
         [payload setObject:self.contentType forKey:@"content-type"];
     }
+    
+    //
+    //  Adding custom claims
+    //
+    [self.customClaims enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        
+        [payload setObject:obj forKey:key];
+    }];
     
     //
     //  MASClaims will only sign with RS256 which is mutually agreed with
