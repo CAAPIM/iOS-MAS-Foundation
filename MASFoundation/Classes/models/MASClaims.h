@@ -25,7 +25,7 @@
  
  @discussion iss is in format of device://{mag-identifier}/{client_id} where both mag-identifier and client_id are known to the primary gateway.
  */
-@property (nonatomic, strong, nullable, readonly) NSString *iss;
+@property (nonatomic, strong, nullable, readwrite) NSString *iss;
 
 
 /**
@@ -33,7 +33,7 @@
  
  @discussion aud is an audience of the JWT where the audience is URL of primary gateway.
  */
-@property (nonatomic, strong, nullable, readonly) NSString *aud;
+@property (nonatomic, strong, nullable, readwrite) NSString *aud;
 
 
 /**
@@ -41,7 +41,7 @@
  
  @discussion sub is an subject of the JWT that is either authenticated user's username or registered client's client name where both are known to the primary gateway.
  */
-@property (nonatomic, strong, nullable, readonly) NSString *sub;
+@property (nonatomic, strong, nullable, readwrite) NSString *sub;
 
 
 /**
@@ -49,7 +49,7 @@
  
  @discussion exp is unix timestamp of expiration for JWT.
  */
-@property (assign, readwrite) NSInteger exp;
+@property (nonatomic, strong, nullable, readwrite) NSDate *exp;
 
 
 /**
@@ -57,7 +57,15 @@
  
  @discussion iat is an issued timestamp when the JWT was built.  iat will be nil in MASClaims object until JWT is built.
  */
-@property (assign, readonly) NSInteger iat;
+@property (nonatomic, strong, nullable, readwrite) NSDate *iat;
+
+
+/**
+ nbf identifies the time before which the JWT must not be accepted for processing.
+ 
+ @discussion nbf is a timestamp which the JWT should not be used before.  nbf is an optional claim which will not be generated and added to payload if not defined.
+ */
+@property (nonatomic, strong, nullable, readwrite) NSDate *nbf;
 
 
 /**
@@ -65,7 +73,7 @@
  
  @discussion jti is an unique identifier of JWT.
  */
-@property (nonatomic, strong, nullable, readonly) NSString *jti;
+@property (nonatomic, strong, nullable, readwrite) NSString *jti;
 
 
 /**
@@ -85,8 +93,29 @@
 @property (nonatomic, strong, nullable, readwrite) NSString *contentType;
 
 
+/**
+ custom claims dictionary added through setValue:forClaimKey.
+ */
+@property (nonatomic, strong, nullable, readonly) NSMutableDictionary *customClaims;
+
+
 ///--------------------------------------
-/// @name Properties
+/// @name Public
+///--------------------------------------
+
+# pragma mark - Public
+
+/**
+ Setting a custom attribute to JWT
+ 
+ @param value Object/value of the attribute. Object can only be either of NSNumber, NSString, NSDictionary, or NSArray.
+ @param claimKey Key of the attribute
+ */
+- (void)setValue:(id __nonnull)value forClaimKey:(NSString * __nonnull)claimKey error:(NSError * __nullable __autoreleasing * __nullable)error;
+
+
+///--------------------------------------
+/// @name LifeCycle
 ///--------------------------------------
 
 # pragma mark - LifeCycle

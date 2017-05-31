@@ -1098,6 +1098,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // JWT
         //
         case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
+        case MASFoundationErrorCodeJWTUnexpectedClassType: return @"Mis-match of reserved JWT claim value's type (%@)";
+        case MASFoundationErrorCodeJWTSerializationError: return @"Claim value (%@) cannot be serialized";
             
         //
         // Default
