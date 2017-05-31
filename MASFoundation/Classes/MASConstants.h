@@ -11,8 +11,8 @@
 @import Foundation;
 
 @class CLLocation;
+@class MASAuthCredentials;
 @class MASUser;
-
 
 
 ///--------------------------------------
@@ -71,6 +71,18 @@ typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authoriz
  * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
  */
 typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock);
+
+
+/**
+ *  The MASAuthCredentialsBlcok to provide auth credentials for device registration and/or user authentication.
+ */
+typedef void (^MASAuthCredentialsBlock)(MASAuthCredentials *_Nonnull authCredentials, BOOL cancel, MASCompletionErrorBlock _Nullable);
+
+
+/**
+ *  The user auth credentials blcok that will be invoked by SDK to notify developers to provide auth credentials.
+ */
+typedef void (^MASUserAuthCredentialsBlock)(MASAuthCredentialsBlock _Nonnull authCredentialBlock);
 
 
 /**
@@ -375,6 +387,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
     MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
     MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120009,
+    MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration = 120010,
     
     //
     // Authorization

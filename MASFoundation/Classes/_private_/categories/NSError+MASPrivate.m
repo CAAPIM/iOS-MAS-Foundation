@@ -578,6 +578,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorDeviceCanNotRegisterWithGivenAuthCredentials
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorDeviceAlreadyRegistered
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeDeviceAlreadyRegistered errorDomain:MASFoundationErrorDomainLocal];
@@ -990,7 +996,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope: return @"Attempted to register the device with a Scope that isn't registered in the application record on the Gateway";
         case MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters: return @"The device registration does not have the required parameters";
         case MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication: return @"The device does not support or have valid local authnetication method";
-        
+        case MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration: return @"Device registration is not supported with given MASAuthCredentials object.";
+            
         //
         // Flow
         //

@@ -18,6 +18,8 @@
 #import "NSString+MASPrivate.h"
 #import "NSData+MASPrivate.h"
 
+#import "MASAuthCredentials+MASPrivate.h"
+
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
 
@@ -56,6 +58,16 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     _userLoginBlock_ = [login copy];
 }
 
+
+- (void)setUserObject:(MASUser *)user
+{
+    if (_currentUser)
+    {
+        _currentUser = nil;
+    }
+    
+    _currentUser = user;
+}
 
 # pragma mark - Shared Service
 
@@ -737,6 +749,46 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     ];
 }
 
+
+- (void)registerDeviceWithCompletion2:(MASCompletionErrorBlock)completion
+{
+    //
+    // Check if the client certificate is expired, if so, renew
+    //
+    if ([MASDevice currentDevice].isClientCertificateExpired && [MASDevice currentDevice].isRegistered)
+    {
+        [self renewClientCertificateWithCompletion:completion];
+        
+        return;
+    }
+    
+    //
+    // If already registered stop here
+    //
+    if ([[MASDevice currentDevice] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(YES, nil);
+        
+        return;
+    }
+    
+    //
+    // Check if the current MASGrantFlow is NOT supported by the registered Scope for the
+    // application record
+    //
+    if (![MASModelService isGrantFlowSupported:_grantFlow_])
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
+        
+        return;
+    }
+}
 
 - (void)registerDeviceWithCompletion:(MASCompletionErrorBlock)completion
 {
@@ -4169,6 +4221,217 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                     }
                 }];
             }
+        }
+    }];
+}
+
+
+- (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+{
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
+    __block MASModelService *blockSelf = self;
+    
+    //
+    //  Go through registration and authentication process with auth credential object.
+    //
+    [self registerApplication:^(BOOL completed, NSError * _Nullable error) {
+        
+        //
+        //  If an error occurred while client registration
+        //
+        if (!completed || error != nil)
+        {
+            if (blockCompletion)
+            {
+                blockCompletion(NO, error);
+            }
+        }
+        //
+        //  Othersiwe,
+        //
+        else {
+            
+            //
+            //  If device is already registered, perform authentication instead
+            //
+            if ([MASDevice currentDevice].isRegistered)
+            {
+                [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
+            }
+            else {
+                
+                //
+                //  Register device with auth credentials object
+                //
+                [self registerDeviceWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                    
+                    //
+                    //  If an error occurred while device registration
+                    //
+                    if (!completed || error != nil)
+                    {
+                        if (blockCompletion)
+                        {
+                            blockCompletion(NO, error);
+                        }
+                    }
+                    //
+                    //  Otherwsie,
+                    //
+                    else {
+                        
+                        //
+                        //  If auth credentials is reuseable, perform login with same credentials
+                        //
+                        if (blockAuthCredentials.isReuseable)
+                        {
+                            [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
+                        }
+                        else {
+                            
+                            //
+                            //  Clear credentials after first attempt if it is not reuseable
+                            //
+                            [blockAuthCredentials clearCredentials];
+                            
+                            //
+                            //  Fallback to user authentication
+                            //
+                            [self validateCurrentUserSession:blockCompletion];
+                        }
+                    }
+                }];
+            }
+        }
+    }];
+}
+
+
+- (void)registerDeviceWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+{
+    //
+    //  Refresh access obj
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // The application must be registered else stop here
+    //
+    if (![[MASApplication currentApplication] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorApplicationNotRegistered]);
+        }
+        
+        return;
+    }
+    
+    //
+    // Detect if device is already registered, if so stop here
+    //
+    if ([[MASDevice currentDevice] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(YES, nil);
+        }
+        
+        return;
+    }
+    
+    //
+    //  Validate to see if auth credentials can register device
+    //
+    if (!authCredentials.canRegisterDevice)
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceCanNotRegisterWithGivenAuthCredentials]);
+        }
+        
+        return;
+    }
+    
+//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    //  Perform registration
+    //
+    [authCredentials registerDeviceWithCredential:^(BOOL completed, NSError * _Nullable error) {
+        
+        //
+        //  Notify
+        //
+        if (blockCompletion)
+        {
+            blockCompletion(completed, error);
+        }
+    }];
+}
+
+
+- (void)loginWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+{
+    //
+    //  Refresh access obj
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // The device must be registered else stop here
+    //
+    if (![[MASDevice currentDevice] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
+        
+        return;
+    }
+    
+    //
+    //  If the user session has already been authenticated, throw an error.
+    //
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        }
+        
+        return;
+    }
+    
+//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    //  Perform authentication
+    //
+    [authCredentials loginWithCredential:^(BOOL completed, NSError * _Nullable error) {
+        
+        //
+        //  Notify
+        //
+        if (blockCompletion)
+        {
+            blockCompletion(completed, error);
         }
     }];
 }

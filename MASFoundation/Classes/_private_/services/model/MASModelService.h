@@ -74,6 +74,8 @@
 + (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login;
 
 
+- (void)setUserObject:(MASUser *)user;
+
 
 ///--------------------------------------
 /// @name Application
