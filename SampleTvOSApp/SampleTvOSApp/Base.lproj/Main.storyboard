@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6K2-E2-OXD">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="6K2-E2-OXD">
     <device id="appleTV" orientation="landscape">
         <adaptation id="light"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -108,7 +108,7 @@
                                 <rect key="frame" x="1009" y="0.0" width="235" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Back"/>
+                                <state key="normal" title="LogOut"/>
                                 <connections>
                                     <action selector="clkLogout:" destination="y5v-3g-8JA" eventType="primaryActionTriggered" id="ZAL-67-LgF"/>
                                 </connections>
@@ -152,7 +152,7 @@
                                 <rect key="frame" x="993" y="0.0" width="251" height="86"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Back"/>
+                                <state key="normal" title="LogOut"/>
                                 <connections>
                                     <action selector="clkLogout:" destination="8dJ-iE-NXG" eventType="primaryActionTriggered" id="oHS-Qt-mnL"/>
                                 </connections>
@@ -257,8 +257,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="1244" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="   Password" minimumFontSize="20" background="textfield" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YRX-R7-Uha">
-                                <rect key="frame" x="303" y="268" width="588" height="108"/>
+                            <textField tag="2" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="20" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YRX-R7-Uha">
+                                <rect key="frame" x="303" y="329" width="633" height="58"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -297,27 +297,36 @@
                                     <action selector="btnClkCancel:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="nsI-HX-xbI"/>
                                 </connections>
                             </button>
-                            <textField tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" placeholder="    User Name" minimumFontSize="20" background="textfield" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
-                                <rect key="frame" x="303" y="131" width="588" height="108"/>
+                            <textField tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User Name" minimumFontSize="20" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="U6X-ur-qUV">
+                                <rect key="frame" x="303" y="202" width="633" height="58"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <attributedString key="attributedText"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                 <textInputTraits key="textInputTraits" keyboardAppearance="light" enablesReturnKeyAutomatically="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="SBT-CD-Izu"/>
                                 </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aTh-kQ-0mq">
-                                <rect key="frame" x="477" y="8" width="239" height="86"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NAH-ex-NcO">
+                                <rect key="frame" x="38" y="20" width="1167" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aTh-kQ-0mq">
+                                <rect key="frame" x="38" y="188" width="239" height="86"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Back" backgroundImage="buttonBackImage"/>
+                                <state key="normal" title="LogOut"/>
                                 <connections>
                                     <action selector="clkLogout:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="FR6-Dc-JGP"/>
                                 </connections>
                             </button>
                         </subviews>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="1244" height="700"/>
@@ -325,6 +334,7 @@
                         <outlet property="btnCancel" destination="Hgf-Sl-JgI" id="Hqe-lZ-0Oo"/>
                         <outlet property="btnLogin" destination="io9-ve-sqh" id="3wY-Dj-HG5"/>
                         <outlet property="btnLogout" destination="aTh-kQ-0mq" id="06b-Dd-m6h"/>
+                        <outlet property="textView" destination="NAH-ex-NcO" id="6L1-PG-dAn"/>
                         <outlet property="txtFPassWord" destination="YRX-R7-Uha" id="bj5-nO-Odp"/>
                         <outlet property="txtFUserName" destination="U6X-ur-qUV" id="sIC-G7-49T"/>
                     </connections>
@@ -335,8 +345,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="buttonBackImage" width="444" height="72"/>
-        <image name="textfield" width="512" height="70"/>
         <image name="thor_the_dark_world_movie_posters_l" width="960" height="1422"/>
     </resources>
 </document>

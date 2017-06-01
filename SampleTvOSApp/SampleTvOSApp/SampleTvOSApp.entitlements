@@ -5,6 +5,7 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.apimca.demo.QRCode</string>
+		<string>$(AppIdentifierPrefix)com.SampleTvOSApp.singleSignOn</string>
 	</array>
 </dict>
 </plist>

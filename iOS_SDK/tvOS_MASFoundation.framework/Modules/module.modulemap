@@ -1,0 +1,6 @@
+framework module tvOS_MASFoundation {
+  umbrella header "tvOS_MASFoundation.h"
+
+  export *
+  module * { export * }
+}

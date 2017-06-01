@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		10F6AF2C1ECA7FF700BC6886 /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = 10F6AF2B1ECA7FF700BC6886 /* msso_config.json */; };
 		BA55074B1E55A536001EC43D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55074A1E55A536001EC43D /* main.m */; };
 		BA55074E1E55A536001EC43D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55074D1E55A536001EC43D /* AppDelegate.m */; };
 		BA5507541E55A537001EC43D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA5507521E55A537001EC43D /* Main.storyboard */; };
 		BA5507561E55A537001EC43D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5507551E55A537001EC43D /* Assets.xcassets */; };
 		BA5507611E55A537001EC43D /* SampleTvOSAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA5507601E55A537001EC43D /* SampleTvOSAppTests.m */; };
 		BA55076C1E55A537001EC43D /* SampleTvOSAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */; };
-		BA55077F1E55A734001EC43D /* msso_config.json in Resources */ = {isa = PBXBuildFile; fileRef = BA55077E1E55A734001EC43D /* msso_config.json */; };
 		BA830DFB1E76C7D900892ACB /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA830DF91E76C7D800892ACB /* FBSDKCoreKit.framework */; };
 		BA830DFC1E76C7D900892ACB /* FBSDKTVOSKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA830DFA1E76C7D900892ACB /* FBSDKTVOSKit.framework */; };
 		BA90CFE71E70371300C222FB /* tvOS_MASFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -62,6 +62,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		10F6AF2B1ECA7FF700BC6886 /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
 		BA5507461E55A536001EC43D /* SampleTvOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleTvOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA55074A1E55A536001EC43D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BA55074C1E55A536001EC43D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -75,7 +76,6 @@
 		BA5507671E55A537001EC43D /* SampleTvOSAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleTvOSAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA55076B1E55A537001EC43D /* SampleTvOSAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleTvOSAppUITests.m; sourceTree = "<group>"; };
 		BA55076D1E55A537001EC43D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BA55077E1E55A734001EC43D /* msso_config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = msso_config.json; sourceTree = "<group>"; };
 		BA830DF91E76C7D800892ACB /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		BA830DFA1E76C7D900892ACB /* FBSDKTVOSKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKTVOSKit.framework; path = ../FBSDKTVOSKit.framework; sourceTree = "<group>"; };
 		BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleTvOSApp.entitlements; sourceTree = "<group>"; };
@@ -171,7 +171,7 @@
 				BA90CFE61E70371300C222FB /* tvOS_MASFoundation.framework */,
 				BA90D00E1E7121F500C222FB /* SVProgressHUDTVOS.framework */,
 				BA8E1E401E55D7A90058563E /* SampleTvOSApp.entitlements */,
-				BA55077E1E55A734001EC43D /* msso_config.json */,
+				10F6AF2B1ECA7FF700BC6886 /* msso_config.json */,
 				BA55074A1E55A536001EC43D /* main.m */,
 			);
 			name = "Supporting Files";
@@ -346,7 +346,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA55077F1E55A734001EC43D /* msso_config.json in Resources */,
+				10F6AF2C1ECA7FF700BC6886 /* msso_config.json in Resources */,
 				BA5507561E55A537001EC43D /* Assets.xcassets in Resources */,
 				BA5507541E55A537001EC43D /* Main.storyboard in Resources */,
 			);

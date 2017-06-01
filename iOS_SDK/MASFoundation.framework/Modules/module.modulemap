@@ -1,0 +1,6 @@
+framework module MASFoundation {
+  umbrella header "MASFoundation.h"
+
+  export *
+  module * { export * }
+}

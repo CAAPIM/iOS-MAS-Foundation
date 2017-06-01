@@ -1,29 +1,113 @@
 {
     "server": {
-        "hostname": "magstaging.ca.com",
+        "hostname": "mag40.ca.com",
         "port": 8443,
         "prefix": "blr",
         "server_certs": [
                          [
-                          "-----BEGIN CERTIFICATE-----", "MIIC/DCCAeSgAwIBAgIIQxcfMIwAz3swDQYJKoZIhvcNAQEMBQAwHDEaMBgGA1UEAxMRbWFnc3Rh", "Z2luZy5jYS5jb20wHhcNMTYxMTI4MDkwMzA1WhcNMjYxMTI2MDkwMzA1WjAcMRowGAYDVQQDExFt", "YWdzdGFnaW5nLmNhLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJZQJ5jrsuOf", "DmhZPDPccPcwfJBSgBwKFNsWYyUhv7XJNjKUCeClwZA6ZpgYatVtjiY7x8uqYEGb76y81tyrbBSR", "D5pePl6EhkwyAfeqrhlu36QtC5mCDtJPcuXa5KhTZ/noQE7M1h0BRnDA2nOag4nkDTK/ghu4ApQm", "LDN7bv12+ctLJYRvceIsedi8IrWHt9KpyS4QlrxVHqswjDYd/LqK46RodM4u2Q5lD/tMXzWXsNar", "Gmn9Oowcj6iMn0Iep1VZDOiIBqfYYepNZFKhLDPn75DeBH6nLkWCwE9gHChQUPREI2ib6e6lAY3q", "5EwEACqrYjBwGgYFeUggbqXS3icCAwEAAaNCMEAwHQYDVR0OBBYEFCp7irRjECV6dmfIie4VaKS/", "DzyFMB8GA1UdIwQYMBaAFCp7irRjECV6dmfIie4VaKS/DzyFMA0GCSqGSIb3DQEBDAUAA4IBAQBQ", "rXSGrrcfS1pZxN4mRue+sIt6n1kfZEpp3alMuA4h6ZDoQ7KWuuYDHunFrfDIQIbuITKjttBYra6z", "Yhui8FJd+tAO730LN4S+mztlGTnoFoqD2H5wk+7Wu+6ROGfcsF1yMmLDlJAXY+dWZ0FuMYKvBIn4", "kLGpdnac9GmdigmrFHLUsHJlRerzseln66JIf8ocOn5wmJz9cGORH4BeSEcSa0fRvz/sXR/3V3AU", "OUxgttZzGa65FaoejMVtwIg7+WsRM06cfbAznd0C+86LMQ21CuzcuDWUcfPelnDqyWOft8t/M+1O", "V9aHdvAsztJfooSNabWUhciSxNv5Tm5GUkfB", "-----END CERTIFICATE-----"
+                          "-----BEGIN CERTIFICATE-----",
+                          "MIIFLzCCBBegAwIBAgIIK/Bpbl4h/cQwDQYJKoZIhvcNAQELBQAwgbQxCzAJBgNV",
+                          "BAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQHEwpTY290dHNkYWxlMRow",
+                          "GAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjEtMCsGA1UECxMkaHR0cDovL2NlcnRz",
+                          "LmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMTMwMQYDVQQDEypHbyBEYWRkeSBTZWN1",
+                          "cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IC0gRzIwHhcNMTcwNDA3MDkyMjAwWhcN",
+                          "MjAwNDA3MDkyMjAwWjA6MSEwHwYDVQQLExhEb21haW4gQ29udHJvbCBWYWxpZGF0",
+                          "ZWQxFTATBgNVBAMTDG1hZzQwLmNhLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEP",
+                          "ADCCAQoCggEBAIibHYGo11lb3PZpHLo2W1SRYoXAjHUikhRntFVd5Me2B89yO88K",
+                          "S7hwa+X1AxlF9nmLCdCbOmBFq01hZ/5H3OHlIME66bRh5jN/xx7f2jht6ql5j3f2",
+                          "FSFDWpeUwsrqPZHeTQWe/G3QbiDPYLVqZrJ+7ltj+cgAXZrmyj1s+JehA5kWaimd",
+                          "dzvimAcJpuD+YNtZwWzCjJyx+IOwlUkvIdidTO3elWlwp1gA6tgvZcIKhwtwGIFe",
+                          "hJK4oOXsmimPZO7R1Uw89Fl5JIs/+YbsQXx4tgUPZhNt0izC79iMpSOGRpMjMDxn",
+                          "3VG+kbQ31oyLHuLYW/ZqiMkzldCusBAbKxECAwEAAaOCAbwwggG4MAwGA1UdEwEB",
+                          "/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMA4GA1UdDwEB/wQE",
+                          "AwIFoDA3BgNVHR8EMDAuMCygKqAohiZodHRwOi8vY3JsLmdvZGFkZHkuY29tL2dk",
+                          "aWcyczEtNDY3LmNybDBdBgNVHSAEVjBUMEgGC2CGSAGG/W0BBxcBMDkwNwYIKwYB",
+                          "BQUHAgEWK2h0dHA6Ly9jZXJ0aWZpY2F0ZXMuZ29kYWRkeS5jb20vcmVwb3NpdG9y",
+                          "eS8wCAYGZ4EMAQIBMHYGCCsGAQUFBwEBBGowaDAkBggrBgEFBQcwAYYYaHR0cDov",
+                          "L29jc3AuZ29kYWRkeS5jb20vMEAGCCsGAQUFBzAChjRodHRwOi8vY2VydGlmaWNh",
+                          "dGVzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvZ2RpZzIuY3J0MB8GA1UdIwQYMBaA",
+                          "FEDCvSeOzDSDMKIz1/tss/C0LIDOMCkGA1UdEQQiMCCCDG1hZzQwLmNhLmNvbYIQ",
+                          "d3d3Lm1hZzQwLmNhLmNvbTAdBgNVHQ4EFgQU+WeNnQh8RUd1NOSgZrRcbHyw0Jkw",
+                          "DQYJKoZIhvcNAQELBQADggEBAD039jLwAdqlponGCCJ+hdwVqoQDJzJkMM6iAbre",
+                          "Mztl5Gq6OhhEzMKmMBnbFmb0CqAoHiMTJX5ft/Gf/Kq0Gevb1pba7fb6yPHlgSRX",
+                          "ElfN6ENueCfbotSX/iMzkbVFP+x9T9VOOM7853gTrGgRyryJNCDx71INvPa9qw/e",
+                          "8af/zp3bBZmCZNv0zh1NtxyvHi+5+w6WmTi0nE23xjYqHFHaVn8aFF7DviV+uXVP",
+                          "qMcScyMgW2bqi1o2nO5ucZRsGs7Vn3E5i0pCYJ6O7X16DfG3nzaP2G2JUIbjIP5y",
+                          "jbqsT2RCJ/d6rOsOS/WOG13x43rLtFkHqC0DgEa+te8KNnk=",
+                          "-----END CERTIFICATE-----"
+                          ],
+                         [
+                          "-----BEGIN CERTIFICATE-----",
+                          "MIIE0DCCA7igAwIBAgIBBzANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx",
+                          "EDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNjb3R0c2RhbGUxGjAYBgNVBAoT",
+                          "EUdvRGFkZHkuY29tLCBJbmMuMTEwLwYDVQQDEyhHbyBEYWRkeSBSb290IENlcnRp",
+                          "ZmljYXRlIEF1dGhvcml0eSAtIEcyMB4XDTExMDUwMzA3MDAwMFoXDTMxMDUwMzA3",
+                          "MDAwMFowgbQxCzAJBgNVBAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQH",
+                          "EwpTY290dHNkYWxlMRowGAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjEtMCsGA1UE",
+                          "CxMkaHR0cDovL2NlcnRzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMTMwMQYDVQQD",
+                          "EypHbyBEYWRkeSBTZWN1cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IC0gRzIwggEi",
+                          "MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC54MsQ1K92vdSTYuswZLiBCGzD",
+                          "BNliF44v/z5lz4/OYuY8UhzaFkVLVat4a2ODYpDOD2lsmcgaFItMzEUz6ojcnqOv",
+                          "K/6AYZ15V8TPLvQ/MDxdR/yaFrzDN5ZBUY4RS1T4KL7QjL7wMDge87Am+GZHY23e",
+                          "cSZHjzhHU9FGHbTj3ADqRay9vHHZqm8A29vNMDp5T19MR/gd71vCxJ1gO7GyQ5HY",
+                          "pDNO6rPWJ0+tJYqlxvTV0KaudAVkV4i1RFXULSo6Pvi4vekyCgKUZMQWOlDxSq7n",
+                          "eTOvDCAHf+jfBDnCaQJsY1L6d8EbyHSHyLmTGFBUNUtpTrw700kuH9zB0lL7AgMB",
+                          "AAGjggEaMIIBFjAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAdBgNV",
+                          "HQ4EFgQUQMK9J47MNIMwojPX+2yz8LQsgM4wHwYDVR0jBBgwFoAUOpqFBxBnKLbv",
+                          "9r0FQW4gwZTaD94wNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8v",
+                          "b2NzcC5nb2RhZGR5LmNvbS8wNQYDVR0fBC4wLDAqoCigJoYkaHR0cDovL2NybC5n",
+                          "b2RhZGR5LmNvbS9nZHJvb3QtZzIuY3JsMEYGA1UdIAQ/MD0wOwYEVR0gADAzMDEG",
+                          "CCsGAQUFBwIBFiVodHRwczovL2NlcnRzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkv",
+                          "MA0GCSqGSIb3DQEBCwUAA4IBAQAIfmyTEMg4uJapkEv/oV9PBO9sPpyIBslQj6Zz",
+                          "91cxG7685C/b+LrTW+C05+Z5Yg4MotdqY3MxtfWoSKQ7CC2iXZDXtHwlTxFWMMS2",
+                          "RJ17LJ3lXubvDGGqv+QqG+6EnriDfcFDzkSnE3ANkR/0yBOtg2DZ2HKocyQetawi",
+                          "DsoXiWJYRBuriSUBAA/NxBti21G00w9RKpv0vHP8ds42pM3Z2Czqrpv1KrKQ0U11",
+                          "GIo/ikGQI31bS/6kA1ibRrLDYGCD+H1QQc7CoZDDu+8CL9IVVO5EFdkKrqeKM+2x",
+                          "LXY2JtwE65/3YR8V3Idv7kaWKK2hJn0KCacuBKONvPi8BDAB",
+                          "-----END CERTIFICATE-----"
+                          ],
+                         [
+                          "-----BEGIN CERTIFICATE-----",
+                          "MIIDxTCCAq2gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx",
+                          "EDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNjb3R0c2RhbGUxGjAYBgNVBAoT",
+                          "EUdvRGFkZHkuY29tLCBJbmMuMTEwLwYDVQQDEyhHbyBEYWRkeSBSb290IENlcnRp",
+                          "ZmljYXRlIEF1dGhvcml0eSAtIEcyMB4XDTA5MDkwMTAwMDAwMFoXDTM3MTIzMTIz",
+                          "NTk1OVowgYMxCzAJBgNVBAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQH",
+                          "EwpTY290dHNkYWxlMRowGAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjExMC8GA1UE",
+                          "AxMoR28gRGFkZHkgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkgLSBHMjCCASIw",
+                          "DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL9xYgjx+lk09xvJGKP3gElY6SKD",
+                          "E6bFIEMBO4Tx5oVJnyfq9oQbTqC023CYxzIBsQU+B07u9PpPL1kwIuerGVZr4oAH",
+                          "/PMWdYA5UXvl+TW2dE6pjYIT5LY/qQOD+qK+ihVqf94Lw7YZFAXK6sOoBJQ7Rnwy",
+                          "DfMAZiLIjWltNowRGLfTshxgtDj6AozO091GB94KPutdfMh8+7ArU6SSYmlRJQVh",
+                          "GkSBjCypQ5Yj36w6gZoOKcUcqeldHraenjAKOc7xiID7S13MMuyFYkMlNAJWJwGR",
+                          "tDtwKj9useiciAF9n9T521NtYJ2/LOdYq7hfRvzOxBsDPAnrSTFcaUaz4EcCAwEA",
+                          "AaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0OBBYE",
+                          "FDqahQcQZyi27/a9BUFuIMGU2g/eMA0GCSqGSIb3DQEBCwUAA4IBAQCZ21151fmX",
+                          "WWcDYfF+OwYxdS2hII5PZYe096acvNjpL9DbWu7PdIxztDhC2gV7+AJ1uP2lsdeu",
+                          "9tfeE8tTEH6KRtGX+rcuKxGrkLAngPnon1rpN5+r5N9ss4UXnT3ZJE95kTXWXwTr",
+                          "gIOrmgIttRD02JDHBHNA7XIloKmf7J6raBKZV8aPEjoJpL1E/QYVN8Gb5DKj7Tjo",
+                          "2GTzLH4U/ALqn83/B2gX2yKQOC16jdFU8WnjXzPKej17CuPKf1855eJ1usV2GDPO",
+                          "LPAvTK33sefOT6jEm0pUBsV/fdUID+Ic/n4XuKxe9tQWskMJDE32p2u0mYRlynqI",
+                          "4uJEvlz36hz1",
+                          "-----END CERTIFICATE-----"
                           ]
                          ]
     },
     "oauth": {
         "client": {
-            "organization": "CA Inc",
-            "description": "It is used to test MAS Identity",
-            "client_name": "MAS_Identity",
+            "organization": "CA Tech",
+            "description": "What is the app used for?",
+            "client_name": "BugFixVerificationClient",
             "client_type": "confidential",
             "registered_by": "admin",
             "client_custom": {},
             "client_ids": [
                            
                            {
-                           "client_id": "90419356-8d33-43e7-ad54-9b2a77a21461",
-                           "client_secret": "",
+                           "client_id": "2caacc89-fcf2-419e-8d65-ef8448bed851",
+                           "client_secret":"",
                            "scope": "openid profile email phone address user_role mas_messaging mas_storage msso msso_register msso_client_register mas_identity_retrieve_users mas_identity_retrieve_groups mas_identity_create_users mas_identity_delete_users mas_identity_update_users mas_identity_create_groups mas_identity_update_groups mas_identity_delete_groups",
-                           "redirect_uri": "https://ios.ssosdk.ca.com/ios",
+                           "redirect_uri": "https://android.ssosdk.ca.com/android",
                            "environment": "ALL",
                            "status": "ENABLED",
                            "registered_by": "admin",
@@ -43,42 +127,9 @@
         "oauth_protected_endpoints": {
             "userinfo_endpoint_path": "/openid/connect/v1/userinfo"
         }
-    },
-    "mas": {
-        "scim-path": "/SCIM/MAS/v2",
-        "mas-storage-path": "/MASS/v1/Client"
-    },
-    "mag": {
-        "system_endpoints": {
-            "device_register_endpoint_path": "/connect/device/register",
-            "device_renew_endpoint_path": "/connect/device/renew",
-            "device_client_register_endpoint_path": "/connect/device/register/client",
-            "device_remove_endpoint_path": "/connect/device/remove",
-            "client_credential_init_endpoint_path": "/connect/client/initialize",
-            "authenticate_otp_endpoint_path": "/auth/generateOTP"
-        },
-        "oauth_protected_endpoints": {
-            "enterprise_browser_endpoint_path": "/connect/enterprise/browser",
-            "device_list_endpoint_path": "/connect/device/list"
-        },
-        "mobile_sdk": {
-            "sso_enabled": true,
-            "location_enabled": true,
-            "location_provider": "network",
-            "msisdn_enabled": true,
-            "enable_public_key_pinning": false,
-            "trusted_public_pki": false,
-            "trusted_cert_pinned_public_key_hashes": [],
-            "client_cert_rsa_keybits": 1024
-        },
-        "ble": {
-            "msso_ble_service_uuid": "980c2f36-bde3-11e4-8dfc-aa07a5b093db",
-            "msso_ble_characteristic_uuid": "980c34cc-bde3-11e4-8dfc-aa07a5b093db",
-            "msso_ble_rssi": -55
-        }
-    },
+    },"mas": { "scim-path":"/SCIM/MAS/v2", "mas-storage-path":"/MASS/v1/Client" },"mag": { "system_endpoints": { "device_register_endpoint_path": "/connect/device/register", "device_renew_endpoint_path": "/connect/device/renew", "device_client_register_endpoint_path": "/connect/device/register/client", "device_remove_endpoint_path": "/connect/device/remove", "client_credential_init_endpoint_path": "/connect/client/initialize", "authenticate_otp_endpoint_path": "/auth/generateOTP" }, "oauth_protected_endpoints": { "enterprise_browser_endpoint_path": "/connect/enterprise/browser", "device_list_endpoint_path": "/connect/device/list" }, "mobile_sdk": { "sso_enabled": true, "location_enabled": true, "location_provider": "network", "msisdn_enabled": true, "enable_public_key_pinning": false, "trusted_public_pki":false, "trusted_cert_pinned_public_key_hashes" :[], "client_cert_rsa_keybits": 1024 }, "ble":{ "msso_ble_service_uuid":"980c2f36-bde3-11e4-8dfc-aa07a5b093db", "msso_ble_characteristic_uuid":"980c34cc-bde3-11e4-8dfc-aa07a5b093db", "msso_ble_rssi": -80 } },
     "custom": {
-        "oauth_demo_protected_api_endpoint_path": "/oauth/v2/protectedapi/foo",
-        "mag_demo_products_endpoint_path": "/protected/resource/products"
+        "oauth_demo_protected_api_endpoint_path":"/oauth/v2/protectedapi/foo",
+        "mag_demo_products_endpoint_path":"/protected/resource/products"
     }
 }
