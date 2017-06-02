@@ -10,6 +10,7 @@
 
 
 #import "MASAccessService.h"
+#import "MASAuthCredentials+MASPrivate.h"
 #import "MASSecurityService.h"
 #import "MASModelService.h"
 #import "NSError+MASPrivate.h"
@@ -33,7 +34,7 @@
 
 - (instancetype)initPrivateWithUsername:(NSString *)username password:(NSString *)password
 {
-    self = [super init];
+    self = [super initPrivate];
     
     if(self) {
         _username = username;

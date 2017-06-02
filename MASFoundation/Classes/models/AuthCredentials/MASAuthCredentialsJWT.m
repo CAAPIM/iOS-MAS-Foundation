@@ -9,6 +9,7 @@
 #import "MASAuthCredentialsJWT.h"
 
 #import "MASAccessService.h"
+#import "MASAuthCredentials+MASPrivate.h"
 #import "MASSecurityService.h"
 #import "MASModelService.h"
 #import "NSError+MASPrivate.h"
@@ -33,7 +34,7 @@
 
 - (instancetype)initPrivateWithJWT:(NSString *)jwt tokenType:(NSString *)tokenType
 {
-    self = [super init];
+    self = [super initPrivate];
     
     if(self) {
         _jwt = jwt;

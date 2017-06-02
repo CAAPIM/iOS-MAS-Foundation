@@ -10,6 +10,7 @@
 
 @interface MASAuthCredentials (MASPrivate)
 
+- (instancetype)initPrivate;
 
 
 - (void)registerDeviceWithCredential:(MASCompletionErrorBlock _Nullable)completion;

@@ -19,6 +19,7 @@
 #import "NSData+MASPrivate.h"
 
 #import "MASAuthCredentials+MASPrivate.h"
+#import "MASAuthCredentialsClientCredentials.h"
 
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
@@ -36,6 +37,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
+static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
 
 
 # pragma mark - Properties
@@ -53,9 +55,9 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
++ (void)setAuthCredentialsBlock:(MASUserAuthCredentialsBlock)authCredentialsBlock
 {
-    _userLoginBlock_ = [login copy];
+    _userAuthCredentialsBlock_ = [authCredentialsBlock copy];
 }
 
 
@@ -603,7 +605,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         //
         case MASGrantFlowPassword:
         {
-            return ([[MASApplication currentApplication] isScopeTypeMssoSupported]);
+            return YES;
         }
         
         //
@@ -750,49 +752,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-- (void)registerDeviceWithCompletion2:(MASCompletionErrorBlock)completion
-{
-    //
-    // Check if the client certificate is expired, if so, renew
-    //
-    if ([MASDevice currentDevice].isClientCertificateExpired && [MASDevice currentDevice].isRegistered)
-    {
-        [self renewClientCertificateWithCompletion:completion];
-        
-        return;
-    }
-    
-    //
-    // If already registered stop here
-    //
-    if ([[MASDevice currentDevice] isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(YES, nil);
-        
-        return;
-    }
-    
-    //
-    // Check if the current MASGrantFlow is NOT supported by the registered Scope for the
-    // application record
-    //
-    if (![MASModelService isGrantFlowSupported:_grantFlow_])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
-        
-        return;
-    }
-}
-
 - (void)registerDeviceWithCompletion:(MASCompletionErrorBlock)completion
 {
-    
     //
     // Check if the client certificate is expired, if so, renew
     //
@@ -826,55 +787,109 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // Notify
         //
         if(completion) completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
-            
+        
         return;
     }
     
-    //
-    // Detect registration type and respond appropriately
-    //
-    switch (_grantFlow_)
-    {
-        //
-        // Client Credentials Registration
-        //
-        case MASGrantFlowClientCredentials:
-        {
-            [self registerDeviceForClientCredentialsCompletion:completion];
-            break;
-        }
-        
-        //
-        // User Credentials Registration
-        //
+    switch (_grantFlow_) {
         case MASGrantFlowPassword:
         {
-            //
-            // If UI handling framework is not present and handling it continue on with notifying the
-            // application it needs to handle this itself
-            //
-            __block MASBasicCredentialsBlock basicCredentialsBlock;
-            __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
             __block MASModelService *blockSelf = self;
-            __block MASCompletionErrorBlock completionBlock = completion;
+            __block MASCompletionErrorBlock blockCompletion = completion;
             
             //
-            // Basic Credentials Supported
+            // Else notify block if available
             //
-            if([[MASApplication currentApplication] isScopeTypeMssoSupported])
+            if(_userAuthCredentialsBlock_)
             {
+                __block MASAuthCredentialsBlock authCredentialsBlock = ^(MASAuthCredentials *authCredentials, BOOL cancel, MASCompletionErrorBlock authCompletion)
+                {
+                    //
+                    //  When the authentication process was explicitly cancelled by user
+                    //
+                    if (cancel)
+                    {
+                        if (blockCompletion)
+                        {
+                            blockCompletion(NO, [NSError errorLoginProcessCancelled]);
+                        }
+                        
+                        if (authCompletion)
+                        {
+                            authCompletion(NO, [NSError errorLoginProcessCancelled]);
+                        }
+                        
+                        return;
+                    }
+                    
+                    __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
+                    
+                    //
+                    //  Perform device registration with auth credentials
+                    //
+                    [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                        
+                        if (error)
+                        {
+                            if (blockCompletion)
+                            {
+                                blockCompletion(NO, error);
+                            }
+                            
+                            if (blockAuthCompletion)
+                            {
+                                blockAuthCompletion(NO, error);
+                            }
+                            
+                            return;
+                        }
+                        
+                        if (blockCompletion)
+                        {
+                            blockCompletion(YES, nil);
+                        }
+                        
+                        if (blockAuthCompletion)
+                        {
+                            blockAuthCompletion(YES, nil);
+                        }
+                    }];
+                };
+            
+                //
+                // Do this is the main queue since the reciever is almost certainly a UI component.
+                // Lets do this for them and not make them figure it out
+                //
+                dispatch_async(dispatch_get_main_queue(),^
+                               {
+                                   _userAuthCredentialsBlock_(authCredentialsBlock);
+                               });
+            }
+            //
+            //
+            //  Technically below portion of logic is deprecated as of MAS 1.5/MAG 4.1
+            //
+            //
+            else if (_userLoginBlock_)
+            {
+                //
+                // If UI handling framework is not present and handling it continue on with notifying the
+                // application it needs to handle this itself
+                //
+                
                 //
                 // Basic Credentials Block
                 //
-                basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock completion)
+                __block MASBasicCredentialsBlock basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock authCompletion)
                 {
                     DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
-                        userName, password, (cancel ? @"Yes" : @"No"));
-                
+                         userName, password, (cancel ? @"Yes" : @"No"));
+                    
                     //
                     // Reset the authenticationProvider as the session id should have been used
                     //
                     blockSelf.currentProviders = nil;
+                    __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
                     
                     //
                     // Cancelled stop here
@@ -884,36 +899,38 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                         //
                         // Notify
                         //
-                        if (completion)
+                        if (blockCompletion)
                         {
-                            completion(NO, [NSError errorLoginProcessCancelled]);
+                            blockCompletion(NO, [NSError errorLoginProcessCancelled]);
                         }
                         
-                        if (completionBlock)
+                        if (blockAuthCompletion)
                         {
-                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                            blockAuthCompletion(NO, [NSError errorLoginProcessCancelled]);
                         }
                         
                         return;
                     }
-                
+                    
                     //
                     // Attempt to register the device with the credentials
                     //
-                    [blockSelf registerDeviceForUser:userName password:password completion:^(BOOL completed, NSError *error)
-                    {
+                    MASAuthCredentialsPassword *authCredentials = [MASAuthCredentialsPassword initWithUsername:userName password:password];
+                    __block MASAuthCredentialsPassword *blockAuthCredentials = authCredentials;
+                    [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                         
-                        //
-                        // Error
-                        //
+                        
                         if (error)
                         {
-                            //
-                            // Notify
-                            //
-                            if (completionBlock) completionBlock(NO, error);
+                            if (blockCompletion)
+                            {
+                                blockCompletion(NO, error);
+                            }
                             
-                            if (completion) completion(NO, error);
+                            if (blockAuthCompletion)
+                            {
+                                blockAuthCompletion(NO, error);
+                            }
                             
                             return;
                         }
@@ -925,8 +942,8 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                             //  the sdk should authenticate the user with given username and password from registration.
                             //  Otherwise, it will end up prompting login screen twice or not be authenticated as id_token does not exist.
                             //
-                            [blockSelf loginWithUserName:userName password:password completion:^(BOOL completed, NSError *error)
-                            {
+                            [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                               
                                 //
                                 // Error
                                 //
@@ -935,9 +952,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                     //
                                     // Notify
                                     //
-                                    if (completionBlock) completionBlock(NO, error);
+                                    if (blockCompletion)
+                                    {
+                                        blockCompletion(NO, error);
+                                    }
                                     
-                                    if (completion) completion(NO, error);
+                                    if (blockAuthCompletion)
+                                    {
+                                        blockAuthCompletion(NO, error);
+                                    }
                                     
                                     return;
                                 }
@@ -945,9 +968,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                                 //
                                 // Notify
                                 //
-                                if(completionBlock) completionBlock(YES, nil);
+                                if (blockCompletion)
+                                {
+                                    blockCompletion(YES, nil);
+                                }
                                 
-                                if (completion) completion(YES, nil);
+                                if (blockAuthCompletion)
+                                {
+                                    blockAuthCompletion(YES, nil);
+                                }
                             }];
                         }
                         else {
@@ -955,113 +984,129 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
                             //
                             // Notify
                             //
-                            if(completionBlock) completionBlock(YES, nil);
+                            if (blockCompletion)
+                            {
+                                blockCompletion(YES, nil);
+                            }
                             
-                            if (completion) completion(YES, nil);
+                            if (blockAuthCompletion)
+                            {
+                                blockAuthCompletion(YES, nil);
+                            }
                         }
                         
                     }];
                 };
-            }
-            
-            //
-            // Authorization Code Credentials Supported
-            //
-            if([[MASApplication currentApplication] isScopeTypeMssoRegisterSupported])
-            {
+                
+                __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
+                __block MASModelService *blockSelf = self;
+                __block MASCompletionErrorBlock completionBlock = completion;
+                
+                
                 //
-                // Authorization Code Credentials Block
+                // Authorization Code Credentials Supported
                 //
-                authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
+                if([[MASApplication currentApplication] isScopeTypeMssoRegisterSupported])
                 {
-                    DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
-                        authorizationCode, (cancel ? @"Yes" : @"No"));
-                    
                     //
-                    // Reset the authenticationProvider as the session id should have been used
+                    // Authorization Code Credentials Block
                     //
-                    blockSelf.currentProviders = nil;
-                    
-                    //
-                    // Cancelled stop here
-                    //
-                    if(cancel)
+                    authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
                     {
-                        //
-                        // Notify
-                        //
-                        if (completion)
-                        {
-                            completion(NO, [NSError errorLoginProcessCancelled]);
-                        }
-                        
-                        if (completionBlock)
-                        {
-                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
-                        }
-                        
-                        return;
-                    }
-                    
-                    //
-                    // Attempt to register the device with the credentials
-                    //
-                    [blockSelf registerDeviceWithAuthorizationCode:authorizationCode completion:^(BOOL completed, NSError *error) {
+                        DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
+                             authorizationCode, (cancel ? @"Yes" : @"No"));
                         
                         //
-                        // Error
+                        // Reset the authenticationProvider as the session id should have been used
                         //
-                        if(error)
+                        blockSelf.currentProviders = nil;
+                        
+                        //
+                        // Cancelled stop here
+                        //
+                        if(cancel)
                         {
                             //
                             // Notify
                             //
-                            if (completionBlock) completionBlock(NO, error);
+                            if (completion)
+                            {
+                                completion(NO, [NSError errorLoginProcessCancelled]);
+                            }
                             
-                            if (completion) completion(NO, error);
+                            if (completionBlock)
+                            {
+                                completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                            }
                             
                             return;
                         }
                         
                         //
-                        // Notify
+                        // Attempt to register the device with the credentials
                         //
-                        if(completionBlock) completionBlock(YES, nil);
-                        
-                        if (completion) completion(YES, nil);
-                        
-                    }];
-                };
-            }
-        
-            DLog(@"\n\n\n********************************************************\n\n"
-                "Waiting for credentials response to continue registration"
-                @"\n\n********************************************************\n\n\n");
-            
-            //
-            // If the UI handling framework is present and will handle this stop here
-            //
-            MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-            if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
-                authorizationCodeBlock:authorizationCodeCredentialsBlock])
-            {
-                return;
-            }
-            
-            //
-            // Else notify block if available
-            //
-            if(_userLoginBlock_)
-            {
+                        MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
+                        [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                            
+                            //
+                            // Error
+                            //
+                            if(error)
+                            {
+                                //
+                                // Notify
+                                //
+                                if (completionBlock) completionBlock(NO, error);
+                                
+                                if (completion) completion(NO, error);
+                                
+                                return;
+                            }
+                            
+                            //
+                            // Notify
+                            //
+                            if(completionBlock) completionBlock(YES, nil);
+                            
+                            if (completion) completion(YES, nil);
+                        }];
+                    };
+                }
+                
+                DLog(@"\n\n\n********************************************************\n\n"
+                     "Waiting for credentials response to continue registration"
+                     @"\n\n********************************************************\n\n\n");
+                
                 //
-                // Do this is the main queue since the reciever is almost certainly a UI component.
-                // Lets do this for them and not make them figure it out
+                // If the UI handling framework is present and will handle this stop here
                 //
-                dispatch_async(dispatch_get_main_queue(),^
+                MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+                if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
+                                                    authorizationCodeBlock:authorizationCodeCredentialsBlock])
                 {
-                    _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
-                });
+                    return;
+                }
+                
+                //
+                // Else notify block if available
+                //
+                if(_userLoginBlock_)
+                {
+                    //
+                    // Do this is the main queue since the reciever is almost certainly a UI component.
+                    // Lets do this for them and not make them figure it out
+                    //
+                    dispatch_async(dispatch_get_main_queue(),^
+                                   {
+                                       _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
+                                   });
+                }
             }
+            //
+            //
+            //  Technically above portion of logic is deprecated as of MAS 1.5/MAG 4.1
+            //
+            //
             else {
                 
                 //
@@ -1075,615 +1120,331 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
             
             break;
         }
+        case MASGrantFlowClientCredentials:
+        {
+            MASAuthCredentialsClientCredentials *clientAuthCredentials = [MASAuthCredentialsClientCredentials initClientCredentials];
+            [self registerDeviceWithAuthCredentials:clientAuthCredentials completion:completion];
         
-        //
-        // Default
-        //
+            break;
+        }
+        case MASGrantFlowCount:
+        case MASGrantFlowUnknown:
         default:
         {
             DLog(@"\n\nError detecting unknown registration type: %@\n\n",
-                [MASModelService grantFlowToString:_grantFlow_]);
+                 [MASModelService grantFlowToString:_grantFlow_]);
+            //
+            // Notify
+            //
+            if (completion)
+            {
+                completion(NO, [NSError errorFlowTypeUnsupported]);
+            }
             
             break;
         }
     }
 }
 
-
-- (void)registerDeviceForClientCredentialsCompletion:(MASCompletionErrorBlock)completion
-{
-    //
-    // Detect if device is already registered, if so stop here
-    //
-    if([self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
-        
-        return;
-    }
-    
-    //
-    // Post the will register notification
-    //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
-    
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterClientEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    // Client Authorization
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // DeviceId
-    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
-    
-    // DeviceName
-    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
-    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
-    
-    // Certificate Format
-    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-   
-    // Certificate Signing Request
-    MASSecurityService *securityService = [MASSecurityService sharedService];
-    [securityService deleteAsymmetricKeys];
-    [securityService generateKeypair];
-    
-    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"clientName"];
-    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-    
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeTextPlain
-        responseType:MASRequestResponseTypeTextPlain
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //DLog(@"Error detected attempting to request registration of the device: %@",
-                //[error localizedDescription]);
-            
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
-            
-                return;
-            }
-            
-            //
-            // Updated with latest info
-            //
-            [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
-            
-            //
-            // re-establish URLSession to trigger URL authentication
-            //
-            [[MASNetworkingService sharedService] establishURLSession];
-            
-            //
-            // Post the did register notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
-    
-            //
-            // Error
-            //
-            if(error)
-            {
-                //
-                // Notify
-                //
-                if(completion) completion(NO, error);
-                
-                return;
-            }
-            
-            //
-            // Notify
-            //
-            if(completion) completion(YES, nil);
-        }
-    ];
-}
-
-
-- (void)registerDeviceForUser:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
-{
-    //
-    // Detect if device is already registered, if so stop here
-    //
-    if([self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
-        
-        return;
-    }
-    
-    //
-    // Post the will register notification
-    //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
-    
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    // Authorization with 'Authorization' header key
-    NSString *authorization = [MASUser authorizationBasicHeaderValueWithUsername:userName password:password];
-    if(authorization) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
-    
-    // Client Authorization
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // DeviceId
-    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
-    
-    // DeviceName
-    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
-    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
-    
-    // Create Session
-    headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
-    
-    // Certificate Format
-    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-   
-    // Certificate Signing Request
-    MASSecurityService *securityService = [MASSecurityService sharedService];
-    [securityService deleteAsymmetricKeys];
-    [securityService generateKeypair];
-    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:userName];
-
-    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-    
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeTextPlain
-        responseType:MASRequestResponseTypeTextPlain
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //DLog(@"Error detected attempting to request registration of the device: %@",
-                //    [error localizedDescription]);
-            
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
-            
-                return;
-            }
-            
-            //
-            // Validate id_token when received from server.
-            //
-            NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
-            
-            if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
-                [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
-                [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-            {
-                NSError *idTokenValidationError = nil;
-                BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
-                                                          magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
-                                                                  error:&idTokenValidationError];
-                
-                if (!isIdTokenValid && idTokenValidationError)
-                {
-                    if (completion)
-                    {
-                        completion(NO, idTokenValidationError);
-                        
-                        return;
-                    }
-                }
-            }
-        
-            //
-            // Updated with latest info
-            //
-            [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
-            
-            //
-            // re-establish URLSession to trigger URL authentication
-            //
-            [[MASNetworkingService sharedService] establishURLSession];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
-            
-            //
-            // Notify
-            //
-            if(completion) completion((self.currentDevice.isRegistered), nil);
-        }
-    ];
-}
-
-
-- (void)registerDeviceWithAuthorizationCode:(NSString *)code completion:(MASCompletionErrorBlock)completion
-{
-    //
-    // Detect if device is already registered, if so stop here
-    //
-    if([self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
-        
-        return;
-    }
-    
-    //
-    // Post the will register notification
-    //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
-    
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    // Authorization with 'Authorization' header key
-    NSString *authorization = [NSString stringWithFormat:@"Bearer %@", code];
-    if(authorization) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
-    
-    // Redirect-Uri
-    headerInfo[MASRedirectUriHeaderRequestResponseKey] = [MASApplication currentApplication].redirectUri.absoluteString;
-    
-    // Client Authorization
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // DeviceId
-    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
-    
-    // DeviceName
-    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
-    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
-    
-    // Create Session
-    headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
-    
-    // Certificate Format
-    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
-    
-    //
-    // If code verifier exists in the memory
-    //
-    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
-    {
-        //
-        // inject it into parameter of the request
-        //
-        headerInfo[MASPKCECodeVerifierHeaderRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
-    }
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-  
-    // Certificate Signing Request
-    MASSecurityService *securityService = [MASSecurityService sharedService];
-    [securityService deleteAsymmetricKeys];
-    [securityService generateKeypair];
-    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"socialLogin"];
-    
-    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-    
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    [[MASNetworkingService sharedService] postTo:endPoint
-                                  withParameters:parameterInfo
-                                      andHeaders:headerInfo
-                                     requestType:MASRequestResponseTypeTextPlain
-                                    responseType:MASRequestResponseTypeTextPlain
-                                      completion:^(NSDictionary *responseInfo, NSError *error)
-     {
-         //
-         // Detect if error, if so stop here
-         //
-         if(error)
-         {
-             //DLog(@"Error detected attempting to request registration of the device: %@",
-             //    [error localizedDescription]);
-             
-             //
-             // Notify
-             //
-             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-             
-             //
-             // Post the notification
-             //
-             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
-             
-             return;
-         }
-         
-         //
-         // Remove PKCE Code Verifier and state
-         //
-         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-         
-         //
-         // Validate id_token when received from server.
-         //
-         NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
-         
-         if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
-             [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
-             [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-         {
-             NSError *idTokenValidationError = nil;
-             BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
-                                                       magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
-                                                               error:&idTokenValidationError];
-             
-             if (!isIdTokenValid && idTokenValidationError)
-             {
-                 if (completion)
-                 {
-                     completion(NO, idTokenValidationError);
-                     
-                     return;
-                 }
-             }
-         }
-         
-         //
-         // Updated with latest info
-         //
-         [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
-         
-         //
-         // re-establish URLSession to trigger URL authentication
-         //
-         [[MASNetworkingService sharedService] establishURLSession];
-         
-         //
-         // Post the notification
-         //
-         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
-         
-         //
-         // Notify
-         //
-         if(completion) completion((self.currentDevice.isRegistered), nil);
-     }
-     ];
-}
-
-
-- (void)registerDeviceWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
-{
-    //
-    // Detect if device is already registered, if so stop here
-    //
-    if([self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
-        
-        return;
-    }
-    
-    //
-    // Post the will register notification
-    //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
-    
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    // Authorization with 'Authorization' header key
-    NSString *authorization = [NSString stringWithFormat:@"Bearer %@", idToken];
-    if(idToken) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
-    
-    if (tokenType)
-    {
-        headerInfo[MASAuthorizationTypeRequestResponseKey] = tokenType;
-    }
-    
-    // Client Authorization
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // DeviceId
-    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
-    
-    // DeviceName
-    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
-    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
-    
-    // Create Session
-    headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
-    
-    // Certificate Format
-    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-    
-    // Certificate Signing Request
-    MASSecurityService *securityService = [MASSecurityService sharedService];
-    [securityService deleteAsymmetricKeys];
-    [securityService generateKeypair];
-    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"socialLogin"];
-    
-    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-    
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    [[MASNetworkingService sharedService] postTo:endPoint
-                                  withParameters:parameterInfo
-                                      andHeaders:headerInfo
-                                     requestType:MASRequestResponseTypeTextPlain
-                                    responseType:MASRequestResponseTypeTextPlain
-                                      completion:^(NSDictionary *responseInfo, NSError *error)
-     {
-         //
-         // Detect if error, if so stop here
-         //
-         if(error)
-         {
-             //DLog(@"Error detected attempting to request registration of the device: %@",
-             //    [error localizedDescription]);
-             
-             //
-             // Notify
-             //
-             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-             
-             //
-             // Post the notification
-             //
-             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
-             
-             return;
-         }
-         
-         //
-         // Remove PKCE Code Verifier and state
-         //
-         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-         
-         //
-         // Validate id_token when received from server.
-         //
-         NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
-         
-         if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
-             [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
-             [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-         {
-             NSError *idTokenValidationError = nil;
-             BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
-                                                       magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
-                                                               error:&idTokenValidationError];
-             
-             if (!isIdTokenValid && idTokenValidationError)
-             {
-                 if (completion)
-                 {
-                     completion(NO, idTokenValidationError);
-                     
-                     return;
-                 }
-             }
-         }
-         
-         //
-         // Updated with latest info
-         //
-         [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
-         
-         //
-         // re-establish URLSession to trigger URL authentication
-         //
-         [[MASNetworkingService sharedService] establishURLSession];
-         
-         //
-         // Post the notification
-         //
-         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
-         
-         //
-         // Notify
-         //
-         if(completion) completion((self.currentDevice.isRegistered), nil);
-     }
-     ];
-}
+//
+//- (void)registerDeviceWithCompletionOld:(MASCompletionErrorBlock)completion
+//{
+//    
+//    //
+//    // Check if the client certificate is expired, if so, renew
+//    //
+//    if ([MASDevice currentDevice].isClientCertificateExpired && [MASDevice currentDevice].isRegistered)
+//    {
+//        [self renewClientCertificateWithCompletion:completion];
+//        
+//        return;
+//    }
+//    
+//    //
+//    // If already registered stop here
+//    //
+//    if ([[MASDevice currentDevice] isRegistered])
+//    {
+//        //
+//        // Notify
+//        //
+//        if(completion) completion(YES, nil);
+//        
+//        return;
+//    }
+//    
+//    //
+//    // Check if the current MASGrantFlow is NOT supported by the registered Scope for the
+//    // application record
+//    //
+//    if (![MASModelService isGrantFlowSupported:_grantFlow_])
+//    {
+//        //
+//        // Notify
+//        //
+//        if(completion) completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
+//            
+//        return;
+//    }
+//    
+//    //
+//    // Detect registration type and respond appropriately
+//    //
+//    switch (_grantFlow_)
+//    {
+//        //
+//        // Client Credentials Registration
+//        //
+//        case MASGrantFlowClientCredentials:
+//        {
+//            [self registerDeviceForClientCredentialsCompletion:completion];
+//            break;
+//        }
+//        
+//        //
+//        // User Credentials Registration
+//        //
+//        case MASGrantFlowPassword:
+//        {
+//            //
+//            // If UI handling framework is not present and handling it continue on with notifying the
+//            // application it needs to handle this itself
+//            //
+//            __block MASBasicCredentialsBlock basicCredentialsBlock;
+//            __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
+//            __block MASModelService *blockSelf = self;
+//            __block MASCompletionErrorBlock completionBlock = completion;
+//            
+//            //
+//            // Basic Credentials Supported
+//            //
+//            if([[MASApplication currentApplication] isScopeTypeMssoSupported])
+//            {
+//                //
+//                // Basic Credentials Block
+//                //
+//                basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock completion)
+//                {
+//                    DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
+//                        userName, password, (cancel ? @"Yes" : @"No"));
+//                
+//                    //
+//                    // Reset the authenticationProvider as the session id should have been used
+//                    //
+//                    blockSelf.currentProviders = nil;
+//                    
+//                    //
+//                    // Cancelled stop here
+//                    //
+//                    if(cancel)
+//                    {
+//                        //
+//                        // Notify
+//                        //
+//                        if (completion)
+//                        {
+//                            completion(NO, [NSError errorLoginProcessCancelled]);
+//                        }
+//                        
+//                        if (completionBlock)
+//                        {
+//                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+//                        }
+//                        
+//                        return;
+//                    }
+//                
+//                    //
+//                    // Attempt to register the device with the credentials
+//                    //
+//                    [blockSelf registerDeviceForUser:userName password:password completion:^(BOOL completed, NSError *error)
+//                    {
+//                        
+//                        //
+//                        // Error
+//                        //
+//                        if (error)
+//                        {
+//                            //
+//                            // Notify
+//                            //
+//                            if (completionBlock) completionBlock(NO, error);
+//                            
+//                            if (completion) completion(NO, error);
+//                            
+//                            return;
+//                        }
+//                        
+//                        if (!_userLoginBlock_ && ![MASConfiguration currentConfiguration].ssoEnabled)
+//                        {
+//                            //
+//                            //  If the user authenticationBlock is not set, and sso was not enabled,
+//                            //  the sdk should authenticate the user with given username and password from registration.
+//                            //  Otherwise, it will end up prompting login screen twice or not be authenticated as id_token does not exist.
+//                            //
+//                            [blockSelf loginWithUserName:userName password:password completion:^(BOOL completed, NSError *error)
+//                            {
+//                                //
+//                                // Error
+//                                //
+//                                if (error)
+//                                {
+//                                    //
+//                                    // Notify
+//                                    //
+//                                    if (completionBlock) completionBlock(NO, error);
+//                                    
+//                                    if (completion) completion(NO, error);
+//                                    
+//                                    return;
+//                                }
+//                                
+//                                //
+//                                // Notify
+//                                //
+//                                if(completionBlock) completionBlock(YES, nil);
+//                                
+//                                if (completion) completion(YES, nil);
+//                            }];
+//                        }
+//                        else {
+//                            
+//                            //
+//                            // Notify
+//                            //
+//                            if(completionBlock) completionBlock(YES, nil);
+//                            
+//                            if (completion) completion(YES, nil);
+//                        }
+//                        
+//                    }];
+//                };
+//            }
+//            
+//            //
+//            // Authorization Code Credentials Supported
+//            //
+//            if([[MASApplication currentApplication] isScopeTypeMssoRegisterSupported])
+//            {
+//                //
+//                // Authorization Code Credentials Block
+//                //
+//                authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
+//                {
+//                    DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
+//                        authorizationCode, (cancel ? @"Yes" : @"No"));
+//                    
+//                    //
+//                    // Reset the authenticationProvider as the session id should have been used
+//                    //
+//                    blockSelf.currentProviders = nil;
+//                    
+//                    //
+//                    // Cancelled stop here
+//                    //
+//                    if(cancel)
+//                    {
+//                        //
+//                        // Notify
+//                        //
+//                        if (completion)
+//                        {
+//                            completion(NO, [NSError errorLoginProcessCancelled]);
+//                        }
+//                        
+//                        if (completionBlock)
+//                        {
+//                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
+//                        }
+//                        
+//                        return;
+//                    }
+//                    
+//                    //
+//                    // Attempt to register the device with the credentials
+//                    //
+//                    [blockSelf registerDeviceWithAuthorizationCode:authorizationCode completion:^(BOOL completed, NSError *error) {
+//                        
+//                        //
+//                        // Error
+//                        //
+//                        if(error)
+//                        {
+//                            //
+//                            // Notify
+//                            //
+//                            if (completionBlock) completionBlock(NO, error);
+//                            
+//                            if (completion) completion(NO, error);
+//                            
+//                            return;
+//                        }
+//                        
+//                        //
+//                        // Notify
+//                        //
+//                        if(completionBlock) completionBlock(YES, nil);
+//                        
+//                        if (completion) completion(YES, nil);
+//                        
+//                    }];
+//                };
+//            }
+//        
+//            DLog(@"\n\n\n********************************************************\n\n"
+//                "Waiting for credentials response to continue registration"
+//                @"\n\n********************************************************\n\n\n");
+//            
+//            //
+//            // If the UI handling framework is present and will handle this stop here
+//            //
+//            MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+//            if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
+//                authorizationCodeBlock:authorizationCodeCredentialsBlock])
+//            {
+//                return;
+//            }
+//            
+//            //
+//            // Else notify block if available
+//            //
+//            if(_userLoginBlock_)
+//            {
+//                //
+//                // Do this is the main queue since the reciever is almost certainly a UI component.
+//                // Lets do this for them and not make them figure it out
+//                //
+//                dispatch_async(dispatch_get_main_queue(),^
+//                {
+//                    _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
+//                });
+//            }
+//            else {
+//                
+//                //
+//                // If the device registration block is not defined, return an error
+//                //
+//                if (completion)
+//                {
+//                    completion(NO, [NSError errorInvalidUserLoginBlock]);
+//                }
+//            }
+//            
+//            break;
+//        }
+//        
+//        //
+//        // Default
+//        //
+//        default:
+//        {
+//            DLog(@"\n\nError detecting unknown registration type: %@\n\n",
+//                [MASModelService grantFlowToString:_grantFlow_]);
+//            
+//            break;
+//        }
+//    }
+//}
 
 
 - (void)renewClientCertificateWithCompletion:(MASCompletionErrorBlock)completion
@@ -2311,7 +2072,12 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-- (void)loginAnonymouslyWithCompletion:(MASCompletionErrorBlock)completion
+/**
+ *  Re-authenticate a specifc user with the refresh token.
+ *
+ *  @param completion The completion block that receives the results.
+ */
+- (void)loginAsRefreshTokenWithCompletion:(MASCompletionErrorBlock)completion
 {
     DLog(@"called");
     
@@ -2327,7 +2093,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
        
         return;
     }
-    
+
     //
     // The device must be registered else stop here
     //
@@ -2340,6 +2106,1052 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
        
         return;
     }
+
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].tokenEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    
+    // Client Authorization with 'Authorization' header key
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    
+    // MAG Identifier
+    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
+    if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
+    
+    //
+    // Parameters
+    //
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    
+    // Scope
+    NSString *scope = [[MASApplication currentApplication] scopeAsString];
+    
+    //
+    //  Check if MASAccess has additional requesting scope to be added as part of the authentication call
+    //
+    if ([MASAccess currentAccess].requestingScopeAsString)
+    {
+        if (scope)
+        {
+            //  Making sure that the new scope has an leading space
+            scope = [scope stringByAppendingString:[NSString stringWithFormat:@" %@",[MASAccess currentAccess].requestingScopeAsString]];
+        }
+        else {
+            scope = [MASAccess currentAccess].requestingScopeAsString;
+        }
+        
+        //
+        //  Nullify the requestingScope
+        //
+        [MASAccess currentAccess].requestingScopeAsString = nil;
+    }
+    
+    //
+    //  If sso is disabled, manually remove msso scope, as it will create id_token with msso scope
+    //
+    if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
+    {
+        scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
+    }
+    
+    if(scope) parameterInfo[MASScopeRequestResponseKey] = scope;
+    
+    // Refresh Token
+    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
+    if(refreshToken) parameterInfo[MASUserRefreshTokenRequestResponseKey] = refreshToken;
+    
+    // Grant Type
+    parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeRefreshToken;
+    
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    [[MASNetworkingService sharedService] postTo:endPoint
+        withParameters:parameterInfo
+        andHeaders:headerInfo
+        requestType:MASRequestResponseTypeWwwFormUrlEncoded
+        responseType:MASRequestResponseTypeJson
+        completion:^(NSDictionary *responseInfo, NSError *error)
+        {
+            //
+            // Detect if error, if so stop here
+            //
+            if(error)
+            {
+                //
+                // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
+                //
+                [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
+                [[MASAccessService sharedService].currentAccessObj refresh];
+                [blockSelf validateCurrentUserSession:completion];
+            
+                return;
+            }
+            
+            //
+            // Remove PKCE Code Verifier and state
+            //
+            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+        
+            //
+            // Validate id_token when received from server.
+            //
+            NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+            
+            if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
+                [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
+                [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+            {
+                NSError *idTokenValidationError = nil;
+                BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
+                                                          magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
+                                                                  error:&idTokenValidationError];
+                
+                if (!isIdTokenValid && idTokenValidationError)
+                {
+                    //
+                    // Post the notification
+                    //
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
+                    
+                    if (blockCompletion)
+                    {
+                        blockCompletion(NO, idTokenValidationError);
+                        
+                        return;
+                    }
+                }
+            }
+            
+            //
+            // Update the current user
+            //
+            [_currentUser saveWithUpdatedInfo:responseInfo];
+        
+            //
+            // Post the notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
+            
+            [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
+                
+                //
+                // Requesting additional userInfo upon successful authentication
+                // and do not depend on the result of userInfo call.
+                // This a workaround to fix other frameworks' dependency issue on userInfo.
+                // James Go @ April 4, 2016
+                //
+                
+                //
+                // Notify
+                //
+                if (blockCompletion)
+                {
+                    blockCompletion(YES, nil);
+                }
+            }];
+        }
+    ];
+}
+
+
+/**
+ *  Logout the current access credentials via asynchronous request.
+ *
+ *  This will remove the user available from 'currentUser' upon a successful result if one exists.
+ *
+ *  @param completion The completion block that receives the results.
+ */
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+{
+    //
+    // The application must be registered else stop here
+    //
+    if(![MASApplication currentApplication].isRegistered)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
+       
+        return;
+    }
+    
+    //
+    // The device must be registered else stop here
+    //
+    if(![MASDevice currentDevice].isRegistered)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
+       
+        return;
+    }
+    
+    //
+    // The current user must be authenticated by username/password or client credentials (anonymously authenticated) else stop here
+    //
+    if(![MASApplication currentApplication].isAuthenticated)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorUserNotAuthenticated]);
+       
+        return;
+    }
+
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    
+    //
+    // Client Authorization
+    //
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    
+    //
+    // Parameters
+    //
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    
+    // Token Type Hint
+    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"access_token";
+    
+    // Access Token
+    NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
+    if(accessToken) parameterInfo[MASTokenRequestResponseKey] = accessToken;
+    
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    [[MASNetworkingService sharedService] deleteFrom:endPoint
+        withParameters:parameterInfo
+        andHeaders:headerInfo
+        completion:^(NSDictionary *responseInfo, NSError *error)
+        {
+            //
+            // Detect if error, if so stop here
+            //
+            if(error)
+            {
+                //
+                // Post the notification
+                //
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+            
+                //
+                // Notify
+                //
+                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+            
+                return;
+            }
+        
+            //
+            // Clear currentUser object upon log-out
+            //
+            [blockSelf clearCurrentUserForLogout];
+        
+            //
+            // Post the notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+        
+            //
+            // Notify
+            //
+            if(completion) completion(YES, nil);
+        }
+    ];
+}
+
+
+/**
+ *  Request the current user's information via asynchronous request.
+ *
+ *  This will update the user available from 'currentUser' upon a successful result.
+ *
+ *  @param completion The completion block that receives the results.
+ */
+- (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion
+{
+    //
+    // The application must be registered else stop here
+    //
+    if(![MASApplication currentApplication].isRegistered)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, [NSError errorApplicationNotRegistered]);
+       
+        return;
+    }
+    
+    //
+    // The device must be registered else stop here
+    //
+    if(![MASDevice currentDevice].isRegistered)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, [NSError errorDeviceNotRegistered]);
+       
+        return;
+    }
+    
+    //
+    // The current user must be authenticated else stop here
+    //
+    if(![MASApplication currentApplication].isAuthenticated)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, [NSError errorUserNotAuthenticated]);
+       
+        return;
+    }
+    
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].userInfoEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    [[MASNetworkingService sharedService] getFrom:endPoint
+        withParameters:nil
+        andHeaders:headerInfo
+        completion:^(NSDictionary *responseInfo, NSError *error)
+        {
+            //
+            // Detect if error, if so stop here
+            //
+            if(error)
+            {
+                //
+                // Post the notification
+                //
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToUpdateInformationNotification object:blockSelf];
+            
+                //
+                // Notify
+                //
+                if(completion) completion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+            
+                return;
+            }
+        
+            //
+            // Update the current user
+            //
+            [blockSelf.currentUser saveWithUpdatedInfo:responseInfo];
+        
+            //
+            // Post the notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidUpdateInformationNotification object:blockSelf];
+        
+            //
+            // Notify
+            //
+            if (completion) {
+               
+                completion(self.currentUser, nil);
+            }
+        }
+    ];
+}
+
+
+- (void)clearCurrentUserForLogout
+{
+    //
+    // If the current user exists, clear out
+    //
+    if(self.currentUser)
+    {
+        //
+        // Set the logged off state
+        //
+        [self.currentUser setWasLoggedOffAndSave:YES];
+        
+        //
+        // Reset currentUser's credentials from keychain
+        //
+        [self.currentUser reset];
+        
+        //
+        // Nullify the currentUser object
+        //
+        _currentUser = nil;
+    }
+}
+
+
+# pragma mark - Authentication Validation
+
+
+- (void)validateCurrentUserSession:(MASCompletionErrorBlock)originalCompletion
+{
+    
+    __block MASModelService *blockSelf = self;
+    
+    //
+    // Go through registeration, authentication logic
+    //
+    [self registerApplication:^(BOOL completed, NSError *error)
+    {
+        
+        if (!completed || error != nil)
+        {
+            if(originalCompletion) originalCompletion(NO, error);
+        }
+        else {
+            
+            void (^registrationAndAuthenticationBlock)(void) = ^{
+                
+                //
+                //  Check device registration status
+                //
+                [blockSelf registerDeviceWithCompletion:^(BOOL completed, NSError *error)
+                 {
+                     //
+                     // If the registration status is correct, and the device is currently locked, generate an error
+                     //
+                     if (!error && [MASAccess currentAccess].isSessionLocked)
+                     {
+                         error = [NSError errorUserSessionIsCurrentlyLocked];
+                         completed = NO;
+                     }
+                     
+                     if (!completed || error != nil)
+                     {
+                         if(originalCompletion) originalCompletion(NO, error);
+                     }
+                     else {
+                         
+                         //
+                         //  Check login status
+                         //
+                         [blockSelf loginWithCompletion:^(BOOL completed, NSError *error) {
+                             
+                             if (!completed || error != nil)
+                             {
+                                 if(originalCompletion)
+                                 {
+                                     originalCompletion(completed, error);
+                                 }
+                             }
+                             else {
+                                 
+                                 if(originalCompletion)
+                                 {
+                                     originalCompletion(completed, error);
+                                 }
+                             }
+                         }];
+                     }
+                 }];
+            };
+            
+            if (_grantFlow_ == MASGrantFlowPassword)
+            {
+                //
+                //  Get authentication providers if it doesn't exist
+                //
+                [blockSelf retrieveAuthenticationProviders:^(id object, NSError *error)
+                 {
+                     
+                     if (error != nil)
+                     {
+                         if(originalCompletion) originalCompletion(NO, error);
+                     }
+                     else {
+                         
+                         registrationAndAuthenticationBlock();
+                     }
+                 }];
+            }
+            else {
+                
+                registrationAndAuthenticationBlock();
+            }
+        }
+    }];
+}
+
+
+# pragma mark - Authentication flow with MASAuthCredentials
+
+- (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+{
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
+    __block MASModelService *blockSelf = self;
+    
+    //
+    //  Go through registration and authentication process with auth credential object.
+    //
+    [self registerApplication:^(BOOL completed, NSError * _Nullable error) {
+        
+        //
+        //  If an error occurred while client registration
+        //
+        if (!completed || error != nil)
+        {
+            if (blockCompletion)
+            {
+                blockCompletion(NO, error);
+            }
+        }
+        //
+        //  Othersiwe,
+        //
+        else {
+            
+            //
+            //  If device is already registered, perform authentication instead
+            //
+            if ([MASDevice currentDevice].isRegistered)
+            {
+                [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
+            }
+            else {
+                
+                //
+                //  Register device with auth credentials object
+                //
+                [self registerDeviceWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                    
+                    //
+                    //  If an error occurred while device registration
+                    //
+                    if (!completed || error != nil)
+                    {
+                        if (blockCompletion)
+                        {
+                            blockCompletion(NO, error);
+                        }
+                    }
+                    //
+                    //  Otherwsie,
+                    //
+                    else {
+                        
+                        //
+                        //  If auth credentials is reuseable, perform login with same credentials
+                        //
+                        if (blockAuthCredentials.isReuseable)
+                        {
+                            [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
+                        }
+                        else {
+                            
+                            //
+                            //  Clear credentials after first attempt if it is not reuseable
+                            //
+                            [blockAuthCredentials clearCredentials];
+                            
+                            //
+                            //  Fallback to user authentication
+                            //
+                            [self loginUsingUserCredentials:blockCompletion];
+                        }
+                    }
+                }];
+            }
+        }
+    }];
+}
+
+
+- (void)registerDeviceWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+{
+    //
+    //  Refresh access obj
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // The application must be registered else stop here
+    //
+    if (![[MASApplication currentApplication] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorApplicationNotRegistered]);
+        }
+        
+        return;
+    }
+    
+    //
+    // Detect if device is already registered, if so stop here
+    //
+    if ([[MASDevice currentDevice] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(YES, nil);
+        }
+        
+        return;
+    }
+    
+    //
+    //  Validate to see if auth credentials can register device
+    //
+    if (!authCredentials.canRegisterDevice)
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceCanNotRegisterWithGivenAuthCredentials]);
+        }
+        
+        return;
+    }
+    
+//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    //  Perform registration
+    //
+    [authCredentials registerDeviceWithCredential:^(BOOL completed, NSError * _Nullable error) {
+        
+        //
+        //  Notify
+        //
+        if (blockCompletion)
+        {
+            blockCompletion(completed, error);
+        }
+    }];
+}
+
+
+- (void)loginWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+{
+    //
+    //  Refresh access obj
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // The device must be registered else stop here
+    //
+    if (![[MASDevice currentDevice] isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
+        
+        return;
+    }
+    
+    //
+    //  If the user session has already been authenticated, throw an error.
+    //
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        }
+        
+        return;
+    }
+    
+//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    //  Perform authentication
+    //
+    [authCredentials loginWithCredential:^(BOOL completed, NSError * _Nullable error) {
+        
+        //
+        //  Notify
+        //
+        if (blockCompletion)
+        {
+            blockCompletion(completed, error);
+        }
+    }];
+}
+
+
+# pragma mark - Deprecated note as of MAS 1.5
+
+
++ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
+{
+    _userLoginBlock_ = [login copy];
+}
+
+
+- (void)validateCurrentUserAuthenticationWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion
+{
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    // Go through registration and authentication logic with authorization code
+    //
+    [self registerApplication:^(BOOL completed, NSError *error) {
+        //
+        // Register the client
+        //
+        if (!completed || error != nil)
+        {
+            if (blockCompletion)
+            {
+                blockCompletion(NO, error);
+            }
+        }
+        else {
+            
+            //
+            // If the device is already registered, skip
+            //
+            if ([MASDevice currentDevice] && [MASDevice currentDevice].isRegistered)
+            {
+                [self loginWithAuthorizationCode:authorizationCode completion:completion];
+            }
+            //
+            // If the device is not registered, register the device with authorization code
+            //
+            else {
+                
+                [self registerDeviceWithAuthorizationCode:authorizationCode completion:^(BOOL completed, NSError *error) {
+                    
+                    //
+                    // Register the device
+                    //
+                    if (!completed || error != nil)
+                    {
+                        if (blockCompletion)
+                        {
+                            blockCompletion(NO, error);
+                        }
+                    }
+                    else {
+                        
+                        //
+                        // If registration was successful, follow the flow for authentication as authorization code is one time usage only
+                        // This may cause the issue where the login screen will prompt again upon successful device registration
+                        // or falling back to client credential authentication when the flow is set to client credentials.
+                        //
+                        [self validateCurrentUserSession:completion];
+                    }
+                }];
+            }
+        }
+    }];
+}
+
+
+- (void)validateCurrentUserAuthenticationWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
+{
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    
+    //
+    // Go through registration and authentication logic with authorization code
+    //
+    [self registerApplication:^(BOOL completed, NSError *error) {
+        //
+        // Register the client
+        //
+        if (!completed || error != nil)
+        {
+            if (blockCompletion)
+            {
+                blockCompletion(NO, error);
+            }
+        }
+        else {
+            //
+            // If the device is already registered, skip
+            //
+            if ([MASDevice currentDevice] && [MASDevice currentDevice].isRegistered)
+            {
+                [self loginWithIdToken:idToken tokenType:tokenType completion:completion];
+            }
+            //
+            // If the device is not registered, register the device with authorization code
+            //
+            else {
+                [self registerDeviceWithIdToken:idToken tokenType:tokenType completion:^(BOOL completed, NSError *error) {
+                    
+                    //
+                    // Register the device
+                    //
+                    if (!completed || error != nil)
+                    {
+                        if (blockCompletion)
+                        {
+                            blockCompletion(NO, error);
+                        }
+                    }
+                    else {
+                        
+                        //
+                        // If registration was successful, follow the flow for authentication as id_token is one time usage only
+                        // This may cause the issue where the login screen will prompt again upon successful device registration
+                        // or falling back to client credential authentication when the flow is set to client credentials.
+                        //
+                        [self validateCurrentUserSession:completion];
+                    }
+                }];
+            }
+        }
+    }];
+}
+
+
+- (void)validateCurrentUserAuthenticationWithUsername:(NSString *)username password:(NSString *)password completion:(MASCompletionErrorBlock)originalCompletion
+{
+    //
+    // Go through registeration, authentication logic
+    //
+    
+    //
+    // Registering client application
+    //
+    [self registerApplication:^(BOOL completed, NSError *error)
+     {
+         
+         if (!completed || error != nil)
+         {
+             if(originalCompletion)
+             {
+                 originalCompletion(NO, error);
+             }
+         }
+         else {
+             
+             //
+             // Check device registration status
+             //
+             if([[MASDevice currentDevice] isRegistered])
+             {
+                 //
+                 // If user already authenticated, proceeds
+                 //
+                 if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+                 {
+                     if (originalCompletion)
+                     {
+                         originalCompletion(YES, nil);
+                     }
+                 }
+                 //
+                 // Otherwise, perform user authentication with given username and password
+                 //
+                 else {
+                     
+                     //
+                     // If the session is currently locked, return an error
+                     //
+                     if ([MASAccess currentAccess].isSessionLocked)
+                     {
+                         if (originalCompletion)
+                         {
+                             originalCompletion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
+                         }
+                         
+                         return;
+                     }
+                     else {
+                         
+                         [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
+                     }
+                 }
+             }
+             //
+             // If the device is not registered
+             //
+             else {
+                 
+                 //
+                 // If user credential flow is set
+                 //
+                 if ([MAS grantFlow] == MASGrantFlowPassword)
+                 {
+                     //
+                     // Register device with given username and password
+                     //
+                     [[MASModelService sharedService] registerDeviceForUser:username password:password completion:^(BOOL completed, NSError *error) {
+                         
+                         //
+                         // If the registration status is correct, and the device is currently locked, generate an error
+                         //
+                         if (!error && [MASAccess currentAccess].isSessionLocked)
+                         {
+                             error = [NSError errorUserSessionIsCurrentlyLocked];
+                         }
+                         
+                         if (!completed || error != nil)
+                         {
+                             if(originalCompletion)
+                             {
+                                 originalCompletion(NO, error);
+                             }
+                         }
+                         else {
+                             
+                             //
+                             // Perform authentication with given username and password
+                             //
+                             [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
+                                 
+                                 if (!completed || error != nil)
+                                 {
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                                 else {
+                                     
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                             }];
+                         }
+                     }];
+                 }
+                 //
+                 // Ifclient credential flow is set
+                 //
+                 else {
+                     
+                     //
+                     // Register device with client credentials
+                     //
+                     [[MASModelService sharedService] registerDeviceForClientCredentialsCompletion:^(BOOL completed, NSError *error) {
+                         
+                         //
+                         // If the registration status is correct, and the device is currently locked, generate an error
+                         //
+                         if (!error && [MASAccess currentAccess].isSessionLocked)
+                         {
+                             error = [NSError errorUserSessionIsCurrentlyLocked];
+                         }
+                         
+                         if (!completed || error != nil)
+                         {
+                             if(originalCompletion)
+                             {
+                                 originalCompletion(NO, error);
+                             }
+                         }
+                         else {
+                             
+                             //
+                             // Perform user authentication with given usernmae and password
+                             //
+                             [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
+                                 
+                                 if (!completed || error != nil)
+                                 {
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                                 else {
+                                     
+                                     if(originalCompletion)
+                                     {
+                                         originalCompletion(completed, error);
+                                     }
+                                 }
+                             }];
+                         }
+                     }];
+                 }
+             }
+         }
+     }];
+}
+
+
+- (void)loginAnonymouslyWithCompletion:(MASCompletionErrorBlock)completion
+{
+    DLog(@"called");
+    
+    //
+    // The application must be registered else stop here
+    //
+    if(![self.currentApplication isRegistered])
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
+        
+        return;
+    }
+    
+    //
+    // The device must be registered else stop here
+    //
+    if(![self.currentDevice isRegistered])
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
+        
+        return;
+    }
     
     //
     // The current user must NOT be authenticated else stop here
@@ -2350,7 +3162,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // Notify
         //
         if(completion) completion(YES, nil);
-       
+        
         return;
     }
     
@@ -2363,7 +3175,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // Headers
     //
     MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-
+    
     // MAG Identifier
     NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
     if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
@@ -2417,57 +3229,57 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     //
     __block MASModelService *blockSelf = self;
     [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeWwwFormUrlEncoded
-        responseType:MASRequestResponseTypeJson
-        completion:^(NSDictionary *authResponseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:authResponseInfo andError:error]);
-            
-                return;
-            }
-            
-            //
-            // set authenticated timestamp
-            //
-            NSNumber *authenticatedTimestamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
-            [[MASAccessService sharedService] setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
-            
-            //
-            // Body Info
-            //
-            NSDictionary *bodyInfo = authResponseInfo[MASResponseInfoBodyInfoKey];
-            
-            //
-            //  Clear refresh_token if it exists as client credential should not have refresh_token
-            //
-            [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
-            
-            //
-            //  Store credential information into keychain
-            //
-            [[MASAccessService sharedService] saveAccessValuesWithDictionary:bodyInfo forceToOverwrite:NO];
-            
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
-
-            //
-            // Notify
-            //
-            if(completion) completion(YES, nil);
-        }
-    ];
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                    responseType:MASRequestResponseTypeJson
+                                      completion:^(NSDictionary *authResponseInfo, NSError *error)
+     {
+         //
+         // Detect if error, if so stop here
+         //
+         if(error)
+         {
+             //
+             // Notify
+             //
+             if(completion) completion(NO, [NSError errorFromApiResponseInfo:authResponseInfo andError:error]);
+             
+             return;
+         }
+         
+         //
+         // set authenticated timestamp
+         //
+         NSNumber *authenticatedTimestamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+         [[MASAccessService sharedService] setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+         
+         //
+         // Body Info
+         //
+         NSDictionary *bodyInfo = authResponseInfo[MASResponseInfoBodyInfoKey];
+         
+         //
+         //  Clear refresh_token if it exists as client credential should not have refresh_token
+         //
+         [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
+         
+         //
+         //  Store credential information into keychain
+         //
+         [[MASAccessService sharedService] saveAccessValuesWithDictionary:bodyInfo forceToOverwrite:NO];
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
+         
+         //
+         // Notify
+         //
+         if(completion) completion(YES, nil);
+     }
+     ];
 }
 
 
@@ -2523,15 +3335,15 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     // Headers
     //
     MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-
+    
     //
     // Empty authorization header for token endpoint with auth code
     //
     headerInfo[MASAuthorizationRequestResponseKey] = @"";
-
+    
     // AccessService
     MASAccessService *accessService = [MASAccessService sharedService];
-
+    
     //
     // Parameters
     //
@@ -2552,7 +3364,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     
     // Scope
     NSString *scope = [[MASApplication currentApplication] scopeAsString];
-
+    
     //
     //  Check if MASAccess has additional requesting scope to be added as part of the authentication call
     //
@@ -2731,7 +3543,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // Notify
         //
         if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
-       
+        
         return;
     }
     
@@ -2744,7 +3556,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // Notify
         //
         if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
-       
+        
         return;
     }
     
@@ -2757,7 +3569,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
         // Notify
         //
         if(completion) completion(YES, nil);
-       
+        
         return;
     }
     
@@ -2786,7 +3598,7 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     
     // Scope
     NSString *scope = [[MASApplication currentApplication] scopeAsString];
-
+    
     //
     //  Check if MASAccess has additional requesting scope to be added as part of the authentication call
     //
@@ -2838,109 +3650,109 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
     __block MASCompletionErrorBlock blockCompletion = completion;
     
     [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeWwwFormUrlEncoded
-        responseType:MASRequestResponseTypeJson
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
-        
-                //
-                // Notify
-                //
-                if(blockCompletion)
-                {
-                    blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-                }
-                
-                return;
-            }
-            
-            //
-            // Remove PKCE Code Verifier and state
-            //
-            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-            
-            //
-            // Validate id_token when received from server.
-            //
-            NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
-            
-            if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
-                [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-            {
-                NSError *idTokenValidationError = nil;
-                BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
-                                                          magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
-                                                                  error:&idTokenValidationError];
-                
-                if (!isIdTokenValid && idTokenValidationError)
-                {
-                    //
-                    // Post the notification
-                    //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(NO, idTokenValidationError);
-                        
-                        return;
-                    }
-                }
-            }
-            
-            //
-            // Create a new instance
-            //
-            if(!blockSelf.currentUser)
-            {
-                _currentUser = [[MASUser alloc] initWithInfo:responseInfo];
-            }
-            
-            //
-            // Update the existing user with new information
-            //
-            else
-            {
-                [blockSelf.currentUser saveWithUpdatedInfo:responseInfo];
-            }
-            
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
-            
-            [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
-                
-                //
-                // Requesting additional userInfo upon successful authentication
-                // and do not depend on the result of userInfo call.
-                // This a workaround to fix other frameworks' dependency issue on userInfo.
-                // James Go @ April 4, 2016
-                //
-                
-                //
-                // Notify
-                //
-                if (blockCompletion)
-                {
-                    blockCompletion(YES, nil);
-                }
-            }];
-        }
-    ];
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                    responseType:MASRequestResponseTypeJson
+                                      completion:^(NSDictionary *responseInfo, NSError *error)
+     {
+         //
+         // Detect if error, if so stop here
+         //
+         if(error)
+         {
+             //
+             // Post the notification
+             //
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
+             
+             //
+             // Notify
+             //
+             if(blockCompletion)
+             {
+                 blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+             }
+             
+             return;
+         }
+         
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+         
+         //
+         // Validate id_token when received from server.
+         //
+         NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+         
+         if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
+             [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
+             [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+         {
+             NSError *idTokenValidationError = nil;
+             BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
+                                                       magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
+                                                               error:&idTokenValidationError];
+             
+             if (!isIdTokenValid && idTokenValidationError)
+             {
+                 //
+                 // Post the notification
+                 //
+                 [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
+                 
+                 if (blockCompletion)
+                 {
+                     blockCompletion(NO, idTokenValidationError);
+                     
+                     return;
+                 }
+             }
+         }
+         
+         //
+         // Create a new instance
+         //
+         if(!blockSelf.currentUser)
+         {
+             _currentUser = [[MASUser alloc] initWithInfo:responseInfo];
+         }
+         
+         //
+         // Update the existing user with new information
+         //
+         else
+         {
+             [blockSelf.currentUser saveWithUpdatedInfo:responseInfo];
+         }
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
+         
+         [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
+             
+             //
+             // Requesting additional userInfo upon successful authentication
+             // and do not depend on the result of userInfo call.
+             // This a workaround to fix other frameworks' dependency issue on userInfo.
+             // James Go @ April 4, 2016
+             //
+             
+             //
+             // Notify
+             //
+             if (blockCompletion)
+             {
+                 blockCompletion(YES, nil);
+             }
+         }];
+     }
+     ];
 }
 
 
@@ -3398,1042 +4210,599 @@ static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 }
 
 
-/**
- *  Re-authenticate a specifc user with the refresh token.
- *
- *  @param completion The completion block that receives the results.
- */
-- (void)loginAsRefreshTokenWithCompletion:(MASCompletionErrorBlock)completion
+- (void)registerDeviceForClientCredentialsCompletion:(MASCompletionErrorBlock)completion
 {
-    DLog(@"called");
-    
-    //
-    // The application must be registered else stop here
-    //
-    if(![self.currentApplication isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
-       
-        return;
-    }
-
-    //
-    // The device must be registered else stop here
-    //
-    if(![self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
-       
-        return;
-    }
-
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].tokenEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    // Client Authorization with 'Authorization' header key
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // MAG Identifier
-    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-    
-    // Scope
-    NSString *scope = [[MASApplication currentApplication] scopeAsString];
-    
-    //
-    //  Check if MASAccess has additional requesting scope to be added as part of the authentication call
-    //
-    if ([MASAccess currentAccess].requestingScopeAsString)
-    {
-        if (scope)
-        {
-            //  Making sure that the new scope has an leading space
-            scope = [scope stringByAppendingString:[NSString stringWithFormat:@" %@",[MASAccess currentAccess].requestingScopeAsString]];
-        }
-        else {
-            scope = [MASAccess currentAccess].requestingScopeAsString;
-        }
-        
-        //
-        //  Nullify the requestingScope
-        //
-        [MASAccess currentAccess].requestingScopeAsString = nil;
-    }
-    
-    //
-    //  If sso is disabled, manually remove msso scope, as it will create id_token with msso scope
-    //
-    if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
-    {
-        scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
-    }
-    
-    if(scope) parameterInfo[MASScopeRequestResponseKey] = scope;
-    
-    // Refresh Token
-    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
-    if(refreshToken) parameterInfo[MASUserRefreshTokenRequestResponseKey] = refreshToken;
-    
-    // Grant Type
-    parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeRefreshToken;
-    
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    __block MASCompletionErrorBlock blockCompletion = completion;
-    
-    [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeWwwFormUrlEncoded
-        responseType:MASRequestResponseTypeJson
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
-                //
-                [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
-                [[MASAccessService sharedService].currentAccessObj refresh];
-                [blockSelf validateCurrentUserSession:completion];
-            
-                return;
-            }
-            
-            //
-            // Remove PKCE Code Verifier and state
-            //
-            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-        
-            //
-            // Validate id_token when received from server.
-            //
-            NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
-            
-            if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
-                [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-            {
-                NSError *idTokenValidationError = nil;
-                BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
-                                                          magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
-                                                                  error:&idTokenValidationError];
-                
-                if (!isIdTokenValid && idTokenValidationError)
-                {
-                    //
-                    // Post the notification
-                    //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(NO, idTokenValidationError);
-                        
-                        return;
-                    }
-                }
-            }
-            
-            //
-            // Update the current user
-            //
-            [_currentUser saveWithUpdatedInfo:responseInfo];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
-            
-            [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
-                
-                //
-                // Requesting additional userInfo upon successful authentication
-                // and do not depend on the result of userInfo call.
-                // This a workaround to fix other frameworks' dependency issue on userInfo.
-                // James Go @ April 4, 2016
-                //
-                
-                //
-                // Notify
-                //
-                if (blockCompletion)
-                {
-                    blockCompletion(YES, nil);
-                }
-            }];
-        }
-    ];
-}
-
-
-/**
- *  Logout the current access credentials via asynchronous request.
- *
- *  This will remove the user available from 'currentUser' upon a successful result if one exists.
- *
- *  @param completion The completion block that receives the results.
- */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
-{
-    //
-    // The application must be registered else stop here
-    //
-    if(![MASApplication currentApplication].isRegistered)
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
-       
-        return;
-    }
-    
-    //
-    // The device must be registered else stop here
-    //
-    if(![MASDevice currentDevice].isRegistered)
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
-       
-        return;
-    }
-    
-    //
-    // The current user must be authenticated by username/password or client credentials (anonymously authenticated) else stop here
-    //
-    if(![MASApplication currentApplication].isAuthenticated)
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(NO, [NSError errorUserNotAuthenticated]);
-       
-        return;
-    }
-
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    //
-    // Client Authorization
-    //
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-    
-    // Token Type Hint
-    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"access_token";
-    
-    // Access Token
-    NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
-    if(accessToken) parameterInfo[MASTokenRequestResponseKey] = accessToken;
-    
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    [[MASNetworkingService sharedService] deleteFrom:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
-            
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
-        
-            //
-            // Clear currentUser object upon log-out
-            //
-            [blockSelf clearCurrentUserForLogout];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
-        
-            //
-            // Notify
-            //
-            if(completion) completion(YES, nil);
-        }
-    ];
-}
-
-
-/**
- *  Request the current user's information via asynchronous request.
- *
- *  This will update the user available from 'currentUser' upon a successful result.
- *
- *  @param completion The completion block that receives the results.
- */
-- (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion
-{
-    //
-    // The application must be registered else stop here
-    //
-    if(![MASApplication currentApplication].isRegistered)
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorApplicationNotRegistered]);
-       
-        return;
-    }
-    
-    //
-    // The device must be registered else stop here
-    //
-    if(![MASDevice currentDevice].isRegistered)
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorDeviceNotRegistered]);
-       
-        return;
-    }
-    
-    //
-    // The current user must be authenticated else stop here
-    //
-    if(![MASApplication currentApplication].isAuthenticated)
-    {
-        //
-        // Notify
-        //
-        if(completion) completion(nil, [NSError errorUserNotAuthenticated]);
-       
-        return;
-    }
-    
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].userInfoEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-
-    //
-    // Trigger the request
-    //
-    __block MASModelService *blockSelf = self;
-    [[MASNetworkingService sharedService] getFrom:endPoint
-        withParameters:nil
-        andHeaders:headerInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToUpdateInformationNotification object:blockSelf];
-            
-                //
-                // Notify
-                //
-                if(completion) completion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
-        
-            //
-            // Update the current user
-            //
-            [blockSelf.currentUser saveWithUpdatedInfo:responseInfo];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidUpdateInformationNotification object:blockSelf];
-        
-            //
-            // Notify
-            //
-            if (completion) {
-               
-                completion(self.currentUser, nil);
-            }
-        }
-    ];
-}
-
-
-- (void)clearCurrentUserForLogout
-{
-    //
-    // If the current user exists, clear out
-    //
-    if(self.currentUser)
-    {
-        //
-        // Set the logged off state
-        //
-        [self.currentUser setWasLoggedOffAndSave:YES];
-        
-        //
-        // Reset currentUser's credentials from keychain
-        //
-        [self.currentUser reset];
-        
-        //
-        // Nullify the currentUser object
-        //
-        _currentUser = nil;
-    }
-}
-
-
-# pragma mark - Authentication Validation
-
-- (void)validateCurrentUserAuthenticationWithUsername:(NSString *)username password:(NSString *)password completion:(MASCompletionErrorBlock)originalCompletion
-{
-    //
-    // Go through registeration, authentication logic
-    //
-    
-    //
-    // Registering client application
-    //
-    [self registerApplication:^(BOOL completed, NSError *error)
-     {
-         
-         if (!completed || error != nil)
-         {
-             if(originalCompletion)
-             {
-                 originalCompletion(NO, error);
-             }
-         }
-         else {
-             
-             //
-             // Check device registration status
-             //
-             if([[MASDevice currentDevice] isRegistered])
-             {
-                 //
-                 // If user already authenticated, proceeds
-                 //
-                 if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
-                 {
-                     if (originalCompletion)
-                     {
-                         originalCompletion(YES, nil);
-                     }
-                 }
-                 //
-                 // Otherwise, perform user authentication with given username and password
-                 //
-                 else {
-                     
-                     //
-                     // If the session is currently locked, return an error
-                     //
-                     if ([MASAccess currentAccess].isSessionLocked)
-                     {
-                         if (originalCompletion)
-                         {
-                             originalCompletion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
-                         }
-                         
-                         return;
-                     }
-                     else {
-                         
-                         [[MASModelService sharedService] loginWithUserName:username password:password completion:originalCompletion];
-                     }
-                 }
-             }
-             //
-             // If the device is not registered
-             //
-             else {
-                 
-                 //
-                 // If user credential flow is set
-                 //
-                 if ([MAS grantFlow] == MASGrantFlowPassword)
-                 {
-                     //
-                     // Register device with given username and password
-                     //
-                     [[MASModelService sharedService] registerDeviceForUser:username password:password completion:^(BOOL completed, NSError *error) {
-                         
-                         //
-                         // If the registration status is correct, and the device is currently locked, generate an error
-                         //
-                         if (!error && [MASAccess currentAccess].isSessionLocked)
-                         {
-                             error = [NSError errorUserSessionIsCurrentlyLocked];
-                         }
-                         
-                         if (!completed || error != nil)
-                         {
-                             if(originalCompletion)
-                             {
-                                 originalCompletion(NO, error);
-                             }
-                         }
-                         else {
-                                 
-                             //
-                             // Perform authentication with given username and password
-                             //
-                             [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
-                                
-                                 if (!completed || error != nil)
-                                 {
-                                     if(originalCompletion)
-                                     {
-                                         originalCompletion(completed, error);
-                                     }
-                                 }
-                                 else {
-                                     
-                                     if(originalCompletion)
-                                     {
-                                         originalCompletion(completed, error);
-                                     }
-                                 }
-                             }];
-                         }
-                     }];
-                 }
-                 //
-                 // Ifclient credential flow is set
-                 //
-                 else {
-                     
-                     //
-                     // Register device with client credentials
-                     //
-                     [[MASModelService sharedService] registerDeviceForClientCredentialsCompletion:^(BOOL completed, NSError *error) {
-                         
-                         //
-                         // If the registration status is correct, and the device is currently locked, generate an error
-                         //
-                         if (!error && [MASAccess currentAccess].isSessionLocked)
-                         {
-                             error = [NSError errorUserSessionIsCurrentlyLocked];
-                         }
-                         
-                         if (!completed || error != nil)
-                         {
-                             if(originalCompletion)
-                             {
-                                 originalCompletion(NO, error);
-                             }
-                         }
-                         else {
-                             
-                             //
-                             // Perform user authentication with given usernmae and password
-                             //
-                             [[MASModelService sharedService] loginWithUserName:username password:password completion:^(BOOL completed, NSError *error) {
-                                 
-                                 if (!completed || error != nil)
-                                 {
-                                     if(originalCompletion)
-                                     {
-                                         originalCompletion(completed, error);
-                                     }
-                                 }
-                                 else {
-                                     
-                                     if(originalCompletion)
-                                     {
-                                         originalCompletion(completed, error);
-                                     }
-                                 }
-                             }];
-                         }
-                     }];
-                 }
-             }
-         }
-     }];
-}
-
-
-- (void)validateCurrentUserSession:(MASCompletionErrorBlock)originalCompletion
-{
-    
-    __block MASModelService *blockSelf = self;
-    
-    //
-    // Go through registeration, authentication logic
-    //
-    [self registerApplication:^(BOOL completed, NSError *error)
-    {
-        
-        if (!completed || error != nil)
-        {
-            if(originalCompletion) originalCompletion(NO, error);
-        }
-        else {
-            
-            void (^registrationAndAuthenticationBlock)(void) = ^{
-                
-                //
-                //  Check device registration status
-                //
-                [blockSelf registerDeviceWithCompletion:^(BOOL completed, NSError *error)
-                 {
-                     //
-                     // If the registration status is correct, and the device is currently locked, generate an error
-                     //
-                     if (!error && [MASAccess currentAccess].isSessionLocked)
-                     {
-                         error = [NSError errorUserSessionIsCurrentlyLocked];
-                         completed = NO;
-                     }
-                     
-                     if (!completed || error != nil)
-                     {
-                         if(originalCompletion) originalCompletion(NO, error);
-                     }
-                     else {
-                         
-                         //
-                         //  Check login status
-                         //
-                         [blockSelf loginWithCompletion:^(BOOL completed, NSError *error) {
-                             
-                             if (!completed || error != nil)
-                             {
-                                 if(originalCompletion)
-                                 {
-                                     originalCompletion(completed, error);
-                                 }
-                             }
-                             else {
-                                 
-                                 if(originalCompletion)
-                                 {
-                                     originalCompletion(completed, error);
-                                 }
-                             }
-                         }];
-                     }
-                 }];
-            };
-            
-            if (_grantFlow_ == MASGrantFlowPassword)
-            {
-                //
-                //  Get authentication providers if it doesn't exist
-                //
-                [blockSelf retrieveAuthenticationProviders:^(id object, NSError *error)
-                 {
-                     
-                     if (error != nil)
-                     {
-                         if(originalCompletion) originalCompletion(NO, error);
-                     }
-                     else {
-                         
-                         registrationAndAuthenticationBlock();
-                     }
-                 }];
-            }
-            else {
-                
-                registrationAndAuthenticationBlock();
-            }
-        }
-    }];
-}
-
-
-- (void)validateCurrentUserAuthenticationWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion
-{
-    __block MASCompletionErrorBlock blockCompletion = completion;
-    
-    //
-    // Go through registration and authentication logic with authorization code
-    //
-    [self registerApplication:^(BOOL completed, NSError *error) {
-        //
-        // Register the client
-        //
-        if (!completed || error != nil)
-        {
-            if (blockCompletion)
-            {
-                blockCompletion(NO, error);
-            }
-        }
-        else {
-            
-            //
-            // If the device is already registered, skip
-            //
-            if ([MASDevice currentDevice] && [MASDevice currentDevice].isRegistered)
-            {
-                [self loginWithAuthorizationCode:authorizationCode completion:completion];
-            }
-            //
-            // If the device is not registered, register the device with authorization code
-            //
-            else {
-                
-                [self registerDeviceWithAuthorizationCode:authorizationCode completion:^(BOOL completed, NSError *error) {
-                    
-                    //
-                    // Register the device
-                    //
-                    if (!completed || error != nil)
-                    {
-                        if (blockCompletion)
-                        {
-                            blockCompletion(NO, error);
-                        }
-                    }
-                    else {
-                        
-                        //
-                        // If registration was successful, follow the flow for authentication as authorization code is one time usage only
-                        // This may cause the issue where the login screen will prompt again upon successful device registration
-                        // or falling back to client credential authentication when the flow is set to client credentials.
-                        //
-                        [self validateCurrentUserSession:completion];
-                    }
-                }];
-            }
-        }
-    }];
-}
-
-
-- (void)validateCurrentUserAuthenticationWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
-{
-    __block MASCompletionErrorBlock blockCompletion = completion;
-    
-    //
-    // Go through registration and authentication logic with authorization code
-    //
-    [self registerApplication:^(BOOL completed, NSError *error) {
-        //
-        // Register the client
-        //
-        if (!completed || error != nil)
-        {
-            if (blockCompletion)
-            {
-                blockCompletion(NO, error);
-            }
-        }
-        else {
-            //
-            // If the device is already registered, skip
-            //
-            if ([MASDevice currentDevice] && [MASDevice currentDevice].isRegistered)
-            {
-                [self loginWithIdToken:idToken tokenType:tokenType completion:completion];
-            }
-            //
-            // If the device is not registered, register the device with authorization code
-            //
-            else {
-                [self registerDeviceWithIdToken:idToken tokenType:tokenType completion:^(BOOL completed, NSError *error) {
-                    
-                    //
-                    // Register the device
-                    //
-                    if (!completed || error != nil)
-                    {
-                        if (blockCompletion)
-                        {
-                            blockCompletion(NO, error);
-                        }
-                    }
-                    else {
-                        
-                        //
-                        // If registration was successful, follow the flow for authentication as id_token is one time usage only
-                        // This may cause the issue where the login screen will prompt again upon successful device registration
-                        // or falling back to client credential authentication when the flow is set to client credentials.
-                        //
-                        [self validateCurrentUserSession:completion];
-                    }
-                }];
-            }
-        }
-    }];
-}
-
-
-- (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
-{
-    __block MASCompletionErrorBlock blockCompletion = completion;
-    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
-    __block MASModelService *blockSelf = self;
-    
-    //
-    //  Go through registration and authentication process with auth credential object.
-    //
-    [self registerApplication:^(BOOL completed, NSError * _Nullable error) {
-        
-        //
-        //  If an error occurred while client registration
-        //
-        if (!completed || error != nil)
-        {
-            if (blockCompletion)
-            {
-                blockCompletion(NO, error);
-            }
-        }
-        //
-        //  Othersiwe,
-        //
-        else {
-            
-            //
-            //  If device is already registered, perform authentication instead
-            //
-            if ([MASDevice currentDevice].isRegistered)
-            {
-                [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
-            }
-            else {
-                
-                //
-                //  Register device with auth credentials object
-                //
-                [self registerDeviceWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
-                    
-                    //
-                    //  If an error occurred while device registration
-                    //
-                    if (!completed || error != nil)
-                    {
-                        if (blockCompletion)
-                        {
-                            blockCompletion(NO, error);
-                        }
-                    }
-                    //
-                    //  Otherwsie,
-                    //
-                    else {
-                        
-                        //
-                        //  If auth credentials is reuseable, perform login with same credentials
-                        //
-                        if (blockAuthCredentials.isReuseable)
-                        {
-                            [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
-                        }
-                        else {
-                            
-                            //
-                            //  Clear credentials after first attempt if it is not reuseable
-                            //
-                            [blockAuthCredentials clearCredentials];
-                            
-                            //
-                            //  Fallback to user authentication
-                            //
-                            [self validateCurrentUserSession:blockCompletion];
-                        }
-                    }
-                }];
-            }
-        }
-    }];
-}
-
-
-- (void)registerDeviceWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
-{
-    //
-    //  Refresh access obj
-    //
-    [[MASAccessService sharedService].currentAccessObj refresh];
-    
-    //
-    // The application must be registered else stop here
-    //
-    if (![[MASApplication currentApplication] isRegistered])
-    {
-        //
-        // Notify
-        //
-        if (completion)
-        {
-            completion(NO, [NSError errorApplicationNotRegistered]);
-        }
-        
-        return;
-    }
-    
     //
     // Detect if device is already registered, if so stop here
     //
-    if ([[MASDevice currentDevice] isRegistered])
+    if([self.currentDevice isRegistered])
     {
         //
         // Notify
         //
-        if (completion)
-        {
-            completion(YES, nil);
-        }
+        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
         
         return;
     }
     
     //
-    //  Validate to see if auth credentials can register device
+    // Post the will register notification
     //
-    if (!authCredentials.canRegisterDevice)
-    {
-        //
-        // Notify
-        //
-        if (completion)
-        {
-            completion(NO, [NSError errorDeviceCanNotRegisterWithGivenAuthCredentials]);
-        }
-        
-        return;
-    }
-    
-//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
-    __block MASCompletionErrorBlock blockCompletion = completion;
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
     
     //
-    //  Perform registration
+    // Endpoint
     //
-    [authCredentials registerDeviceWithCredential:^(BOOL completed, NSError * _Nullable error) {
-        
-        //
-        //  Notify
-        //
-        if (blockCompletion)
-        {
-            blockCompletion(completed, error);
-        }
-    }];
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterClientEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    
+    // Client Authorization
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    
+    // DeviceId
+    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
+    
+    // DeviceName
+    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
+    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
+    
+    // Certificate Format
+    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
+    
+    //
+    // Parameters
+    //
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    
+    // Certificate Signing Request
+    MASSecurityService *securityService = [MASSecurityService sharedService];
+    [securityService deleteAsymmetricKeys];
+    [securityService generateKeypair];
+    
+    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"clientName"];
+    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
+    
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    [[MASNetworkingService sharedService] postTo:endPoint
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeTextPlain
+                                    responseType:MASRequestResponseTypeTextPlain
+                                      completion:^(NSDictionary *responseInfo, NSError *error)
+     {
+         //
+         // Detect if error, if so stop here
+         //
+         if(error)
+         {
+             //DLog(@"Error detected attempting to request registration of the device: %@",
+             //[error localizedDescription]);
+             
+             //
+             // Notify
+             //
+             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+             
+             //
+             // Post the notification
+             //
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+             
+             return;
+         }
+         
+         //
+         // Updated with latest info
+         //
+         [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
+         
+         //
+         // re-establish URLSession to trigger URL authentication
+         //
+         [[MASNetworkingService sharedService] establishURLSession];
+         
+         //
+         // Post the did register notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
+         
+         //
+         // Error
+         //
+         if(error)
+         {
+             //
+             // Notify
+             //
+             if(completion) completion(NO, error);
+             
+             return;
+         }
+         
+         //
+         // Notify
+         //
+         if(completion) completion(YES, nil);
+     }
+     ];
 }
 
 
-- (void)loginWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
+- (void)registerDeviceForUser:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
 {
     //
-    //  Refresh access obj
+    // Detect if device is already registered, if so stop here
     //
-    [[MASAccessService sharedService].currentAccessObj refresh];
-    
-    //
-    // The device must be registered else stop here
-    //
-    if (![[MASDevice currentDevice] isRegistered])
+    if([self.currentDevice isRegistered])
     {
         //
         // Notify
         //
-        if (completion)
-        {
-            completion(NO, [NSError errorDeviceNotRegistered]);
-        }
+        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
         
         return;
     }
     
     //
-    //  If the user session has already been authenticated, throw an error.
+    // Post the will register notification
     //
-    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
+    
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    
+    // Authorization with 'Authorization' header key
+    NSString *authorization = [MASUser authorizationBasicHeaderValueWithUsername:userName password:password];
+    if(authorization) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
+    
+    // Client Authorization
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    
+    // DeviceId
+    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
+    
+    // DeviceName
+    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
+    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
+    
+    // Create Session
+    headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
+    
+    // Certificate Format
+    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
+    
+    //
+    // Parameters
+    //
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    
+    // Certificate Signing Request
+    MASSecurityService *securityService = [MASSecurityService sharedService];
+    [securityService deleteAsymmetricKeys];
+    [securityService generateKeypair];
+    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:userName];
+    
+    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
+    
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    [[MASNetworkingService sharedService] postTo:endPoint
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeTextPlain
+                                    responseType:MASRequestResponseTypeTextPlain
+                                      completion:^(NSDictionary *responseInfo, NSError *error)
+     {
+         //
+         // Detect if error, if so stop here
+         //
+         if(error)
+         {
+             //DLog(@"Error detected attempting to request registration of the device: %@",
+             //    [error localizedDescription]);
+             
+             //
+             // Notify
+             //
+             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+             
+             //
+             // Post the notification
+             //
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+             
+             return;
+         }
+         
+         //
+         // Validate id_token when received from server.
+         //
+         NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+         
+         if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
+             [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
+             [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+         {
+             NSError *idTokenValidationError = nil;
+             BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
+                                                       magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
+                                                               error:&idTokenValidationError];
+             
+             if (!isIdTokenValid && idTokenValidationError)
+             {
+                 if (completion)
+                 {
+                     completion(NO, idTokenValidationError);
+                     
+                     return;
+                 }
+             }
+         }
+         
+         //
+         // Updated with latest info
+         //
+         [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
+         
+         //
+         // re-establish URLSession to trigger URL authentication
+         //
+         [[MASNetworkingService sharedService] establishURLSession];
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
+         
+         //
+         // Notify
+         //
+         if(completion) completion((self.currentDevice.isRegistered), nil);
+     }
+     ];
+}
+
+
+- (void)registerDeviceWithAuthorizationCode:(NSString *)code completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Detect if device is already registered, if so stop here
+    //
+    if([self.currentDevice isRegistered])
     {
-        if (completion)
-        {
-            completion(NO, [NSError errorUserAlreadyAuthenticated]);
-        }
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
         
         return;
     }
     
-//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
-    __block MASCompletionErrorBlock blockCompletion = completion;
+    //
+    // Post the will register notification
+    //
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
     
     //
-    //  Perform authentication
+    // Endpoint
     //
-    [authCredentials loginWithCredential:^(BOOL completed, NSError * _Nullable error) {
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    
+    // Authorization with 'Authorization' header key
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@", code];
+    if(authorization) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
+    
+    // Redirect-Uri
+    headerInfo[MASRedirectUriHeaderRequestResponseKey] = [MASApplication currentApplication].redirectUri.absoluteString;
+    
+    // Client Authorization
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    
+    // DeviceId
+    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
+    
+    // DeviceName
+    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
+    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
+    
+    // Create Session
+    headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
+    
+    // Certificate Format
+    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
+    
+    //
+    // If code verifier exists in the memory
+    //
+    if ([[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier])
+    {
+        //
+        // inject it into parameter of the request
+        //
+        headerInfo[MASPKCECodeVerifierHeaderRequestResponseKey] = [[MASAccessService sharedService].currentAccessObj retrieveCodeVerifier];
+    }
+    
+    //
+    // Parameters
+    //
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    
+    // Certificate Signing Request
+    MASSecurityService *securityService = [MASSecurityService sharedService];
+    [securityService deleteAsymmetricKeys];
+    [securityService generateKeypair];
+    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"socialLogin"];
+    
+    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
+    
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    [[MASNetworkingService sharedService] postTo:endPoint
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeTextPlain
+                                    responseType:MASRequestResponseTypeTextPlain
+                                      completion:^(NSDictionary *responseInfo, NSError *error)
+     {
+         //
+         // Detect if error, if so stop here
+         //
+         if(error)
+         {
+             //DLog(@"Error detected attempting to request registration of the device: %@",
+             //    [error localizedDescription]);
+             
+             //
+             // Notify
+             //
+             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+             
+             //
+             // Post the notification
+             //
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+             
+             return;
+         }
+         
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+         
+         //
+         // Validate id_token when received from server.
+         //
+         NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+         
+         if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
+             [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
+             [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+         {
+             NSError *idTokenValidationError = nil;
+             BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
+                                                       magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
+                                                               error:&idTokenValidationError];
+             
+             if (!isIdTokenValid && idTokenValidationError)
+             {
+                 if (completion)
+                 {
+                     completion(NO, idTokenValidationError);
+                     
+                     return;
+                 }
+             }
+         }
+         
+         //
+         // Updated with latest info
+         //
+         [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
+         
+         //
+         // re-establish URLSession to trigger URL authentication
+         //
+         [[MASNetworkingService sharedService] establishURLSession];
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
+         
+         //
+         // Notify
+         //
+         if(completion) completion((self.currentDevice.isRegistered), nil);
+     }
+     ];
+}
+
+
+- (void)registerDeviceWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Detect if device is already registered, if so stop here
+    //
+    if([self.currentDevice isRegistered])
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorDeviceAlreadyRegistered]);
         
-        //
-        //  Notify
-        //
-        if (blockCompletion)
-        {
-            blockCompletion(completed, error);
-        }
-    }];
+        return;
+    }
+    
+    //
+    // Post the will register notification
+    //
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
+    
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
+    
+    //
+    // Headers
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    
+    // Authorization with 'Authorization' header key
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@", idToken];
+    if(idToken) headerInfo[MASAuthorizationRequestResponseKey] = authorization;
+    
+    if (tokenType)
+    {
+        headerInfo[MASAuthorizationTypeRequestResponseKey] = tokenType;
+    }
+    
+    // Client Authorization
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    
+    // DeviceId
+    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
+    
+    // DeviceName
+    NSString *deviceName = [MASDevice deviceNameBase64Encoded];
+    if(deviceName) headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
+    
+    // Create Session
+    headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
+    
+    // Certificate Format
+    headerInfo[MASCertFormatRequestResponseKey] = @"pem";
+    
+    //
+    // Parameters
+    //
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    
+    // Certificate Signing Request
+    MASSecurityService *securityService = [MASSecurityService sharedService];
+    [securityService deleteAsymmetricKeys];
+    [securityService generateKeypair];
+    NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"socialLogin"];
+    
+    if(certificateSigningRequest) parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
+    
+    //
+    // Trigger the request
+    //
+    __block MASModelService *blockSelf = self;
+    [[MASNetworkingService sharedService] postTo:endPoint
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeTextPlain
+                                    responseType:MASRequestResponseTypeTextPlain
+                                      completion:^(NSDictionary *responseInfo, NSError *error)
+     {
+         //
+         // Detect if error, if so stop here
+         //
+         if(error)
+         {
+             //DLog(@"Error detected attempting to request registration of the device: %@",
+             //    [error localizedDescription]);
+             
+             //
+             // Notify
+             //
+             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+             
+             //
+             // Post the notification
+             //
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+             
+             return;
+         }
+         
+         //
+         // Remove PKCE Code Verifier and state
+         //
+         [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+         [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+         
+         //
+         // Validate id_token when received from server.
+         //
+         NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+         
+         if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
+             [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
+             [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+         {
+             NSError *idTokenValidationError = nil;
+             BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
+                                                       magIdentifier:[headerInfo objectForKey:MASMagIdentifierRequestResponseKey]
+                                                               error:&idTokenValidationError];
+             
+             if (!isIdTokenValid && idTokenValidationError)
+             {
+                 if (completion)
+                 {
+                     completion(NO, idTokenValidationError);
+                     
+                     return;
+                 }
+             }
+         }
+         
+         //
+         // Updated with latest info
+         //
+         [blockSelf.currentDevice saveWithUpdatedInfo:responseInfo];
+         
+         //
+         // re-establish URLSession to trigger URL authentication
+         //
+         [[MASNetworkingService sharedService] establishURLSession];
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidRegisterNotification object:blockSelf];
+         
+         //
+         // Notify
+         //
+         if(completion) completion((self.currentDevice.isRegistered), nil);
+     }
+     ];
 }
 
 @end

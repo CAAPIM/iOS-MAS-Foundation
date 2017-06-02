@@ -67,6 +67,12 @@
 }
 
 
++ (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
+{
+    [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];
+}
+
+
 + (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
 {
     [MASModelService setUserLoginBlock:login];

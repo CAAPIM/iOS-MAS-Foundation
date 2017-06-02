@@ -10,4 +10,21 @@
 
 @implementation MASAuthCredentials (MASPrivate)
 
+- (instancetype)initPrivate
+{
+    return [super init];
+}
+
+
+- (void)registerDeviceWithCredential:(MASCompletionErrorBlock)completion
+{
+    
+}
+
+
+- (void)loginWithCredential:(MASCompletionErrorBlock)completion
+{
+    
+}
+
 @end

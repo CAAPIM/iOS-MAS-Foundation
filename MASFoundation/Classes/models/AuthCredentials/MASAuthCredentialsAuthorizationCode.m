@@ -9,6 +9,7 @@
 #import "MASAuthCredentialsAuthorizationCode.h"
 
 #import "MASAccessService.h"
+#import "MASAuthCredentials+MASPrivate.h"
 #import "MASSecurityService.h"
 #import "MASModelService.h"
 #import "NSError+MASPrivate.h"
@@ -32,7 +33,7 @@
 
 - (instancetype)initPrivateWithAuthorizationCode:(NSString *)authorizationCode
 {
-    self = [super init];
+    self = [super initPrivate];
     
     if(self) {
         _authorizationCode = authorizationCode;

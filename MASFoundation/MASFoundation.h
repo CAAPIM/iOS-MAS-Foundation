@@ -57,6 +57,8 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 //
 #import <MASFoundation/MASAuthCredentials.h>
 #import <MASFoundation/MASAuthCredentialsPassword.h>
+#import <MASFoundation/MASAuthCredentialsAuthorizationCode.h>
+#import <MASFoundation/MASAuthCredentialsJWT.h>
 
 //
 // Categories

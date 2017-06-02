@@ -9,6 +9,7 @@
 #import "MASAuthCredentialsClientCredentials.h"
 
 #import "MASAccessService.h"
+#import "MASAuthCredentials+MASPrivate.h"
 #import "MASSecurityService.h"
 #import "MASModelService.h"
 #import "NSError+MASPrivate.h"
@@ -35,7 +36,7 @@
 
 - (instancetype)initPrivate
 {
-    self = [super init];
+    self = [super initPrivate];
     
     if(self) {
         _credentialsType = MASAuthCredentialsTypeClientCredential;

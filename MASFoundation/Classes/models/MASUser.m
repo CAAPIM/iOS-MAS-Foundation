@@ -187,7 +187,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         return;
     }
     
-    [[MASModelService sharedService] validateCurrentUserAuthenticationWithUsername:userName password:password completion:completion];
+    MASAuthCredentialsPassword *authCredentials = [MASAuthCredentialsPassword initWithUsername:userName password:password];
+    [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
 
 
@@ -203,7 +204,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         return;
     }
     
-    [[MASModelService sharedService] validateCurrentUserAuthenticationWithAuthorizationCode:authorizationCode completion:completion];
+    MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
+    [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
 
 
@@ -219,7 +221,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         return;
     }
     
-    [[MASModelService sharedService] validateCurrentUserAuthenticationWithIdToken:idToken tokenType:tokenType completion:completion];
+    MASAuthCredentialsJWT *authCredentials = [MASAuthCredentialsJWT initWithJWT:idToken tokenType:tokenType];
+    [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
 
 
