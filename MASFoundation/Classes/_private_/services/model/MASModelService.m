@@ -797,65 +797,79 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             __block MASModelService *blockSelf = self;
             __block MASCompletionErrorBlock blockCompletion = completion;
             
-            //
-            // Else notify block if available
-            //
-            if(_userAuthCredentialsBlock_)
+            __block MASAuthCredentialsBlock authCredentialsBlock = ^(MASAuthCredentials *authCredentials, BOOL cancel, MASCompletionErrorBlock authCompletion)
             {
-                __block MASAuthCredentialsBlock authCredentialsBlock = ^(MASAuthCredentials *authCredentials, BOOL cancel, MASCompletionErrorBlock authCompletion)
+                //
+                //  When the authentication process was explicitly cancelled by user
+                //
+                if (cancel)
                 {
-                    //
-                    //  When the authentication process was explicitly cancelled by user
-                    //
-                    if (cancel)
+                    if (blockCompletion)
+                    {
+                        blockCompletion(NO, [NSError errorLoginProcessCancelled]);
+                    }
+                    
+                    if (authCompletion)
+                    {
+                        authCompletion(NO, [NSError errorLoginProcessCancelled]);
+                    }
+                    
+                    return;
+                }
+                
+                __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
+                
+                //
+                //  Perform device registration with auth credentials
+                //
+                [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                    
+                    if (error)
                     {
                         if (blockCompletion)
                         {
-                            blockCompletion(NO, [NSError errorLoginProcessCancelled]);
+                            blockCompletion(NO, error);
                         }
                         
-                        if (authCompletion)
+                        if (blockAuthCompletion)
                         {
-                            authCompletion(NO, [NSError errorLoginProcessCancelled]);
+                            blockAuthCompletion(NO, error);
                         }
                         
                         return;
                     }
                     
-                    __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
+                    if (blockCompletion)
+                    {
+                        blockCompletion(YES, nil);
+                    }
                     
-                    //
-                    //  Perform device registration with auth credentials
-                    //
-                    [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
-                        
-                        if (error)
-                        {
-                            if (blockCompletion)
-                            {
-                                blockCompletion(NO, error);
-                            }
-                            
-                            if (blockAuthCompletion)
-                            {
-                                blockAuthCompletion(NO, error);
-                            }
-                            
-                            return;
-                        }
-                        
-                        if (blockCompletion)
-                        {
-                            blockCompletion(YES, nil);
-                        }
-                        
-                        if (blockAuthCompletion)
-                        {
-                            blockAuthCompletion(YES, nil);
-                        }
-                    }];
-                };
+                    if (blockAuthCompletion)
+                    {
+                        blockAuthCompletion(YES, nil);
+                    }
+                }];
+            };
             
+            DLog(@"\n\n\n********************************************************\n\n"
+                 "Waiting for credentials response to continue registration"
+                 @"\n\n********************************************************\n\n\n");
+            
+            //
+            // If the UI handling framework is present and will handle this stop here
+            //
+            MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+            if([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
+            {
+                return;
+            }
+            
+            
+            //
+            // Else notify block if available
+            //
+            if(_userAuthCredentialsBlock_)
+            {
                 //
                 // Do this is the main queue since the reciever is almost certainly a UI component.
                 // Lets do this for them and not make them figure it out
@@ -1073,20 +1087,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                     };
                 }
                 
-                DLog(@"\n\n\n********************************************************\n\n"
-                     "Waiting for credentials response to continue registration"
-                     @"\n\n********************************************************\n\n\n");
-                
-                //
-                // If the UI handling framework is present and will handle this stop here
-                //
-                MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-                if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
-                                                    authorizationCodeBlock:authorizationCodeCredentialsBlock])
-                {
-                    return;
-                }
-                
                 //
                 // Else notify block if available
                 //
@@ -1145,306 +1145,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         }
     }
 }
-
-//
-//- (void)registerDeviceWithCompletionOld:(MASCompletionErrorBlock)completion
-//{
-//    
-//    //
-//    // Check if the client certificate is expired, if so, renew
-//    //
-//    if ([MASDevice currentDevice].isClientCertificateExpired && [MASDevice currentDevice].isRegistered)
-//    {
-//        [self renewClientCertificateWithCompletion:completion];
-//        
-//        return;
-//    }
-//    
-//    //
-//    // If already registered stop here
-//    //
-//    if ([[MASDevice currentDevice] isRegistered])
-//    {
-//        //
-//        // Notify
-//        //
-//        if(completion) completion(YES, nil);
-//        
-//        return;
-//    }
-//    
-//    //
-//    // Check if the current MASGrantFlow is NOT supported by the registered Scope for the
-//    // application record
-//    //
-//    if (![MASModelService isGrantFlowSupported:_grantFlow_])
-//    {
-//        //
-//        // Notify
-//        //
-//        if(completion) completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
-//            
-//        return;
-//    }
-//    
-//    //
-//    // Detect registration type and respond appropriately
-//    //
-//    switch (_grantFlow_)
-//    {
-//        //
-//        // Client Credentials Registration
-//        //
-//        case MASGrantFlowClientCredentials:
-//        {
-//            [self registerDeviceForClientCredentialsCompletion:completion];
-//            break;
-//        }
-//        
-//        //
-//        // User Credentials Registration
-//        //
-//        case MASGrantFlowPassword:
-//        {
-//            //
-//            // If UI handling framework is not present and handling it continue on with notifying the
-//            // application it needs to handle this itself
-//            //
-//            __block MASBasicCredentialsBlock basicCredentialsBlock;
-//            __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
-//            __block MASModelService *blockSelf = self;
-//            __block MASCompletionErrorBlock completionBlock = completion;
-//            
-//            //
-//            // Basic Credentials Supported
-//            //
-//            if([[MASApplication currentApplication] isScopeTypeMssoSupported])
-//            {
-//                //
-//                // Basic Credentials Block
-//                //
-//                basicCredentialsBlock = ^(NSString *userName, NSString *password, BOOL cancel, MASCompletionErrorBlock completion)
-//                {
-//                    DLog(@"\n\nBasic credentials block called with userName: %@ password: %@ and cancel: %@\n\n",
-//                        userName, password, (cancel ? @"Yes" : @"No"));
-//                
-//                    //
-//                    // Reset the authenticationProvider as the session id should have been used
-//                    //
-//                    blockSelf.currentProviders = nil;
-//                    
-//                    //
-//                    // Cancelled stop here
-//                    //
-//                    if(cancel)
-//                    {
-//                        //
-//                        // Notify
-//                        //
-//                        if (completion)
-//                        {
-//                            completion(NO, [NSError errorLoginProcessCancelled]);
-//                        }
-//                        
-//                        if (completionBlock)
-//                        {
-//                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
-//                        }
-//                        
-//                        return;
-//                    }
-//                
-//                    //
-//                    // Attempt to register the device with the credentials
-//                    //
-//                    [blockSelf registerDeviceForUser:userName password:password completion:^(BOOL completed, NSError *error)
-//                    {
-//                        
-//                        //
-//                        // Error
-//                        //
-//                        if (error)
-//                        {
-//                            //
-//                            // Notify
-//                            //
-//                            if (completionBlock) completionBlock(NO, error);
-//                            
-//                            if (completion) completion(NO, error);
-//                            
-//                            return;
-//                        }
-//                        
-//                        if (!_userLoginBlock_ && ![MASConfiguration currentConfiguration].ssoEnabled)
-//                        {
-//                            //
-//                            //  If the user authenticationBlock is not set, and sso was not enabled,
-//                            //  the sdk should authenticate the user with given username and password from registration.
-//                            //  Otherwise, it will end up prompting login screen twice or not be authenticated as id_token does not exist.
-//                            //
-//                            [blockSelf loginWithUserName:userName password:password completion:^(BOOL completed, NSError *error)
-//                            {
-//                                //
-//                                // Error
-//                                //
-//                                if (error)
-//                                {
-//                                    //
-//                                    // Notify
-//                                    //
-//                                    if (completionBlock) completionBlock(NO, error);
-//                                    
-//                                    if (completion) completion(NO, error);
-//                                    
-//                                    return;
-//                                }
-//                                
-//                                //
-//                                // Notify
-//                                //
-//                                if(completionBlock) completionBlock(YES, nil);
-//                                
-//                                if (completion) completion(YES, nil);
-//                            }];
-//                        }
-//                        else {
-//                            
-//                            //
-//                            // Notify
-//                            //
-//                            if(completionBlock) completionBlock(YES, nil);
-//                            
-//                            if (completion) completion(YES, nil);
-//                        }
-//                        
-//                    }];
-//                };
-//            }
-//            
-//            //
-//            // Authorization Code Credentials Supported
-//            //
-//            if([[MASApplication currentApplication] isScopeTypeMssoRegisterSupported])
-//            {
-//                //
-//                // Authorization Code Credentials Block
-//                //
-//                authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
-//                {
-//                    DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
-//                        authorizationCode, (cancel ? @"Yes" : @"No"));
-//                    
-//                    //
-//                    // Reset the authenticationProvider as the session id should have been used
-//                    //
-//                    blockSelf.currentProviders = nil;
-//                    
-//                    //
-//                    // Cancelled stop here
-//                    //
-//                    if(cancel)
-//                    {
-//                        //
-//                        // Notify
-//                        //
-//                        if (completion)
-//                        {
-//                            completion(NO, [NSError errorLoginProcessCancelled]);
-//                        }
-//                        
-//                        if (completionBlock)
-//                        {
-//                            completionBlock(NO, [NSError errorLoginProcessCancelled]);
-//                        }
-//                        
-//                        return;
-//                    }
-//                    
-//                    //
-//                    // Attempt to register the device with the credentials
-//                    //
-//                    [blockSelf registerDeviceWithAuthorizationCode:authorizationCode completion:^(BOOL completed, NSError *error) {
-//                        
-//                        //
-//                        // Error
-//                        //
-//                        if(error)
-//                        {
-//                            //
-//                            // Notify
-//                            //
-//                            if (completionBlock) completionBlock(NO, error);
-//                            
-//                            if (completion) completion(NO, error);
-//                            
-//                            return;
-//                        }
-//                        
-//                        //
-//                        // Notify
-//                        //
-//                        if(completionBlock) completionBlock(YES, nil);
-//                        
-//                        if (completion) completion(YES, nil);
-//                        
-//                    }];
-//                };
-//            }
-//        
-//            DLog(@"\n\n\n********************************************************\n\n"
-//                "Waiting for credentials response to continue registration"
-//                @"\n\n********************************************************\n\n\n");
-//            
-//            //
-//            // If the UI handling framework is present and will handle this stop here
-//            //
-//            MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-//            if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
-//                authorizationCodeBlock:authorizationCodeCredentialsBlock])
-//            {
-//                return;
-//            }
-//            
-//            //
-//            // Else notify block if available
-//            //
-//            if(_userLoginBlock_)
-//            {
-//                //
-//                // Do this is the main queue since the reciever is almost certainly a UI component.
-//                // Lets do this for them and not make them figure it out
-//                //
-//                dispatch_async(dispatch_get_main_queue(),^
-//                {
-//                    _userLoginBlock_(basicCredentialsBlock, authorizationCodeCredentialsBlock);
-//                });
-//            }
-//            else {
-//                
-//                //
-//                // If the device registration block is not defined, return an error
-//                //
-//                if (completion)
-//                {
-//                    completion(NO, [NSError errorInvalidUserLoginBlock]);
-//                }
-//            }
-//            
-//            break;
-//        }
-//        
-//        //
-//        // Default
-//        //
-//        default:
-//        {
-//            DLog(@"\n\nError detecting unknown registration type: %@\n\n",
-//                [MASModelService grantFlowToString:_grantFlow_]);
-//            
-//            break;
-//        }
-//    }
-//}
 
 
 - (void)renewClientCertificateWithCompletion:(MASCompletionErrorBlock)completion
@@ -2032,15 +1732,15 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
               "Waiting for credentials response to continue registration"
               @"\n\n********************************************************\n\n\n");
          
-         //
-         // If the UI handling framework is present and will handle this stop here
-         //
-         MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-         if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
-                                             authorizationCodeBlock:authorizationCodeCredentialsBlock])
-         {
-             return;
-         }
+//         //
+//         // If the UI handling framework is present and will handle this stop here
+//         //
+//         MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+//         if([serviceRegistry uiServiceWillHandleBasicAuthentication:basicCredentialsBlock
+//                                             authorizationCodeBlock:authorizationCodeCredentialsBlock])
+//         {
+//             return;
+//         }
          
          //
          // Else notify block if available

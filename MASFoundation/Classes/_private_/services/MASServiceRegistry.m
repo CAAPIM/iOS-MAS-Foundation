@@ -708,13 +708,12 @@ static NSArray const *_serviceUUIDs_;
 
 # pragma mark - UI Service
 
-- (BOOL)uiServiceWillHandleBasicAuthentication:(MASBasicCredentialsBlock)basicBlock
-    authorizationCodeBlock:(MASAuthorizationCodeCredentialsBlock)authorizationCodeBlock
+- (BOOL)uiServiceWillHandleWithAuthCredentialsBlock:(MASAuthCredentialsBlock)authCredentialBlock
 {
-
+    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-
+    
     //
     // If an authenticated user is present no need to continue
     //
@@ -749,7 +748,7 @@ static NSArray const *_serviceUUIDs_;
     //
     IMP imp = [uiServiceClass methodForSelector:selector];
     BOOL (*willHandleAuthentication)(id, SEL) = (void *)imp;
-                    
+    
     //
     // Invoke the method and if the service responds that it will NOT handle authentication UI
     // stop here
@@ -766,7 +765,7 @@ static NSArray const *_serviceUUIDs_;
     // If the service does not even implement the notification callback to handle the authentication
     // stop here
     //
-    selector = NSSelectorFromString(@"__masRequestsCredentialsWithAuthenticationProviders:basicCredentialsBlock:authorizationCodeBlock__:");
+    selector = NSSelectorFromString(@"__masRequestsCredentialsWithAuthenticationProviders__:authCredentialsBlock:");
     if(![self.uiService respondsToSelector:selector])
     {
         return NO;
@@ -776,15 +775,15 @@ static NSArray const *_serviceUUIDs_;
     // Retrieve the function pointer for this selector
     //
     imp = [self.uiService methodForSelector:selector];
-    __block void (*handleAuthentication)(id, SEL, MASAuthenticationProviders*, MASBasicCredentialsBlock, MASAuthorizationCodeCredentialsBlock) = (void *)imp;
+    __block void (*handleAuthentication)(id, SEL, MASAuthenticationProviders*, MASAuthCredentialsBlock) = (void *)imp;
     
     //
     // Attempt to retrieve the authentication providers
     //
-    handleAuthentication(self.uiService, selector, [MASAuthenticationProviders currentProviders], basicBlock, authorizationCodeBlock);
-                
+    handleAuthentication(self.uiService, selector, [MASAuthenticationProviders currentProviders], authCredentialBlock);
+    
 #pragma clang diagnostic pop
-
+    
     return YES;
 }
 
