@@ -30,6 +30,14 @@
 
 
 
+
+/**
+ Designated factory method to construct MASAuthCredentials object for JWT credentials
+ 
+ @param jwt NSString of JWT for credentials
+ @param tokenType NSString of JWT's token type for credentials
+ @return MASAuthCredentialsJWT object that can be used as auth credentials to register or login
+ */
 + (MASAuthCredentialsJWT * _Nullable)initWithJWT:(NSString * _Nonnull)jwt tokenType:(NSString * _Nonnull)tokenType;
 
 @end

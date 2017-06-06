@@ -25,6 +25,13 @@
 
 
 
+
+/**
+ Designated factory method to construct MASAuthCredentials object for authorization code credentials
+
+ @param authorizationCode NSString of authorization code for credentials
+ @return MASAuthCredentialsAuthorizationCode object that can be used as auth credentials to register or login
+ */
 + (MASAuthCredentialsAuthorizationCode * _Nullable)initWithAuthorizationCode:(NSString * _Nonnull)authorizationCode;
 
 @end

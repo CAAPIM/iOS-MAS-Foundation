@@ -339,7 +339,6 @@
     //
     __block MASAuthCredentialsJWT *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    __block BOOL blockIgnoreFallback = YES;
     
     [[MASNetworkingService sharedService] postTo:endPoint
                                   withParameters:parameterInfo
@@ -364,13 +363,9 @@
              //
              // If it was set to fallback to authentication validation
              //
-             if (!blockIgnoreFallback)
+             if (blockCompletion)
              {
-                 [[MASModelService sharedService] validateCurrentUserSession:completion];
-             }
-             else if (blockCompletion)
-             {
-                 blockCompletion(NO, error);
+                 blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
              }
              
              return;

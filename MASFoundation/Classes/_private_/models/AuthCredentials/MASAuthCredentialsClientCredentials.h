@@ -10,6 +10,13 @@
 
 @interface MASAuthCredentialsClientCredentials : MASAuthCredentials
 
+
+
+/**
+ Designated factory method to construct MASAuthCredentials object for client credentials credentials
+ 
+ @return MASAuthCredentialsClientCredentials object that can be used as auth credentials to register or login
+ */
 + (MASAuthCredentialsClientCredentials * _Nullable)initClientCredentials;
 
 @end

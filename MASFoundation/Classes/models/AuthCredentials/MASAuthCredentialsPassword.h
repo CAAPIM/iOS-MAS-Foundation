@@ -31,6 +31,14 @@
 
 
 
+
+/**
+ Designated factory method to construct MASAuthCredentials object for password credentials
+
+ @param username NSString of username for credentials
+ @param password NSString of password for credentials
+ @return MASAuthCredentialsPassword object that can be used as auth credentials to register or login
+ */
 + (MASAuthCredentialsPassword * _Nullable)initWithUsername:(NSString * _Nonnull)username password:(NSString * _Nonnull)password;
 
 @end

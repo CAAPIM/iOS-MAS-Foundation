@@ -995,6 +995,6 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *
  *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
  */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login;
++ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login DEPRECATED_MSG_ATTRIBUTE("[MAS setUserLoginBlock:] is deprecated as of MAS 1.5. Use [MAS setAuthCredentials:] instead.");
 
 @end

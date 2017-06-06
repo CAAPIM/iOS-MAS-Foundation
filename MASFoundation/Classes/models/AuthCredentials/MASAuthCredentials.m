@@ -23,7 +23,7 @@
 
 # pragma mark - Public
 
-- (void)clearCredential
+- (void)clearCredentials
 {
     
 }

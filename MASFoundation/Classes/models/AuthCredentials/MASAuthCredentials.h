@@ -54,7 +54,19 @@ typedef NS_ENUM(NSInteger, MASAuthCredentialsType) {
  *  Authentication credential type.
  */
 @property (nonatomic, assign, readonly) MASAuthCredentialsType credentialsType;
+
+
+
+/**
+ *  boolean indicator whether this particular auth credentials can be used for device registration.
+ */
 @property (nonatomic, assign, readonly) BOOL canRegisterDevice;
+
+
+
+/**
+ *  boolean indicator whether this particular auth credentials can be re-used.
+ */
 @property (nonatomic, assign, readonly) BOOL isReuseable;
 
 
