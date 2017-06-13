@@ -11,38 +11,6 @@
 @interface MASAuthCredentials : MASObject
 
 
-/**
- *  MASAuthCredentialType enumeration type represents the authentication credential type of MAS SDK.
- */
-typedef NS_ENUM(NSInteger, MASAuthCredentialsType) {
-    
-    /**
-     *  MASAuthCredentialTypeClientCredential represents client credential auth credential type which is default flow of SDK.
-     */
-    MASAuthCredentialsTypeClientCredential = -1,
-    
-    /**
-     *  MASAuthCredentialTypePassword represents username/password flow auth credential type.
-     */
-    MASAuthCredentialsTypePassword,
-    
-    /**
-     *  MASAuthCredentialTypeAuthCode represents authorization code flow auth credential type.
-     */
-    MASAuthCredentialsTypeAuthCode,
-    
-    /**
-     *  MASAuthCredentialTypeJWT represents JSON Web Token auth credential type.
-     */
-    MASAuthCredentialsTypeJWT,
-    
-    /**
-     *  MASAuthCredentialTypeFIDO represents FIDO flow auth credential type.
-     */
-    MASAuthCredentialsTypeFIDO
-};
-
-
 
 ///--------------------------------------
 /// @name Properties
@@ -53,7 +21,7 @@ typedef NS_ENUM(NSInteger, MASAuthCredentialsType) {
 /**
  *  Authentication credential type.
  */
-@property (nonatomic, assign, readonly) MASAuthCredentialsType credentialsType;
+@property (nonatomic, assign, readonly) NSString *credentialsType;
 
 
 

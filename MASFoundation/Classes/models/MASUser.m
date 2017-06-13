@@ -40,6 +40,14 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
++ (NSString *_Nullable)authCredentialsType
+{
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    
+    return authCredentialsType;
+}
+
+
 # pragma mark - Current User - Lock/Unlock Session
 
 - (void)lockSessionWithCompletion:(MASCompletionErrorBlock)completion
@@ -222,6 +230,22 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     }
     
     MASAuthCredentialsJWT *authCredentials = [MASAuthCredentialsJWT initWithJWT:idToken tokenType:tokenType];
+    [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
+}
+
+
++ (void)loginWithAuthCredentials:(MASAuthCredentials *_Nonnull)authCredentials completion:(MASCompletionErrorBlock _Nullable)completion
+{
+    //
+    //  If the user session has already been authenticated, throw an error.
+    //
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        
+        return;
+    }
+    
     [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
 

@@ -818,11 +818,17 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                 }
                 
                 __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
+                __block MASAuthCredentials *blockAuthCredentials = authCredentials;
                 
                 //
                 //  Perform device registration with auth credentials
                 //
                 [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                    
+                    //
+                    //  Clear credentials after first attempt if it is not reuseable
+                    //
+                    [blockAuthCredentials clearCredentials];
                     
                     if (error)
                     {
@@ -957,7 +963,12 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                             //  Otherwise, it will end up prompting login screen twice or not be authenticated as id_token does not exist.
                             //
                             [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
-                               
+                                
+                                //
+                                //  Clear credentials after first attempt if it is not reuseable
+                                //
+                                [blockAuthCredentials clearCredentials];
+                                
                                 //
                                 // Error
                                 //
@@ -994,6 +1005,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                             }];
                         }
                         else {
+                            
+                            //
+                            //  Clear credentials after first attempt if it is not reuseable
+                            //
+                            [blockAuthCredentials clearCredentials];
                             
                             //
                             // Notify
@@ -1059,8 +1075,13 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                         //
                         // Attempt to register the device with the credentials
                         //
-                        MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
+                        __block MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
                         [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                            
+                            //
+                            //  Clear credentials after first attempt if it is not reuseable
+                            //
+                            [authCredentials clearCredentials];
                             
                             //
                             // Error
@@ -1136,8 +1157,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                     //
                     if (completionBlock) completionBlock(NO, error);
                     
-                    if (completion) completion(NO, error);
-                    
                     return;
                 }
                 
@@ -1145,8 +1164,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                 // Notify
                 //
                 if(completionBlock) completionBlock(YES, nil);
-                
-                if (completion) completion(YES, nil);
             }];
         
             break;
@@ -1516,8 +1533,13 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         __block MASModelService *blockSelf = self;
         __block MASCompletionErrorBlock blockCompletion = completion;
     
-        MASAuthCredentialsJWT *authCredentials = [MASAuthCredentialsJWT initWithJWT:idToken tokenType:idTokenType];
+        __block MASAuthCredentialsJWT *authCredentials = [MASAuthCredentialsJWT initWithJWT:idToken tokenType:idTokenType];
         [self loginWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+            
+            //
+            //  Clear credentials after first attempt if it is not reuseable
+            //
+            [authCredentials clearCredentials];
             
             if ([error.domain isEqualToString:MASFoundationErrorDomain])
             {
@@ -1580,11 +1602,17 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         }
         
         __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
+        __block MASAuthCredentials *blockAuthCredentials = authCredentials;
         
         //
         //  Perform user authentication with auth credentials
         //
         [blockSelf loginWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+        
+            //
+            //  Clear credentials after first attempt if it is not reuseable
+            //
+            [blockAuthCredentials clearCredentials];
             
             if (error)
             {
@@ -1681,8 +1709,13 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             //
             // Attempt to log in the user with the credentials
             //
-            MASAuthCredentialsPassword *authCredentials = [MASAuthCredentialsPassword initWithUsername:userName password:password];
+            __block MASAuthCredentialsPassword *authCredentials = [MASAuthCredentialsPassword initWithUsername:userName password:password];
             [blockSelf loginWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                
+                //
+                //  Clear credentials after first attempt if it is not reuseable
+                //
+                [authCredentials clearCredentials];
                 
                 //
                 // Error
@@ -1745,8 +1778,13 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             //
             // Attempt to log in the user with the authorization code
             //
-            MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
+            __block MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
             [blockSelf loginWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                
+                //
+                //  Clear credentials after first attempt if it is not reuseable
+                //
+                [authCredentials clearCredentials];
                 
                 //
                 // Error
@@ -2355,6 +2393,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         //
         if (!completed || error != nil)
         {
+            //
+            //  Clear credentials after first attempt if it is not reuseable
+            //
+            [blockAuthCredentials clearCredentials];
+            
             if (blockCompletion)
             {
                 blockCompletion(NO, error);
@@ -2370,7 +2413,21 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             //
             if ([MASDevice currentDevice].isRegistered)
             {
-                [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
+                [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                    
+                    //
+                    //  Clear credentials after first attempt if it is not reuseable
+                    //
+                    [blockAuthCredentials clearCredentials];
+                    
+                    //
+                    //  Notify
+                    //
+                    if (blockCompletion)
+                    {
+                        blockCompletion(completed, error);
+                    }
+                }];
             }
             else {
                 
@@ -2384,6 +2441,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                     //
                     if (!completed || error != nil)
                     {
+                        //
+                        //  Clear credentials after first attempt if it is not reuseable
+                        //
+                        [blockAuthCredentials clearCredentials];
+                        
                         if (blockCompletion)
                         {
                             blockCompletion(NO, error);
@@ -2399,7 +2461,21 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                         //
                         if (blockAuthCredentials.isReuseable)
                         {
-                            [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:blockCompletion];
+                            [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                                
+                                //
+                                //  Clear credentials after first attempt if it is not reuseable
+                                //
+                                [blockAuthCredentials clearCredentials];
+                                
+                                //
+                                //  Notify
+                                //
+                                if (blockCompletion)
+                                {
+                                    blockCompletion(completed, error);
+                                }
+                            }];
                         }
                         else {
                             
@@ -2476,7 +2552,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         return;
     }
     
-//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
     __block MASCompletionErrorBlock blockCompletion = completion;
     
     //
@@ -2518,8 +2593,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         return;
     }
     
-    
-//    __block MASAuthCredentials *blockAuthCredentials = authCredentials;
     __block MASCompletionErrorBlock blockCompletion = completion;
     
     //

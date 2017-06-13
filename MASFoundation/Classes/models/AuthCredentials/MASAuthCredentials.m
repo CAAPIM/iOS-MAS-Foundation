@@ -8,6 +8,15 @@
 
 #import "MASAuthCredentials.h"
 
+#import "MASAccessService.h"
+#import "MASAuthCredentials+MASPrivate.h"
+#import "MASSecurityService.h"
+#import "MASModelService.h"
+#import "NSError+MASPrivate.h"
+
+#import "MASConstants.h"
+
+
 @implementation MASAuthCredentials
 
 # pragma mark - Lifecycle
@@ -27,5 +36,9 @@
 {
     
 }
+
+
+# pragma mark - Prviate
+
 
 @end
