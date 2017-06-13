@@ -56,24 +56,6 @@ typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nul
 
 
 /**
- * The Basic Credentials (NSString *userName, NSString *password, BOOL cancel) block.
- */
-typedef void (^MASBasicCredentialsBlock)(NSString *_Nonnull userName, NSString *_Nonnull password, BOOL cancel, MASCompletionErrorBlock _Nullable) DEPRECATED_MSG_ATTRIBUTE("MASBasicCredentialsBlock is deprecated as of MAS 1.5. Use MASAuthCredentialsBlock instead.");
-
-
-/**
- * The Authorization Code Credentials (NSString *authorizationCode, BOOL cancel, MAScompletionErrorBlock) block.
- */
-typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authorizationCode, BOOL cancel, MASCompletionErrorBlock _Nullable) DEPRECATED_MSG_ATTRIBUTE("MASAuthorizationCodeCredentialsBlock is deprecated as of MAS 1.5. Use MASAuthCredentialsBlock instead.");
-
-
-/**
- * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
- */
-typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock) DEPRECATED_MSG_ATTRIBUTE("MASBasicCredentialsBlock is deprecated as of MAS 1.5. Use MASUserAuthCredentialsBlock instead.");
-
-
-/**
  *  The MASAuthCredentialsBlcok to provide auth credentials for device registration and/or user authentication.
  */
 typedef void (^MASAuthCredentialsBlock)(MASAuthCredentials *_Nonnull authCredentials, BOOL cancel, MASCompletionErrorBlock _Nullable);
@@ -765,3 +747,28 @@ static NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification = @"MA
  * retrieve new status value.
  */
 static NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
+
+
+
+///--------------------------------------
+/// @name Deprecated
+///--------------------------------------
+
+# pragma mark - Deprecated
+
+/**
+ * The Basic Credentials (NSString *userName, NSString *password, BOOL cancel) block.
+ */
+typedef void (^MASBasicCredentialsBlock)(NSString *_Nonnull userName, NSString *_Nonnull password, BOOL cancel, MASCompletionErrorBlock _Nullable) DEPRECATED_MSG_ATTRIBUTE("MASBasicCredentialsBlock is deprecated as of MAS 1.5. Use MASAuthCredentialsBlock instead.");
+
+
+/**
+ * The Authorization Code Credentials (NSString *authorizationCode, BOOL cancel, MAScompletionErrorBlock) block.
+ */
+typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authorizationCode, BOOL cancel, MASCompletionErrorBlock _Nullable) DEPRECATED_MSG_ATTRIBUTE("MASAuthorizationCodeCredentialsBlock is deprecated as of MAS 1.5. Use MASAuthCredentialsBlock instead.");
+
+
+/**
+ * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
+ */
+typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock) DEPRECATED_MSG_ATTRIBUTE("MASBasicCredentialsBlock is deprecated as of MAS 1.5. Use MASUserAuthCredentialsBlock instead.");
