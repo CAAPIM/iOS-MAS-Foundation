@@ -43,7 +43,7 @@
         
         if (!_tokenType || [_tokenType length] == 0)
         {
-            _tokenType = @"jwt";
+            _tokenType = @"urn:ietf:params:oauth:grant-type:jwt-bearer";
         }
         
         _canRegisterDevice = YES;
