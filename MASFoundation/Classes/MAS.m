@@ -67,6 +67,12 @@
 }
 
 
++ (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
+{
+    [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];
+}
+
+
 + (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
 {
     [MASModelService setUserLoginBlock:login];
@@ -199,7 +205,10 @@
                 //
                 if (completed && !error)
                 {
-                    [[MASModelService sharedService] loginAsIdTokenIgnoreFallback:YES completion:^(BOOL completed, NSError *error) {
+                    NSString *jwt = [MASAccessService sharedService].currentAccessObj.idToken;
+                    NSString *tokenType = [MASAccessService sharedService].currentAccessObj.idTokenType;
+                    
+                    [MASUser loginWithIdToken:jwt tokenType:tokenType completion:^(BOOL completed, NSError * _Nullable error) {
                         
                         //
                         //  Regardless of result of the authentication, should post the successful result to SDK initialization completion block

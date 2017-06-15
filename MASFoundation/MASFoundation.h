@@ -21,7 +21,6 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 //
 // Top Level
 //
-
 #import <MASFoundation/MAS.h>
 #import <MASFoundation/MASConstants.h>
 #import <MASFoundation/MASProximityLoginDelegate.h>
@@ -31,7 +30,6 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 //
 // MQTT
 //
-
 #import <MASFoundation/MASMQTTClient.h>
 #import <MASFoundation/MASMQTTMessage.h>
 #import <MASFoundation/MASMQTTConstants.h>
@@ -55,7 +53,14 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASProximityLoginQRCode.h>
 
 //
+//  AuthCredentials Models
+//
+#import <MASFoundation/MASAuthCredentials.h>
+#import <MASFoundation/MASAuthCredentialsPassword.h>
+#import <MASFoundation/MASAuthCredentialsAuthorizationCode.h>
+#import <MASFoundation/MASAuthCredentialsJWT.h>
+
+//
 // Categories
 //
-
 #import <MASFoundation/NSData+MAS.h>

@@ -264,6 +264,15 @@
 
 
 /**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration.
+ *
+ * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error code MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration.
+ */
++ (NSError *)errorDeviceCanNotRegisterWithGivenAuthCredentials;
+
+
+/**
  * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeDeviceAlreadyRegistered.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
