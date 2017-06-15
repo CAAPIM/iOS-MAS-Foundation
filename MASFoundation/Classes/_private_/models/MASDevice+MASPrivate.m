@@ -123,9 +123,10 @@
     //
     // Certificate Data (in the body)
     //
-    DLog(@"\n\nCert data is: %@\n\n", info[MASResponseInfoBodyInfoKey]);
     
-    NSData *certificateData = info[MASResponseInfoBodyInfoKey];
+    NSString *certificateString = info[MASResponseInfoBodyInfoKey];
+    NSData *certificateData = [certificateString dataUsingEncoding:NSUTF8StringEncoding];
+    
     if (certificateData)
     {
         [accessService setAccessValueCertificate:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificate];

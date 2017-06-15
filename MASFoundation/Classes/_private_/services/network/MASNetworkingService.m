@@ -281,8 +281,15 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         
-        MASIHTTPResponseSerializer *responseSerializer = [MASURLRequest responseSerializerForType:blockResponseType];
-        [responseSerializer validateResponse:httpResponse data:responseObject error:&error];
+        if (blockResponseType == MASRequestResponseTypeTextPlain && [responseObject isKindOfClass:[NSData class]])
+        {
+            NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            
+            if (responseString != nil && [responseString length] > 0)
+            {
+                responseObject = responseString;
+            }
+        }
         
         //
         // Response header info
@@ -846,6 +853,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     }
     
     //
+    //  Set particular response serializer for this request's expected response type as AFNetworking's compound response serializer
+    //  will accept all of the response types defined in compound serializer, and we can't do that.
+    //
+    MASIHTTPResponseSerializer *thisResponseSerializer = [MASURLRequest responseSerializerForType:responseType];
+    _manager.responseSerializer = thisResponseSerializer;
+    
+    //
     // Determine if we need to add the geo-location header value
     //
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
@@ -1005,6 +1019,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     }
     
     //
+    //  Set particular response serializer for this request's expected response type as AFNetworking's compound response serializer
+    //  will accept all of the response types defined in compound serializer, and we can't do that.
+    //
+    MASIHTTPResponseSerializer *thisResponseSerializer = [MASURLRequest responseSerializerForType:responseType];
+    _manager.responseSerializer = thisResponseSerializer;
+    
+    //
     // Determine if we need to add the geo-location header value
     //
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
@@ -1161,6 +1182,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         
         return;
     }
+    
+    //
+    //  Set particular response serializer for this request's expected response type as AFNetworking's compound response serializer
+    //  will accept all of the response types defined in compound serializer, and we can't do that.
+    //
+    MASIHTTPResponseSerializer *thisResponseSerializer = [MASURLRequest responseSerializerForType:responseType];
+    _manager.responseSerializer = thisResponseSerializer;
     
     //
     // Determine if we need to add the geo-location header value
@@ -1324,6 +1352,13 @@ withParameters:(NSDictionary *)parameterInfo
     }
     
     //
+    //  Set particular response serializer for this request's expected response type as AFNetworking's compound response serializer
+    //  will accept all of the response types defined in compound serializer, and we can't do that.
+    //
+    MASIHTTPResponseSerializer *thisResponseSerializer = [MASURLRequest responseSerializerForType:responseType];
+    _manager.responseSerializer = thisResponseSerializer;
+    
+    //
     // Determine if we need to add the geo-location header value
     //
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
@@ -1481,6 +1516,13 @@ withParameters:(NSDictionary *)parameterInfo
         
         return;
     }
+    
+    //
+    //  Set particular response serializer for this request's expected response type as AFNetworking's compound response serializer
+    //  will accept all of the response types defined in compound serializer, and we can't do that.
+    //
+    MASIHTTPResponseSerializer *thisResponseSerializer = [MASURLRequest responseSerializerForType:responseType];
+    _manager.responseSerializer = thisResponseSerializer;
     
     //
     // Determine if we need to add the geo-location header value
