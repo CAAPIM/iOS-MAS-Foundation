@@ -109,7 +109,8 @@ static NSArray const *_serviceUUIDs_;
         MASModelServiceUUID,
         MASNetworkServiceUUID,
      
-        MASUIServiceUUID
+        MASUIServiceUUID,
+        MASFIDOServiceUUID
     ];
 }
 

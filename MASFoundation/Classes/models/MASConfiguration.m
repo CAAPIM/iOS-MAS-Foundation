@@ -557,18 +557,18 @@ static float _systemVersionNumber_;
 
 - (NSURL *)gatewayUrl
 {
-    if ([self gatewayPrefix] && [self gatewayPrefix].length > 0)
-    {
-        return [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@/%@",
-                                     [self gatewayHostName],
-                                     [self gatewayPort],
-                                     [self gatewayPrefix]]];
-    }
-    else {
+//    if ([self gatewayPrefix] && [self gatewayPrefix].length > 0)
+//    {
+//        return [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@/%@",
+//                                     [self gatewayHostName],
+//                                     [self gatewayPort],
+//                                     [self gatewayPrefix]]];
+//    }
+//    else {
         return [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%@",
                                      [self gatewayHostName],
                                      [self gatewayPort]]];
-    }
+//    }
 }
 
 
