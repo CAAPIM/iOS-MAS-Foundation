@@ -83,13 +83,13 @@
 
 
 /**
- *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
+ *  Set a user auth credential block to handle the case where SDK requires auth credentials.
+ *  When MASGrantFlow is set to MASGrantFlowPassword, and auth credentials is required, SDK will invoke this block
+ *  to obtain MASAuthCredentials to proceed authentication process.
  *
- *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
+ *  @param userAuthCredentialsBlock MASUserAuthCredentialsBlock that contains callback block to be invoked with MASAuthCredentials.
  */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login;
++ (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock;
 
 
 
@@ -983,5 +983,18 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
 + (void)currentStatusToConsole;
 
 #endif
+
+
+
+# pragma mark - Deprecated
+
+/**
+ *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
+ *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
+ *  is not called.
+ *
+ *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
+ */
++ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login DEPRECATED_MSG_ATTRIBUTE("[MAS setUserLoginBlock:] is deprecated as of MAS 1.5. Use [MAS setAuthCredentials:] instead.");
 
 @end

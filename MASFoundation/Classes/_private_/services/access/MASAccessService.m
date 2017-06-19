@@ -677,6 +677,9 @@ static BOOL _isPKCEEnabled_ = YES;
         case MASAccessValueTypeAuthenticatedTimestamp:
             storageKey = kMASAccessLocalStorageKey;
             break;
+        case MASAccessValueTypeCurrentAuthCredentialsGrantType:
+            storageKey = kMASAccessSharedStorageKey;
+            break;
         case MASAccessValueTypeIsDeviceLocked:
             storageKey = kMASAccessSharedStorageKey;
             break;
@@ -800,6 +803,9 @@ static BOOL _isPKCEEnabled_ = YES;
             break;
         case MASAccessValueTypeIsDeviceLocked:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeIsDeviceLocked"];
+            break;
+        case MASAccessValueTypeCurrentAuthCredentialsGrantType:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeCurrentAuthCredentialsGrantType"];
             break;
         case MASAccessValueTypeMASUserObjectData:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayHostName, @"kMASAccessValueTypeMASUserObjectData"];

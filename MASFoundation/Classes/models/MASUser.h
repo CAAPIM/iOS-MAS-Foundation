@@ -125,6 +125,18 @@
 
 
 
+
+/**
+ Previously, or currently used authCredentialsType for the session.
+ If the SDK is not properly initialized, nil will be returned regardless of the authentication status of the SDK.
+ If the SDK was never authenticated before, SDK will also return nil as a result.
+
+ @return NSString of previously, or currently used authCredentialsType as in String.
+ */
++ (NSString *_Nullable)authCredentialsType;
+
+
+
 ///--------------------------------------
 /// @name Current User - Lock/Unlock Session
 ///--------------------------------------
@@ -230,6 +242,22 @@
  available via [MASUser currentUser] has been updated with the new information.
  */
 + (void)loginWithIdToken:(NSString *_Nonnull)idToken tokenType:(NSString *_Nonnull)tokenType completion:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+
+/**
+ Authenticate a user via asynchronous request with MASAuthCredentials object.
+ This will accept any objects that inherites from MASAuthCredentials and all MASAuthCredentials objects that adheres device registration/user authentication logics
+ on backend services.
+ 
+ This will create an [MASUser currentUser] upon a successful result.
+ 
+ @param authCredentials MASAuthCredentials object that contains credentials
+ @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
+ available via [MASUser currentUser] has been updated with the new information.
+ */
++ (void)loginWithAuthCredentials:(MASAuthCredentials *_Nonnull)authCredentials completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
