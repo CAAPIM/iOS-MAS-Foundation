@@ -1113,40 +1113,29 @@ static BOOL _isPKCEEnabled_ = YES;
     [[MASAccessService sharedService].currentAccessObj refresh];
 }
 
-
 + (BOOL)validateIdToken:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error
 {
     //
     // Credits to Anthony Yu
     //
-    
-    NSArray *segments = [idToken componentsSeparatedByString:@"."];
+
+    //
+    // extract idToken segments
+    //
+    NSDictionary *idTokenSegments = [MASAccessService getIdTokenSegments:idToken error:error];
     
     //
-    // check if idToken is in valid format
+    // if could not extract segments, there is an issue with the idToken
     //
-    if (segments == nil || [segments count] != 3) {
-        
-        if (error)
-        {
-            *error = [NSError errorInvalidIdToken];
-        }
-        
+    if (!idTokenSegments)
+    {
         return NO;
     }
     
-    NSString *headerString = [segments objectAtIndex:0];
-    NSString *payload = [segments objectAtIndex:1];
-    NSString *signature = [segments objectAtIndex:2];
+    NSString *headerString = [idTokenSegments valueForKey:@"headerString"];
+    NSString *payload = [idTokenSegments valueForKey:@"payload"];
+    NSString *signature = [idTokenSegments valueForKey:@"signature"];;
     
-    if (!headerString || !payload || !signature){
-        
-        if (error)
-        {
-            *error = [NSError errorInvalidIdToken];
-        }
-        return NO;
-    }
     
     //
     // verifying signature
@@ -1160,7 +1149,9 @@ static BOOL _isPKCEEnabled_ = YES;
     
     if ([[headerDisctionary objectForKey:@"alg"] isEqualToString:@"HS256"]){
         
-        //check signature
+        //
+        // check signature
+        //
         NSMutableArray *signatureSegments = [NSMutableArray array];
         [signatureSegments addObject:headerString];
         [signatureSegments addObject:payload];
@@ -1170,7 +1161,9 @@ static BOOL _isPKCEEnabled_ = YES;
         NSData *signedInput = [NSData sign:signingInput key:clientSecret];
         NSString *encodedSignedInput = [signedInput base64Encoding];
         
-        //case 1: signature doesn't match
+        //
+        // case 1: signature doesn't match
+        //
         if (![encodedSignedInput isEqualToString:[MASAccessService padding:signature]]){
             
             if (error)
@@ -1181,17 +1174,10 @@ static BOOL _isPKCEEnabled_ = YES;
         }
     }
     
-    //validating payload
-    //padding payload
-    payload = [MASAccessService padding:payload];
-    
-    //process to unwrap the payload
-    NSData *decodedData = [NSData dataWithBase64EncodedString:payload];
-    NSString *decodedString = [[NSString alloc] initWithData:decodedData encoding:NSUTF8StringEncoding];
-    
-    NSDictionary *payloadDictionary = [NSJSONSerialization JSONObjectWithData:[decodedString dataUsingEncoding:NSUTF8StringEncoding]
-                                                                      options:0
-                                                                        error:nil];
+    //
+    // validating payload
+    //
+    NSDictionary *payloadDictionary = [MASAccessService getPayloadDictionary:payload];
     
     NSString *aud = [payloadDictionary valueForKey:@"aud"];
     NSString *azp = [payloadDictionary valueForKey:@"azp"];
@@ -1206,7 +1192,9 @@ static BOOL _isPKCEEnabled_ = YES;
         return NO;
     }
     
-    //case 2: aud doesn't match with clientId
+    //
+    // case 2: aud doesn't match with clientId
+    //
     if (![aud isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId]]){
         
         if (error)
@@ -1216,7 +1204,9 @@ static BOOL _isPKCEEnabled_ = YES;
         return NO;
     }
     
-    //case 3: azp doesn't match with mag-identifier
+    //
+    // case 3: azp doesn't match with mag-identifier
+    //
     if (![azp isEqualToString:magIdentifier]){
         
         if (error)
@@ -1226,7 +1216,9 @@ static BOOL _isPKCEEnabled_ = YES;
         return NO;
     }
     
-    //case 4: JWT expired
+    //
+    // case 4: JWT expired
+    //
     if ([exp timeIntervalSinceNow] < 0){
         
         if (error)
@@ -1238,6 +1230,118 @@ static BOOL _isPKCEEnabled_ = YES;
 
     
     return YES;
+}
+
++ (NSDictionary *)getIdTokenSegments:(NSString *)idToken error:(NSError *__autoreleasing *)error
+{
+    NSDictionary *segmentsDict = nil;
+    
+    NSArray *segments = [idToken componentsSeparatedByString:@"."];
+    
+    //
+    // check if idToken is in valid format
+    //
+    if (segments == nil || [segments count] != 3) {
+        
+        if (error)
+        {
+            *error = [NSError errorInvalidIdToken];
+        }
+    }
+    
+    NSString *headerString = [segments objectAtIndex:0];
+    NSString *payload = [segments objectAtIndex:1];
+    NSString *signature = [segments objectAtIndex:2];
+    
+    if (!headerString || !payload || !signature){
+        
+        if (error)
+        {
+            *error = [NSError errorInvalidIdToken];
+        }
+
+    }
+    else {
+        segmentsDict = [[NSDictionary alloc] initWithObjectsAndKeys:headerString, @"headerString", payload, @"payload", signature, @"signature", nil];
+    }
+    
+    return segmentsDict;
+}
+
++ (NSDictionary *)getPayloadDictionary:(NSString *)payload
+{
+    NSDictionary *payloadDictionary = nil;
+    
+    //
+    // padding payload
+    //    
+    payload = [MASAccessService padding:payload];
+    
+    //
+    // process to unwrap the payload
+    //
+    NSData *decodedData = [NSData dataWithBase64EncodedString:payload];
+    NSString *decodedString = [[NSString alloc] initWithData:decodedData encoding:NSUTF8StringEncoding];
+    
+    payloadDictionary = [NSJSONSerialization JSONObjectWithData:[decodedString dataUsingEncoding:NSUTF8StringEncoding]
+                                                                      options:0
+                                                                        error:nil];
+    
+    return payloadDictionary;
+}
+
++ (BOOL)isIdTokenExpired:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error
+{
+    //
+    // extract idToken segments
+    //
+    NSDictionary *idTokenSegments = [MASAccessService getIdTokenSegments:idToken error:error];
+    
+    //
+    // if could not extract segments, there is an issue with the idToken so return as expired
+    //
+    if (!idTokenSegments)
+    {
+        return YES;
+    }
+    
+    //
+    // validate mag-identifier and expire date
+    //
+    NSString *payload = [idTokenSegments valueForKey:@"payload"];
+    NSDictionary *payloadDictionary = [MASAccessService getPayloadDictionary:payload];
+    
+    NSString *azp = [payloadDictionary valueForKey:@"azp"];
+    NSDate *exp = [NSDate dateWithTimeIntervalSince1970:[[payloadDictionary valueForKey:@"exp"] floatValue]];
+    
+    //
+    // check mag-identifier
+    //
+    if (![azp isEqualToString:magIdentifier])
+    {
+        
+        if (error)
+        {
+            *error = [NSError errorIdTokenInvalidAzp];
+        }
+        return YES;
+    }
+    
+    //
+    // check if JWT expired
+    //
+    if ([exp timeIntervalSinceNow] < 0)
+    {
+        
+        if (error)
+        {
+            *error = [NSError errorIdTokenExpired];
+        }
+        return YES;
+    }
+    
+    
+    return NO;
 }
 
 

@@ -284,7 +284,15 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  */
 + (BOOL)validateIdToken:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error;
 
-
+/**
+ *  Validate the expiration date in id_token
+ *
+ *  @param idToken NSString of id_token value
+ *  @param magIdentifier NSString of mag-identifier value
+ *
+ *  @return BOOL if the id_token has expired and invalid format
+ */
++ (BOOL)isIdTokenExpired:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error;
 
 
 - (NSDate *)extractExpirationDateFromCertificate:(SecCertificateRef)certificate;
