@@ -107,6 +107,12 @@
  */
 @property (assign, readonly) BOOL isAccessTokenValid;
 
+/**
+ *  The MASAccess authCredentialsType property for the currently used authCredentialsType for the session
+ */
+@property (nonatomic, copy, readonly) NSString *authCredentialsType;
+
+
 
 ///--------------------------------------
 /// @name Lifecycle

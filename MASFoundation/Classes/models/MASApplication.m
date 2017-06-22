@@ -147,9 +147,13 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     NSString *idToken = accessService.currentAccessObj.idToken;
     NSNumber *expiresIn = accessService.currentAccessObj.expiresIn;
     NSDate *expiresInDate = accessService.currentAccessObj.expiresInDate;
+    NSString *authCredentialsType = accessService.currentAccessObj.authCredentialsType;
+    
+    BOOL isClientCrendential = [authCredentialsType isEqualToString:MASGrantTypeClientCredentials];
     
     //DLog(@"\n\n  access token: %@\n  refresh token: %@\n  expiresIn: %@, expires in date: %@\n\n",
     //    accessToken, refreshToken, expiresIn, expiresInDate);
+    
 
     //
     // If there is an idToken and SSO is enabled
@@ -174,9 +178,9 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
             currentStatus = MASAuthenticationStatusLoginWithUser;
         }
         //
-        // if refreshToken is missing, the user has been authenticated anonymously (Client credential)
+        // check if it has been authenticated anonymously (Client credential)
         //
-        else if (accessToken && expiresIn && !currentUser){
+        else if (accessToken && expiresIn && !currentUser && isClientCrendential){
             currentStatus = MASAuthenticationStatusLoginAnonymously;
         }
         
