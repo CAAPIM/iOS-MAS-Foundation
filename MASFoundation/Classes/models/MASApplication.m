@@ -139,6 +139,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Retrieve the items that determine authentication status
     //
+    MASUser *currentUser = [MASUser currentUser];
     MASAccessService *accessService = [MASAccessService sharedService];
     
     NSString *accessToken = accessService.currentAccessObj.accessToken;
@@ -146,36 +147,50 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     NSString *idToken = accessService.currentAccessObj.idToken;
     NSNumber *expiresIn = accessService.currentAccessObj.expiresIn;
     NSDate *expiresInDate = accessService.currentAccessObj.expiresInDate;
+    NSString *authCredentialsType = accessService.currentAccessObj.authCredentialsType;
+    
+    BOOL isClientCrendential = [authCredentialsType isEqualToString:MASGrantTypeClientCredentials];
     
     //DLog(@"\n\n  access token: %@\n  refresh token: %@\n  expiresIn: %@, expires in date: %@\n\n",
     //    accessToken, refreshToken, expiresIn, expiresInDate);
     
+
     //
-    // if accessToken, refreshToken, and exprieDate values exist, we understand that the user is authenticated with username and password
+    // If there is an idToken and a current user
     //
-    if (accessToken && refreshToken && expiresIn)
+    if(idToken && currentUser)
     {
-        currentStatus = MASAuthenticationStatusLoginWithUser;
+        //
+        // Check idToken expiration
+        //
+        if(![MASAccessService isIdTokenExpired:idToken error:nil])
+        {
+            currentStatus = MASAuthenticationStatusLoginWithUser;
+        }
     }
-    //
-    // if refreshToken is missing, the user has been authenticated anonymously
-    //
-    else if (accessToken && expiresIn){
-        currentStatus = MASAuthenticationStatusLoginAnonymously;
-    }
-    
-    //
-    // Then check if expiration has passed
-    //
-    if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
-    {
-        currentStatus = MASAuthenticationStatusNotLoggedIn;
-        [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
-    }
-    
-    if ((refreshToken || (idToken && [MASAccessService validateIdToken:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil])) && [MASUser currentUser])
-    {
-        currentStatus = MASAuthenticationStatusLoginWithUser;
+    else {
+        //
+        // if accessToken, refreshToken, exprieDate values exist and it is the current user, we understand that the user is authenticated with username and password
+        //
+        if (accessToken && refreshToken && expiresIn && currentUser && currentUser.isCurrentUser)
+        {
+            currentStatus = MASAuthenticationStatusLoginWithUser;
+        }
+        //
+        // check if it has been authenticated anonymously (Client credential)
+        //
+        else if (accessToken && expiresIn && !currentUser && isClientCrendential){
+            currentStatus = MASAuthenticationStatusLoginAnonymously;
+        }
+        
+        //
+        // Then check if expiration has passed
+        //
+        if (expiresIn && ([expiresInDate timeIntervalSinceNow] <= 0))
+        {
+            currentStatus = MASAuthenticationStatusNotLoggedIn;
+            [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
+        }
     }
     
     //DLog(@"\n\nNOW date is: %@, expiration date is: %@ and interval since now: %f\n\n",
@@ -183,7 +198,6 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     
     return currentStatus;
 }
-
 
 
 # pragma mark - Enterprise Apps
