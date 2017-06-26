@@ -555,6 +555,58 @@ static BOOL _isPKCEEnabled_ = YES;
     return encodedString;
 }
 
++ (NSDictionary *)getIdTokenSegments:(NSString *)idToken error:(NSError *__autoreleasing *)error
+{
+    NSDictionary *segmentsDict = nil;
+    
+    NSArray *segments = [idToken componentsSeparatedByString:@"."];
+    
+    //
+    // check if idToken is in valid format
+    //
+    if (segments == nil || [segments count] != 3) {
+        
+        if (error)
+        {
+            *error = [NSError errorInvalidIdToken];
+        }
+    }
+    
+    NSString *headerString = [segments objectAtIndex:0];
+    NSString *payload = [segments objectAtIndex:1];
+    NSString *signature = [segments objectAtIndex:2];
+    
+    if (!headerString || !payload || !signature){
+        
+        if (error)
+        {
+            *error = [NSError errorInvalidIdToken];
+        }
+        
+    }
+    else {
+        segmentsDict = [[NSDictionary alloc] initWithObjectsAndKeys:headerString, @"headerString", payload, @"payload", signature, @"signature", nil];
+    }
+    
+    return segmentsDict;
+}
+
++ (NSDictionary *)unwrap:(NSString *)data
+{
+    NSDictionary *dictionary = nil;
+    
+    //
+    // process to unwrap
+    //
+    NSData *decodedData = [NSData dataWithBase64EncodedString:data];
+    NSString *decodedString = [[NSString alloc] initWithData:decodedData encoding:NSUTF8StringEncoding];
+    
+    dictionary = [NSJSONSerialization JSONObjectWithData:[decodedString dataUsingEncoding:NSUTF8StringEncoding]
+                                                 options:0
+                                                   error:nil];
+    
+    return dictionary;
+}
 
 - (BOOL)isSecuredData:(MASAccessValueType)type
 {
@@ -1136,16 +1188,11 @@ static BOOL _isPKCEEnabled_ = YES;
     NSString *payload = [idTokenSegments valueForKey:@"payload"];
     NSString *signature = [idTokenSegments valueForKey:@"signature"];;
     
-    
     //
     // verifying signature
     // processes to unwrap the header
     //
-    NSString *encodedHeaderString = [[NSString alloc] initWithData:[NSData dataWithBase64EncodedString:headerString] encoding:NSUTF8StringEncoding];
-    
-    NSDictionary *headerDisctionary = [NSJSONSerialization JSONObjectWithData:[encodedHeaderString dataUsingEncoding:NSUTF8StringEncoding]
-                                                                      options:0
-                                                                        error:nil];
+    NSDictionary *headerDisctionary = [MASAccessService unwrap:headerString];
     
     if ([[headerDisctionary objectForKey:@"alg"] isEqualToString:@"HS256"]){
         
@@ -1177,7 +1224,7 @@ static BOOL _isPKCEEnabled_ = YES;
     //
     // validating payload
     //
-    NSDictionary *payloadDictionary = [MASAccessService getPayloadDictionary:payload];
+    NSDictionary *payloadDictionary = [MASAccessService unwrap:payload];
     
     NSString *aud = [payloadDictionary valueForKey:@"aud"];
     NSString *azp = [payloadDictionary valueForKey:@"azp"];
@@ -1232,65 +1279,7 @@ static BOOL _isPKCEEnabled_ = YES;
     return YES;
 }
 
-+ (NSDictionary *)getIdTokenSegments:(NSString *)idToken error:(NSError *__autoreleasing *)error
-{
-    NSDictionary *segmentsDict = nil;
-    
-    NSArray *segments = [idToken componentsSeparatedByString:@"."];
-    
-    //
-    // check if idToken is in valid format
-    //
-    if (segments == nil || [segments count] != 3) {
-        
-        if (error)
-        {
-            *error = [NSError errorInvalidIdToken];
-        }
-    }
-    
-    NSString *headerString = [segments objectAtIndex:0];
-    NSString *payload = [segments objectAtIndex:1];
-    NSString *signature = [segments objectAtIndex:2];
-    
-    if (!headerString || !payload || !signature){
-        
-        if (error)
-        {
-            *error = [NSError errorInvalidIdToken];
-        }
-
-    }
-    else {
-        segmentsDict = [[NSDictionary alloc] initWithObjectsAndKeys:headerString, @"headerString", payload, @"payload", signature, @"signature", nil];
-    }
-    
-    return segmentsDict;
-}
-
-+ (NSDictionary *)getPayloadDictionary:(NSString *)payload
-{
-    NSDictionary *payloadDictionary = nil;
-    
-    //
-    // padding payload
-    //    
-    payload = [MASAccessService padding:payload];
-    
-    //
-    // process to unwrap the payload
-    //
-    NSData *decodedData = [NSData dataWithBase64EncodedString:payload];
-    NSString *decodedString = [[NSString alloc] initWithData:decodedData encoding:NSUTF8StringEncoding];
-    
-    payloadDictionary = [NSJSONSerialization JSONObjectWithData:[decodedString dataUsingEncoding:NSUTF8StringEncoding]
-                                                                      options:0
-                                                                        error:nil];
-    
-    return payloadDictionary;
-}
-
-+ (BOOL)isIdTokenExpired:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error
++ (BOOL)isIdTokenExpired:(NSString *)idToken error:(NSError *__autoreleasing *)error
 {
     //
     // extract idToken segments
@@ -1306,27 +1295,17 @@ static BOOL _isPKCEEnabled_ = YES;
     }
     
     //
-    // validate mag-identifier and expire date
+    // validate expire date
     //
     NSString *payload = [idTokenSegments valueForKey:@"payload"];
-    NSDictionary *payloadDictionary = [MASAccessService getPayloadDictionary:payload];
     
-    NSString *azp = [payloadDictionary valueForKey:@"azp"];
+    //
+    // unwrap payload
+    //
+    NSDictionary *payloadDictionary = [MASAccessService unwrap:payload];
+
     NSDate *exp = [NSDate dateWithTimeIntervalSince1970:[[payloadDictionary valueForKey:@"exp"] floatValue]];
-    
-    //
-    // check mag-identifier
-    //
-    if (![azp isEqualToString:magIdentifier])
-    {
-        
-        if (error)
-        {
-            *error = [NSError errorIdTokenInvalidAzp];
-        }
-        return YES;
-    }
-    
+
     //
     // check if JWT expired
     //
@@ -1339,7 +1318,6 @@ static BOOL _isPKCEEnabled_ = YES;
         }
         return YES;
     }
-    
     
     return NO;
 }

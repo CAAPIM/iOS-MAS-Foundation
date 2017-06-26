@@ -156,15 +156,14 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     
 
     //
-    // If there is an idToken and SSO is enabled
+    // If there is an idToken and a current user
     //
-    if([MASConfiguration currentConfiguration].ssoEnabled && idToken)
+    if(idToken && currentUser)
     {
         //
-        // Check idToken expiration and if there is a current user
+        // Check idToken expiration
         //
-        if(![MASAccessService isIdTokenExpired:idToken magIdentifier:[accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] error:nil]
-           && currentUser)
+        if(![MASAccessService isIdTokenExpired:idToken error:nil])
         {
             currentStatus = MASAuthenticationStatusLoginWithUser;
         }
