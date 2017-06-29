@@ -362,6 +362,10 @@
                                           //
                                           if ([self.credentialsType isEqualToString:MASGrantTypeClientCredentials])
                                           {
+                                              //
+                                              // Make sure to clean up current user after client credentials authentication
+                                              //
+                                              [[MASModelService sharedService] clearCurrentUserForLogout];
                                               
                                               //
                                               // set authenticated timestamp
