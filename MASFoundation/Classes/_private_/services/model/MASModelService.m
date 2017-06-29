@@ -1560,15 +1560,27 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     //
     if (_grantFlow_ == MASGrantFlowClientCredentials)
     {
-        //
-        // Clear the current user.
-        //
-        [self clearCurrentUserForLogout];
-        
-        MASAuthCredentialsClientCredentials *authCredentials = [MASAuthCredentialsClientCredentials initClientCredentials];
-        [self loginWithAuthCredentials:authCredentials completion:completion];
-        
-        return;
+        if ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginAnonymously)
+        {
+            if (completion)
+            {
+                completion(YES, nil);
+            }
+            
+            return;
+        }
+        else {
+            
+            //
+            // Clear the current user.
+            //
+            [self clearCurrentUserForLogout];
+            
+            MASAuthCredentialsClientCredentials *authCredentials = [MASAuthCredentialsClientCredentials initClientCredentials];
+            [self loginWithAuthCredentials:authCredentials completion:completion];
+            
+            return;
+        }
     }
     
     //
