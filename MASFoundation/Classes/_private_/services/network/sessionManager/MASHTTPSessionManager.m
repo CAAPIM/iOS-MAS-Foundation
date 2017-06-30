@@ -58,14 +58,17 @@
             BOOL didPassEvaluation = YES;
             
             MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
+            NSString *serverHost = [NSString stringWithFormat:@"%@://%@%@", challenge.protectionSpace.protocol, challenge.protectionSpace.host, challenge.protectionSpace.port ? [NSString stringWithFormat:@":%ld",(long)challenge.protectionSpace.port] : @""];
             
-            if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
-            {
-                didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
-            }
-            else {
-                didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
-            }
+            didPassEvaluation = [securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust forDomain:serverHost];
+            
+//            if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
+//            {
+//                didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
+//            }
+//            else {
+//                didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
+//            }
             
             if (didPassEvaluation)
             {

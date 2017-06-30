@@ -58,16 +58,24 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 # pragma mark - Properties
 
 @property (nonatomic, strong, readonly) MASHTTPSessionManager *manager;
+@property (nonatomic, strong) MASSecurityConfiguration *defaultSecurityConfigurations;
+@property (nonatomic, strong) NSMutableArray *securityConfigurations;
 
 @end
 
 
 @implementation MASNetworkingService
 
+static NSMutableDictionary *_securityConfigurations_;
 static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 
 # pragma mark - Properties
+
++ (void)setSecurityConfigurations:(NSMutableDictionary *)securityConfigurations
+{
+    _securityConfigurations_ = securityConfigurations;
+}
 
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
@@ -169,6 +177,8 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     [self.manager.reachabilityManager setReachabilityStatusChangeBlock:nil];
     _manager = nil;
     
+    self.defaultSecurityConfigurations = nil;
+    
     //
     // Reset the value
     //
@@ -209,12 +219,33 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         pinningMode = MASSSLPinningModePublicKeyHash;
     }
     
-    MASSecurityPolicy *securityPolicy = [MASSecurityPolicy policyWithMASPinningMode:pinningMode];
+    //
+    //  Construct MASSecurityConfiguration for primary Gateway
+    //
+    MASSecurityConfiguration *securityConfig = [[MASSecurityConfiguration alloc] initWithURL:configuration.gatewayUrl];
+    securityConfig.enforcePinning = YES;
+    securityConfig.includeCredentials = YES;
+    securityConfig.validateCertificateChain = YES;
+    securityConfig.trustPublicPKI = configuration.enabledTrustedPublicPKI;
+    securityConfig.certificates = configuration.gatewayCertificates;
     
-    [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
-    [securityPolicy setValidatesDomainName:YES];
-    [securityPolicy setValidatesCertificateChain:YES];
-    [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
+    securityConfig.pinningMode = MASSecuritySSLPinningModePublicKey;
+    
+    if (configuration.trustedCertPinnedPublickKeyHashes != nil && [configuration.trustedCertPinnedPublickKeyHashes count] > 0)
+    {
+        securityConfig.pinningMode = MASSecuritySSLPinningModePublicKeyHash;
+    }
+    
+    self.defaultSecurityConfigurations = securityConfig;
+    
+    MASSecurityPolicy *securityPolicy = [MASSecurityPolicy policyWithSecurityConfigurations:@{[MASConfiguration currentConfiguration].gatewayUrl.absoluteString:self.defaultSecurityConfigurations}];
+    
+//    [MASSecurityPolicy policyWithMASPinningMode:pinningMode];
+//    
+//    [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
+//    [securityPolicy setValidatesDomainName:YES];
+//    [securityPolicy setValidatesCertificateChain:YES];
+//    [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
     
     //
     // Create the network manager

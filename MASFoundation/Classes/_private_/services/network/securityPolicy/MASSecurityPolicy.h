@@ -21,6 +21,10 @@ typedef NS_ENUM(NSUInteger, MASSSLPinningMode) {
 
 @property (readonly, nonatomic, assign) MASSSLPinningMode MASSSLPinningMode;
 
++ (instancetype)policyWithSecurityConfigurations:(NSDictionary *)configurations;
+
+- (BOOL)evaluateSecurityConfigurationsForServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain;
+
 + (instancetype)policyWithMASPinningMode:(MASSSLPinningMode)pinningMode;
 
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust withPublicKeyHashes:(NSArray *)publicKeyHashes forDomain:(NSString *)domain;
