@@ -325,14 +325,14 @@
                                           //
                                           // Validate id_token when received from server.
                                           //
-                                          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                          NSDictionary *bodyInfo = responseInfo[MASResponseInfoBodyInfoKey];
                                           
-                                          if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
-                                              [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                                              [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+                                          if ([bodyInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
+                                              [bodyInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
+                                              [[bodyInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
                                           {
                                               NSError *idTokenValidationError = nil;
-                                              BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
+                                              BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodyInfo objectForKey:MASIdTokenBodyRequestResponseKey]
                                                                                         magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
                                                                                                 error:&idTokenValidationError];
                                               
@@ -358,21 +358,43 @@
                                           [[MASAccessService sharedService] setAccessValueString:self.credentialsType withAccessValueType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
                                           
                                           //
-                                          // Create a new instance
+                                          // Create a new instance of MASUser if not client credentials
                                           //
-                                          if(![MASUser currentUser])
+                                          if ([self.credentialsType isEqualToString:MASGrantTypeClientCredentials])
                                           {
-                                              [[MASModelService sharedService] setUserObject:[[MASUser alloc] initWithInfo:responseInfo]];
+                                              //
+                                              // Make sure to clean up current user after client credentials authentication
+                                              //
+                                              [[MASModelService sharedService] clearCurrentUserForLogout];
                                               
+                                              //
+                                              // set authenticated timestamp
+                                              //
+                                              NSNumber *authenticatedTimestamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+                                              [[MASAccessService sharedService] setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+                                              
+                                              //
+                                              //  Store credential information into keychain
+                                              //
+                                              [[MASAccessService sharedService] saveAccessValuesWithDictionary:bodyInfo forceToOverwrite:NO];
+                                          }
+                                          else {
+                                              if(![MASUser currentUser])
+                                              {
+                                                  [[MASModelService sharedService] setUserObject:[[MASUser alloc] initWithInfo:responseInfo]];
+                                                  
+                                              }
+                                              
+                                              //
+                                              // Update the existing user with new information
+                                              //
+                                              else
+                                              {
+                                                  [[MASUser currentUser] saveWithUpdatedInfo:responseInfo];
+                                              }
                                           }
                                           
-                                          //
-                                          // Update the existing user with new information
-                                          //
-                                          else
-                                          {
-                                              [[MASUser currentUser] saveWithUpdatedInfo:responseInfo];
-                                          }
+                                          [[MASAccessService sharedService].currentAccessObj refresh];
                                           
                                           //
                                           // Post the notification
