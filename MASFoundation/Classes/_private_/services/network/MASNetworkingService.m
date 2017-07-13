@@ -901,23 +901,33 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
-             //
-             // create dataTask
-             //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                                    isPublic:isPublic
-                                                                                                             completionBlock:completion]];
-             
-             //
-             // resume dataTask
-             //
-             [dataTask resume];
+             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                                                                parameters:parameterInfo
+                                                                                                                                                                   headers:headerInfo
+                                                                                                                                                                httpMethod:request.HTTPMethod
+                                                                                                                                                               requestType:requestType
+                                                                                                                                                              responseType:responseType
+                                                                                                                                                                  isPublic:isPublic
+                                                                                                                                                           completionBlock:completion]];
+             [operation setResponseType:responseType];
+             [_sessionManager addOperation:operation];
+//             //
+//             // create dataTask
+//             //
+//             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+//                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+//                                                                                                                  parameters:parameterInfo
+//                                                                                                                     headers:headerInfo
+//                                                                                                                  httpMethod:request.HTTPMethod
+//                                                                                                                 requestType:requestType
+//                                                                                                                responseType:responseType
+//                                                                                                                    isPublic:isPublic
+//                                                                                                             completionBlock:completion]];
+//             
+//             //
+//             // resume dataTask
+//             //
+//             [dataTask resume];
          }];
     }
     else {
@@ -1067,30 +1077,34 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
-             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error) {
-                 
-                 NSLog(@"what ? %@", responseObject);
-                 NSLog(@"what ? %@", response);
-             }];
+             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                                                                parameters:parameterInfo
+                                                                                                                                                                   headers:headerInfo
+                                                                                                                                                                httpMethod:request.HTTPMethod
+                                                                                                                                                               requestType:requestType
+                                                                                                                                                              responseType:responseType
+                                                                                                                                                                  isPublic:isPublic
+                                                                                                                                                           completionBlock:completion]];
+             [operation setResponseType:responseType];
              [_sessionManager addOperation:operation];
              
-             //
-             // create dataTask
-             //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                                    isPublic:isPublic
-                                                                                                             completionBlock:completion]];
-             
-             //
-             // resume dataTask
-             //
-             [dataTask resume];
+//             //
+//             // create dataTask
+//             //
+//             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+//                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+//                                                                                                                  parameters:parameterInfo
+//                                                                                                                     headers:headerInfo
+//                                                                                                                  httpMethod:request.HTTPMethod
+//                                                                                                                 requestType:requestType
+//                                                                                                                responseType:responseType
+//                                                                                                                    isPublic:isPublic
+//                                                                                                             completionBlock:completion]];
+//             
+//             //
+//             // resume dataTask
+//             //
+//             [dataTask resume];
          }];
     }
     else {
@@ -1239,23 +1253,34 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
-             //
-             // create dataTask
-             //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                                    isPublic:isPublic
-                                                                                                             completionBlock:completion]];
-             
-             //
-             // resume dataTask
-             //
-             [dataTask resume];
+             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                                                                parameters:parameterInfo
+                                                                                                                                                                   headers:headerInfo
+                                                                                                                                                                httpMethod:request.HTTPMethod
+                                                                                                                                                               requestType:requestType
+                                                                                                                                                              responseType:responseType
+                                                                                                                                                                  isPublic:isPublic
+                                                                                                                                                           completionBlock:completion]];
+             [operation setResponseType:responseType];
+             [_sessionManager addOperation:operation];
+//             
+//             //
+//             // create dataTask
+//             //
+//             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+//                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+//                                                                                                                  parameters:parameterInfo
+//                                                                                                                     headers:headerInfo
+//                                                                                                                  httpMethod:request.HTTPMethod
+//                                                                                                                 requestType:requestType
+//                                                                                                                responseType:responseType
+//                                                                                                                    isPublic:isPublic
+//                                                                                                             completionBlock:completion]];
+//             
+//             //
+//             // resume dataTask
+//             //
+//             [dataTask resume];
          }];
     }
     else {
@@ -1407,23 +1432,33 @@ withParameters:(NSDictionary *)parameterInfo
              //
              MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
-             //
-             // create dataTask
-             //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                                    isPublic:isPublic
-                                                                                                             completionBlock:completion]];
-             
-             //
-             // resume dataTask
-             //
-             [dataTask resume];
+             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                                                                parameters:parameterInfo
+                                                                                                                                                                   headers:headerInfo
+                                                                                                                                                                httpMethod:request.HTTPMethod
+                                                                                                                                                               requestType:requestType
+                                                                                                                                                              responseType:responseType
+                                                                                                                                                                  isPublic:isPublic
+                                                                                                                                                           completionBlock:completion]];
+             [operation setResponseType:responseType];
+             [_sessionManager addOperation:operation];
+//             //
+//             // create dataTask
+//             //
+//             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+//                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+//                                                                                                                  parameters:parameterInfo
+//                                                                                                                     headers:headerInfo
+//                                                                                                                  httpMethod:request.HTTPMethod
+//                                                                                                                 requestType:requestType
+//                                                                                                                responseType:responseType
+//                                                                                                                    isPublic:isPublic
+//                                                                                                             completionBlock:completion]];
+//             
+//             //
+//             // resume dataTask
+//             //
+//             [dataTask resume];
              
          }];
     }
@@ -1573,23 +1608,33 @@ withParameters:(NSDictionary *)parameterInfo
              //
              MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
-             //
-             // create dataTask
-             //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                                    isPublic:isPublic
-                                                                                                             completionBlock:completion]];
-             
-             //
-             // resume dataTask
-             //
-             [dataTask resume];
+             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                                                                parameters:parameterInfo
+                                                                                                                                                                   headers:headerInfo
+                                                                                                                                                                httpMethod:request.HTTPMethod
+                                                                                                                                                               requestType:requestType
+                                                                                                                                                              responseType:responseType
+                                                                                                                                                                  isPublic:isPublic
+                                                                                                                                                           completionBlock:completion]];
+             [operation setResponseType:responseType];
+             [_sessionManager addOperation:operation];
+//             //
+//             // create dataTask
+//             //
+//             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
+//                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+//                                                                                                                  parameters:parameterInfo
+//                                                                                                                     headers:headerInfo
+//                                                                                                                  httpMethod:request.HTTPMethod
+//                                                                                                                 requestType:requestType
+//                                                                                                                responseType:responseType
+//                                                                                                                    isPublic:isPublic
+//                                                                                                             completionBlock:completion]];
+//             
+//             //
+//             // resume dataTask
+//             //
+//             [dataTask resume];
          }];
     }
     else {

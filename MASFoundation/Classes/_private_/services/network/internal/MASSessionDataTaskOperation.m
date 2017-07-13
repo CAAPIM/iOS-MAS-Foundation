@@ -39,12 +39,31 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    if (self.didCompleteWithDataErrorBlock)
+    __block id responseObj = nil;
+    
+    if (error)
     {
-        dispatch_group_async(self.completionGroup ? self.completionGroup : [self defaultDispatchGroupForCompletionBlock], self.completionQueue ? self.completionQueue : dispatch_get_main_queue(), ^{
-           
-            self.didCompleteWithDataErrorBlock(session, task, self.responseData, error);
-        });
+        if (self.didCompleteWithDataErrorBlock)
+        {
+            dispatch_group_async(self.completionGroup ? self.completionGroup : [self defaultDispatchGroupForCompletionBlock], self.completionQueue ? self.completionQueue : dispatch_get_main_queue(), ^{
+                
+                self.didCompleteWithDataErrorBlock(session, task, responseObj, error);
+            });
+        }
+    }
+    else {
+        
+        NSError *serializationError = nil;
+        responseObj = [self.responseSerializer responseObjectForResponse:task.response data:self.responseData error:&serializationError];
+        
+        
+        if (self.didCompleteWithDataErrorBlock)
+        {
+            dispatch_group_async(self.completionGroup ? self.completionGroup : [self defaultDispatchGroupForCompletionBlock], self.completionQueue ? self.completionQueue : dispatch_get_main_queue(), ^{
+                
+                self.didCompleteWithDataErrorBlock(session, task, responseObj, serializationError);
+            });
+        }
     }
     
     [self completeOperation];
