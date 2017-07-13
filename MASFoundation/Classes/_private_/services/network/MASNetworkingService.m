@@ -27,6 +27,8 @@
 #import "MASINetworking.h"
 #import "MASINetworkActivityLogger.h"
 
+#import "MASURLSessionManager.h"
+
 
 # pragma mark - Configuration Constants
 
@@ -58,6 +60,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 # pragma mark - Properties
 
 @property (nonatomic, strong, readonly) MASHTTPSessionManager *manager;
+@property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
 
 @end
 
@@ -215,6 +218,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     [securityPolicy setValidatesDomainName:YES];
     [securityPolicy setValidatesCertificateChain:YES];
     [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
+    
+    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    sessionConfig.URLCredentialStorage = nil;
+    sessionConfig.URLCache = nil;
+    
+    _sessionManager = [[MASURLSessionManager alloc] initWithConfiguration:sessionConfig];
+    _sessionManager.securityPolicy = securityPolicy;
+    
     
     //
     // Create the network manager
@@ -1055,6 +1066,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              // create request
              //
              MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+             
+             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error) {
+                 
+                 NSLog(@"what ? %@", responseObject);
+                 NSLog(@"what ? %@", response);
+             }];
+             [_sessionManager addOperation:operation];
              
              //
              // create dataTask
