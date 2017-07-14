@@ -2,7 +2,7 @@
 //  MASURLSessionManager.m
 //  MASFoundation
 //
-//  Copyright (c) 2016 CA. All rights reserved.
+//  Copyright (c) 2017 CA. All rights reserved.
 //
 //  This software may be modified and distributed under the terms
 //  of the MIT license. See the LICENSE file for details.
@@ -48,6 +48,7 @@
         
         _session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
         _operations = [NSMutableDictionary dictionary];
+        _reachabilityManager = [MASINetworkReachabilityManager sharedManager];
         
         __block MASURLSessionManager *blockSelf = self;
         
@@ -74,10 +75,12 @@
                 
                 if (didPassEvaluation)
                 {
+                    DLog(@"ssl evaluation passed // %@", blockSelf);
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
                     disposition = NSURLSessionAuthChallengeUseCredential;
                 }
                 else {
+                    DLog(@"ssl evaluation failed // %@", blockSelf);
                     disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
                 }
                 
@@ -109,38 +112,27 @@
             
             if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
             {
+                
                 BOOL didPassEvaluation = YES;
                 
-                if ([MASConfiguration currentConfiguration].enabledTrustedPublicPKI)
+                MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
+                
+                if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
                 {
-                    SecTrustResultType result = 0;
-                    SecTrustEvaluate(challenge.protectionSpace.serverTrust, &result);
-                    
-                    if (result != kSecTrustResultUnspecified && result != kSecTrustResultProceed)
-                    {
-                        didPassEvaluation = NO;
-                    }
+                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
+                }
+                else {
+                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
                 }
                 
                 if (didPassEvaluation)
                 {
-                    MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
-                    
-                    if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
-                    {
-                        didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
-                    }
-                    else {
-                        didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
-                    }
-                }
-                
-                if (didPassEvaluation)
-                {
+                    DLog(@"ssl evaluation passed // %@", blockSelf);
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
                     disposition = NSURLSessionAuthChallengeUseCredential;
                 }
                 else {
+                    DLog(@"ssl evaluation failed // %@", blockSelf);
                     disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
                 }
             }
@@ -205,7 +197,7 @@
 
 # pragma mark - Public
 
-- (void)addOperation:(MASSessionTaskOperation *)operation
+- (void)addOperation:(NSOperation *)operation
 {
     [self.operationQueue addOperation:operation];
 }

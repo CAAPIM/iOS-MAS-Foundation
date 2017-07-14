@@ -2,13 +2,15 @@
 //  MASSessionDataTaskOperation.m
 //  MASFoundation
 //
-//  Copyright (c) 2016 CA. All rights reserved.
+//  Copyright (c) 2017 CA. All rights reserved.
 //
 //  This software may be modified and distributed under the terms
 //  of the MIT license. See the LICENSE file for details.
 //
 
 #import "MASSessionDataTaskOperation.h"
+
+#import "MASAuthValidationOperation.h"
 
 @interface MASSessionDataTaskOperation ()
 
@@ -18,10 +20,17 @@
 @property (nonatomic) long long totalBytesExpected;
 @property (nonatomic) long long bytesReceived;
 
+@property (nonatomic, readwrite, getter = isFinished) BOOL finished;
+@property (nonatomic, readwrite, getter = isExecuting) BOOL executing;
+
 @end
 
 
 @implementation MASSessionDataTaskOperation
+
+@synthesize executing = _executing;
+@synthesize finished = _finished;
+
 
 - (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request
 {
@@ -32,6 +41,68 @@
     }
     
     return self;
+}
+
+
+# pragma mark - NSOperation
+
+- (void)start
+{
+    if ([self isCancelled])
+    {
+        self.finished = YES;
+        return;
+    }
+    
+    self.executing = YES;
+    
+    if ([self.dependencies.lastObject isKindOfClass:[MASAuthValidationOperation class]])
+    {
+        DLog(@"validation check entered");
+        MASAuthValidationOperation *validationOperation = (MASAuthValidationOperation *)self.dependencies.lastObject;
+        
+        if (!validationOperation.result || validationOperation.error != nil)
+        {
+            if (self.didCompleteWithDataErrorBlock)
+            {
+                dispatch_group_async(self.completionGroup ? self.completionGroup : [self defaultDispatchGroupForCompletionBlock], self.completionQueue ? self.completionQueue : dispatch_get_main_queue(), ^{
+                   
+                    self.didCompleteWithDataErrorBlock(nil, nil, nil, validationOperation.error);
+                });
+            }
+            
+            [self completeOperation];
+        }
+        else {
+            [self.task resume];
+        }
+    }
+    else {
+        
+        [self.task resume];
+    }
+}
+
+
+- (void)setExecuting:(BOOL)executing
+{
+    if (executing != _executing)
+    {
+        [self willChangeValueForKey:@"isExecuting"];
+        _executing = executing;
+        [self didChangeValueForKey:@"isExecuting"];
+    }
+}
+
+
+- (void)setFinished:(BOOL)finished
+{
+    if (finished != _finished)
+    {
+        [self willChangeValueForKey:@"isFinished"];
+        _finished = finished;
+        [self didChangeValueForKey:@"isFinished"];
+    }
 }
 
 

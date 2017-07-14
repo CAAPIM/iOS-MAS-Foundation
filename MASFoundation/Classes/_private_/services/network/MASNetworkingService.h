@@ -11,6 +11,7 @@
 #import "MASService.h"
 
 #import "MASConstantsPrivate.h"
+#import "MASAuthValidationOperation.h"
 
 
 @interface MASNetworkingService : MASService
@@ -24,6 +25,9 @@
 # pragma mark - Properties
 
 @property (nonatomic, assign, readonly) MASGatewayMonitoringStatus monitoringStatus;
+
+
+- (MASAuthValidationOperation *)sharedOperation;
 
 
 /**

@@ -2,7 +2,7 @@
 //  MASURLSessionManager.h
 //  MASFoundation
 //
-//  Copyright (c) 2016 CA. All rights reserved.
+//  Copyright (c) 2017 CA. All rights reserved.
 //
 //  This software may be modified and distributed under the terms
 //  of the MIT license. See the LICENSE file for details.
@@ -10,9 +10,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "MASAuthValidationOperation.h"
 #import "MASSecurityPolicy.h"
 #import "MASSessionDataTaskOperation.h"
 #import "MASURLRequest.h"
+//  AFNetworking
+#import "MASINetworkReachabilityManager.h"
 
 //
 //  NSURLSessionDelegate
@@ -32,6 +35,8 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 @property (readonly, nonatomic, strong) NSURLSession *session;
 
 @property (readwrite, nonatomic, strong) MASSecurityPolicy *securityPolicy;
+
+@property (readwrite, nonatomic, strong) MASINetworkReachabilityManager *reachabilityManager;
 
 
 ///--------------------------------------
@@ -64,7 +69,7 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 
 
 
-- (void)addOperation:(MASSessionTaskOperation *)operation;
+- (void)addOperation:(NSOperation *)operation;
 
 
 

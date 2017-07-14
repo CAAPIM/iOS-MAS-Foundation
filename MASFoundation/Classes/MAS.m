@@ -919,10 +919,10 @@
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
+//            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+//                
+//                if (error == nil)
+//                {
                     //
                     // Pass through the call to the network manager
                     //
@@ -933,15 +933,15 @@
                                                         responseType:responseType
                                                             isPublic:isPublic
                                                           completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+//                }
+//                else {
+//                    
+//                    if (blockCompletion)
+//                    {
+//                        blockCompletion(nil, error);
+//                    }
+//                }
+//            }];
         }];
     }
     else {
@@ -1063,10 +1063,10 @@
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
+//            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+//                
+//                if (error == nil)
+//                {
                     //
                     // Pass through the call to the network manager
                     //
@@ -1077,16 +1077,16 @@
                                                      responseType:responseType
                                                          isPublic:isPublic
                                                        completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+//                    
+//                }
+//                else {
+//                    
+//                    if (blockCompletion)
+//                    {
+//                        blockCompletion(nil, error);
+//                    }
+//                }
+//            }];
         }];
     }
     else {
@@ -1202,10 +1202,10 @@
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
+//            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+//                
+//                if (error == nil)
+//                {
                     //
                     // Pass through the call to the network manager
                     //
@@ -1216,16 +1216,16 @@
                                                      responseType:responseType
                                                          isPublic:isPublic
                                                        completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+//                    
+//                }
+//                else {
+//                    
+//                    if (blockCompletion)
+//                    {
+//                        blockCompletion(nil, error);
+//                    }
+//                }
+//            }];
         }];
     }
     else {
@@ -1341,10 +1341,10 @@ withParameters:(NSDictionary *)parameterInfo
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
+//            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+//                
+//                if (error == nil)
+//                {
                     //
                     // Pass through the call to the network manager
                     //
@@ -1356,15 +1356,15 @@ withParameters:(NSDictionary *)parameterInfo
                                                         isPublic:isPublic
                                                       completion:[self parseTargetAPIErrorForCompletionBlock:completion]];
                     
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+//                }
+//                else {
+//                    
+//                    if (blockCompletion)
+//                    {
+//                        blockCompletion(nil, error);
+//                    }
+//                }
+//            }];
         }];
     }
     else {
@@ -1481,10 +1481,10 @@ withParameters:(nullable NSDictionary *)parameterInfo
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
+//            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
+//                
+//                if (error == nil)
+//                {
                     //
                     // Pass through the call to the network manager
                     //
@@ -1495,16 +1495,16 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                                    responseType:responseType
                                                        isPublic:isPublic
                                                      completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+//                    
+//                }
+//                else {
+//                    
+//                    if (blockCompletion)
+//                    {
+//                        blockCompletion(nil, error);
+//                    }
+//                }
+//            }];
         }];
     }
     //
