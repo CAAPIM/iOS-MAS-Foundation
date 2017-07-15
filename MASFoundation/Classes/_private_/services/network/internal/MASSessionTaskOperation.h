@@ -66,6 +66,10 @@ typedef NSCachedURLResponse * (^MASNetworkDataTaskWillCacheResponseBlock)(NSURLS
 
 # pragma mark - Public
 
+- (void)updateSession:(NSURLSession *)session;
+
+
+
 - (void)setResponseType:(MASRequestResponseType)responseType;
 
 

@@ -11,6 +11,9 @@
 #import "MASSessionDataTaskOperation.h"
 
 #import "MASAuthValidationOperation.h"
+#import "MASURLRequest.h"
+#import "MASDevice.h"
+#import "MASAccessService.h"
 
 @interface MASSessionDataTaskOperation ()
 
@@ -22,6 +25,9 @@
 
 @property (nonatomic, readwrite, getter = isFinished) BOOL finished;
 @property (nonatomic, readwrite, getter = isExecuting) BOOL executing;
+
+@property (nonatomic, readwrite, strong) MASURLRequest *request;
+@property (nonatomic, readwrite, strong) NSURLSession *session;
 
 @end
 
@@ -37,10 +43,19 @@
     self = [super initWithSession:session request:request];
     if (self)
     {
-        self.task = [session dataTaskWithRequest:request];
+        
     }
     
     return self;
+}
+
+# pragma mark - Public
+
+- (void)updateSession:(NSURLSession *)session
+{
+    [super updateSession:session];
+    
+    DLog(@"data task has been updated");
 }
 
 
@@ -55,6 +70,24 @@
     }
     
     self.executing = YES;
+    
+    if (!self.request.isPublic)
+    {
+        NSMutableDictionary *mutableHeader = [self.request.headerInfo mutableCopy];
+        
+        if (![[self.request.headerInfo allKeys] containsObject:MASMagIdentifierRequestResponseKey] && [MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
+        {
+            [mutableHeader setObject:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] forKey:MASMagIdentifierRequestResponseKey];
+        }
+        
+        if (![[self.request.headerInfo allKeys] containsObject:MASAuthorizationRequestResponseKey] && [MASAccessService sharedService].currentAccessObj.accessToken)
+        {
+            [mutableHeader setObject:[MASUser authorizationBearerWithAccessToken] forKey:MASAuthorizationRequestResponseKey];
+        }
+        
+        self.request.headerInfo = mutableHeader;
+        self.request = [self.request rebuildRequest];
+    }
     
     if ([self.dependencies.lastObject isKindOfClass:[MASAuthValidationOperation class]])
     {
@@ -72,15 +105,14 @@
             }
             
             [self completeOperation];
-        }
-        else {
-            [self.task resume];
+            
+            return;
         }
     }
-    else {
-        
-        [self.task resume];
-    }
+    self.task = [self.session dataTaskWithRequest:self.request];
+    
+    
+    [self.task resume];
 }
 
 

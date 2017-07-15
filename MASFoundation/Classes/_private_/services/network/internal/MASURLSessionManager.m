@@ -18,9 +18,10 @@
 @property (readwrite, nonatomic, copy) MASURLSessionDidReceiveAuthenticationChallengeBlock sessionAuthChallengeBlock;
 @property (readwrite, nonatomic, copy) MASTaskDidReceiveAuthenticationChallengeBlock taskAuthChallengeBlock;
 @property (readwrite, nonatomic, strong) NSOperationQueue *operationQueue;
-@property (readwrite, nonatomic, strong) NSMutableDictionary *operations;
+@property (readwrite, nonatomic, strong) NSOperationQueue *internalOperationQueue;
+@property (readwrite, nonatomic, strong) NSMutableArray *operations;
 
-
+@property (readwrite, nonatomic, strong) NSURLSessionConfiguration *configuration;
 @end
 
 
@@ -43,11 +44,14 @@
     {
         if (!configuration)
         {
-            configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+            _configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        }
+        else {
+            _configuration = configuration;
         }
         
-        _session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        _operations = [NSMutableDictionary dictionary];
+        _session = [NSURLSession sessionWithConfiguration:_configuration delegate:self delegateQueue:nil];
+        _operations = [NSMutableArray array];
         _reachabilityManager = [MASINetworkReachabilityManager sharedManager];
         
         __block MASURLSessionManager *blockSelf = self;
@@ -164,7 +168,7 @@
 - (MASSessionDataTaskOperation *)dataOperationWithRequest:(MASURLRequest *)request completionHandler:(MASSessionDataTaskCompletionBlock)completionHandler
 {
     MASSessionDataTaskOperation *dataTask = [[MASSessionDataTaskOperation alloc] initWithSession:_session request:request];
-    [self.operations setObject:dataTask forKey:@(dataTask.task.taskIdentifier)];
+    [self.operations addObject:dataTask];
     
     dataTask.didCompleteWithDataErrorBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSData *data, NSError *error) {
       
@@ -195,7 +199,45 @@
 }
 
 
+- (NSOperationQueue *)internalOperationQueue
+{
+    @synchronized (self) {
+        if (!_internalOperationQueue)
+        {
+            _internalOperationQueue = [[NSOperationQueue alloc] init];
+            _internalOperationQueue.name = [NSString stringWithFormat:@"com.ca.mas.network.internaloperationqueue"];
+            _internalOperationQueue.maxConcurrentOperationCount = 10;
+        }
+        
+        return _internalOperationQueue;
+    }
+}
+
+
 # pragma mark - Public
+
+- (void)updateSession
+{
+    if (_session)
+    {
+        _session = nil;
+    }
+    
+    _session = [NSURLSession sessionWithConfiguration:_configuration delegate:self delegateQueue:nil];
+    
+    if ([_operationQueue.operations count] > 0)
+    {
+        for (NSOperation *operation in _operationQueue.operations)
+        {
+            if ((!operation.isFinished || !operation.isExecuting) && [operation isKindOfClass:[MASSessionTaskOperation class]])
+            {
+                MASSessionTaskOperation *taskOperation = (MASSessionTaskOperation *)operation;
+                [taskOperation updateSession:_session];
+            }
+        }
+    }
+}
+
 
 - (void)addOperation:(NSOperation *)operation
 {
@@ -217,13 +259,45 @@
 
 # pragma mark - Private
 
+- (MASSessionTaskOperation *)taskOperationWithTask:(NSURLSessionTask *)task
+{
+    MASSessionTaskOperation *taskOperation = nil;
+    
+    for (MASSessionTaskOperation *operation in self.operations)
+    {
+        if ([operation.task isEqual:task])
+        {
+            taskOperation = operation;
+        }
+    }
+    
+    return taskOperation;
+}
+
+
+- (MASSessionDataTaskOperation *)dataTaskOperationWithDataTask:(NSURLSessionDataTask *)dataTask
+{
+    MASSessionDataTaskOperation *dataTaskOperation = nil;
+    
+    for (MASSessionDataTaskOperation *operation in self.operations)
+    {
+        if ([operation.task isEqual:dataTask])
+        {
+            dataTaskOperation = operation;
+        }
+    }
+    
+    return dataTaskOperation;
+}
+
+
 - (void)removeSessionTaskFromOperations:(NSURLSessionTask *)task
 {
-    MASSessionTaskOperation *operation = self.operations[@(task.taskIdentifier)];
+    MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
     
     if (operation)
     {
-        [self.operations removeObjectForKey:@(operation.task.taskIdentifier)];
+        [self.operations removeObject:operation];
     }
 }
 
@@ -252,7 +326,7 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    MASSessionTaskOperation *operation = self.operations[@(task.taskIdentifier)];
+    MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
     
     if ([operation respondsToSelector:@selector(URLSession:task:didCompleteWithError:)])
     {
@@ -264,7 +338,7 @@
 
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
-    MASSessionTaskOperation *operation = self.operations[@(task.taskIdentifier)];
+    MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
     
     if ([operation respondsToSelector:@selector(URLSession:task:didReceiveChallenge:completionHandler:)])
     {
@@ -275,7 +349,7 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
-    MASSessionTaskOperation *operation = self.operations[@(task.taskIdentifier)];
+    MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
     
     if ([operation respondsToSelector:@selector(URLSession:task:didSendBodyData:totalBytesSent:totalBytesExpectedToSend:)])
     {
@@ -286,7 +360,7 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task needNewBodyStream:(void (^)(NSInputStream *bodyStream))completionHandler
 {
-    MASSessionTaskOperation *operation = self.operations[@(task.taskIdentifier)];
+    MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
     
     if ([operation respondsToSelector:@selector(URLSession:task:needNewBodyStream:)])
     {
@@ -297,7 +371,7 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *))completionHandler
 {
-    MASSessionTaskOperation *operation = self.operations[@(task.taskIdentifier)];
+    MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
     
     if ([operation respondsToSelector:@selector(URLSession:task:willPerformHTTPRedirection:newRequest:completionHandler:)])
     {
@@ -310,7 +384,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler
 {
-    MASSessionDataTaskOperation *operation = self.operations[@(dataTask.taskIdentifier)];
+    MASSessionDataTaskOperation *operation = [self dataTaskOperationWithDataTask:dataTask];
     
     if ([operation respondsToSelector:@selector(URLSession:dataTask:didReceiveResponse:completionHandler:)])
     {
@@ -321,7 +395,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
 {
-    MASSessionDataTaskOperation *operation = self.operations[@(dataTask.taskIdentifier)];
+    MASSessionDataTaskOperation *operation = [self dataTaskOperationWithDataTask:dataTask];
     
     if ([operation respondsToSelector:@selector(URLSession:dataTask:didReceiveData:)])
     {
@@ -332,7 +406,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask willCacheResponse:(NSCachedURLResponse *)proposedResponse completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler
 {
-    MASSessionDataTaskOperation *operation = self.operations[@(dataTask.taskIdentifier)];
+    MASSessionDataTaskOperation *operation = [self dataTaskOperationWithDataTask:dataTask];
     
     if ([operation respondsToSelector:@selector(URLSession:dataTask:willCacheResponse:completionHandler:)])
     {
@@ -343,7 +417,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
 {
-    MASSessionDataTaskOperation *operation = self.operations[@(dataTask.taskIdentifier)];
+    MASSessionDataTaskOperation *operation = [self dataTaskOperationWithDataTask:dataTask];
     
     if ([operation respondsToSelector:@selector(URLSession:dataTask:didBecomeDownloadTask:)])
     {

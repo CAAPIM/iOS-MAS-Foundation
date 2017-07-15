@@ -65,7 +65,15 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 
 # pragma mark - Public
 
+- (void)updateSession;
+
+
+
 - (NSOperationQueue *)operationQueue;
+
+
+
+- (NSOperationQueue *)internalOperationQueue;
 
 
 

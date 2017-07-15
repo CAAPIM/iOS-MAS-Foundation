@@ -91,6 +91,14 @@
 }
 
 
+# pragma mark - NSObject
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, executing: %@, cancelled: %@, finished: %@>", NSStringFromClass([self class]), self, self.executing ? @"YES":@"NO", [self isCancelled] ? @"YES":@"NO", self.isFinished ? @"YES":@"NO"];
+}
+
+
 # pragma mark - Private
 
 - (void)validateAuthSession

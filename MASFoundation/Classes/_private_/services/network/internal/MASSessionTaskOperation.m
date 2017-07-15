@@ -16,6 +16,8 @@
 @property (nonatomic, readwrite, getter = isFinished) BOOL finished;
 @property (nonatomic, readwrite, getter = isExecuting) BOOL executing;
 @property (nonatomic, readwrite, copy) MASTaskDidReceiveAuthenticationChallengeBlock taskAuthenticationChallengeBlock;
+@property (nonatomic, readwrite, strong) MASURLRequest *request;
+@property (nonatomic, readwrite, strong) NSURLSession *session;
 
 @end
 
@@ -44,7 +46,8 @@
     self = [super init];
     if (self)
     {
-        
+        self.session = session;
+        self.request = (MASURLRequest *)request;
     }
     
     return self;
@@ -52,6 +55,17 @@
 
 
 # pragma mark - Public
+
+- (void)updateSession:(NSURLSession *)session
+{
+    if (self.session)
+    {
+        self.session = nil;
+    }
+    
+    self.session = session;
+}
+
 
 - (void)setResponseType:(MASRequestResponseType)responseType
 {

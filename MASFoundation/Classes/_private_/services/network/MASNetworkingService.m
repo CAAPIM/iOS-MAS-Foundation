@@ -224,6 +224,11 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 //            [_authValidationOperation setQueuePriority:NSOperationQueuePriorityVeryHigh];
             DLog(@"shared validation operation created");
         }
+        else if (_authValidationOperation.isFinished)
+        {
+            _authValidationOperation = nil;
+            _authValidationOperation = [MASAuthValidationOperation sharedOperation];
+        }
         
         return _authValidationOperation;
     }
@@ -235,78 +240,73 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 - (void)establishURLSession
 {
     
-    //
-    // Cleanup the internal manager and shared instance
-    //
-    if (_sessionManager)
+    if (_sessionManager == nil)
     {
-        [_sessionManager.operationQueue cancelAllOperations];
-        [_sessionManager.reachabilityManager stopMonitoring];
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
-        _sessionManager = nil;
-    }
-    
-    //
-    // Retrieve the configuration
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    
-    //
-    //  Setup the security policy
-    //
-    //  Certificate Pinning Mode
-    //
-    
-    MASSSLPinningMode pinningMode = MASSSLPinningModeCertificate;
-    
-    if (configuration.trustedCertPinnedPublickKeyHashes != nil && [configuration.trustedCertPinnedPublickKeyHashes count] > 0)
-    {
-        pinningMode = MASSSLPinningModePublicKeyHash;
-    }
-    
-    MASSecurityPolicy *securityPolicy = [MASSecurityPolicy policyWithMASPinningMode:pinningMode];
-    
-    [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
-    [securityPolicy setValidatesDomainName:YES];
-    [securityPolicy setValidatesCertificateChain:YES];
-    [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
-    
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    sessionConfig.URLCredentialStorage = nil;
-    sessionConfig.URLCache = nil;
-    
-    //
-    //  NSURLSessionManager
-    //
-    _sessionManager = [[MASURLSessionManager alloc] initWithConfiguration:sessionConfig];
-    _sessionManager.securityPolicy = securityPolicy;
-    [_sessionManager.operationQueue addObserver:self forKeyPath:@"operations" options:0 context:&kMASNetworkQueueOperationsChanged];
-    
-    //
-    // Reachability
-    //
-    [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(MASINetworkReachabilityStatus status) {
         //
-        // Set the new value, this should be a direct mapping of MASI and MAS types
+        // Retrieve the configuration
         //
-        _monitoringStatus = (long)status;
+        MASConfiguration *configuration = [MASConfiguration currentConfiguration];
         
         //
-        // Make sure it is on the main thread
+        //  Setup the security policy
         //
-        dispatch_async(dispatch_get_main_queue(), ^
-                       {
-                           //
-                           // Notify the block, if any
-                           //
-                           if(_gatewayStatusMonitor_) _gatewayStatusMonitor_((long)status);
-                       });
-    }];
-    
-    //
-    // Begin monitoring
-    //
-    [_sessionManager.reachabilityManager startMonitoring];
+        //  Certificate Pinning Mode
+        //
+        
+        MASSSLPinningMode pinningMode = MASSSLPinningModeCertificate;
+        
+        if (configuration.trustedCertPinnedPublickKeyHashes != nil && [configuration.trustedCertPinnedPublickKeyHashes count] > 0)
+        {
+            pinningMode = MASSSLPinningModePublicKeyHash;
+        }
+        
+        MASSecurityPolicy *securityPolicy = [MASSecurityPolicy policyWithMASPinningMode:pinningMode];
+        
+        [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
+        [securityPolicy setValidatesDomainName:YES];
+        [securityPolicy setValidatesCertificateChain:YES];
+        [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
+        
+        NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        sessionConfig.URLCredentialStorage = nil;
+        sessionConfig.URLCache = nil;
+        
+        //
+        //  NSURLSessionManager
+        //
+        _sessionManager = [[MASURLSessionManager alloc] initWithConfiguration:sessionConfig];
+        _sessionManager.securityPolicy = securityPolicy;
+        [_sessionManager.operationQueue addObserver:self forKeyPath:@"operations" options:0 context:&kMASNetworkQueueOperationsChanged];
+        
+        //
+        // Reachability
+        //
+        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(MASINetworkReachabilityStatus status) {
+            //
+            // Set the new value, this should be a direct mapping of MASI and MAS types
+            //
+            _monitoringStatus = (long)status;
+            
+            //
+            // Make sure it is on the main thread
+            //
+            dispatch_async(dispatch_get_main_queue(), ^
+                           {
+                               //
+                               // Notify the block, if any
+                               //
+                               if(_gatewayStatusMonitor_) _gatewayStatusMonitor_((long)status);
+                           });
+        }];
+        
+        //
+        // Begin monitoring
+        //
+        [_sessionManager.reachabilityManager startMonitoring];
+    }
+    else {
+        [_sessionManager updateSession];
+    }
 }
 
 

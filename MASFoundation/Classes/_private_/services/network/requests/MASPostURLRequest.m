@@ -45,34 +45,26 @@
     //
     // Create the request
     //
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+    MASPostURLRequest *request = [MASPostURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
     
     //
     // Method
     //
     [request setHTTPMethod:kMASHTTPPostRequestMethod];
-    
-    //
-    // Mutable copy of header
-    //
-    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-    
-    //mag-identifier
-    if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] && !isPublic)
-    {
-        mutableHeaderInfo[MASMagIdentifierRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    }
-    
-    // Authorization
-    if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey] && !isPublic)
-    {
-        mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
-    }
-    
     //
     // Headers
     //
-    [request setHeaderInfo:mutableHeaderInfo forRequestType:requestType andResponseType:responseType];
+    [request setHeaderInfo:headerInfo forRequestType:requestType andResponseType:responseType];
+    
+    //
+    //  capture request
+    //
+    request.isPublic = isPublic;
+    request.requestType = requestType;
+    request.responseType = responseType;
+    request.headerInfo = headerInfo;
+    request.parameterInfo = parameterInfo;
+    request.endPoint = endPoint;
     
     //
     // Body ... format the parameter dictionary to data for the request type if there is anything
@@ -87,7 +79,14 @@
         [request setHTTPBody:data];
     }
     
-    return (MASPostURLRequest *)request;
+    return request;
+}
+
+- (MASURLRequest *)rebuildRequest
+{
+    [self setHeaderInfo:self.headerInfo forRequestType:self.requestType andResponseType:self.responseType];
+    
+    return self;
 }
 
 @end
