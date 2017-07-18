@@ -54,8 +54,6 @@
 - (void)updateSession:(NSURLSession *)session
 {
     [super updateSession:session];
-    
-    DLog(@"data task has been updated");
 }
 
 
@@ -91,7 +89,6 @@
     
     if ([self.dependencies.lastObject isKindOfClass:[MASAuthValidationOperation class]])
     {
-        DLog(@"validation check entered");
         MASAuthValidationOperation *validationOperation = (MASAuthValidationOperation *)self.dependencies.lastObject;
         
         if (!validationOperation.result || validationOperation.error != nil)

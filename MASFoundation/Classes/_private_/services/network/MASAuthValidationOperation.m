@@ -106,7 +106,8 @@
     __block MASAuthValidationOperation *blockSelf = self;
     
     [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError * _Nullable error) {
-    
+        [[MASNetworkingService sharedService] releaseOperationQueue];
+        
         blockSelf.result = completed;
         blockSelf.error = error;
         [blockSelf completeOperation];

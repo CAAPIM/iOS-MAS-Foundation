@@ -196,6 +196,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     if ([object isKindOfClass:[NSOperationQueue class]] && [keyPath isEqualToString:@"operations"] && context == &kMASNetworkQueueOperationsChanged)
     {
         NSOperationQueue *thisQueue = (NSOperationQueue *)object;
+//        DLog(@"operation queue changed : %@", thisQueue.operations);
         if ([thisQueue.operations count] == 0)
         {
             //
@@ -221,7 +222,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         if (!_authValidationOperation)
         {
             _authValidationOperation = [MASAuthValidationOperation sharedOperation];
-//            [_authValidationOperation setQueuePriority:NSOperationQueuePriorityVeryHigh];
             DLog(@"shared validation operation created");
         }
         else if (_authValidationOperation.isFinished)
@@ -236,6 +236,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 
 # pragma mark - Public
+
+- (void)releaseOperationQueue
+{
+    if (_sessionManager.operationQueue.isSuspended)
+    {
+        [_sessionManager.operationQueue setSuspended:NO];
+    }
+}
 
 - (void)establishURLSession
 {
@@ -486,6 +494,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         else if (magErrorCode && [magErrorCode hasSuffix:@"990"])
         {
+            [_sessionManager.operationQueue setSuspended:YES];
             
             //
             // Remove access_token from keychain
@@ -493,43 +502,25 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             [[MASAccessService sharedService].currentAccessObj deleteForTokenExpiration];
             [[MASAccessService sharedService].currentAccessObj refresh];
             
-            //
-            // Validate user's session
-            //
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
+            
+            if ([blockSelf isMAGEndpoint:blockEndPoint])
+            {
+                blockCompletion(responseInfo, nil);
+            }
+            else {
+            
                 //
-                // If it fails to re-validate session, notify user
+                //  Proceed with original request
                 //
-                if (!completed || error)
-                {
-                    if(blockCompletion)
-                    {
-                        blockCompletion(responseInfo, error);
-                    }
-                }
-                else {
-                    
-                    if ([blockSelf isMAGEndpoint:blockEndPoint])
-                    {
-                        blockCompletion(responseInfo, nil);
-                    }
-                    else {
-                        
-                        //
-                        //  Proceed with original request
-                        //
-                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                       originalHeader:blockOriginalHeader
-                                                    originalParameter:blockOriginalParameter
-                                                          requestType:blockRequestType
-                                                         responseType:blockResponseType
-                                                             isPublic:isPublic
-                                                           httpMethod:blockHTTPMethod
-                                                           completion:blockCompletion];
-                    }
-                }
-            }];
+                [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                               originalHeader:blockOriginalHeader
+                                            originalParameter:blockOriginalParameter
+                                                  requestType:blockRequestType
+                                                 responseType:blockResponseType
+                                                     isPublic:isPublic
+                                                   httpMethod:blockHTTPMethod
+                                                   completion:blockCompletion];
+            }
         }
         //
         // If MAG error code exists, and it ends with 140/142/143/144/145,
@@ -625,6 +616,11 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             if (magErrorCode && [magErrorCode hasSuffix:@"201"]) {
                 
+                [_sessionManager.operationQueue setSuspended:YES];
+                
+                //
+                //  Remove slave client_id and client_secret from keychain
+                //
                 [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
                 [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
                 [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientExpiration];
@@ -636,60 +632,38 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 [[MASAccessService sharedService].currentAccessObj refresh];
                 
                 //
-                // Validate user's session
+                //  Re-validate all registration/authentication status before proceeding
                 //
-                [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                    
+                [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError * _Nullable error) {
+                   
                     //
-                    // If it fails to re-validate session, notify user
+                    //  If failing request was one of MAG system endpoint, deliver the message as it is
                     //
-                    if (!completed || error)
+                    if ([blockSelf isMAGEndpoint:blockEndPoint])
                     {
-                        if(blockCompletion)
-                        {
-                            blockCompletion(responseInfo, error);
-                        }
+                        blockCompletion(responseInfo, nil);
                     }
+                    //
+                    //  If failing request was not one of MAG system endpoint, rebuild the request
+                    //
                     else {
                         
-                        if ([blockSelf isMAGEndpoint:blockEndPoint])
-                        {
-                            blockCompletion(responseInfo, nil);
-                        }
-                        else {
-                            
-                            //
-                            // If the original header contains the clientAuthorizationHeader, which is invalid;
-                            // replace with the newly generated clientAuthorizationHeader for the retry request.
-                            //
-                            if ([[blockOriginalHeader allKeys] containsObject:MASAuthorizationRequestResponseKey] && ![[blockOriginalHeader objectForKey:MASAuthorizationRequestResponseKey] isEqualToString:[[MASApplication currentApplication] clientAuthorizationBasicHeaderValue]])
-                            {
-                                [blockOriginalHeader setObject:[[MASApplication currentApplication] clientAuthorizationBasicHeaderValue] forKey:MASAuthorizationRequestResponseKey];
-                            }
-                            
-                            if ([[blockOriginalParameter allKeys] containsObject:MASClientKeyRequestResponseKey] && ![[blockOriginalParameter objectForKey:MASClientKeyRequestResponseKey] isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId]])
-                            {
-                                [blockOriginalParameter setObject:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId] forKey:MASClientKeyRequestResponseKey];
-                            }
-                            
-                            //
-                            //  Proceed with original request
-                            //
-                            [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                           originalHeader:blockOriginalHeader
-                                                        originalParameter:blockOriginalParameter
-                                                              requestType:blockRequestType
-                                                             responseType:blockResponseType
-                                                                 isPublic:isPublic
-                                                               httpMethod:blockHTTPMethod
-                                                               completion:blockCompletion];
-                        }
+                        //
+                        //  Proceed with original request
+                        //
+                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                       originalHeader:blockOriginalHeader
+                                                    originalParameter:blockOriginalParameter
+                                                          requestType:blockRequestType
+                                                         responseType:blockResponseType
+                                                             isPublic:isPublic
+                                                           httpMethod:blockHTTPMethod
+                                                           completion:blockCompletion];
                     }
                 }];
             }
             else if (blockCompletion)
             {
-                
                 //
                 // notify
                 //
@@ -706,7 +680,11 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 {
     BOOL isMAGEndpoint = NO;
     
-    if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].tokenEndpointPath])
+    if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].userInfoEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].tokenEndpointPath])
     {
         isMAGEndpoint = YES;
     }
@@ -958,16 +936,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              {
                  [operation addDependency:self.sharedOperation];
                  
-                 if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
                  {
-                     [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
                  }
-                 else {
-                     [_sessionManager.operationQueue addOperation:operation];
-                 }
+                 [_sessionManager.operationQueue addOperation:operation];
              }
              else {
-                 [_sessionManager.operationQueue addOperation:operation];
+                 [_sessionManager.internalOperationQueue addOperation:operation];
              }
          }];
     }
@@ -992,16 +968,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         {
             [operation addDependency:self.sharedOperation];
             
-            if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
             {
-                [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
             }
-            else {
-                [_sessionManager.operationQueue addOperation:operation];
-            }
+            [_sessionManager.operationQueue addOperation:operation];
         }
         else {
-            [_sessionManager.operationQueue addOperation:operation];
+            [_sessionManager.internalOperationQueue addOperation:operation];
         }
     }
 }
@@ -1135,16 +1109,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              {
                  [operation addDependency:self.sharedOperation];
                  
-                 if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
                  {
-                     [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
                  }
-                 else {
-                     [_sessionManager.operationQueue addOperation:operation];
-                 }
+                 [_sessionManager.operationQueue addOperation:operation];
              }
              else {
-                 [_sessionManager.operationQueue addOperation:operation];
+                 [_sessionManager.internalOperationQueue addOperation:operation];
              }
          }];
     }
@@ -1170,16 +1142,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         {
             [operation addDependency:self.sharedOperation];
             
-            if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
             {
-                [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
             }
-            else {
-                [_sessionManager.operationQueue addOperation:operation];
-            }
+            [_sessionManager.operationQueue addOperation:operation];
         }
         else {
-            [_sessionManager.operationQueue addOperation:operation];
+            [_sessionManager.internalOperationQueue addOperation:operation];
         }
     }
 }
@@ -1310,16 +1280,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              {
                  [operation addDependency:self.sharedOperation];
                  
-                 if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
                  {
-                     [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
                  }
-                 else {
-                     [_sessionManager.operationQueue addOperation:operation];
-                 }
+                 [_sessionManager.operationQueue addOperation:operation];
              }
              else {
-                 [_sessionManager.operationQueue addOperation:operation];
+                 [_sessionManager.internalOperationQueue addOperation:operation];
              }
          }];
     }
@@ -1344,16 +1312,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         {
             [operation addDependency:self.sharedOperation];
             
-            if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
             {
-                [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
             }
-            else {
-                [_sessionManager.operationQueue addOperation:operation];
-            }
+            [_sessionManager.operationQueue addOperation:operation];
         }
         else {
-            [_sessionManager.operationQueue addOperation:operation];
+            [_sessionManager.internalOperationQueue addOperation:operation];
         }
     }
 }
@@ -1487,16 +1453,14 @@ withParameters:(NSDictionary *)parameterInfo
              {
                  [operation addDependency:self.sharedOperation];
                  
-                 if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
                  {
-                     [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
                  }
-                 else {
-                     [_sessionManager.operationQueue addOperation:operation];
-                 }
+                 [_sessionManager.operationQueue addOperation:operation];
              }
              else {
-                 [_sessionManager.operationQueue addOperation:operation];
+                 [_sessionManager.internalOperationQueue addOperation:operation];
              }
              
          }];
@@ -1522,16 +1486,14 @@ withParameters:(NSDictionary *)parameterInfo
         {
             [operation addDependency:self.sharedOperation];
             
-            if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
             {
-                [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
             }
-            else {
-                [_sessionManager.operationQueue addOperation:operation];
-            }
+            [_sessionManager.operationQueue addOperation:operation];
         }
         else {
-            [_sessionManager.operationQueue addOperation:operation];
+            [_sessionManager.internalOperationQueue addOperation:operation];
         }
     }
 }
@@ -1662,16 +1624,14 @@ withParameters:(NSDictionary *)parameterInfo
              {
                  [operation addDependency:self.sharedOperation];
                  
-                 if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
                  {
-                     [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
                  }
-                 else {
-                     [_sessionManager.operationQueue addOperation:operation];
-                 }
+                 [_sessionManager.operationQueue addOperation:operation];
              }
              else {
-                 [_sessionManager.operationQueue addOperation:operation];
+                 [_sessionManager.internalOperationQueue addOperation:operation];
              }
          }];
     }
@@ -1696,16 +1656,14 @@ withParameters:(NSDictionary *)parameterInfo
         {
             [operation addDependency:self.sharedOperation];
             
-            if (!self.sharedOperation.isFinished && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
             {
-                [_sessionManager.operationQueue addOperations:@[self.sharedOperation, operation] waitUntilFinished:NO];
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
             }
-            else {
-                [_sessionManager.operationQueue addOperation:operation];
-            }
+            [_sessionManager.operationQueue addOperation:operation];
         }
         else {
-            [_sessionManager.operationQueue addOperation:operation];
+            [_sessionManager.internalOperationQueue addOperation:operation];
         }
     }
 }

@@ -79,12 +79,10 @@
                 
                 if (didPassEvaluation)
                 {
-                    DLog(@"ssl evaluation passed // %@", blockSelf);
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
                     disposition = NSURLSessionAuthChallengeUseCredential;
                 }
                 else {
-                    DLog(@"ssl evaluation failed // %@", blockSelf);
                     disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
                 }
                 
@@ -131,12 +129,10 @@
                 
                 if (didPassEvaluation)
                 {
-                    DLog(@"ssl evaluation passed // %@", blockSelf);
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
                     disposition = NSURLSessionAuthChallengeUseCredential;
                 }
                 else {
-                    DLog(@"ssl evaluation failed // %@", blockSelf);
                     disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
                 }
             }

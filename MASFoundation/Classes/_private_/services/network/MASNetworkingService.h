@@ -68,6 +68,8 @@
 
 # pragma mark - Public
 
+- (void)releaseOperationQueue;
+
 /**
  *  Establish URLSession with given URL and SessionConfiguration to trigger URL authentication challenge with stored certificate
  */
