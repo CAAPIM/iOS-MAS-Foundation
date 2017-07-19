@@ -154,7 +154,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     if (_sessionManager)
     {
-        [_sessionManager.operationQueue removeObserver:self forKeyPath:@"operations"];
         [_sessionManager.operationQueue cancelAllOperations];
         [_sessionManager.reachabilityManager stopMonitoring];
         [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
@@ -173,7 +172,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     if (_sessionManager)
     {
-        [_sessionManager.operationQueue removeObserver:self forKeyPath:@"operations"];
         [_sessionManager.operationQueue cancelAllOperations];
         [_sessionManager.reachabilityManager stopMonitoring];
         [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
@@ -196,14 +194,12 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     if ([object isKindOfClass:[NSOperationQueue class]] && [keyPath isEqualToString:@"operations"] && context == &kMASNetworkQueueOperationsChanged)
     {
         NSOperationQueue *thisQueue = (NSOperationQueue *)object;
-//        DLog(@"operation queue changed : %@", thisQueue.operations);
         if ([thisQueue.operations count] == 0)
         {
             //
             //  Nullify shared operation as all of operations is completed
             //
             _authValidationOperation = nil;
-            DLog(@"shared validation operation destroyed");
         }
     }
     else
@@ -217,13 +213,21 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 - (MASAuthValidationOperation *)sharedOperation
 {
+    //
+    //  synchronized method to avoid duplicate sharedOperation
+    //
     @synchronized (self) {
         
+        //
+        //  if shared operation was not constructed, create one
+        //
         if (!_authValidationOperation)
         {
             _authValidationOperation = [MASAuthValidationOperation sharedOperation];
-            DLog(@"shared validation operation created");
         }
+        //
+        //  if shared operation was created, but already executed and cleared, destroy old one and create new one
+        //
         else if (_authValidationOperation.isFinished)
         {
             _authValidationOperation = nil;
@@ -632,35 +636,34 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 [[MASAccessService sharedService].currentAccessObj refresh];
                 
                 //
-                //  Re-validate all registration/authentication status before proceeding
+                //  Invalidate the current shared validation operation, then reconstruct new validation operation and move all pending operation's dependencies over to the newly created one
                 //
-                [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError * _Nullable error) {
-                   
+                [self reconstructAuthValidationOperation];
+                
+                //
+                //  If failing request was one of MAG system endpoint, deliver the message as it is
+                //
+                if ([blockSelf isMAGEndpoint:blockEndPoint])
+                {
+                    blockCompletion(responseInfo, nil);
+                }
+                //
+                //  If failing request was not one of MAG system endpoint, rebuild the request
+                //
+                else {
+                    
                     //
-                    //  If failing request was one of MAG system endpoint, deliver the message as it is
+                    //  Proceed with original request
                     //
-                    if ([blockSelf isMAGEndpoint:blockEndPoint])
-                    {
-                        blockCompletion(responseInfo, nil);
-                    }
-                    //
-                    //  If failing request was not one of MAG system endpoint, rebuild the request
-                    //
-                    else {
-                        
-                        //
-                        //  Proceed with original request
-                        //
-                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                       originalHeader:blockOriginalHeader
-                                                    originalParameter:blockOriginalParameter
-                                                          requestType:blockRequestType
-                                                         responseType:blockResponseType
-                                                             isPublic:isPublic
-                                                           httpMethod:blockHTTPMethod
-                                                           completion:blockCompletion];
-                    }
-                }];
+                    [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                   originalHeader:blockOriginalHeader
+                                                originalParameter:blockOriginalParameter
+                                                      requestType:blockRequestType
+                                                     responseType:blockResponseType
+                                                         isPublic:isPublic
+                                                       httpMethod:blockHTTPMethod
+                                                       completion:blockCompletion];
+                }
             }
             else if (blockCompletion)
             {
@@ -890,94 +893,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         return;
     }
     
-    //
-    // Determine if we need to add the geo-location header value
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
-    {
-        
-        //
-        // Request the one time, currently available location before proceeding
-        //
-        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
-         {
-             
-             //
-             // Update the header
-             //
-             NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             
-             //
-             // If a valid geolocation result is detected
-             //
-             if (status == MASLocationMonitoringStatusSuccess && location)
-             {
-                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-             }
-             
-             //
-             // create request
-             //
-             MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-             
-             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                                parameters:parameterInfo
-                                                                                                                                                                   headers:headerInfo
-                                                                                                                                                                httpMethod:request.HTTPMethod
-                                                                                                                                                               requestType:requestType
-                                                                                                                                                              responseType:responseType
-                                                                                                                                                                  isPublic:isPublic
-                                                                                                                                                           completionBlock:completion]];
-             
-             [operation setResponseType:responseType];
-             
-             if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-             {
-                 [operation addDependency:self.sharedOperation];
-                 
-                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-                 {
-                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-                 }
-                 [_sessionManager.operationQueue addOperation:operation];
-             }
-             else {
-                 [_sessionManager.internalOperationQueue addOperation:operation];
-             }
-         }];
-    }
-    else {
-        
-        //
-        // create request
-        //
-        MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        
-        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                           parameters:parameterInfo
-                                                                                                                                                              headers:headerInfo
-                                                                                                                                                           httpMethod:request.HTTPMethod
-                                                                                                                                                          requestType:requestType
-                                                                                                                                                         responseType:responseType
-                                                                                                                                                             isPublic:isPublic
-                                                                                                                                                      completionBlock:completion]];
-        [operation setResponseType:responseType];
-        
-        if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-        {
-            [operation addDependency:self.sharedOperation];
-            
-            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-            {
-                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-            }
-            [_sessionManager.operationQueue addOperation:operation];
-        }
-        else {
-            [_sessionManager.internalOperationQueue addOperation:operation];
-        }
-    }
+    [self httpRequest:@"DELETE" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:completion];
 }
 
 
@@ -1063,95 +979,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         return;
     }
     
-    //
-    // Determine if we need to add the geo-location header value
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
-    {
-        
-        //
-        // Request the one time, currently available location before proceeding
-        //
-        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
-         {
-             
-             //
-             // Update the header
-             //
-             NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             
-             //
-             // If a valid geolocation result is detected
-             //
-             if (status == MASLocationMonitoringStatusSuccess && location)
-             {
-                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-             }
-             
-             //
-             // create request
-             //
-             MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-             
-             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                                parameters:parameterInfo
-                                                                                                                                                                   headers:headerInfo
-                                                                                                                                                                httpMethod:request.HTTPMethod
-                                                                                                                                                               requestType:requestType
-                                                                                                                                                              responseType:responseType
-                                                                                                                                                                  isPublic:isPublic
-                                                                                                                                                           completionBlock:completion]];
-             
-             [operation setResponseType:responseType];
-             
-             if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-             {
-                 [operation addDependency:self.sharedOperation];
-                 
-                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-                 {
-                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-                 }
-                 [_sessionManager.operationQueue addOperation:operation];
-             }
-             else {
-                 [_sessionManager.internalOperationQueue addOperation:operation];
-             }
-         }];
-    }
-    else {
-        
-        //
-        // Else just create the request
-        //
-        MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        
-        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                           parameters:parameterInfo
-                                                                                                                                                              headers:headerInfo
-                                                                                                                                                           httpMethod:request.HTTPMethod
-                                                                                                                                                          requestType:requestType
-                                                                                                                                                         responseType:responseType
-                                                                                                                                                             isPublic:isPublic
-                                                                                                                                                      completionBlock:completion]];
-        
-        [operation setResponseType:responseType];
-        
-        if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-        {
-            [operation addDependency:self.sharedOperation];
-            
-            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-            {
-                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-            }
-            [_sessionManager.operationQueue addOperation:operation];
-        }
-        else {
-            [_sessionManager.internalOperationQueue addOperation:operation];
-        }
-    }
+    [self httpRequest:@"GET" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:completion];
 }
 
 
@@ -1235,93 +1063,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         return;
     }
     
-    //
-    // Determine if we need to add the geo-location header value
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
-    {
-        
-        //
-        // Request the one time, currently available location before proceeding
-        //
-        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
-         {
-             
-             //
-             // Update the header
-             //
-             NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             
-             //
-             // If a valid geolocation result is detected
-             //
-             if (status == MASLocationMonitoringStatusSuccess && location)
-             {
-                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-             }
-             
-             //
-             // create request
-             //
-             MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-             
-             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                                parameters:parameterInfo
-                                                                                                                                                                   headers:headerInfo
-                                                                                                                                                                httpMethod:request.HTTPMethod
-                                                                                                                                                               requestType:requestType
-                                                                                                                                                              responseType:responseType
-                                                                                                                                                                  isPublic:isPublic
-                                                                                                                                                           completionBlock:completion]];
-             [operation setResponseType:responseType];
-             
-             if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-             {
-                 [operation addDependency:self.sharedOperation];
-                 
-                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-                 {
-                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-                 }
-                 [_sessionManager.operationQueue addOperation:operation];
-             }
-             else {
-                 [_sessionManager.internalOperationQueue addOperation:operation];
-             }
-         }];
-    }
-    else {
-        
-        //
-        // create request
-        //
-        MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        
-        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                           parameters:parameterInfo
-                                                                                                                                                              headers:headerInfo
-                                                                                                                                                           httpMethod:request.HTTPMethod
-                                                                                                                                                          requestType:requestType
-                                                                                                                                                         responseType:responseType
-                                                                                                                                                             isPublic:isPublic
-                                                                                                                                                      completionBlock:completion]];
-        [operation setResponseType:responseType];
-        
-        if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-        {
-            [operation addDependency:self.sharedOperation];
-            
-            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-            {
-                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-            }
-            [_sessionManager.operationQueue addOperation:operation];
-        }
-        else {
-            [_sessionManager.internalOperationQueue addOperation:operation];
-        }
-    }
+    [self httpRequest:@"PATCH" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:completion];
 }
 
 
@@ -1408,94 +1150,7 @@ withParameters:(NSDictionary *)parameterInfo
         return;
     }
     
-    //
-    // Determine if we need to add the geo-location header value
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
-    {
-        
-        //
-        // Request the one time, currently available location before proceeding
-        //
-        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
-         {
-             
-             //
-             // Update the header
-             //
-             NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             
-             //
-             // If a valid geolocation result is detected
-             //
-             if (status == MASLocationMonitoringStatusSuccess && location)
-             {
-                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-             }
-             
-             //
-             // create request
-             //
-             MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-             
-             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                                parameters:parameterInfo
-                                                                                                                                                                   headers:headerInfo
-                                                                                                                                                                httpMethod:request.HTTPMethod
-                                                                                                                                                               requestType:requestType
-                                                                                                                                                              responseType:responseType
-                                                                                                                                                                  isPublic:isPublic
-                                                                                                                                                           completionBlock:completion]];
-             [operation setResponseType:responseType];
-             
-             if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-             {
-                 [operation addDependency:self.sharedOperation];
-                 
-                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-                 {
-                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-                 }
-                 [_sessionManager.operationQueue addOperation:operation];
-             }
-             else {
-                 [_sessionManager.internalOperationQueue addOperation:operation];
-             }
-             
-         }];
-    }
-    else {
-        
-        //
-        // create request
-        //
-        MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        
-        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                           parameters:parameterInfo
-                                                                                                                                                              headers:headerInfo
-                                                                                                                                                           httpMethod:request.HTTPMethod
-                                                                                                                                                          requestType:requestType
-                                                                                                                                                         responseType:responseType
-                                                                                                                                                             isPublic:isPublic
-                                                                                                                                                      completionBlock:completion]];
-        [operation setResponseType:responseType];
-        
-        if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-        {
-            [operation addDependency:self.sharedOperation];
-            
-            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-            {
-                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-            }
-            [_sessionManager.operationQueue addOperation:operation];
-        }
-        else {
-            [_sessionManager.internalOperationQueue addOperation:operation];
-        }
-    }
+    [self httpRequest:@"POST" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:completion];
 }
 
 
@@ -1579,69 +1234,63 @@ withParameters:(NSDictionary *)parameterInfo
         return;
     }
     
-    //
-    // Determine if we need to add the geo-location header value
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
-    {
+    [self httpRequest:@"PUT" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:completion];
+}
+
+
+- (void)httpRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic completion:(MASResponseInfoErrorBlock)completion
+{
+    __block MASResponseInfoErrorBlock blockCompletion = completion;
+    
+    [self retrieveLocation:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
         
         //
-        // Request the one time, currently available location before proceeding
+        // Update the header
         //
-        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status)
-         {
-             
-             //
-             // Update the header
-             //
-             NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-             
-             //
-             // If a valid geolocation result is detected
-             //
-             if (status == MASLocationMonitoringStatusSuccess && location)
-             {
-                 mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-             }
-             
-             //
-             // create request
-             //
-             MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-             
-             MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                                parameters:parameterInfo
-                                                                                                                                                                   headers:headerInfo
-                                                                                                                                                                httpMethod:request.HTTPMethod
-                                                                                                                                                               requestType:requestType
-                                                                                                                                                              responseType:responseType
-                                                                                                                                                                  isPublic:isPublic
-                                                                                                                                                           completionBlock:completion]];
-             [operation setResponseType:responseType];
-             
-             if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
-             {
-                 [operation addDependency:self.sharedOperation];
-                 
-                 if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
-                 {
-                     [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-                 }
-                 [_sessionManager.operationQueue addOperation:operation];
-             }
-             else {
-                 [_sessionManager.internalOperationQueue addOperation:operation];
-             }
-         }];
-    }
-    else {
+        NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+        
+        if (location && status == MASLocationMonitoringStatusSuccess)
+        {
+            mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+        }
+        
+        MASURLRequest *request = nil;
         
         //
-        // create request
+        //  if location was successfully retrieved
         //
-        MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
+        if (location && status == MASLocationMonitoringStatusSuccess)
+        {
+            mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
+        }
         
+        //
+        //  Construct MASURLRequest object per HTTP method
+        //
+        if ([httpMethod isEqualToString:@"DELETE"])
+        {
+            request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+        }
+        else if ([httpMethod isEqualToString:@"GET"])
+        {
+            request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+        }
+        else if ([httpMethod isEqualToString:@"PATCH"])
+        {
+            request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+        }
+        else if ([httpMethod isEqualToString:@"POST"])
+        {
+            request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+        }
+        else if ([httpMethod isEqualToString:@"PUT"])
+        {
+            request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+        }
+        
+        //
+        //  Construct MASSessionDataTaskOperation with request, and completion block to handle any responsive re-authentication or re-registration.
+        //
         MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
                                                                                                                                                            parameters:parameterInfo
                                                                                                                                                               headers:headerInfo
@@ -1649,22 +1298,99 @@ withParameters:(NSDictionary *)parameterInfo
                                                                                                                                                           requestType:requestType
                                                                                                                                                          responseType:responseType
                                                                                                                                                              isPublic:isPublic
-                                                                                                                                                      completionBlock:completion]];
-        [operation setResponseType:responseType];
+                                                                                                                                                      completionBlock:blockCompletion]];
         
-        if (self.sharedOperation && ![self isMAGEndpoint:endPoint])
+        if (![self isMAGEndpoint:endPoint])
         {
-            [operation addDependency:self.sharedOperation];
-            
-            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+            //
+            //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
+            //  then, add dependency on shared validation operation which will validate current session
+            //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
+            //
+            if (!isPublic)
             {
-                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
+                //
+                //  add dependency
+                //
+                [operation addDependency:self.sharedOperation];
+                
+                //
+                //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
+                //
+                if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                {
+                    //
+                    //  add sharedOperation into internal operation queue
+                    //
+                    [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
+                }
             }
+            
+            //
+            //  add current request into normal operation queue
+            //
             [_sessionManager.operationQueue addOperation:operation];
         }
         else {
+            //
+            //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
+            //
             [_sessionManager.internalOperationQueue addOperation:operation];
         }
+    }];
+}
+
+
+- (void)retrieveLocation:(MASLocationMonitorBlock)completion
+{
+    //
+    // Determine if we need to add the geo-location header value
+    //
+    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
+    if(configuration.locationIsRequired)
+    {
+        //
+        // Request the one time, currently available location before proceeding
+        //
+        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
+            
+            if (completion)
+            {
+                completion(location, accuracy, status);
+            }
+        }];
+    }
+    else {
+        //
+        //  if location is not required, return unknown status
+        //
+        if (completion)
+        {
+            completion([[CLLocation alloc] init], MASLocationMonitoringAccuracyNone, MASLocationMonitoringStatusUnknown);
+        }
+    }
+}
+
+
+- (void)reconstructAuthValidationOperation
+{
+    if (_authValidationOperation != nil && _authValidationOperation.isExecuting)
+    {
+        MASAuthValidationOperation *authOperation = [MASAuthValidationOperation sharedOperation];
+ 
+        for (NSOperation *pendingOperation in _sessionManager.operationQueue.operations)
+        {
+            if (pendingOperation && [pendingOperation.dependencies containsObject:_authValidationOperation])
+            {
+                [pendingOperation addDependency:authOperation];
+            }
+        }
+        
+        [_sessionManager.internalOperationQueue addOperation:authOperation];
+        
+        [_authValidationOperation cancel];
+        _authValidationOperation = nil;
+        _authValidationOperation = authOperation;
     }
 }
 

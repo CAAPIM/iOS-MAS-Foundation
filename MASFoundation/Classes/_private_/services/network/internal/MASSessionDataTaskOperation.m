@@ -43,7 +43,8 @@
     self = [super initWithSession:session request:request];
     if (self)
     {
-        
+        self.request = (MASURLRequest *)request;
+        [self setResponseType:self.request.responseType];
     }
     
     return self;

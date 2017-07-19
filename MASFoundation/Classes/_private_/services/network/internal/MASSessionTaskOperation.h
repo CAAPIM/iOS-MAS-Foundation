@@ -66,22 +66,45 @@ typedef NSCachedURLResponse * (^MASNetworkDataTaskWillCacheResponseBlock)(NSURLS
 
 # pragma mark - Public
 
+/**
+ Reconstruct NSURLSessionDataTask with new NSURLSession
+
+ @param session newly created NSURLSession object
+ */
 - (void)updateSession:(NSURLSession *)session;
 
 
 
+/**
+ Set response type for NSURLSessionDataTask to validate response according to the response data type
+
+ @param responseType MASRequestResponseType enumeration value
+ */
 - (void)setResponseType:(MASRequestResponseType)responseType;
 
 
 
+/**
+ Complete operation and notify the queue
+ */
 - (void)completeOperation;
 
 
 
+/**
+ Default dispatch group for completion block
+
+ @return dispatch_group_t for completion block
+ */
 - (dispatch_group_t)defaultDispatchGroupForCompletionBlock;
 
 
 
+/**
+ Sets task level authentication challenge code block
+
+ @param block NSURLSessionAuthChallengeDisposition code block for authentication challenge
+ */
 - (void)setTaskDidReceiveAuthenticationChallengeBlock:(NSURLSessionAuthChallengeDisposition (^)(NSURLSession *session, NSURLSessionTask *task, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing * credential))block;
 
 @end
