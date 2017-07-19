@@ -10,10 +10,11 @@
 
 #import "MASSessionDataTaskOperation.h"
 
-#import "MASAuthValidationOperation.h"
-#import "MASURLRequest.h"
-#import "MASDevice.h"
 #import "MASAccessService.h"
+#import "MASAuthValidationOperation.h"
+#import "MASDevice.h"
+#import "MASURLRequest.h"
+#import "MASConstantsPrivate.h"
 
 @interface MASSessionDataTaskOperation ()
 
@@ -109,6 +110,12 @@
     }
     self.task = [self.session dataTaskWithRequest:self.request];
     
+    //
+    //  post notification for network monitoring
+    //
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASSessionTaskDidResumeNotification object:self.task];
+    });
     
     [self.task resume];
 }
@@ -141,6 +148,7 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
     __block id responseObj = nil;
+    __block NSURLSessionTask *blockTask = task;
     
     if (error)
     {
@@ -166,6 +174,16 @@
             });
         }
     }
+    
+    //
+    //  post notification for network monitoring
+    //
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (responseObj)
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASSessionTaskDidCompleteNotification object:blockTask userInfo:@{MASSessionTaskDidCompleteSerializedResponseKey:responseObj}];
+        else
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASSessionTaskDidResumeNotification object:blockTask];
+    });
     
     [self completeOperation];
 }

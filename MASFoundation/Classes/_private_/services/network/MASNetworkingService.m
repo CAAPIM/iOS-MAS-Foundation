@@ -10,23 +10,24 @@
 
 #import "MASNetworkingService.h"
 
+#import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASConfigurationService.h"
-
-#import "MASAccessService.h"
-#import "MASDeleteURLRequest.h"
-#import "MASSecurityPolicy.h"
-#import "MASGetURLRequest.h"
-#import "MASPatchURLRequest.h"
-#import "MASPostURLRequest.h"
-#import "MASPutURLRequest.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
 #import "MASOTPService.h"
-#import "MASINetworking.h"
-#import "MASINetworkActivityLogger.h"
 
+#import "MASINetworking.h"
+
+//  MAS internal network layer
 #import "MASURLSessionManager.h"
+#import "MASDeleteURLRequest.h"
+#import "MASGetURLRequest.h"
+#import "MASNetworkMonitor.h"
+#import "MASPatchURLRequest.h"
+#import "MASPostURLRequest.h"
+#import "MASPutURLRequest.h"
+#import "MASSecurityPolicy.h"
 
 
 # pragma mark - Configuration Constants
@@ -90,16 +91,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // Begin logging
         //
-        [[MASINetworkActivityLogger sharedLogger] startLogging];
-        [[MASINetworkActivityLogger sharedLogger] setLevel:MASILoggerLevelDebug];
+        [[MASNetworkMonitor sharedMonitor] startMonitoring];
     }
-    
     //
     // Stop network activity logging
     //
     else
     {
-        [[MASINetworkActivityLogger sharedLogger] stopLogging];
+        [[MASNetworkMonitor sharedMonitor] stopMonitoring];
     }
 }
 

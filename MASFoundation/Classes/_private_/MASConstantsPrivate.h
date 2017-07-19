@@ -427,3 +427,21 @@ static NSString *_Nonnull const MASDeviceDidRenewClientCertificateNotification =
  * did fail to renew its signed client certificate.
  */
 static NSString *_Nonnull const MASDeviceDidFailToRenewClientCertificateNotification = @"MASDeviceDidFailToRenewClientCertificateNotification";
+
+
+/**
+ *  The NSString constant for network monitor's network did start event.
+ */
+static NSString *_Nonnull const MASSessionTaskDidResumeNotification = @"com.ca.mas.networking.sessiontask.resume";
+
+
+/**
+ *  The NSString constant for network monitor's network did complete event.
+ */
+static NSString *_Nonnull const MASSessionTaskDidCompleteNotification = @"com.ca.mas.networking.sessiontask.didcomplete";
+
+
+/**
+ *  The NSString constant for network monitor's response object key string in NSDictionary.
+ */
+static NSString *_Nonnull const MASSessionTaskDidCompleteSerializedResponseKey = @"com.ca.mas.networking.sessiontask.didcomplete.responsekey";
