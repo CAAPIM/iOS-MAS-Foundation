@@ -88,7 +88,15 @@ static MASMQTTClient *_sharedClient = nil;
             
             if ([MASUser currentUser].isAuthenticated && [MASDevice currentDevice].isRegistered) {
 
+                //
+                // Init MQTT client for current gateway
+                //
                 _sharedClient = [[MASMQTTClient alloc] initWithClientId:[MASMQTTHelper mqttClientId] cleanSession:NO];
+                
+                //
+                // Set the username and password for the connection
+                //
+                [_sharedClient setUsername:[MASUser currentUser].objectId Password:[MASUser currentUser].accessToken];
             }
             else {
             
@@ -538,22 +546,23 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     const char *cstrHost = [self.host cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cstrUsername = NULL, *cstrPassword = NULL;
     
+    //
+    // If provided username and password for the connection
+    //
     if (!self.username || !self.password) {
         
-        //
-        // Set the username and password for the connection
-        //
-        [[MASMQTTClient sharedClient] setUsername:[MASUser currentUser].objectId Password:[MASUser currentUser].accessToken];
+        if (self.username)
+            cstrUsername = [self.username cStringUsingEncoding:NSUTF8StringEncoding];
+        
+        if (self.password)
+            cstrPassword = [self.password cStringUsingEncoding:NSUTF8StringEncoding];
+        
+        mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
     }
     
-    if (self.username)
-        cstrUsername = [self.username cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    if (self.password)
-        cstrPassword = [self.password cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    //Unsed for the moment. Validate after we start using it
-    mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
+    //
+    // Establish the connection with MQTT broker
+    //
     mosquitto_reconnect_delay_set(mosq, self.reconnectDelay, self.reconnectDelayMax, self.reconnectExponentialBackoff);
 
     mosquitto_connect(mosq, cstrHost, self.port, self.keepAlive);
