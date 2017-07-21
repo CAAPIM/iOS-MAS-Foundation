@@ -177,6 +177,13 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
             currentStatus = MASAuthenticationStatusLoginWithUser;
         }
         //
+        //  if accessToken, refrehsToken, and currentUser exist, we understand that the current session was authenticated with user credentials
+        //
+        else if (accessToken && refreshToken && currentUser)
+        {
+            currentStatus = MASAuthenticationStatusLoginWithUser;
+        }
+        //
         // check if it has been authenticated anonymously (Client credential)
         //
         else if (accessToken && expiresIn && !currentUser && isClientCrendential){
