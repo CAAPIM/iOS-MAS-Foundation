@@ -92,11 +92,6 @@ static MASMQTTClient *_sharedClient = nil;
                 // Init MQTT client for current gateway
                 //
                 _sharedClient = [[MASMQTTClient alloc] initWithClientId:[MASMQTTHelper mqttClientId] cleanSession:NO];
-                
-                //
-                // Set the username and password for the connection
-                //
-                [_sharedClient setUsername:[MASUser currentUser].objectId Password:[MASUser currentUser].accessToken];
             }
             else {
             
@@ -547,19 +542,20 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     const char *cstrUsername = NULL, *cstrPassword = NULL;
     
     //
-    // If provided username and password for the connection
+    // If using gateway, set MAS username and password
     //
-    if (!self.username || !self.password) {
-        
-        if (self.username)
-            cstrUsername = [self.username cStringUsingEncoding:NSUTF8StringEncoding];
-        
-        if (self.password)
-            cstrPassword = [self.password cStringUsingEncoding:NSUTF8StringEncoding];
+    if ([self.clientID isEqualToString:[MASMQTTHelper mqttClientId]]) {
+        [[MASMQTTClient sharedClient] setUsername:[MASUser currentUser].objectId Password:[MASUser currentUser].accessToken];
+    }
+    
+    // If provided, pass username and password to mosquitto
+    if (self.username && self.password){
+        cstrUsername = [self.username cStringUsingEncoding:NSUTF8StringEncoding];
+        cstrPassword = [self.password cStringUsingEncoding:NSUTF8StringEncoding];
         
         mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
     }
-    
+
     //
     // Establish the connection with MQTT broker
     //
