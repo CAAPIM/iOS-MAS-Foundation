@@ -69,14 +69,17 @@
                 
                 MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
                 
-                if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
-                {
-                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
-                }
-                else {
-                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
-                }
+                didPassEvaluation = [securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
                 
+                
+//                if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
+//                {
+//                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
+//                }
+//                else {
+//                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
+//                }
+//                
                 if (didPassEvaluation)
                 {
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
@@ -117,15 +120,10 @@
                 
                 BOOL didPassEvaluation = YES;
                 
+                
                 MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
                 
-                if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
-                {
-                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
-                }
-                else {
-                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
-                }
+                didPassEvaluation = [securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
                 
                 if (didPassEvaluation)
                 {

@@ -168,6 +168,7 @@ static NSString *const MASConfigurationIsLoadedPropertyKey = @"isLoaded"; // boo
 
 @implementation MASConfiguration
 
+static NSMutableDictionary *_securityConfigurations_;
 static NSDictionary *_configurationInfo_;
 static NSMutableDictionary *_endpointKeysToPaths_;
 static float _systemVersionNumber_;
@@ -377,6 +378,32 @@ static float _systemVersionNumber_;
     }
 
     return self;
+}
+
+
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration
+{
+    if (!_securityConfigurations_)
+    {
+        _securityConfigurations_ = [NSMutableDictionary dictionary];
+    }
+    
+    if ([securityConfiguration.host absoluteString])
+    {
+        [_securityConfigurations_ setObject:securityConfiguration forKey:[securityConfiguration.host absoluteString]];
+    }
+}
+
+
++ (NSArray *)securityConfigurations
+{
+    return _securityConfigurations_ ? [_securityConfigurations_ allValues] : nil;
+}
+
+
++ (MASSecurityConfiguration *)securityConfigurationForDomain:(NSURL *)domain
+{
+    return domain ? [_securityConfigurations_ objectForKey:[domain absoluteString]] : nil;
 }
 
 

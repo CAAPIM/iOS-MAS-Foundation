@@ -226,6 +226,17 @@ static BOOL _newConfigurationDetected_ = NO;
         }
     }
     
+    //
+    //  Construct and set MASSecurityConfiguration for the primary gateway
+    //
+    NSURL *currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayHostName, _currentConfiguration.gatewayPort]];
+    MASSecurityConfiguration *defaultSecurityConfiguration = [[MASSecurityConfiguration alloc] initWithURL:currentURL];
+    defaultSecurityConfiguration.trustPublicPKI = _currentConfiguration.enabledTrustedPublicPKI;
+    defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublickKeyHashes;
+    defaultSecurityConfiguration.certificates = _currentConfiguration.gatewayCertificates;
+    
+    [MASConfiguration setSecurityConfiguration:defaultSecurityConfiguration];
+    
     //DLog(@"\n\ndone and current configuration is:\n\n%@\n\n", [_currentConfiguration debugDescription]);
     
     [super serviceWillStart];

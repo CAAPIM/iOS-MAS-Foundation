@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, MASSSLPinningMode) {
 /**
  MASSecurityPolicy class is responsible for handling SSL pinning
  */
-@interface MASSecurityPolicy : MASISecurityPolicy
+@interface MASSecurityPolicy : NSObject
 
 
 /**
@@ -49,6 +49,8 @@ typedef NS_ENUM(NSUInteger, MASSSLPinningMode) {
 + (instancetype)policyWithMASPinningMode:(MASSSLPinningMode)pinningMode;
 
 
+
+- (BOOL)evaluateSecurityConfigurationsForServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain;
 
 /**
  Evaluate the ServerTrust with defined pinning logic

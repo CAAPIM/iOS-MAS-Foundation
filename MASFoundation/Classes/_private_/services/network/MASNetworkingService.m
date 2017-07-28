@@ -271,12 +271,12 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             pinningMode = MASSSLPinningModePublicKeyHash;
         }
         
-        MASSecurityPolicy *securityPolicy = [MASSecurityPolicy policyWithMASPinningMode:pinningMode];
+        MASSecurityPolicy *securityPolicy = [[MASSecurityPolicy alloc] init];
         
-        [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
-        [securityPolicy setValidatesDomainName:YES];
-        [securityPolicy setValidatesCertificateChain:YES];
-        [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
+//        [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
+//        [securityPolicy setValidatesDomainName:YES];
+//        [securityPolicy setValidatesCertificateChain:YES];
+//        [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
         
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
         sessionConfig.URLCredentialStorage = nil;

@@ -9,7 +9,7 @@
 //
 
 @import Foundation;
-
+@class MASSecurityConfiguration;
 
 /**
  * The `MASConfiguration` class is a local representation of configuration data.
@@ -166,6 +166,38 @@
 - (NSString *_Nullable)endpointPathForKey:(NSString *_Nonnull)endpointKey;
 
 
+
+///--------------------------------------
+/// @name Current Configuration
+///--------------------------------------
+
+# pragma mark - Current Configuration
+
+/**
+ Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object
+
+ @param securityConfiguration MASSecurityConfiguration object with host, and security measure configuration values.
+ */
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *_Nonnull)securityConfiguration;
+
+
+
+/**
+ Returns an array of MASSecurityConfiguration objects for each host.
+
+ @return Returns an array of currently active MASSecurityConfigurations.
+ */
++ (NSArray *_Nullable)securityConfigurations;
+
+
+
+/**
+ Returns MASSecurityConfiguration object for a specific domain.
+
+ @param domain NSURL of the domain for the MASSecurityConfiguration object.
+ @return Returns a MASSecurityConfiguration object for the domain.
+ */
++ (MASSecurityConfiguration *_Nullable)securityConfigurationForDomain:(NSURL *_Nonnull)domain;
 
 
 

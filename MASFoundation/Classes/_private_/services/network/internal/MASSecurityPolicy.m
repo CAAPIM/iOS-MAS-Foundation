@@ -46,7 +46,7 @@ static unsigned char rsa2048Asn1Header[] = {
 
 - (BOOL)evaluateSecurityConfigurationsForServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain
 {
-    MASSecurityConfiguration *securityConfiguration = [_securityConfigurations objectForKey:domain];
+    MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:domain]];
     
     //
     //  If there is no security configuration define, cancel request
@@ -54,14 +54,6 @@ static unsigned char rsa2048Asn1Header[] = {
     if (securityConfiguration == nil)
     {
         return NO;
-    }
-    
-    //
-    //  Proceed if pinning mode is set to none
-    //
-    if (securityConfiguration.pinningMode == MASSecuritySSLPinningModeNone)
-    {
-        return YES;
     }
     
     NSMutableArray *policies = [NSMutableArray array];
@@ -85,102 +77,118 @@ static unsigned char rsa2048Asn1Header[] = {
         return NO;
     }
     
-    BOOL isPinningVerified = NO;
+    
+    //
+    //  Validate all pinning information that are present; even though it's duplicated process.
+    //
+    BOOL isPinningVerified = YES;
     NSArray *certificateChain = [self extractCertificateDataFromServerTrust:serverTrust];
     
-    switch (securityConfiguration.pinningMode) {
-        case MASSecuritySSLPinningModeCertificate:
+    //
+    //  pinning with certificates
+    //
+    if ([securityConfiguration.certificates count] > 0)
+    {
+        NSMutableArray *pinnedCertificates = [[securityConfiguration convertCertificatesToSecCertificateRef] mutableCopy];
+        NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
+        
+        SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
+        
+        //
+        //  Stop proceeding if validation of server trust against anchor (pinned) certificates
+        //
+        if (![self validateServerTrust:serverTrust])
         {
-            //
-            //  If certificate is not found from configuration, cancel request
-            //
-            if ([securityConfiguration.certificates count] == 0)
-            {
-                isPinningVerified = NO;
-            }
-            else {
-                
-                NSMutableArray *pinnedCertificates = [[securityConfiguration convertCertificatesToSecCertificateRef] mutableCopy];
-                NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
-                
-                SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
-                
-                //
-                //  Stop proceeding if validation of server trust against anchor (pinned) certificates
-                //
-                if (![self validateServerTrust:serverTrust])
-                {
-                    return NO;
-                }
-                
-                //
-                //  As of this point, if the configuration doesn't force to validate the entire chain, proceeds the request
-                //
-                if (!securityConfiguration.validateCertificateChain)
-                {
-                    return YES;
-                }
-                else {
-                    
-                    int matchingCertificatesCount = 0;
-                    
-                    for (NSData *trustCertData in certificateChain)
-                    {
-                        if ([pinnedCertificatesData containsObject:trustCertData])
-                        {
-                            matchingCertificatesCount++;
-                        }
-                    }
-                    
-                    return matchingCertificatesCount == [pinnedCertificatesData count];
-                }
-            }
+            return NO;
         }
-            break;
-        case MASSecuritySSLPinningModePublicKey:
+        
+        //
+        //  As of this point, if the configuration forces to validate the entire chain, validate entire chain of certificates
+        //
+        if (securityConfiguration.validateCertificateChain)
         {
+            int matchingCertificatesCount = 0;
             
-            NSArray *pinnedPublicKeyRefs = [securityConfiguration convertPublicKeysToSecKeyRef];
-            NSArray *certificateRefArray = [self extractCertificateRefFromServerTrust:serverTrust];
-            NSArray *serverTrustPublicKeyRefs = [securityConfiguration extractPublicKeyRefFromCertificateRefs:certificateRefArray];
+            for (NSData *trustCertData in certificateChain)
+            {
+                if ([pinnedCertificatesData containsObject:trustCertData])
+                {
+                    matchingCertificatesCount++;
+                }
+            }
             
-            if ([pinnedPublicKeyRefs count] != [serverTrustPublicKeyRefs count])
+            //
+            //  If matching certificates are not equal to pinned certificates, reject connection
+            //
+            if (matchingCertificatesCount != [pinnedCertificatesData count])
             {
                 return NO;
             }
-            else {
-                int matchingPublicKeysCouont = 0;
-                
-                if (!securityConfiguration.validateDomainName && [serverTrustPublicKeyRefs count] > 0)
-                {
-                    serverTrustPublicKeyRefs = @[[serverTrustPublicKeyRefs firstObject]];
-                }
-                
-                for (id serverTrustPublicKey in serverTrustPublicKeyRefs)
-                {
-                    for (id pinnedPublicKey in pinnedPublicKeyRefs)
-                    {
-                        NSData *pinnedKeyData = [NSData converKeyRefToNSData:(__bridge SecKeyRef)pinnedPublicKey];
-                        NSData *trustKeyData = [NSData converKeyRefToNSData:(__bridge SecKeyRef)serverTrustPublicKey];
-                        
-                        if ([pinnedKeyData isEqual:trustKeyData])
-                        {
-                            matchingPublicKeysCouont++;
-                        }
-                    }
-                }
-                
-                return matchingPublicKeysCouont == [serverTrustPublicKeyRefs count];
+        }
+    }
+    
+    //
+    //  pinning with public key hashes
+    //
+    if ([securityConfiguration.publicKeyHashes count] > 0)
+    {
+        
+        //
+        //  extract the server public key hash from serverTrust
+        //
+        NSArray *serverPublicKeyHashes = [self extractPublicKeyHashesFromServerTrust:serverTrust];
+        
+        //
+        //  retrieve an array of public key hash strings from configuration
+        //
+        NSMutableArray *knownPublicKeyHashes = [NSMutableArray array];
+        
+        for (NSString *publicKeyHashString in securityConfiguration.publicKeyHashes)
+        {
+            //
+            //  create NSData based on base64 encoded public key hash
+            //
+            NSMutableData *publicKeyHashData = [[NSMutableData alloc] initWithBase64EncodedString:publicKeyHashString options:(NSDataBase64DecodingOptions)0];
+            
+            //
+            //  make sure that the public keys are SHA256 hashed
+            //
+            if ([publicKeyHashData length] == CC_SHA256_DIGEST_LENGTH)
+            {
+                [knownPublicKeyHashes addObject:publicKeyHashData];
             }
         }
-            break;
-        case MASSecuritySSLPinningModePublicKeyHash:
+        
+        //
+        //  SDK will continue only when the set of the trust chain form the challenge is a subset of the public key hashes on the client side
+        //
+        NSUInteger trustedPublicKeyHashCount = 0;
+        
+        //
+        //  if security configuration is set to not validate entire chain, only validate with the first item
+        //
+        if (!securityConfiguration.validateCertificateChain && [serverPublicKeyHashes count] > 0)
         {
-            
+            serverPublicKeyHashes = @[[serverPublicKeyHashes firstObject]];
         }
-            break;
-        default:
-            break;
+        
+        for (NSData *serverPublicKeyHash in serverPublicKeyHashes)
+        {
+            if ([knownPublicKeyHashes containsObject:serverPublicKeyHash])
+            {
+                trustedPublicKeyHashCount++;
+            }
+        }
+        
+        //
+        //  if there is no matching public key hash found,
+        //  or matching public key hash count is not equal to # of public key presented in server trust while the security configuration expects entire chain to be validated,
+        //  reject connection
+        //
+        if (trustedPublicKeyHashCount == 0 || (securityConfiguration.validateCertificateChain && trustedPublicKeyHashCount != [serverPublicKeyHashes count]))
+        {
+            return NO;
+        }
     }
     
     return isPinningVerified;
@@ -213,15 +221,15 @@ static unsigned char rsa2048Asn1Header[] = {
         break;
     }
     
-    MASSecurityPolicy *securityPolicy = [super policyWithPinningMode:masISSLPinningMode];
-    securityPolicy.MASSSLPinningMode = pinningMode;
-    
-    [securityPolicy setPinnedCertificates:[self defaultPinnedCertificates]];
-    
-    securityPolicy.allowInvalidCertificates = YES;
-    securityPolicy.validatesCertificateChain = NO;
-    
-    return securityPolicy;
+//    MASSecurityPolicy *securityPolicy = [super policyWithPinningMode:masISSLPinningMode];
+//    securityPolicy.MASSSLPinningMode = pinningMode;
+//    
+//    [securityPolicy setPinnedCertificates:[self defaultPinnedCertificates]];
+//    
+//    securityPolicy.allowInvalidCertificates = YES;
+//    securityPolicy.validatesCertificateChain = NO;
+//    
+    return nil;
 }
 
 
@@ -247,100 +255,102 @@ static unsigned char rsa2048Asn1Header[] = {
 
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust withPublicKeyHashes:(NSArray *)publicKeyHashes forDomain:(NSString *)domain
 {
-    //
-    //  If no public key hases are not presented
-    //
-    if ([publicKeyHashes count] == 0)
-    {
-        return NO;
-    }
+//    //
+//    //  If no public key hases are not presented
+//    //
+//    if ([publicKeyHashes count] == 0)
+//    {
+//        return NO;
+//    }
+//    
+//    if (self.MASSSLPinningMode != MASSSLPinningModePublicKeyHash) {
+//        
+//        NSAssert(self.SSLPinningMode != MASSSLPinningModePublicKeyHash, @"For SSL pinning mode cert, plain public key, or none, use [MASISecurityPolicy evaluateServerTrust:forDomain:] instead.  This method is specifically intended for hashed public key");
+//        return NO;
+//    }
+//    
+//    //
+//    // From MASISecurityPolicy.m
+//    //
+//    if (domain && self.allowInvalidCertificates && self.validatesDomainName && (self.MASSSLPinningMode == MASSSLPinningModeNone || ([self.pinnedCertificates count] == 0 && [publicKeyHashes count] == 0))) {
+//        // https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NetworkingTopics/Articles/OverridingSSLChainValidationCorrectly.html
+//        //  According to the docs, you should only trust your provided certs for evaluation.
+//        //  Pinned certificates are added to the trust. Without pinned certificates,
+//        //  there is nothing to evaluate against.
+//        //
+//        //  From Apple Docs:
+//        //          "Do not implicitly trust self-signed certificates as anchors (kSecTrustOptionImplicitAnchors).
+//        //           Instead, add your own (self-signed) CA certificate to the list of trusted anchors."
+//        DLog(@"In order to validate a domain name for self signed certificates, you MUST use pinning.");
+//        return NO;
+//    }
+//    
+//    NSMutableArray *policies = [NSMutableArray array];
+//    if (self.validatesDomainName) {
+//        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
+//    } else {
+//        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
+//    }
+//    
+//    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
+//    
+//    if (![self validateServerTrust:serverTrust] && !self.allowInvalidCertificates)
+//    {
+//        return NO;
+//    }
+//    //
+//    // END OF MASISecurityPolicy.m
+//    //
+//    
+//    
+//        
+//    //
+//    //  extract the server public key hash from serverTrust
+//    //
+//    NSArray *serverPublicKeyHashes = [self extractPublicKeyHashesFromServerTrust:serverTrust];
+//    
+//    //
+//    //  retrieve an array of public key hash strings from configuration
+//    //
+//    NSMutableArray *knownPublicKeyHashes = [NSMutableArray array];
+//    
+//    for (NSString *publicKeyHashString in publicKeyHashes)
+//    {
+//        //
+//        //  create NSData based on base64 encoded public key hash
+//        //
+//        NSMutableData *publicKeyHashData = [[NSMutableData alloc] initWithBase64EncodedString:publicKeyHashString options:(NSDataBase64DecodingOptions)0];
+//        
+//        //
+//        //  make sure that the public keys are SHA256 hashed
+//        //
+//        if ([publicKeyHashData length] == CC_SHA256_DIGEST_LENGTH)
+//        {
+//            [knownPublicKeyHashes addObject:publicKeyHashData];
+//        }
+//    }
+//    
+//    //
+//    //  SDK will continue only when the set of the trust chain form the challenge is a subset of the public key hashes on the client side
+//    //
+//    NSUInteger trustedPublicKeyHashCount = 0;
+//    
+//    if (!self.validatesCertificateChain && [serverPublicKeyHashes count] > 0)
+//    {
+//        serverPublicKeyHashes = @[[serverPublicKeyHashes firstObject]];
+//    }
+//    
+//    for (NSData *serverPublicKeyHash in serverPublicKeyHashes)
+//    {
+//        if ([knownPublicKeyHashes containsObject:serverPublicKeyHash])
+//        {
+//            trustedPublicKeyHashCount++;
+//        }
+//    }
+//    
+//    return trustedPublicKeyHashCount > 0 && ((self.validatesCertificateChain && trustedPublicKeyHashCount == [serverPublicKeyHashes count]) || (!self.validatesCertificateChain && trustedPublicKeyHashCount >= 1));
     
-    if (self.MASSSLPinningMode != MASSSLPinningModePublicKeyHash) {
-        
-        NSAssert(self.SSLPinningMode != MASSSLPinningModePublicKeyHash, @"For SSL pinning mode cert, plain public key, or none, use [MASISecurityPolicy evaluateServerTrust:forDomain:] instead.  This method is specifically intended for hashed public key");
-        return NO;
-    }
-    
-    //
-    // From MASISecurityPolicy.m
-    //
-    if (domain && self.allowInvalidCertificates && self.validatesDomainName && (self.MASSSLPinningMode == MASSSLPinningModeNone || ([self.pinnedCertificates count] == 0 && [publicKeyHashes count] == 0))) {
-        // https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NetworkingTopics/Articles/OverridingSSLChainValidationCorrectly.html
-        //  According to the docs, you should only trust your provided certs for evaluation.
-        //  Pinned certificates are added to the trust. Without pinned certificates,
-        //  there is nothing to evaluate against.
-        //
-        //  From Apple Docs:
-        //          "Do not implicitly trust self-signed certificates as anchors (kSecTrustOptionImplicitAnchors).
-        //           Instead, add your own (self-signed) CA certificate to the list of trusted anchors."
-        DLog(@"In order to validate a domain name for self signed certificates, you MUST use pinning.");
-        return NO;
-    }
-    
-    NSMutableArray *policies = [NSMutableArray array];
-    if (self.validatesDomainName) {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-    } else {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
-    }
-    
-    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
-    
-    if (![self validateServerTrust:serverTrust] && !self.allowInvalidCertificates)
-    {
-        return NO;
-    }
-    //
-    // END OF MASISecurityPolicy.m
-    //
-    
-    
-        
-    //
-    //  extract the server public key hash from serverTrust
-    //
-    NSArray *serverPublicKeyHashes = [self extractPublicKeyHashesFromServerTrust:serverTrust];
-    
-    //
-    //  retrieve an array of public key hash strings from configuration
-    //
-    NSMutableArray *knownPublicKeyHashes = [NSMutableArray array];
-    
-    for (NSString *publicKeyHashString in publicKeyHashes)
-    {
-        //
-        //  create NSData based on base64 encoded public key hash
-        //
-        NSMutableData *publicKeyHashData = [[NSMutableData alloc] initWithBase64EncodedString:publicKeyHashString options:(NSDataBase64DecodingOptions)0];
-        
-        //
-        //  make sure that the public keys are SHA256 hashed
-        //
-        if ([publicKeyHashData length] == CC_SHA256_DIGEST_LENGTH)
-        {
-            [knownPublicKeyHashes addObject:publicKeyHashData];
-        }
-    }
-    
-    //
-    //  SDK will continue only when the set of the trust chain form the challenge is a subset of the public key hashes on the client side
-    //
-    NSUInteger trustedPublicKeyHashCount = 0;
-    
-    if (!self.validatesCertificateChain && [serverPublicKeyHashes count] > 0)
-    {
-        serverPublicKeyHashes = @[[serverPublicKeyHashes firstObject]];
-    }
-    
-    for (NSData *serverPublicKeyHash in serverPublicKeyHashes)
-    {
-        if ([knownPublicKeyHashes containsObject:serverPublicKeyHash])
-        {
-            trustedPublicKeyHashCount++;
-        }
-    }
-    
-    return trustedPublicKeyHashCount > 0 && ((self.validatesCertificateChain && trustedPublicKeyHashCount == [serverPublicKeyHashes count]) || (!self.validatesCertificateChain && trustedPublicKeyHashCount >= 1));
+    return NO;
 }
 
 

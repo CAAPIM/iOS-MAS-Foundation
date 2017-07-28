@@ -75,14 +75,14 @@
 
 - (NSArray *)convertPublicKeysToSecKeyRef
 {
-    if ([self.publicKeys count] == 0 && [self.certificates count] > 0)
-    {
-        return [self extractPublicKeyRefFromCertificateRefs:[self convertCertificatesToSecCertificateRef]];
-    }
-    else {
-        
-        
-    }
+//    if ([self.publicKeys count] == 0 && [self.certificates count] > 0)
+//    {
+//        return [self extractPublicKeyRefFromCertificateRefs:[self convertCertificatesToSecCertificateRef]];
+//    }
+//    else {
+//        
+//        
+//    }
     
     return nil;
 }

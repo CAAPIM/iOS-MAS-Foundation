@@ -35,6 +35,10 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
     
     if (self) {
         self.host = url;
+        self.isPublic = NO;
+        self.trustPublicPKI = NO;
+        self.validateCertificateChain = NO;
+        self.validateDomainName = NO;
     }
     
     return self;
@@ -73,14 +77,10 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
 
 - (void)setValuesWithConfiguration:(NSDictionary *)configuration
 {
-    if ([configuration.allKeys containsObject:@"enforcePinning"])
-    {
-        self.enforcePinning = [[configuration objectForKey:@"enforcePinning"] boolValue];
-    }
     
-    if ([configuration.allKeys containsObject:@"includeCredentials"])
+    if ([configuration.allKeys containsObject:@"isPublic"])
     {
-        self.includeCredentials = [[configuration objectForKey:@"includeCredentials"] boolValue];
+        self.isPublic = [[configuration objectForKey:@"isPublic"] boolValue];
     }
     
     if ([configuration.allKeys containsObject:@"validateCertificateChain"])
@@ -98,19 +98,9 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
         self.trustPublicPKI = [[configuration objectForKey:@"turstPublicPKI"] boolValue];
     }
     
-    if ([configuration.allKeys containsObject:@"pinningMode"])
-    {
-        self.pinningMode = [MASSecurityConfiguration praseStringToPinningMode:[configuration objectForKey:@"pinningMode"]];
-    }
-    
     if ([configuration.allKeys containsObject:@"certificate"] && [[configuration objectForKey:@"certificate"] isKindOfClass:[NSArray class]])
     {
         self.certificates = [configuration objectForKey:@"certificate"];
-    }
-    
-    if ([configuration.allKeys containsObject:@"publicKeys"] && [[configuration objectForKey:@"publicKeys"] isKindOfClass:[NSArray class]])
-    {
-        self.publicKeys = [configuration objectForKey:@"publicKeys"];
     }
     
     if ([configuration.allKeys containsObject:@"publicKeyHashes"] && [[configuration objectForKey:@"publicKeyHashes"] isKindOfClass:[NSArray class]])
@@ -120,50 +110,9 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
 }
 
 
-+ (MASSecuritySSLPinningMode)praseStringToPinningMode:(NSString *)pinningMode
-{
-    MASSecuritySSLPinningMode pinningModeValue = MASSecuritySSLPinningModeNone;
-    
-    if ([pinningMode isEqualToString:MASSecurityConfigurationPinningModeCertificate])
-    {
-        pinningModeValue = MASSecuritySSLPinningModeCertificate;
-    }
-    else if ([pinningMode isEqualToString:MASSecurityConfigurationPinningModePublicKey])
-    {
-        pinningModeValue = MASSecuritySSLPinningModePublicKey;
-    }
-    else if ([pinningMode isEqualToString:MASSecurityConfigurationPinningModePublicKeyHash])
-    {
-        pinningModeValue = MASSecuritySSLPinningModePublicKeyHash;
-    }
-    
-    return pinningModeValue;
-}
-
-
-+ (NSString *)parsePinningModeToString:(MASSecuritySSLPinningMode)pinningMode
-{
-    switch (pinningMode) {
-        case MASSecuritySSLPinningModeCertificate:
-            return MASSecurityConfigurationPinningModeCertificate;
-            break;
-        case MASSecuritySSLPinningModePublicKey:
-            return MASSecurityConfigurationPinningModePublicKey;
-            break;
-        case MASSecuritySSLPinningModePublicKeyHash:
-            return MASSecurityConfigurationPinningModePublicKeyHash;
-            break;
-        case MASSecuritySSLPinningModeNone:
-        default:
-            return MASSecurityConfigurationPinningModeNone;
-            break;
-    }
-}
-
-
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"(%@) for %@\n\nenforcePinning: %@\nincludeCredentials: %@\nvalidateCertificateChain: %@\nvalidateDomainName: %@\ntrustPublicPKI: %@\npinningMode: %@\ncertificates: %@\npublicKeys: %@\npublicKeyHashes: %@\n", [self class], [[self host] absoluteString], self.enforcePinning ? @"YES":@"NO", self.includeCredentials ? @"YES":@"NO", self.validateCertificateChain ? @"YES":@"NO", self.validateDomainName ? @"YES":@"NO", self.trustPublicPKI ? @"YES":@"NO", [MASSecurityConfiguration parsePinningModeToString:self.pinningMode], self.certificates, self.publicKeys, self.publicKeyHashes];
+    return [NSString stringWithFormat:@"(%@) for %@\n\nisPublic: %@\nvalidateCertificateChain: %@\nvalidateDomainName: %@\ntrustPublicPKI: %@\ncertificates: %@\npublicKeyHashes: %@\n", [self class], [[self host] absoluteString], self.isPublic ? @"YES":@"NO", self.validateCertificateChain ? @"YES":@"NO", self.validateDomainName ? @"YES":@"NO", self.trustPublicPKI ? @"YES":@"NO", self.certificates, self.publicKeyHashes];
 }
 
 @end
