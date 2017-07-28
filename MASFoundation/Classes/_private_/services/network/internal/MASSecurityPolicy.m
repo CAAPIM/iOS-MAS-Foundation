@@ -9,6 +9,10 @@
 //
 
 #import "MASSecurityPolicy.h"
+
+#import "MASConstantsPrivate.h"
+#import "MASSecurityConfiguration.h"
+#import "MASSecurityConfiguration+MASPrivate.h"
 #import "NSData+MASPrivate.h"
 
 #import <CommonCrypto/CommonDigest.h>
@@ -19,6 +23,7 @@
 @interface MASSecurityPolicy ()
 
 @property (readwrite, nonatomic, assign) MASSSLPinningMode MASSSLPinningMode;
+@property (nonatomic, strong) NSDictionary *securityConfigurations;
 
 @end
 
@@ -28,6 +33,159 @@ static unsigned char rsa2048Asn1Header[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
     0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00
 };
+
+
++ (instancetype)policyWithSecurityConfigurations:(NSDictionary *)configurations
+{
+    MASSecurityPolicy *securityPolicy = [[MASSecurityPolicy alloc] init];
+    securityPolicy.securityConfigurations = [configurations copy];
+    
+    return securityPolicy;
+}
+
+
+- (BOOL)evaluateSecurityConfigurationsForServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain
+{
+    MASSecurityConfiguration *securityConfiguration = [_securityConfigurations objectForKey:domain];
+    
+    //
+    //  If there is no security configuration define, cancel request
+    //
+    if (securityConfiguration == nil)
+    {
+        return NO;
+    }
+    
+    //
+    //  Proceed if pinning mode is set to none
+    //
+    if (securityConfiguration.pinningMode == MASSecuritySSLPinningModeNone)
+    {
+        return YES;
+    }
+    
+    NSMutableArray *policies = [NSMutableArray array];
+    
+    //
+    //  Set security policy for domain name associated with the server trust
+    //
+    if (securityConfiguration.validateDomainName)
+    {
+        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
+    } else {
+        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
+    }
+    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
+    
+    //
+    //  Validate server trust validity
+    //
+    if (securityConfiguration.trustPublicPKI && ![self validateServerTrust:serverTrust])
+    {
+        return NO;
+    }
+    
+    BOOL isPinningVerified = NO;
+    NSArray *certificateChain = [self extractCertificateDataFromServerTrust:serverTrust];
+    
+    switch (securityConfiguration.pinningMode) {
+        case MASSecuritySSLPinningModeCertificate:
+        {
+            //
+            //  If certificate is not found from configuration, cancel request
+            //
+            if ([securityConfiguration.certificates count] == 0)
+            {
+                isPinningVerified = NO;
+            }
+            else {
+                
+                NSMutableArray *pinnedCertificates = [[securityConfiguration convertCertificatesToSecCertificateRef] mutableCopy];
+                NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
+                
+                SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
+                
+                //
+                //  Stop proceeding if validation of server trust against anchor (pinned) certificates
+                //
+                if (![self validateServerTrust:serverTrust])
+                {
+                    return NO;
+                }
+                
+                //
+                //  As of this point, if the configuration doesn't force to validate the entire chain, proceeds the request
+                //
+                if (!securityConfiguration.validateCertificateChain)
+                {
+                    return YES;
+                }
+                else {
+                    
+                    int matchingCertificatesCount = 0;
+                    
+                    for (NSData *trustCertData in certificateChain)
+                    {
+                        if ([pinnedCertificatesData containsObject:trustCertData])
+                        {
+                            matchingCertificatesCount++;
+                        }
+                    }
+                    
+                    return matchingCertificatesCount == [pinnedCertificatesData count];
+                }
+            }
+        }
+            break;
+        case MASSecuritySSLPinningModePublicKey:
+        {
+            
+            NSArray *pinnedPublicKeyRefs = [securityConfiguration convertPublicKeysToSecKeyRef];
+            NSArray *certificateRefArray = [self extractCertificateRefFromServerTrust:serverTrust];
+            NSArray *serverTrustPublicKeyRefs = [securityConfiguration extractPublicKeyRefFromCertificateRefs:certificateRefArray];
+            
+            if ([pinnedPublicKeyRefs count] != [serverTrustPublicKeyRefs count])
+            {
+                return NO;
+            }
+            else {
+                int matchingPublicKeysCouont = 0;
+                
+                if (!securityConfiguration.validateDomainName && [serverTrustPublicKeyRefs count] > 0)
+                {
+                    serverTrustPublicKeyRefs = @[[serverTrustPublicKeyRefs firstObject]];
+                }
+                
+                for (id serverTrustPublicKey in serverTrustPublicKeyRefs)
+                {
+                    for (id pinnedPublicKey in pinnedPublicKeyRefs)
+                    {
+                        NSData *pinnedKeyData = [NSData converKeyRefToNSData:(__bridge SecKeyRef)pinnedPublicKey];
+                        NSData *trustKeyData = [NSData converKeyRefToNSData:(__bridge SecKeyRef)serverTrustPublicKey];
+                        
+                        if ([pinnedKeyData isEqual:trustKeyData])
+                        {
+                            matchingPublicKeysCouont++;
+                        }
+                    }
+                }
+                
+                return matchingPublicKeysCouont == [serverTrustPublicKeyRefs count];
+            }
+        }
+            break;
+        case MASSecuritySSLPinningModePublicKeyHash:
+        {
+            
+        }
+            break;
+        default:
+            break;
+    }
+    
+    return isPinningVerified;
+}
+
 
 + (instancetype)policyWithMASPinningMode:(MASSSLPinningMode)pinningMode
 {
@@ -200,6 +358,36 @@ static unsigned char rsa2048Asn1Header[] = {
     }
     
     return isValid;
+}
+
+
+- (NSArray *)extractCertificateRefFromServerTrust:(SecTrustRef)serverTrust
+{
+    CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
+    NSMutableArray *certificateChain = [NSMutableArray array];
+    
+    for (CFIndex i = 0; i < certificateCount; i++)
+    {
+        SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+        [certificateChain addObject:(__bridge id _Nonnull)(certificate)];
+    }
+    
+    return certificateChain;
+}
+
+
+- (NSArray *)extractCertificateDataFromServerTrust:(SecTrustRef)serverTrust
+{
+    CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
+    NSMutableArray *certificateChain = [NSMutableArray array];
+    
+    for (CFIndex i = 0; i < certificateCount; i++)
+    {
+        SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+        [certificateChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
+    }
+    
+    return certificateChain;
 }
 
 
