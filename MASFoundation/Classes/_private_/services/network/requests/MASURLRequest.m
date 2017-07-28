@@ -33,6 +33,12 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
 
 # pragma mark - Public
 
+- (MASURLRequest *)rebuildRequest
+{
+    return self;
+}
+
+
 + (NSString *)endPoint:(NSString *)endPoint byAppendingParameterInfo:(NSDictionary *)parameterInfo
 {
     //

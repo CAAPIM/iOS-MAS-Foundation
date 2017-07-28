@@ -72,8 +72,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (void)saveWithUpdatedInfo:(NSDictionary *)info
 {
-    DLog(@"\n\ncalled with info: %@\n\n", info);
-    
     NSAssert(info, @"info cannot be nil");
    
     //

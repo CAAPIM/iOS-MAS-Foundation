@@ -23,7 +23,8 @@
 #import "MASServiceRegistry.h"
 #import "NSURL+MASPrivate.h"
 
-#import "MASHTTPSessionManager.h"
+#import "MASURLSessionManager.h"
+#import "MASSessionDataTaskOperation.h"
 #import "MASSecurityPolicy.h"
 #import "MASGetURLRequest.h"
 #import "NSData+MASPrivate.h"
@@ -568,20 +569,15 @@
         //
         __block NSString *subjectKeyHash = [[urlParameters objectForKey:MASSubjectKeyHashRequestResponseKey] URLDecode];
         [urlParameters removeObjectForKey:MASSubjectKeyHashRequestResponseKey];
-        
-        //
-        //  Constrcut baseURL with given scheme, host, and port
-        //
-        NSString *baseURL = [NSString stringWithFormat:@"%@://%@%@",url.scheme,url.host,url.port ? [NSString stringWithFormat:@":%@", url.port] : @""];
 
         //
-        //  Construct an individual HTTPSessionManager as MASNetworkingService is not initialized at the moment, and it will be used for temporarily
-        //  and define authentication challenge block for SSL pinning
+        //  Construct an individual MASURLSessionManager as MASNetworkingService is not initialized at the moment, and it will be used for temporarily
+        //  and define session level authentication challenge block for SSL pinning
         //
-        __block MASHTTPSessionManager *sessionManager = [[MASHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
-        
-        [sessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession * _Nonnull session, NSURLAuthenticationChallenge * _Nonnull challenge, NSURLCredential *__autoreleasing  _Nullable * _Nullable credential) {
-
+        __block MASCompletionErrorBlock blockCompletion = completion;
+        MASURLSessionManager *urlSessionManager = [[MASURLSessionManager alloc] initWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        [urlSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential *__autoreleasing *credential) {
+            
             NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
             
             //
@@ -596,28 +592,37 @@
             
             return disposition;
         }];
-
+        
         //
         //  Invoke enrolmentURL which will return entire JSON configuration file
         //
-        [sessionManager GET:url.relativePath parameters:urlParameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-            
-            //
-            //  If the JSON configuration is successfully retrieved, initialize SDK with JSON
-            //
-            NSDictionary *configurationObject = (NSDictionary *)responseObject;
-            [MAS startWithJSON:configurationObject completion:completion];
-            
-        } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
-            
-            //
-            //  If the request fails, parse the error object, and notify the block
-            //
-            if (completion)
+        MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:url.absoluteString
+                                                          withParameters:urlParameters
+                                                              andHeaders:nil
+                                                             requestType:MASRequestResponseTypeJson
+                                                            responseType:MASRequestResponseTypeJson isPublic:YES];
+        MASSessionDataTaskOperation *dataTaskOperation = [urlSessionManager dataOperationWithRequest:request
+                                                                                   completionHandler:^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error) {
+            if (error)
             {
-                completion(NO, [NSError errorFromApiResponseInfo:nil andError:error]);
+                //
+                //  If the request fails, parse the error object, and notify the block
+                //
+                if (blockCompletion)
+                {
+                    blockCompletion(NO, [NSError errorFromApiResponseInfo:nil andError:error]);
+                }
+            }
+            else {
+                
+                //
+                //  If the JSON configuration is successfully retrieved, initialize SDK with JSON
+                //
+                NSDictionary *configurationObject = (NSDictionary *)responseObject;
+                [MAS startWithJSON:configurationObject completion:completion];
             }
         }];
+        [urlSessionManager addOperation:dataTaskOperation];
     }
     //
     //  If URL is not nil, and not recognized as valid http URL, it is recognized as local system file URL
@@ -919,29 +924,16 @@
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
-                    //
-                    // Pass through the call to the network manager
-                    //
-                    [[MASNetworkingService sharedService] deleteFrom:endPoint
-                                                      withParameters:mutableParameterInfo
-                                                          andHeaders:mutableHeaderInfo
-                                                         requestType:requestType
-                                                        responseType:responseType
-                                                            isPublic:isPublic
-                                                          completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+            //
+            // Pass through the call to the network manager
+            //
+            [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                              withParameters:mutableParameterInfo
+                                                  andHeaders:mutableHeaderInfo
+                                                 requestType:requestType
+                                                responseType:responseType
+                                                    isPublic:isPublic
+                                                  completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }];
     }
     else {
@@ -1063,30 +1055,16 @@
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
-                    //
-                    // Pass through the call to the network manager
-                    //
-                    [[MASNetworkingService sharedService] getFrom:endPoint
-                                                   withParameters:mutableParameterInfo
-                                                       andHeaders:mutableHeaderInfo
-                                                      requestType:requestType
-                                                     responseType:responseType
-                                                         isPublic:isPublic
-                                                       completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+            //
+            // Pass through the call to the network manager
+            //
+            [[MASNetworkingService sharedService] getFrom:endPoint
+                                           withParameters:mutableParameterInfo
+                                               andHeaders:mutableHeaderInfo
+                                              requestType:requestType
+                                             responseType:responseType
+                                                 isPublic:isPublic
+                                               completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }];
     }
     else {
@@ -1202,30 +1180,16 @@
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
-                    //
-                    // Pass through the call to the network manager
-                    //
-                    [[MASNetworkingService sharedService] patchTo:endPoint
-                                                   withParameters:mutableParameterInfo
-                                                       andHeaders:mutableHeaderInfo
-                                                      requestType:requestType
-                                                     responseType:responseType
-                                                         isPublic:isPublic
-                                                       completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+            //
+            // Pass through the call to the network manager
+            //
+            [[MASNetworkingService sharedService] patchTo:endPoint
+                                           withParameters:mutableParameterInfo
+                                               andHeaders:mutableHeaderInfo
+                                              requestType:requestType
+                                             responseType:responseType
+                                                 isPublic:isPublic
+                                               completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }];
     }
     else {
@@ -1341,30 +1305,16 @@ withParameters:(NSDictionary *)parameterInfo
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
-                    //
-                    // Pass through the call to the network manager
-                    //
-                    [[MASNetworkingService sharedService] postTo:endPoint
-                                                  withParameters:mutableParameterInfo
-                                                      andHeaders:mutableHeaderInfo
-                                                     requestType:requestType
-                                                    responseType:responseType
-                                                        isPublic:isPublic
-                                                      completion:[self parseTargetAPIErrorForCompletionBlock:completion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+            //
+            // Pass through the call to the network manager
+            //
+            [[MASNetworkingService sharedService] postTo:endPoint
+                                          withParameters:mutableParameterInfo
+                                              andHeaders:mutableHeaderInfo
+                                             requestType:requestType
+                                            responseType:responseType
+                                                isPublic:isPublic
+                                              completion:[self parseTargetAPIErrorForCompletionBlock:completion]];
         }];
     }
     else {
@@ -1481,30 +1431,16 @@ withParameters:(nullable NSDictionary *)parameterInfo
             
             //DLog(@"\n\ncalled with endPoint: %@\n  parameters: %@\n\n  headers: %@\n\n", endPoint, mutableParameterInfo, mutableHeaderInfo);
             
-            [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError *error) {
-                
-                if (error == nil)
-                {
-                    //
-                    // Pass through the call to the network manager
-                    //
-                    [[MASNetworkingService sharedService] putTo:endPoint
-                                                 withParameters:mutableParameterInfo
-                                                     andHeaders:mutableHeaderInfo
-                                                    requestType:requestType
-                                                   responseType:responseType
-                                                       isPublic:isPublic
-                                                     completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
-                    
-                }
-                else {
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(nil, error);
-                    }
-                }
-            }];
+            //
+            // Pass through the call to the network manager
+            //
+            [[MASNetworkingService sharedService] putTo:endPoint
+                                         withParameters:mutableParameterInfo
+                                             andHeaders:mutableHeaderInfo
+                                            requestType:requestType
+                                           responseType:responseType
+                                               isPublic:isPublic
+                                             completion:[self parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }];
     }
     //
