@@ -176,6 +176,7 @@
 /**
  Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object
 
+ @warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASSecurityConfiguration object will be overwritten. If primary gateway's security configuration has to be modified, ensure to set security configuration after SDK initialization.
  @param securityConfiguration MASSecurityConfiguration object with host, and security measure configuration values.
  */
 + (void)setSecurityConfiguration:(MASSecurityConfiguration *_Nonnull)securityConfiguration;

@@ -583,8 +583,13 @@
             //
             //  enrolmentURL can only successfully pin SSL with subjectKeyHash, otherwise, the request will be cancelled
             //
-            MASSecurityPolicy *masSecurityPolicy = [MASSecurityPolicy policyWithMASPinningMode:MASSSLPinningModePublicKeyHash];
-            if ([masSecurityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:@[subjectKeyHash] forDomain:challenge.protectionSpace.host])
+            NSString *hostURL = [NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port];
+            MASSecurityPolicy *masSecurityPolicy = [[MASSecurityPolicy alloc] init];
+            MASSecurityConfiguration *securityConfig = [[MASSecurityConfiguration alloc] initWithURL:[NSURL URLWithString:hostURL]];
+            securityConfig.publicKeyHashes = @[subjectKeyHash];
+            [MASConfiguration setSecurityConfiguration:securityConfig];
+            
+            if ([masSecurityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust forDomain:hostURL])
             {
                 disposition = NSURLSessionAuthChallengeUseCredential;
                 *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
@@ -834,7 +839,7 @@
           andHeaders:headerInfo
          requestType:MASRequestResponseTypeJson
         responseType:MASRequestResponseTypeJson
-            isPublic:NO
+            isPublic:[self isPublicForEndpoint:endPoint]
           completion:completion];
 }
 
@@ -851,7 +856,7 @@
           andHeaders:headerInfo
          requestType:requestType
         responseType:responseType
-            isPublic:NO
+            isPublic:[self isPublicForEndpoint:endPoint]
           completion:completion];
 }
 
@@ -959,7 +964,7 @@
        andHeaders:headerInfo
       requestType:MASRequestResponseTypeJson
      responseType:MASRequestResponseTypeJson
-         isPublic:NO
+         isPublic:[self isPublicForEndpoint:endPoint]
        completion:completion];
 }
 
@@ -971,12 +976,13 @@
    responseType:(MASRequestResponseType)responseType
      completion:(MASResponseInfoErrorBlock)completion
 {
+    
     [self getFrom:endPoint
    withParameters:parameterInfo
        andHeaders:headerInfo
       requestType:requestType
      responseType:responseType
-         isPublic:NO
+         isPublic:[self isPublicForEndpoint:endPoint]
        completion:completion];
 }
 
@@ -1090,7 +1096,7 @@
        andHeaders:headerInfo
       requestType:MASRequestResponseTypeJson
      responseType:MASRequestResponseTypeJson
-         isPublic:NO
+         isPublic:[self isPublicForEndpoint:endPoint]
        completion:completion];
 }
 
@@ -1107,7 +1113,7 @@
        andHeaders:headerInfo
       requestType:requestType
      responseType:responseType
-         isPublic:NO
+         isPublic:[self isPublicForEndpoint:endPoint]
        completion:completion];
 }
 
@@ -1215,7 +1221,7 @@ withParameters:(NSDictionary *)parameterInfo
       andHeaders:headerInfo
      requestType:MASRequestResponseTypeJson
     responseType:MASRequestResponseTypeJson
-        isPublic:NO
+        isPublic:[self isPublicForEndpoint:endPoint]
       completion:completion];
 }
 
@@ -1232,7 +1238,7 @@ withParameters:(NSDictionary *)parameterInfo
       andHeaders:headerInfo
      requestType:requestType
     responseType:responseType
-        isPublic:NO
+        isPublic:[self isPublicForEndpoint:endPoint]
       completion:completion];
 }
 
@@ -1340,7 +1346,7 @@ withParameters:(NSDictionary *)parameterInfo
      andHeaders:headerInfo
     requestType:MASRequestResponseTypeJson
    responseType:MASRequestResponseTypeJson
-       isPublic:NO
+       isPublic:[self isPublicForEndpoint:endPoint]
      completion:completion];
 }
 
@@ -1357,7 +1363,7 @@ withParameters:(NSDictionary *)parameterInfo
      andHeaders:headerInfo
     requestType:requestType
    responseType:responseType
-       isPublic:NO
+       isPublic:[self isPublicForEndpoint:endPoint]
      completion:completion];
 }
 
@@ -1659,6 +1665,27 @@ withParameters:(nullable NSDictionary *)parameterInfo
     }
     
     return [claims buildWithPrivateKey:privateKey error:error];
+}
+
+
++ (BOOL)isPublicForEndpoint:(NSString *)endPoint
+{
+    BOOL isPublic = NO;
+    
+    NSURL *endpointURL = [NSURL URLWithString:endPoint];
+    if (endpointURL.scheme && endpointURL.host)
+    {
+        MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", endpointURL.scheme, endpointURL.host, endpointURL.port]]];
+        isPublic = securityConfiguration.isPublic;
+    }
+    else if ([MASConfiguration currentConfiguration])
+    {
+        NSURL *gatewayURL = [MASConfiguration currentConfiguration].gatewayUrl;
+        MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", gatewayURL.scheme, gatewayURL.host, gatewayURL.port]]];
+        isPublic = securityConfiguration.isPublic;
+    }
+    
+    return isPublic;
 }
 
 

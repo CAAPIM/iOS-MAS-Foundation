@@ -67,27 +67,6 @@
 }
 
 
-- (NSArray *)convertPublicKeysToData
-{
-    return nil;
-}
-
-
-- (NSArray *)convertPublicKeysToSecKeyRef
-{
-//    if ([self.publicKeys count] == 0 && [self.certificates count] > 0)
-//    {
-//        return [self extractPublicKeyRefFromCertificateRefs:[self convertCertificatesToSecCertificateRef]];
-//    }
-//    else {
-//        
-//        
-//    }
-    
-    return nil;
-}
-
-
 - (NSArray *)extractPublicKeyRefFromCertificateRefs:(NSArray *)certificateRef
 {
     if ([certificateRef count] == 0)

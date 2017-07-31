@@ -34,7 +34,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
     self = [super init];
     
     if (self) {
-        self.host = url;
+        self.host = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port]];
         self.isPublic = NO;
         self.trustPublicPKI = NO;
         self.validateCertificateChain = NO;

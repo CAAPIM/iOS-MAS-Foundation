@@ -67,19 +67,12 @@
             {
                 BOOL didPassEvaluation = YES;
                 
-                MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
+                //
+                //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
+                //
+                didPassEvaluation = [blockSelf.securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust
+                                                                                       forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
                 
-                didPassEvaluation = [securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
-                
-                
-//                if (securityPolicy.MASSSLPinningMode == MASSSLPinningModePublicKeyHash)
-//                {
-//                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust withPublicKeyHashes:[MASConfiguration currentConfiguration].trustedCertPinnedPublickKeyHashes forDomain:challenge.protectionSpace.host];
-//                }
-//                else {
-//                    didPassEvaluation = [securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host];
-//                }
-//                
                 if (didPassEvaluation)
                 {
                     *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
@@ -88,7 +81,6 @@
                 else {
                     disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
                 }
-                
             }
             else {
                 
@@ -120,10 +112,11 @@
                 
                 BOOL didPassEvaluation = YES;
                 
-                
-                MASSecurityPolicy *securityPolicy = (MASSecurityPolicy *)blockSelf.securityPolicy;
-                
-                didPassEvaluation = [securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
+                //
+                //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
+                //
+                didPassEvaluation = [blockSelf.securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust
+                                                                                                 forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
                 
                 if (didPassEvaluation)
                 {

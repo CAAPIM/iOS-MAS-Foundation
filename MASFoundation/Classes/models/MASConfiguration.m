@@ -403,7 +403,8 @@ static float _systemVersionNumber_;
 
 + (MASSecurityConfiguration *)securityConfigurationForDomain:(NSURL *)domain
 {
-    return domain ? [_securityConfigurations_ objectForKey:[domain absoluteString]] : nil;
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", domain.scheme, domain.host, domain.port]];
+    return thisDomain ? [_securityConfigurations_ objectForKey:[thisDomain absoluteString]] : nil;
 }
 
 

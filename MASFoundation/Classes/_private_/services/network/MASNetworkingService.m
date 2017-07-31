@@ -254,30 +254,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     if (_sessionManager == nil)
     {
         //
-        // Retrieve the configuration
-        //
-        MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-        
-        //
         //  Setup the security policy
         //
-        //  Certificate Pinning Mode
-        //
-        
-        MASSSLPinningMode pinningMode = MASSSLPinningModeCertificate;
-        
-        if (configuration.trustedCertPinnedPublickKeyHashes != nil && [configuration.trustedCertPinnedPublickKeyHashes count] > 0)
-        {
-            pinningMode = MASSSLPinningModePublicKeyHash;
-        }
-        
         MASSecurityPolicy *securityPolicy = [[MASSecurityPolicy alloc] init];
-        
-//        [securityPolicy setAllowInvalidCertificates:([MASConfiguration currentConfiguration].enabledTrustedPublicPKI ? NO: YES)];
-//        [securityPolicy setValidatesDomainName:YES];
-//        [securityPolicy setValidatesCertificateChain:YES];
-//        [securityPolicy setPinnedCertificates:configuration.gatewayCertificatesAsDERData];
-        
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
         sessionConfig.URLCredentialStorage = nil;
         sessionConfig.URLCache = nil;
@@ -1290,14 +1269,15 @@ withParameters:(NSDictionary *)parameterInfo
         //
         //  Construct MASSessionDataTaskOperation with request, and completion block to handle any responsive re-authentication or re-registration.
         //
-        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                                           parameters:parameterInfo
-                                                                                                                                                              headers:headerInfo
-                                                                                                                                                           httpMethod:request.HTTPMethod
-                                                                                                                                                          requestType:requestType
-                                                                                                                                                         responseType:responseType
-                                                                                                                                                             isPublic:isPublic
-                                                                                                                                                      completionBlock:blockCompletion]];
+        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request
+                                                                         completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                                 parameters:parameterInfo
+                                                                                                                                    headers:headerInfo
+                                                                                                                                 httpMethod:request.HTTPMethod
+                                                                                                                                requestType:requestType
+                                                                                                                               responseType:responseType
+                                                                                                                                   isPublic:isPublic
+                                                                                                                            completionBlock:blockCompletion]];
         
         if (![self isMAGEndpoint:endPoint])
         {
