@@ -38,7 +38,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
         self.isPublic = NO;
         self.trustPublicPKI = NO;
         self.validateCertificateChain = NO;
-        self.validateDomainName = NO;
+        self.validateDomainName = YES;
     }
     
     return self;

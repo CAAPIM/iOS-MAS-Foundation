@@ -77,7 +77,6 @@ static unsigned char rsa2048Asn1Header[] = {
         return NO;
     }
     
-    
     //
     //  Validate all pinning information that are present; even though it's duplicated process.
     //
@@ -89,8 +88,13 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     if ([securityConfiguration.certificates count] > 0)
     {
-        NSMutableArray *pinnedCertificates = [[securityConfiguration convertCertificatesToSecCertificateRef] mutableCopy];
+        NSMutableArray *pinnedCertificates = [NSMutableArray array];
         NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
+        
+        for (NSData *certificateData in pinnedCertificatesData)
+        {
+            [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
+        }
         
         SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
         
