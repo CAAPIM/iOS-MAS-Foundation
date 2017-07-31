@@ -132,7 +132,10 @@
         return signResult.successResult.encoded;
     }
     else {
-        *error = signResult.errorResult.error;
+        if (signResult.errorResult.error && error)
+        {
+            *error = signResult.errorResult.error;
+        }
         return nil;
     }
 }

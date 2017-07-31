@@ -1283,7 +1283,6 @@ withParameters:(NSDictionary *)parameterInfo
     //
     if (!isPublic)
     {
-        __block MASResponseInfoErrorBlock blockCompletion = completion;
         
         //
         //  Validate if new scope has been requested in header
