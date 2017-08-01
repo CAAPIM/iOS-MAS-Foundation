@@ -25,10 +25,13 @@
 
 - (id)init
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"init is not a valid initializer, please use a factory method"
-                                 userInfo:nil];
-    return nil;
+    self = [super init];
+    if(self)
+    {
+        
+    }
+    
+    return self;
 }
 
 
