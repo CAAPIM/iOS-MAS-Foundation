@@ -168,10 +168,10 @@
 
 
 ///--------------------------------------
-/// @name Current Configuration
+/// @name Security Configuration
 ///--------------------------------------
 
-# pragma mark - Current Configuration
+# pragma mark - Security Configuration
 
 /**
  Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object
