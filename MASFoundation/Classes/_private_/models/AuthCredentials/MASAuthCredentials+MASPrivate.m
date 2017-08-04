@@ -397,16 +397,16 @@
                                           [[MASAccessService sharedService].currentAccessObj refresh];
                                           
                                           //
-                                          // Post the notification
-                                          //
-                                          [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
-                                          
-                                          //
                                           // Retrieve userinfo unless otherwise authCredentialsType is client credentials
                                           //
                                           if (![self.credentialsType isEqualToString:MASGrantTypeClientCredentials])
                                           {
                                               [[MASModelService sharedService] requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
+                                                  
+                                                  //
+                                                  // Post the notification
+                                                  //
+                                                  [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
                                                   
                                                   //
                                                   // Requesting additional userInfo upon successful authentication
@@ -425,6 +425,12 @@
                                               }];
                                           }
                                           else {
+                                              
+                                              //
+                                              // Post the notification
+                                              //
+                                              [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
+                                              
                                               if (blockCompletion)
                                               {
                                                   blockCompletion(YES, nil);
