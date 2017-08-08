@@ -447,7 +447,12 @@
         //
         [self.centralManager cancelPeripheralConnection:peripheral];
     }
-
+    
+    //
+    //  set being authroized status to false
+    //
+    [[MASDevice currentDevice] setIsBeingAuthorized:NO];
+    
     //
     // Stop central scanning for peripherals
     //
