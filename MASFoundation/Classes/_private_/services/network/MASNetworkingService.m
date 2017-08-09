@@ -1296,7 +1296,7 @@ withParameters:(NSDictionary *)parameterInfo
                 //
                 //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
                 //
-                if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.operationQueue.operations containsObject:self.sharedOperation])
+                if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
                 {
                     //
                     //  add sharedOperation into internal operation queue
