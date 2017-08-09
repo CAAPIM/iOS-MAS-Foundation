@@ -183,6 +183,16 @@
 
 
 
+
+/**
+ Removes security configuration object based on the domain (host, and port number).
+
+ @param domain NSURL object of domain to delete MASSecurityConfiguration.
+ */
++ (void)removeSecurityConfigurationForDomain:(NSURL *_Nonnull)domain;
+
+
+
 /**
  Returns an array of MASSecurityConfiguration objects for each host.
 

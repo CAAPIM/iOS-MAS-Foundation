@@ -84,6 +84,13 @@ static NSMutableDictionary *_securityConfigurations_;
 }
 
 
++ (void)removeSecurityConfigurationForDomain:(NSURL *)domain
+{
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", domain.scheme, domain.host, domain.port]];
+    [_securityConfigurations_ removeObjectForKey:[thisDomain absoluteString]];
+}
+
+
 + (NSArray *)securityConfigurations
 {
     return _securityConfigurations_ ? [_securityConfigurations_ allValues] : nil;

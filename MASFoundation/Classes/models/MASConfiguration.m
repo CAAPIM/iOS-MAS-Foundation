@@ -386,6 +386,12 @@ static float _systemVersionNumber_;
 }
 
 
++ (void)removeSecurityConfigurationForDomain:(NSURL *)domain
+{
+    [MASConfigurationService removeSecurityConfigurationForDomain:domain];
+}
+
+
 + (NSArray *)securityConfigurations
 {
     return [MASConfigurationService securityConfigurations];
