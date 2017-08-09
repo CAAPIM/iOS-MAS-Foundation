@@ -77,7 +77,7 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     //  If trustPublicPKI is set to NO, and there is no pinning information defined, reject connection
     //
-    else if (!securityConfiguration.trustPublicPKI && ([securityConfiguration.certificates count] == 0 && [securityConfiguration.publicKeyHashes count] == 0))
+    else if (!securityConfiguration.trustPublicPKI && (([securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] == 0) && ([securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] == 0)))
     {
         return NO;
     }
@@ -91,7 +91,7 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     //  pinning with certificates
     //
-    if ([securityConfiguration.certificates count] > 0)
+    if (securityConfiguration.certificates != nil && [securityConfiguration.certificates isKindOfClass:[NSArray class]] &&[securityConfiguration.certificates count] > 0)
     {
         //
         //  Set anchor cert with pinned certificates
@@ -140,7 +140,7 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     //  pinning with public key hashes
     //
-    if ([securityConfiguration.publicKeyHashes count] > 0)
+    if (securityConfiguration.publicKeyHashes != nil && [securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] > 0)
     {
         
         //
