@@ -93,14 +93,14 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
         self.validateDomainName = [[configuration objectForKey:@"validateDomainName"] boolValue];
     }
     
-    if ([configuration.allKeys containsObject:@"turstPublicPKI"])
+    if ([configuration.allKeys containsObject:@"trustPublicPKI"])
     {
-        self.trustPublicPKI = [[configuration objectForKey:@"turstPublicPKI"] boolValue];
+        self.trustPublicPKI = [[configuration objectForKey:@"trustPublicPKI"] boolValue];
     }
     
-    if ([configuration.allKeys containsObject:@"certificate"] && [[configuration objectForKey:@"certificate"] isKindOfClass:[NSArray class]])
+    if ([configuration.allKeys containsObject:@"certificates"] && [[configuration objectForKey:@"certificates"] isKindOfClass:[NSArray class]])
     {
-        self.certificates = [configuration objectForKey:@"certificate"];
+        self.certificates = [configuration objectForKey:@"certificates"];
     }
     
     if ([configuration.allKeys containsObject:@"publicKeyHashes"] && [[configuration objectForKey:@"publicKeyHashes"] isKindOfClass:[NSArray class]])
