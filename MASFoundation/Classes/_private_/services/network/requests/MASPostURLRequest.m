@@ -30,7 +30,7 @@
     //
     // Adding prefix to the endpoint path
     //
-    if ([MASConfiguration currentConfiguration].gatewayPrefix)
+    if ([MASConfiguration currentConfiguration].gatewayPrefix && ![endPoint hasPrefix:@"http://"] && ![endPoint hasPrefix:@"https://"])
     {
         endPoint = [NSString stringWithFormat:@"%@%@",[MASConfiguration currentConfiguration].gatewayPrefix, endPoint];
     }
