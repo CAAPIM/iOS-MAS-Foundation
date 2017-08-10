@@ -372,7 +372,6 @@
     NSString * certStr = [[NSString alloc] initWithData:certificate encoding:NSUTF8StringEncoding];
     NSData * certData = [NSData convertPEMCertificateToDERCertificate:certStr];
     
-    OSStatus err;
     SecCertificateRef cert;
     
     //
@@ -390,6 +389,7 @@
     
     if (cert != NULL)
     {
+        OSStatus err;
 
 #if TARGET_IPHONE_SIMULATOR
         
@@ -416,7 +416,6 @@
 
     }
     CFRelease(cert);
-    DLog(@"\n\ndone and status is: %d and certificate reference: %@\n\n", (int)err, cert);
 }
 
 

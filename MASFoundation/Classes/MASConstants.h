@@ -347,6 +347,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeNetworkRequestTimedOut = 100405,
     MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade = 100406,
     MASFoundationErrorCodeResponseSerializationFailedToParseResponse = 100407,
+    MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure = 100408,
     
     //
     // Application

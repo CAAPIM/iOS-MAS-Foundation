@@ -130,6 +130,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     MASUrlErrorCodeNetworkUnacceptableContentType = -1016,
     MASUrlErrorCodeNetworkUnacceptableContentType2 = -1011,
     MASUrlErrorCodeSSLConnectionCannotBeMade = -1200,
+    MASUrlErrorCodeSSLAuthenticationChallengeFailure = -999,
     
     MASUrlErrorCodeResponseSerializeFailedToParseResponse = 3840,
 
@@ -924,7 +925,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASUrlErrorCodeNetworkIsOffline: return MASFoundationErrorCodeNetworkIsOffline;
         case MASUrlErrorCodeNetworkUnacceptableContentType: return MASFoundationErrorCodeNetworkUnacceptableContentType;
         case MASUrlErrorCodeSSLConnectionCannotBeMade: return MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade;
-        
+        case MASUrlErrorCodeSSLAuthenticationChallengeFailure: return MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure;
         //
         // Response serialization
         //
@@ -1025,6 +1026,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeNetworkNotStarted: return @"The network is not started";
         case MASFoundationErrorCodeNetworkNotReachable: return @"The network host is not currently reachable";
         case MASFoundationErrorCodeNetworkRequestTimedOut: return @"The network request has timed out";
+        case MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure: return @"SSL pinning validation failed: ensure the target domain’s MASSecurityConfiguration is correctly configured.";
         
         case MASFoundationErrorCodeResponseSerializationFailedToParseResponse: return @"Invalid response format - failed to parse response";
         

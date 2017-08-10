@@ -86,6 +86,24 @@ bool _encrypted = NO;
 }
 
 
++ (NSData *)pemDataFromCertificateArray:(NSArray *)certificateArray
+{
+    NSString *base64String = [certificateArray componentsJoinedByString:MASDefaultNewline];
+    
+    return [self dataFromPEMBase64String:base64String];
+}
+
+
++ (NSData *)dataFromPEMBase64String:(NSString *)base64String
+{
+    base64String = [base64String stringByReplacingOccurrencesOfString:MASDefaultNewline withString:@""];
+    base64String = [base64String stringByReplacingOccurrencesOfString:MASCertificateBeginPrefix withString:@""];
+    base64String = [base64String stringByReplacingOccurrencesOfString:MASCertificateEndSuffix withString:@""];
+    
+    return [self dataWithBase64EncodedString:base64String];
+}
+
+
 + (NSData *)converKeyRefToNSData:(SecKeyRef)keyRef
 {
     //            Below two lines of codes will replace the rest of PrivateKey conversion which is only available on iOS 10 or above.
