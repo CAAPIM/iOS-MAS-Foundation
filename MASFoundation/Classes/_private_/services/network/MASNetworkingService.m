@@ -693,6 +693,10 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     {
         isMAGEndpoint = YES;
     }
+    else if ([endpoint hasPrefix:@"/auth/device/authorization/"])
+    {
+        isMAGEndpoint = YES;
+    }
     
     return isMAGEndpoint;
 }
