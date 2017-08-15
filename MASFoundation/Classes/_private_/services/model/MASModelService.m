@@ -1373,6 +1373,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     }
     
     //
+    //  Post notification
+    //
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASUserWillLogoutNotification object:self];
+    
+    //
     // Endpoint
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].userSessionLogoutEndpointPath;
