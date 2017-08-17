@@ -111,10 +111,7 @@
         blockSelf.result = completed;
         blockSelf.error = error;
         
-        if (completed || (error && ![error.domain isEqualToString:MASFoundationErrorDomain]))
-        {
-            [blockSelf completeOperation];
-        }
+        [blockSelf completeOperation];
     }];
 }
 
