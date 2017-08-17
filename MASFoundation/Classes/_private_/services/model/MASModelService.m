@@ -832,11 +832,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                     
                     if (error)
                     {
-                        if (blockCompletion)
-                        {
-                            blockCompletion(NO, error);
-                        }
-                        
                         if (blockAuthCompletion)
                         {
                             blockAuthCompletion(NO, error);
@@ -1633,11 +1628,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             
             if (error)
             {
-                if (blockCompletion)
-                {
-                    blockCompletion(NO, error);
-                }
-                
                 if (blockAuthCompletion)
                 {
                     blockAuthCompletion(NO, error);
