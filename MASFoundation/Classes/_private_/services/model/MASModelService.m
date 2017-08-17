@@ -1490,6 +1490,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     // MASAccessService
     //
     MASAccessService *accessService = [MASAccessService sharedService];
+    [accessService.currentAccessObj refresh];
     
     //
     // refresh_token
