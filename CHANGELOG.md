@@ -10,6 +10,7 @@ NOTE: From this version on the frameworks changed to Dynamic instead of Static l
 - `MASMQTTClient` can now connect to a public broker that does not require username, and password. Previously, `MASMQTTClient` was forcing to provide user credentials to all brokers. [DE306921]
 - Mobile SDK now properly validates request's response type as defined. Previously, Mobile SDK was accepting mis-match content-type for 200 response as a valid response. [US349551]
 - Mobile SDK now allows to run without enabling Keychain Sharing in Xcode. Please note that in order to estbalish SSO across multiple applications, Keychain Sharing still needs to be enabled. [US320771]
+- Mobile SDK now only validates against the leaf certificate for SSL pinning validation by default. The configuration can be changed to validate against entire certificate chain through `MASSecurityConfiguration`. [US374086]
 
 ### New Features
 - Mobile SDK introduces an ability to configure security configuration for external APIs (such as SSL pinning), so that Mobile SDK can securely connect to external API (other than primary Gateway). [US344780]
