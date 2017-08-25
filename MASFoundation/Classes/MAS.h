@@ -138,7 +138,6 @@
 + (MASState)MASState;
 
 
-#ifdef DEBUG
 
 /**
  *  Turn on or off the logging of the network activity with the Gateway.
@@ -146,8 +145,6 @@
  *  @param enabled BOOL YES to turn on logging, NO to turn it off.
  */
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled;
-
-#endif
 
 
 
@@ -370,8 +367,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)deleteFrom:(NSString *_Nonnull)endPointPath
-    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    withParameters:(NSDictionary *_Nullable)parameterInfo
+        andHeaders:(NSDictionary *_Nullable)headerInfo
         completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
@@ -406,8 +403,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)deleteFrom:(NSString *_Nonnull)endPointPath
-    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    withParameters:(NSDictionary *_Nullable)parameterInfo
+        andHeaders:(NSDictionary *_Nullable)headerInfo
       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock _Nullable)completion;
@@ -446,8 +443,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)deleteFrom:(NSString *_Nonnull)endPointPath
-    withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-        andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+    withParameters:(NSDictionary *_Nullable)parameterInfo
+        andHeaders:(NSDictionary *_Nullable)headerInfo
        requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
           isPublic:(BOOL)isPublic
@@ -485,8 +482,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)getFrom:(NSString *_Nonnull)endPointPath
- withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+ withParameters:(NSDictionary *_Nullable)parameterInfo
+     andHeaders:(NSDictionary *_Nullable)headerInfo
      completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
@@ -521,8 +518,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)getFrom:(NSString *_Nonnull)endPointPath
- withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+ withParameters:(NSDictionary *_Nullable)parameterInfo
+     andHeaders:(NSDictionary *_Nullable)headerInfo
     requestType:(MASRequestResponseType)requestType
    responseType:(MASRequestResponseType)responseType
      completion:(MASResponseInfoErrorBlock _Nullable)completion;
@@ -561,8 +558,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)getFrom:(NSString *_Nonnull)endPointPath
- withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+ withParameters:(NSDictionary *_Nullable)parameterInfo
+     andHeaders:(NSDictionary *_Nullable)headerInfo
     requestType:(MASRequestResponseType)requestType
    responseType:(MASRequestResponseType)responseType
        isPublic:(BOOL)isPublic
@@ -602,8 +599,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)patchTo:(NSString *_Nonnull)endPointPath
- withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+ withParameters:(NSDictionary *_Nullable)parameterInfo
+     andHeaders:(NSDictionary *_Nullable)headerInfo
      completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
@@ -640,8 +637,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)patchTo:(NSString *_Nonnull)endPointPath
- withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+ withParameters:(NSDictionary *_Nullable)parameterInfo
+     andHeaders:(NSDictionary *_Nullable)headerInfo
     requestType:(MASRequestResponseType)requestType
    responseType:(MASRequestResponseType)responseType
      completion:(MASResponseInfoErrorBlock _Nullable)completion;
@@ -682,8 +679,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)patchTo:(NSString *_Nonnull)endPointPath
- withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-     andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+ withParameters:(NSDictionary *_Nullable)parameterInfo
+     andHeaders:(NSDictionary *_Nullable)headerInfo
     requestType:(MASRequestResponseType)requestType
    responseType:(MASRequestResponseType)responseType
        isPublic:(BOOL)isPublic
@@ -723,8 +720,8 @@
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)postTo:(NSString *_Nonnull)endPointPath
-withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+withParameters:(NSDictionary *_Nullable)parameterInfo
+    andHeaders:(NSDictionary *_Nullable)headerInfo
     completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
@@ -761,8 +758,8 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)postTo:(NSString *_Nonnull)endPointPath
-withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+withParameters:(NSDictionary *_Nullable)parameterInfo
+    andHeaders:(NSDictionary *_Nullable)headerInfo
    requestType:(MASRequestResponseType)requestType
   responseType:(MASRequestResponseType)responseType
     completion:(MASResponseInfoErrorBlock _Nullable)completion;
@@ -803,8 +800,8 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)postTo:(NSString *_Nonnull)endPointPath
-withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-    andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+withParameters:(NSDictionary *_Nullable)parameterInfo
+    andHeaders:(NSDictionary *_Nullable)headerInfo
    requestType:(MASRequestResponseType)requestType
   responseType:(MASRequestResponseType)responseType
       isPublic:(BOOL)isPublic
@@ -844,8 +841,8 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)putTo:(NSString *_Nonnull)endPointPath
-withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+withParameters:(NSDictionary *_Nullable)parameterInfo
+   andHeaders:(NSDictionary *_Nullable)headerInfo
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
@@ -882,8 +879,8 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)putTo:(NSString *_Nonnull)endPointPath
-withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+withParameters:(NSDictionary *_Nullable)parameterInfo
+   andHeaders:(NSDictionary *_Nullable)headerInfo
   requestType:(MASRequestResponseType)requestType
  responseType:(MASRequestResponseType)responseType
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
@@ -924,8 +921,8 @@ withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
  *      receive the JSON response object or an NSError object if there is a failure.
  */
 + (void)putTo:(NSString *_Nonnull)endPointPath
-withParameters:(NSDictionary<NSString *, NSString *> *_Nullable)parameterInfo
-   andHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)headerInfo
+withParameters:(NSDictionary *_Nullable)parameterInfo
+   andHeaders:(NSDictionary *_Nullable)headerInfo
   requestType:(MASRequestResponseType)requestType
  responseType:(MASRequestResponseType)responseType
      isPublic:(BOOL)isPublic

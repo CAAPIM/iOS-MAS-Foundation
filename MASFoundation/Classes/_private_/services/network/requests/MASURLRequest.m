@@ -112,42 +112,64 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
     //
     if(!parameterInfo || parameterInfo.count == 0) return nil;
     
-    //
-    // Query
-    //
-    NSString *parameterValue;
-    NSString *queryFragment;
-    NSMutableString *queryParameters = [NSMutableString new];
-    for(NSString *parameterKey in [parameterInfo allKeys])
+    return [self serializeParams:parameterInfo];
+}
+
+
++ (NSString *)serializeParams:(NSDictionary *)params
+{
+    NSMutableArray *pairs = [NSMutableArray array];
+    for (NSString *key in [params allKeys])
     {
-        //
-        // Retrieve the value for the key, trimming any leading or trailer whitespace and encoding
-        // percent escape characters for interior whitespaces
-        //
-        
-        // Trim and escape as appropriate
-        parameterValue = [[[parameterInfo objectForKey:parameterKey] stringByTrimmingCharactersInSet:
-            [NSCharacterSet whitespaceCharacterSet]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-        //
-        // Create the query fragment
-        //
-        queryFragment = [NSString stringWithFormat:@"%@=%@&",
-            parameterKey,
-            parameterValue];
+        id value = params[key];
         
         //
-        // Add the query fragment
+        //  If the parameter is nested dictionary
         //
-        [queryParameters appendString:queryFragment];
+        if ([value isKindOfClass:[NSDictionary class]])
+        {
+            for (NSString *subKey in value)
+            {
+                [pairs addObject:[NSString stringWithFormat:@"%@[%@]=%@", key, subKey, [self escapeValueForURLParameter:[value objectForKey:subKey]]]];
+            }
+        }
+        //
+        //  If parameter is nested array
+        //
+        else if ([value isKindOfClass:[NSArray class]])
+        {
+            for (NSString *subValue in value)
+            {
+                [pairs addObject:[NSString stringWithFormat:@"%@[]=%@", key, [self escapeValueForURLParameter:subValue]]];
+            }
+        }
+        //
+        //  otherwise, string
+        //
+        else {
+            [pairs addObject:[NSString stringWithFormat:@"%@=%@", key, [self escapeValueForURLParameter:value]]];
+        }
+        
     }
+    return [pairs componentsJoinedByString:@"&"];
+}
+
+
++ (NSString *)escapeValueForURLParameter:(NSString *)valueToEscape {
     
     //
-    // Remove the last &
+    //  Only do the escape for NSString class 
     //
-    [queryParameters deleteCharactersInRange:NSMakeRange([queryParameters length]-1, 1)];
-    
-    return queryParameters;
+    if ([valueToEscape isKindOfClass:[NSString class]])
+    {
+        return [valueToEscape stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    }
+    //
+    //  Otherwise, just return the value
+    //
+    else {
+        return valueToEscape;
+    }
 }
 
 
