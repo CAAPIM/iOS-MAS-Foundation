@@ -825,29 +825,62 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                 //
                 [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                     
-                    //
-                    //  Clear credentials after first attempt if it is not reuseable
-                    //
-                    [blockAuthCredentials clearCredentials];
-                    
-                    if (error)
+                    if (blockAuthCredentials.isReuseable)
                     {
-                        if (blockAuthCompletion)
+                        [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
+                           
+                            //
+                            //  Clear credentials after first attempt if it is not reuseable
+                            //
+                            [blockAuthCredentials clearCredentials];
+                            
+                            if (error)
+                            {
+                                if (blockAuthCompletion)
+                                {
+                                    blockAuthCompletion(NO, error);
+                                }
+                                
+                                return;
+                            }
+                            
+                            if (blockCompletion)
+                            {
+                                blockCompletion(YES, nil);
+                            }
+                            
+                            if (blockAuthCompletion)
+                            {
+                                blockAuthCompletion(YES, nil);
+                            }
+                        }];
+                    }
+                    else {
+                        
+                        //
+                        //  Clear credentials after first attempt if it is not reuseable
+                        //
+                        [blockAuthCredentials clearCredentials];
+                        
+                        if (error)
                         {
-                            blockAuthCompletion(NO, error);
+                            if (blockAuthCompletion)
+                            {
+                                blockAuthCompletion(NO, error);
+                            }
+                            
+                            return;
                         }
                         
-                        return;
-                    }
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(YES, nil);
-                    }
-                    
-                    if (blockAuthCompletion)
-                    {
-                        blockAuthCompletion(YES, nil);
+                        if (blockCompletion)
+                        {
+                            blockCompletion(YES, nil);
+                        }
+                        
+                        if (blockAuthCompletion)
+                        {
+                            blockAuthCompletion(YES, nil);
+                        }
                     }
                 }];
             };

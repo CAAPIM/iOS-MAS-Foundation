@@ -58,7 +58,7 @@ typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nul
 /**
  *  The MASAuthCredentialsBlcok to provide auth credentials for device registration and/or user authentication.
  */
-typedef void (^MASAuthCredentialsBlock)(MASAuthCredentials *_Nonnull authCredentials, BOOL cancel, MASCompletionErrorBlock _Nullable);
+typedef void (^MASAuthCredentialsBlock)(MASAuthCredentials *_Nullable authCredentials, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
