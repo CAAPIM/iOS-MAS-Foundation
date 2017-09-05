@@ -515,6 +515,18 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
 }
 
 
+- (void)retrieveAuthenticationProvidersIfNeeded:(MASObjectResponseErrorBlock)completion
+{
+    if (_grantFlow_ == MASGrantFlowPassword)
+    {
+        [self retrieveAuthenticationProviders:completion];
+    }
+    else {
+        completion(nil, nil);
+    }
+}
+
+
 - (void)retrieveEnterpriseApplications:(MASObjectsResponseErrorBlock)completion
 {
     //
@@ -2371,51 +2383,60 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                      else {
                          
                          //
-                         //  Check login status
+                         // retrieve authentication providers for password grant flow only
+                         // retrieving authentication providers should be available for client credentials flow, but since this flow is implicit authentication flow,
+                         // we are only retreiving the providers for the password grant flow
                          //
-                         [blockSelf loginUsingUserCredentials:^(BOOL completed, NSError *error) {
+                         [blockSelf retrieveAuthenticationProvidersIfNeeded:^(id  _Nullable object, NSError * _Nullable error) {
                              
-                             if (!completed || error != nil)
+                             if (error != nil)
                              {
-                                 if(originalCompletion)
-                                 {
-                                     originalCompletion(completed, error);
-                                 }
+                                 if(originalCompletion) originalCompletion(NO, error);
                              }
                              else {
                                  
-                                 if(originalCompletion)
-                                 {
-                                     originalCompletion(completed, error);
-                                 }
+                                 //
+                                 //  Check login status
+                                 //
+                                 [blockSelf loginUsingUserCredentials:^(BOOL completed, NSError *error) {
+                                     
+                                     if (!completed || error != nil)
+                                     {
+                                         if(originalCompletion)
+                                         {
+                                             originalCompletion(completed, error);
+                                         }
+                                     }
+                                     else {
+                                         
+                                         if(originalCompletion)
+                                         {
+                                             originalCompletion(completed, error);
+                                         }
+                                     }
+                                 }];
                              }
                          }];
                      }
                  }];
             };
             
-            if (_grantFlow_ == MASGrantFlowPassword)
-            {
-                //
-                //  Get authentication providers if it doesn't exist
-                //
-                [blockSelf retrieveAuthenticationProviders:^(id object, NSError *error)
-                 {
-                     
-                     if (error != nil)
-                     {
-                         if(originalCompletion) originalCompletion(NO, error);
-                     }
-                     else {
-                         
-                         registrationAndAuthenticationBlock();
-                     }
-                 }];
-            }
-            else {
+            //
+            // retrieve authentication providers for password grant flow only
+            // retrieving authentication providers should be available for client credentials flow, but since this flow is implicit authentication flow,
+            // we are only retreiving the providers for the password grant flow
+            //
+            [blockSelf retrieveAuthenticationProvidersIfNeeded:^(id  _Nullable object, NSError * _Nullable error) {
                 
-                registrationAndAuthenticationBlock();
-            }
+                if (error != nil)
+                {
+                    if(originalCompletion) originalCompletion(NO, error);
+                }
+                else {
+                    
+                    registrationAndAuthenticationBlock();
+                }
+            }];
         }
     }];
 }
