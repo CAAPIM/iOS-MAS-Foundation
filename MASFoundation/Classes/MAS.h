@@ -12,7 +12,7 @@
 
 #import "MASConstants.h"
 #import "MASClaims.h"
-
+#import "MASRequest.h"
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -927,6 +927,10 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  responseType:(MASRequestResponseType)responseType
      isPublic:(BOOL)isPublic
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
+
+
+
++ (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseInfoErrorBlock)completion;
 
 
 ///--------------------------------------
