@@ -8,13 +8,13 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <Foundation/Foundation.h>
-
 #import "MASClaims.h"
+
+@class MASRequest;
 
 /**
  MASRequestBuilder class is an object that allows developers to progressively build a request as needed.
- The class is mainly responsible for receive parameters and create a MASRequest object.
+ The class is mainly responsible to receive parameters and create a MASRequest object.
  
  Default configuration value for designated initializer, [[MASRequestBuilder alloc] initWithHTTPMethod:], would be:
  isPublic: NO,
@@ -22,9 +22,8 @@
  requestType:MASRequestResponseTypeJson, 
  responseType:MASRequestResponseTypeJson.
  */
-@interface MASRequestBuilder : NSObject
+@interface MASRequestBuilder : MASObject
 
-NS_ASSUME_NONNULL_BEGIN
 
 ///--------------------------------------
 /// @name Properties
@@ -36,63 +35,67 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  NSString value of the HTTP Method (GET, POST, PUT, DELETE).
  */
-@property (nonatomic, strong, readonly) NSString *httpMethod;
+@property (nonatomic, strong, readonly) NSString * _Nonnull httpMethod;
+
 
 /**
- BOOL value that determines whether or not the target host is a primary gateway or another gateway/public server.
+ BOOL value that determines whether or not to include credentials of primary gateway in the request.
  */
 @property (assign) BOOL isPublic;
+
 
 /**
  BOOL value that determines whether or not digitally sign the request parameters with JWT signature.
  */
-@property (assign) BOOL sign;
+@property (assign, readonly) BOOL sign;
+
 
 /**
  NSString value of the target endpoint.
  */
 @property (nonatomic, strong, nullable) NSString *endPoint;
 
+
 /**
  MASClaims object containing claims for JWT.
  */
-@property (nonatomic, strong, nullable) MASClaims *claims;
+@property (nonatomic, strong, nullable, readonly) MASClaims *claims;
+
 
 /**
  NSData value of private key.
  */
-@property (nonatomic, strong, nullable) NSData *privateKey;
+@property (nonatomic, strong, nullable, readonly) NSData *privateKey;
+
 
 /**
  NSDictionary of type/value parameters to put into the header of a request.
  */
 @property (nonatomic, strong, nullable) NSDictionary *header;
 
+
 /**
  NSDictionary of type/value parameters to put into the body of a request.
  */
 @property (nonatomic, strong, nullable) NSDictionary *body;
+
 
 /**
  NSDictionary of type/value parameters to put into the URL of a request.
  */
 @property (nonatomic, strong, nullable) NSDictionary *query;
 
+
 /**
  MASRequestResponseType value that specifies what type formatting is required for request body.
  */
 @property (assign) MASRequestResponseType requestType;
 
+
 /**
  MASRequestResponseType value that specifies what type formatting is required for response body.
  */
 @property (assign) MASRequestResponseType responseType;
-
-/**
- MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) property that will
- receive the JSON response object or an NSError object if there is a failure.
- */
-@property (nonatomic, strong, nullable) MASResponseInfoErrorBlock completionBlock;
 
 
 ///--------------------------------------
@@ -109,7 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
  @param method NSString of the HTTP Method (GET, POST, PUT, DELETE)
  @return MASRequestBuilder object
  */
-- (instancetype)initWithHTTPMethod:(NSString *)method NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nonnull)initWithHTTPMethod:(NSString *_Nonnull)method NS_DESIGNATED_INITIALIZER;
+
+
 
 ///--------------------------------------
 /// @name Public
@@ -119,27 +124,41 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /**
- Set to sign the request with a MASClaims object using custom private key in NSData format.
+ Create a MASRequest object using the parameters from MASRequestBuider
  
- @param privateKey Custom private key in NSData format signed using RS256 algorithm.
+ @return MASRequest object
  */
-- (id)build;
+- (MASRequest *_Nullable)build;
+
+
+
+/**
+ Set to sign the body of request using default private key from device registration against primary gateway.
+ 
+ @param error NSERror error reference object that returns any error occurred during JWT signature.
+ */
+- (void)setSignWithError:(NSError *__nullable __autoreleasing *__nullable)error;
+
 
 
 /**
  Set to sign the request with a MASClaims object using default private key from device registration against primary gateway.
  
  @param claims MASClaims object containing claims for JWT
+ @param error NSERror error reference object that returns any error occurred during JWT signature.
  */
-- (void)setSignWithClaims:(MASClaims *)claims;
+- (void)setSignWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error;
+
 
 
 /**
  Set to sign the request with a MASClaims object using custom private key in NSData format.
  
  @param privateKey Custom private key in NSData format signed using RS256 algorithm.
+ @param error NSERror error reference object that returns any error occurred during JWT signature.
  */
-- (void)setSignWithClaims:(MASClaims *)claims privateKey:(NSData *)privateKey;
+- (void)setSignWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error;
+
 
 
 /**
@@ -148,7 +167,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param key NSString containing name/type of the parameter.
  @param value NSString containing value of the parameter.
  */
-- (void)setHeaderParameter:(NSString *)key value:(NSString *)value;
+- (void)setHeaderParameter:(NSString *_Nonnull)key value:(NSString *_Nonnull)value;
+
 
 
 /**
@@ -157,7 +177,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param key NSString containing name/type of the parameter.
  @param value NSString containing value of the parameter.
  */
-- (void)setBodyParameter:(NSString *)key value:(NSString *)value;
+- (void)setBodyParameter:(NSString *_Nonnull)key value:(NSString *_Nonnull)value;
+
 
 
 /**
@@ -166,9 +187,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param key NSString containing name/type of the parameter.
  @param value NSString containing value of the parameter.
  */
-- (void)setQueryParameter:(NSString *)key value:(NSString *)value;
+- (void)setQueryParameter:(NSString *_Nonnull)key value:(NSString *_Nonnull)value;
 
 
-NS_ASSUME_NONNULL_END
 
 @end

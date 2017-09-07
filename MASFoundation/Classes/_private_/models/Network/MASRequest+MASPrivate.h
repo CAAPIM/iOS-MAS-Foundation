@@ -8,10 +8,7 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import <Foundation/Foundation.h>
-
-#import "MASRequest.h"
-#import "MASRequestBuilder.h"
+#import <MASFoundation/MASFoundation.h>
 
 @interface MASRequest (MASPrivate)
 
@@ -21,6 +18,6 @@
  @param url NSURL of the target domain
  @return MASRequest object
  */
-- (id)initWithBuilder:(MASRequestBuilder *)builder;
+- (instancetype)initWithBuilder:(MASRequestBuilder *)builder;
 
 @end

@@ -14,7 +14,6 @@
 
 @property (nonatomic, readwrite) NSString *endPoint;
 @property (nonatomic, readwrite) NSString *httpMethod;
-@property (nonatomic, readwrite) MASClaims *claims;
 @property (nonatomic, readwrite) NSData *privateKey;
 @property (nonatomic, readwrite) NSDictionary *header;
 @property (nonatomic, readwrite) NSDictionary *body;
@@ -28,39 +27,45 @@
 
 @implementation MASRequest
 
-+ (instancetype)delete:(void (^)(MASRequestBuilder *))block {
+
++ (instancetype)deleteFrom:(void (^)(MASRequestBuilder *builder))block {
 
     MASRequestBuilder *builder = [[MASRequestBuilder alloc] initWithHTTPMethod:@"DELETE"];
     block(builder);
     return [builder build];
 }
 
-+ (instancetype)get:(void (^)(MASRequestBuilder *))block {
+
++ (instancetype)getFrom:(void (^)(MASRequestBuilder *builder))block {
     
     MASRequestBuilder *builder = [[MASRequestBuilder alloc] initWithHTTPMethod:@"GET"];
     block(builder);
     return [builder build];
 }
 
-+ (instancetype)patch:(void (^)(MASRequestBuilder *))block {
+
++ (instancetype)patchTo:(void (^)(MASRequestBuilder *builder))block {
     
     MASRequestBuilder *builder = [[MASRequestBuilder alloc] initWithHTTPMethod:@"PATCH"];
     block(builder);
     return [builder build];
 }
 
-+ (instancetype)post:(void (^)(MASRequestBuilder *))block {
+
++ (instancetype)postTo:(void (^)(MASRequestBuilder *builder))block {
     
     MASRequestBuilder *builder = [[MASRequestBuilder alloc] initWithHTTPMethod:@"POST"];
     block(builder);
     return [builder build];
 }
 
-+ (instancetype)put:(void (^)(MASRequestBuilder *))block {
+
++ (instancetype)putTo:(void (^)(MASRequestBuilder *builder))block {
     
     MASRequestBuilder *builder = [[MASRequestBuilder alloc] initWithHTTPMethod:@"PUT"];
     block(builder);
     return [builder build];
 }
+
 
 @end

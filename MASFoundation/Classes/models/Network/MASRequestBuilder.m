@@ -15,7 +15,9 @@
 @interface MASRequestBuilder ()
 
 @property (nonatomic, strong, readwrite) NSString *httpMethod;
-
+@property (assign, readwrite) BOOL sign;
+@property (nonatomic, strong, readwrite) MASClaims *claims;
+@property (nonatomic, strong, readwrite) NSData *privateKey;
 @end
 
 @implementation MASRequestBuilder
@@ -42,24 +44,69 @@
 
 # pragma mark - Public
 
-- (id)build
+
+- (MASRequest *)build
 {
     return [[MASRequest alloc] initWithBuilder:self];
 }
 
 
-- (void)setSignWithClaims:(MASClaims *)claims
+- (void)setSignWithError:(NSError *__nullable __autoreleasing *__nullable)error
+{
+    self.sign = TRUE;
+    
+    //
+    // create a new MASClaims and set the body content
+    //
+    MASClaims *claims = [MASClaims claims];
+    claims.content = self.body;
+    claims.contentType = @"application/json";
+    self.claims = claims;
+    
+    NSString *jwt = [MAS signWithClaims:claims error:error];
+    
+    //
+    // injects JWT claims into the payload
+    //
+    if (!error)
+    {
+        [self setBody:@{@"jwt":jwt}];
+    }
+    
+}
+
+- (void)setSignWithClaims:(MASClaims *)claims error:(NSError *__nullable __autoreleasing *__nullable)error
 {
     self.sign = TRUE;
     self.claims = claims;
+    
+    NSString *jwt = [MAS signWithClaims:claims error:error];
+    
+    //
+    // injects JWT claims into the payload
+    //
+    if (!error)
+    {
+        [self setBody:@{@"jwt":jwt}];
+    }
 }
 
 
-- (void)setSignWithClaims:(MASClaims *)claims privateKey:(NSData *)privateKey
+- (void)setSignWithClaims:(MASClaims *)claims privateKey:(NSData *)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error
 {
     self.sign = TRUE;
     self.claims = claims;
     self.privateKey = privateKey;
+    
+    NSString *jwt = [MAS signWithClaims:claims privateKey:self.privateKey error:error];
+    
+    //
+    // injects JWT claims into the payload
+    //
+    if (!error)
+    {
+        [self setBody:@{@"jwt":jwt}];
+    }
 }
 
 
@@ -74,6 +121,7 @@
     }
 }
 
+
 - (void)setBodyParameter:(NSString *)key value:(NSString *)value
 {
     if(self.body)
@@ -84,6 +132,7 @@
         self.body = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
     }
 }
+
 
 - (void)setQueryParameter:(NSString *)key value:(NSString *)value
 {
