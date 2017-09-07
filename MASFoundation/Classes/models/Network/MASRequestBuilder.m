@@ -68,7 +68,7 @@
     //
     // injects JWT claims into the payload
     //
-    if (!error)
+    if (!*error)
     {
         [self setBody:@{@"jwt":jwt}];
     }
@@ -85,7 +85,7 @@
     //
     // injects JWT claims into the payload
     //
-    if (!error)
+    if (!*error)
     {
         [self setBody:@{@"jwt":jwt}];
     }
@@ -103,7 +103,7 @@
     //
     // injects JWT claims into the payload
     //
-    if (!error)
+    if (!*error)
     {
         [self setBody:@{@"jwt":jwt}];
     }

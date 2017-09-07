@@ -135,7 +135,7 @@
 /**
  Set to sign the body of request using default private key from device registration against primary gateway.
  
- @param error NSERror error reference object that returns any error occurred during JWT signature.
+ @param error NSError error reference object that returns any error occurred during JWT signature.
  */
 - (void)setSignWithError:(NSError *__nullable __autoreleasing *__nullable)error;
 
@@ -145,7 +145,7 @@
  Set to sign the request with a MASClaims object using default private key from device registration against primary gateway.
  
  @param claims MASClaims object containing claims for JWT
- @param error NSERror error reference object that returns any error occurred during JWT signature.
+ @param error NSError error reference object that returns any error occurred during JWT signature.
  */
 - (void)setSignWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error;
 
@@ -155,7 +155,7 @@
  Set to sign the request with a MASClaims object using custom private key in NSData format.
  
  @param privateKey Custom private key in NSData format signed using RS256 algorithm.
- @param error NSERror error reference object that returns any error occurred during JWT signature.
+ @param error NSError error reference object that returns any error occurred during JWT signature.
  */
 - (void)setSignWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error;
 
