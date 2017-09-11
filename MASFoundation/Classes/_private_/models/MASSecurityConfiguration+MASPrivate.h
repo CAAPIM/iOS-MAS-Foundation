@@ -36,4 +36,13 @@
  */
 - (NSArray *)extractPublicKeyRefFromCertificateRefs:(NSArray *)certificateRef;
 
+
+
+/**
+ BOOL value that determines whether or not to validate entire certificate chain of the server trust.  If validateCertiicateChain is set to YES, ensure to include ALL certificate information, and/or public key hash information from the root to the leaf.
+ 
+ @warning If validateCertificateChain is set to YES, ALL of certificates and/or public key hashes in the chain MUST be added.
+ */
+- (BOOL)validateCertificateChain;
+
 @end

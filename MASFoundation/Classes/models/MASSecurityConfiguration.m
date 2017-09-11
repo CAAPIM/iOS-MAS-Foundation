@@ -19,6 +19,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
 @interface MASSecurityConfiguration ()
 
 @property (nonatomic, strong, readwrite) NSURL *host;
+@property (assign) BOOL validateCertificateChain;
 
 @end
 
@@ -112,7 +113,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
 
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"(%@) for %@\n\nisPublic: %@\nvalidateCertificateChain: %@\nvalidateDomainName: %@\ntrustPublicPKI: %@\ncertificates: %@\npublicKeyHashes: %@\n", [self class], [[self host] absoluteString], self.isPublic ? @"YES":@"NO", self.validateCertificateChain ? @"YES":@"NO", self.validateDomainName ? @"YES":@"NO", self.trustPublicPKI ? @"YES":@"NO", self.certificates, self.publicKeyHashes];
+    return [NSString stringWithFormat:@"(%@) for %@\n\nisPublic: %@\nvalidateDomainName: %@\ntrustPublicPKI: %@\ncertificates: %@\npublicKeyHashes: %@\n", [self class], [[self host] absoluteString], self.isPublic ? @"YES":@"NO", self.validateDomainName ? @"YES":@"NO", self.trustPublicPKI ? @"YES":@"NO", self.certificates, self.publicKeyHashes];
 }
 
 @end
