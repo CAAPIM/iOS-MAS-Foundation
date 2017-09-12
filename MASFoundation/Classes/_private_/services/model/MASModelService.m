@@ -837,6 +837,16 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                 //
                 [blockSelf registerDeviceWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                     
+                    if (error)
+                    {
+                        if (blockAuthCompletion)
+                        {
+                            blockAuthCompletion(NO, error);
+                        }
+                        
+                        return;
+                    }
+                    
                     if (blockAuthCredentials.isReuseable)
                     {
                         [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
@@ -873,16 +883,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                         //  Clear credentials after first attempt if it is not reuseable
                         //
                         [blockAuthCredentials clearCredentials];
-                        
-                        if (error)
-                        {
-                            if (blockAuthCompletion)
-                            {
-                                blockAuthCompletion(NO, error);
-                            }
-                            
-                            return;
-                        }
                         
                         if (blockCompletion)
                         {
