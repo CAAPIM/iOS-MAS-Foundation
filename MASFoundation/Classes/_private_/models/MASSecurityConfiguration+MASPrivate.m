@@ -102,4 +102,10 @@
     return [keysAsRef count] > 0 ? keysAsRef : nil;
 }
 
+
+- (BOOL)validateCertificateChain
+{
+    return NO;
+}
+
 @end
