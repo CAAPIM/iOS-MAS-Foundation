@@ -24,7 +24,7 @@
 //  DEALINGS IN THE SOFTWARE.
 //
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
 // NOTE: No CommonCrypto types may be used in this file. Swift can't handle them.
