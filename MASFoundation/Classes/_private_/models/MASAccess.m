@@ -67,6 +67,7 @@
     NSString *idTokenType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdTokenType];
     NSNumber *expiresIn = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeExpiresIn];
     NSString *scopeAsString = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeScope];
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
     
     NSMutableDictionary *accessDictionary = [NSMutableDictionary dictionary];
     
@@ -105,6 +106,11 @@
         [accessDictionary setObject:scopeAsString forKey:MASScopeRequestResponseKey];
     }
     
+    if (authCredentialsType)
+    {
+        [accessDictionary setObject:authCredentialsType forKey:MASGrantTypeRequestResponseKey];
+    }
+    
     MASAccess *access = [[MASAccess alloc] initWithInfo:accessDictionary];
     
     return access;
@@ -129,9 +135,10 @@
 - (NSString *)debugDescription
 {
     
-    return [NSString stringWithFormat:@"\n\n(%@) \n accessToken : %@ \n tokenType : %@ \n refreshToken : %@ \n idToken : %@ \n idTokenType : %@ \n expiredIn : %@ \n scopes : %@ \n scopeAsInString : %@\n"
+    return [NSString stringWithFormat:@"\n\n(%@) \n accessToken : %@ \n tokenType : %@ \n refreshToken : %@ \n idToken : %@ \n idTokenType : %@ \n expiredIn : %@ \n scopes : %@ \n scopeAsInString : %@\n authCredentialsType : %@\n"
             "\n\n*********************\n\n",
-            [self class], self.accessToken, self.tokenType, self.refreshToken, self.idToken, self.idTokenType, self.expiresIn, self.scope, self.scopeAsString];
+            [self class], self.accessToken, self.tokenType, self.refreshToken, self.idToken, self.idTokenType, self.expiresIn, self.scope, self.scopeAsString,
+            self.authCredentialsType];
 }
 
 
@@ -149,6 +156,7 @@
     [[MASAccessService sharedService] setAccessValueString:self.idTokenType withAccessValueType:MASAccessValueTypeIdTokenType];
     [[MASAccessService sharedService] setAccessValueNumber:self.expiresIn withAccessValueType:MASAccessValueTypeExpiresIn];
     [[MASAccessService sharedService] setAccessValueString:self.scopeAsString withAccessValueType:MASAccessValueTypeScope];
+    [[MASAccessService sharedService] setAccessValueString:self.authCredentialsType withAccessValueType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
 }
 
 
@@ -252,6 +260,15 @@
     }
     
     //
+    // authCredentialsType
+    //
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    if (authCredentialsType)
+    {
+        _authCredentialsType = authCredentialsType;
+    }
+    
+    //
     // save access information to keychain
     //
     [self saveToStorage];
@@ -260,7 +277,6 @@
 
 - (void)refresh
 {
-    
     _accessToken = nil;
     _accessToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAccessToken];
     
@@ -282,6 +298,9 @@
     _scope = nil;
     _scopeAsString = nil;
     _scopeAsString = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeScope];
+    
+    _authCredentialsType = nil;
+    _authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
 }
 
 

@@ -11,6 +11,7 @@
 #import "MASService.h"
 
 #import "MASConstantsPrivate.h"
+#import "MASAuthValidationOperation.h"
 
 
 @interface MASNetworkingService : MASService
@@ -24,6 +25,14 @@
 # pragma mark - Properties
 
 @property (nonatomic, assign, readonly) MASGatewayMonitoringStatus monitoringStatus;
+
+
+/**
+ Constructs, if not exist, the shared operation that validates current session's registration and authentication status
+
+ @return MASAuthValidationOperation object
+ */
+- (MASAuthValidationOperation *)sharedOperation;
 
 
 /**
@@ -63,6 +72,12 @@
 ///--------------------------------------
 
 # pragma mark - Public
+
+/**
+ Release operation queue for API requests, if the queue was suspended.
+ */
+- (void)releaseOperationQueue;
+
 
 /**
  *  Establish URLSession with given URL and SessionConfiguration to trigger URL authentication challenge with stored certificate

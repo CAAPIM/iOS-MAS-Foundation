@@ -158,8 +158,7 @@ typedef NS_ENUM(NSInteger, MASRegistryState)
  *   provider code response.
  * @returns Return YES if handled, NO if not.
  */
-- (BOOL)uiServiceWillHandleBasicAuthentication:(MASBasicCredentialsBlock)basicBlock
-    authorizationCodeBlock:(MASAuthorizationCodeCredentialsBlock)authorizationCodeBlock;
+- (BOOL)uiServiceWillHandleWithAuthCredentialsBlock:(MASAuthCredentialsBlock)authCredentialBlock;
 
 
 

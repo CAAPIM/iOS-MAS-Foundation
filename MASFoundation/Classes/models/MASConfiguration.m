@@ -380,6 +380,30 @@ static float _systemVersionNumber_;
 }
 
 
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration
+{
+    [MASConfigurationService setSecurityConfiguration:securityConfiguration];
+}
+
+
++ (void)removeSecurityConfigurationForDomain:(NSURL *)domain
+{
+    [MASConfigurationService removeSecurityConfigurationForDomain:domain];
+}
+
+
++ (NSArray *)securityConfigurations
+{
+    return [MASConfigurationService securityConfigurations];
+}
+
+
++ (MASSecurityConfiguration *)securityConfigurationForDomain:(NSURL *)domain
+{
+    return [MASConfigurationService securityConfigurationForDomain:domain];
+}
+
+
 # pragma mark - Properties
 
 #pragma clang diagnostic push

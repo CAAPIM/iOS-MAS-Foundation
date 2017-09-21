@@ -225,7 +225,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             withParameters:parameterInfo
             andHeaders:headerInfo
             requestType:MASRequestResponseTypeJson
-            responseType:MASRequestResponseTypeJson
+            responseType:MASRequestResponseTypeTextPlain
             completion:^(NSDictionary *responseInfo, NSError *error)
             {
                 //

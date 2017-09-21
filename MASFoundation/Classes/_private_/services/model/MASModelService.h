@@ -65,14 +65,21 @@
 
 
 /**
- *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
+ *  Set a user auth credentials block to handle the case where SDK's grant flow is set to MASGrantFlowPassword, or SDK recognizes that
+ *  any type of MASAuthCredentials is required.
  *
- *  @param registration The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
+ *  @param authCredentialsBlock MASUserAuthCredentialsBlock that contains callback for developers to invoke with MASAuthCredentials.
  */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login;
++ (void)setAuthCredentialsBlock:(MASUserAuthCredentialsBlock)authCredentialsBlock;
 
+
+
+/**
+ *  Set MASUser object to [MASUser currentUser] after re-authentication, or log-out of current user
+ *
+ *  @param user current MASUser object
+ */
+- (void)setUserObject:(MASUser *)user;
 
 
 ///--------------------------------------
@@ -142,24 +149,6 @@
 
 
 /**
- *  Register the device with grantFlowClientCredentials
- *
- *  @param completion MASCompletionErrorBlock that receives the results.
- */
-- (void)registerDeviceForClientCredentialsCompletion:(MASCompletionErrorBlock)completion;
-
-
-/**
- *  Register the device with grantFlowPassword with given username and password
- *
- *  @param userName   NSString of username.
- *  @param password   NSString of password.
- *  @param completion MASCompletionErrorBlock that receives the results.
- */
-- (void)registerDeviceForUser:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion;
-
-
-/**
  *  Renew signed client certificate.
  *
  *  @param completion MASCompletionErrorBlock that receives the results.
@@ -193,44 +182,6 @@
 
 # pragma mark - Login & Logout
 
-/**
- *  Login user with defined MASDeviceRegistrationType.
- *
- *  There are two type of device registration supported
- *
- *      MASDeviceRegistrationTypeClientCredentials
- *      MASDeviceRegistrationTypeUserCredentials
- *
- *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that
- *  receives the results.
- */
-- (void)loginWithCompletion:(MASCompletionErrorBlock)completion;
-
-
-/**
- *  Login anonymously with client credentials.
- *
- *  This means that upon a successful authentication completion the access credentials will have
- *  very limited access scope as defined by the Gateway administrator and custom endpoints.
- *
- *  @param completion The completion block that receives the results.
- */
-- (void)loginAnonymouslyWithCompletion:(MASCompletionErrorBlock)completion;
-
-
-/**
- *  Login a specific user with basic credentials.
- *
- *  This means that upon a successful authentication completion the access credentials will have
- *  scope access as defined for that user by the Gateway administrator and access to custom 
- *  endpoints which allow that scope.
- *
- *  @param userName The userName of the user.
- *  @param password The password of the user.
- *  @param completion The completion block that receives the results.
- */
-- (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion;
-
 
 /**
  *  Re-login a specifc user with the refresh token.
@@ -238,15 +189,6 @@
  *  @param completion The completion block that receives the results.
  */
 - (void)loginAsRefreshTokenWithCompletion:(MASCompletionErrorBlock)completion;
-
-
-/**
- *  Re-login a specific user with the id_token
- *
- *  @param ignoreFallback BOOL property that specifies whether to ignore fallback to user authenticated session validation or not
- *  @param completion     The completion block that receives the results.
- */
-- (void)loginAsIdTokenIgnoreFallback:(BOOL)ignoreFallback completion:(MASCompletionErrorBlock)completion;
 
 
 /**
@@ -278,18 +220,6 @@
 # pragma mark - Authentication Validation
 
 /**
- *  Validate the current user's authentication session information.
- *  This method will go through the validation process of application registration, device registration and user authentication.
- *  For device registration, the method will register the device with specified MASGrantFlow.
- *
- *  @param username           NSString of username.
- *  @param password           NSString of password.
- *  @param originalCompletion completion The completion block that receives the results.
- */
-- (void)validateCurrentUserAuthenticationWithUsername:(NSString *)username password:(NSString *)password completion:(MASCompletionErrorBlock)originalCompletion;
-
-
-/**
  *  Validate the current user's session information
  *
  *  This method will go through access_token validation, refresh_token validation (for user credential session), and id_token validation
@@ -299,24 +229,28 @@
 - (void)validateCurrentUserSession:(MASCompletionErrorBlock)completion;
 
 
-/**
- Validate the current user's session information with authorization code.
- 
- Note: if the authorization code was consumed for device registration, the validation process will fall back to currently set flow.  In this case, the authorization code will not be guranteed to proceed authentication as well which may result in presenting login view controller once again for authentication.
-
- @param authorizationCode NSString of authorization code
- @param completion        MASCompletionErrorBlock to notify original caller for the result of the validation process.
- */
-- (void)validateCurrentUserAuthenticationWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion;
-
+# pragma mark - Authentication flow with MASAuthCredentials
 
 /**
- Validate the current user's session information with id_token.
- 
- @param idToken           NSString of id_token
- @param tokenType         NSString of token type for id_token
- @param completion        MASCompletionErrorBlock to notify original caller for the result of the validation process.
+ *  Validate the current user's session information with given MASAuthCredentials object.
+ *
+ *  This method will go through access_token, refresh_token, and id_token (optional) validation
+ *
+ *  @param authCredentials  MASAuthCredentials object that contains auth credentials that can be used for session validation.
+ *  @param completion       MASCompletionErrorBlock block that notifies original caller for the result of validation.
  */
-- (void)validateCurrentUserAuthenticationWithIdToken:(NSString *)idToken tokenType:(NSString *)tokenType completion:(MASCompletionErrorBlock)completion;
+- (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion;
+
+
+# pragma mark - Deprecated as of MAS 1.5
+
+/**
+ *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
+ *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
+ *  is not called.
+ *
+ *  @param registration The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
+ */
++ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login DEPRECATED_MSG_ATTRIBUTE("[MASModelService setUserLoginBlock:] is deprecated as of MAS 1.5. Use [MASModelService setAuthCredentials:] instead.");
 
 @end

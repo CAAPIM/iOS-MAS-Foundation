@@ -29,10 +29,12 @@ NSString * const MAG_SERVER_CERTIFICATES= @"mag_server_certificates";
 
 //Arrays for the subscription and unsubscription
 @property (nonatomic,strong) NSMutableDictionary *subscriptionHandlers;
+@property (nonatomic,strong) NSMutableDictionary *subscriptionBlocks;
 @property (nonatomic,strong) NSMutableDictionary *unsubscriptionHandlers;
 
 // Dictionary of mid -> completion handlers for messages published with a QoS of 1 or 2
 @property (nonatomic,strong) NSMutableDictionary *publishHandlers;
+@property (nonatomic,strong) NSMutableDictionary *publishBlocks;
 
 // Dispatch queue to run the mosquitto_loop_forever.
 @property (nonatomic,strong) dispatch_queue_t queue;
@@ -86,6 +88,9 @@ static MASMQTTClient *_sharedClient = nil;
             
             if ([MASUser currentUser].isAuthenticated && [MASDevice currentDevice].isRegistered) {
 
+                //
+                // Init MQTT client for current gateway
+                //
                 _sharedClient = [[MASMQTTClient alloc] initWithClientId:[MASMQTTHelper mqttClientId] cleanSession:NO];
             }
             else {
@@ -106,33 +111,6 @@ static MASMQTTClient *_sharedClient = nil;
     mosquitto_lib_init();
 }
 
-
-//- (MASMQTTClient *)init
-//{
-////    if (!self.clientID) {
-////        
-////        self.clientID = [Helper mqttClientId];
-////    }
-//    self.clientID = [UIDevice currentDevice].identifierForVendor.UUIDString;
-//    
-//    return [self initWithClientId:self.clientID cleanSession:NO];
-//}
-
-
-//- (MASMQTTClient *)initWithCleanSession:(BOOL)cleanSession
-//{
-//    NSParameterAssert(!cleanSession || cleanSession == YES);
-//    
-////    if (!self.clientID) {
-////        
-////        self.clientID = [Helper mqttClientId];
-////    }
-//    self.clientID = [UIDevice currentDevice].identifierForVendor.UUIDString;
-//    
-//    return [self initWithClientId:self.clientID cleanSession:cleanSession];
-//}
-
-
 - (MASMQTTClient *)initWithClientId:(NSString *)clientId cleanSession:(BOOL)cleanSession
 {
     NSParameterAssert(clientId);
@@ -147,8 +125,10 @@ static MASMQTTClient *_sharedClient = nil;
         self.reconnectExponentialBackoff = NO;
         
         self.subscriptionHandlers = [[NSMutableDictionary alloc] init];
+        self.subscriptionBlocks = [[NSMutableDictionary alloc] init];
         self.unsubscriptionHandlers = [[NSMutableDictionary alloc] init];
         self.publishHandlers = [[NSMutableDictionary alloc] init];
+        self.publishBlocks = [[NSMutableDictionary alloc] init];
         self.cleanSession = cleanSession;
         
         const char *cstrClientId = [self.clientID cStringUsingEncoding:NSUTF8StringEncoding];
@@ -303,9 +283,10 @@ static void on_publish(struct mosquitto *mosq, void *obj, int message_id)
     _sharedClient = (__bridge MASMQTTClient *)obj;
     
     NSNumber *mid = [NSNumber numberWithInt:message_id];
-    void (^handler)(int) = [_sharedClient.publishHandlers objectForKey:mid];
-    
-    if (handler) {
+
+    if ([_sharedClient.publishHandlers objectForKey:mid]) {
+        
+        void (^handler)(int) = [_sharedClient.publishHandlers objectForKey:mid];
         
         handler(message_id);
         
@@ -313,6 +294,18 @@ static void on_publish(struct mosquitto *mosq, void *obj, int message_id)
             
             [_sharedClient.publishHandlers removeObjectForKey:mid];
         }
+    }
+    else if ([_sharedClient.publishBlocks objectForKey:mid]) {
+
+        void (^MQTTPublishingCompletionBlock)(BOOL completed, NSError *_Nullable error, int mid) = [_sharedClient.publishBlocks objectForKey:mid];
+        
+        MQTTPublishingCompletionBlock(YES, nil, message_id);
+        
+        if (message_id > 0) {
+            
+            [_sharedClient.publishBlocks removeObjectForKey:mid];
+        }
+
     }
     
     //Delegation callback
@@ -367,9 +360,25 @@ static void on_subscribe(struct mosquitto *mosq, void *obj, int message_id, int 
     _sharedClient = (__bridge MASMQTTClient *)obj;
     
     NSNumber *mid = [NSNumber numberWithInt:message_id];
-    MQTTSubscriptionCompletionHandler handler = [_sharedClient.subscriptionHandlers objectForKey:mid];
     
-    if (handler) {
+    if ([_sharedClient.subscriptionHandlers objectForKey:mid]) {
+        
+        MQTTSubscriptionCompletionHandler handler = [_sharedClient.subscriptionHandlers objectForKey:mid];
+        
+        NSMutableArray *grantedQos = [NSMutableArray arrayWithCapacity:qos_count];
+
+        for (int i = 0; i < qos_count; i++) {
+
+            [grantedQos addObject:[NSNumber numberWithInt:granted_qos[i]]];
+        }
+
+        handler(grantedQos);
+
+        [_sharedClient.subscriptionHandlers removeObjectForKey:mid];
+    }
+    else if ([_sharedClient.subscriptionBlocks objectForKey:mid]) {
+        
+        void (^MQTTSubscriptionCompletionBlock)(BOOL completed, NSError *_Nullable error, NSArray *grantedQos) = [_sharedClient.subscriptionBlocks objectForKey:mid];
         
         NSMutableArray *grantedQos = [NSMutableArray arrayWithCapacity:qos_count];
         
@@ -378,9 +387,9 @@ static void on_subscribe(struct mosquitto *mosq, void *obj, int message_id, int 
             [grantedQos addObject:[NSNumber numberWithInt:granted_qos[i]]];
         }
         
-        handler(grantedQos);
+        MQTTSubscriptionCompletionBlock(YES, nil, grantedQos);
         
-        [_sharedClient.subscriptionHandlers removeObjectForKey:mid];
+        [_sharedClient.subscriptionBlocks removeObjectForKey:mid];
     }
 }
 
@@ -532,22 +541,24 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     const char *cstrHost = [self.host cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cstrUsername = NULL, *cstrPassword = NULL;
     
-    if (!self.username || !self.password) {
-        
-        //
-        // Set the username and password for the connection
-        //
+    //
+    // If using gateway, set MAS username and password
+    //
+    if ([self.clientID isEqualToString:[MASMQTTHelper mqttClientId]]) {
         [[MASMQTTClient sharedClient] setUsername:[MASUser currentUser].objectId Password:[MASUser currentUser].accessToken];
     }
     
-    if (self.username)
+    // If provided, pass username and password to mosquitto
+    if (self.username && self.password){
         cstrUsername = [self.username cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    if (self.password)
         cstrPassword = [self.password cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    //Unsed for the moment. Validate after we start using it
-    mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
+        
+        mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
+    }
+
+    //
+    // Establish the connection with MQTT broker
+    //
     mosquitto_reconnect_delay_set(mosq, self.reconnectDelay, self.reconnectDelayMax, self.reconnectExponentialBackoff);
 
     mosquitto_connect(mosq, cstrHost, self.port, self.keepAlive);
@@ -593,6 +604,7 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
 
 #pragma mark - Publish methods
 
+/** DEPRECATED */
 - (void)publishData:(NSData *)payload
             toTopic:(NSString *)topic
             withQos:(MQTTQualityOfService)qos
@@ -629,11 +641,65 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
 }
 
 
+- (void)publishData:(NSData *)payload
+            toTopic:(NSString *)topic
+            withQos:(MQTTQualityOfService)qos
+             retain:(BOOL)retain
+         completion:(MQTTPublishingCompletionBlock)completion
+{
+    NSParameterAssert(payload);
+    NSParameterAssert(topic);
+    NSParameterAssert(qos >= 0);
+    NSParameterAssert(!retain || retain == YES);
+    
+    const char *cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
+    
+    if (qos == 0 && completion) {
+        
+        [self.publishBlocks setObject:completion forKey:[NSNumber numberWithInt:0]];
+    }
+    
+    int mid;
+    int result;
+    
+    result = mosquitto_publish(mosq, &mid, cstrTopic, (int)payload.length, payload.bytes, qos, retain);
+    
+    if (result == 4) {
+        
+        //Build the error message based on the returned int value
+        
+        if (completion) {
+            
+            NSError *error = [NSError errorWithDomain:@"com.ca.MASFoundation.localError:ErrorDomain"
+                                                 code:911001
+                                             userInfo:@{ NSLocalizedDescriptionKey:@"MQTT error. No connection available" }];
+            
+            completion(NO, error, mid);
+        }
+    }
+    else {
+
+        if (completion) {
+            
+            if (qos == 0) {
+                
+                completion(YES, nil, mid);
+            }
+            else {
+                
+                [self.publishBlocks setObject:completion forKey:[NSNumber numberWithInt:mid]];
+            }
+        }
+    }
+}
+
+
+/** DEPRECATED */
 - (void)publishString:(NSString *)payload
               toTopic:(NSString *)topic
               withQos:(MQTTQualityOfService)qos
                retain:(BOOL)retain
-    completionHandler:(void(^)(int mid))completionHandler;
+    completionHandler:(void(^)(int mid))completionHandler
 {
     NSParameterAssert(payload);
     NSParameterAssert(topic);
@@ -647,8 +713,24 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     completionHandler:completionHandler];
 }
 
+    
+- (void)publishString:(NSString *)payload
+              toTopic:(NSString *)topic
+              withQos:(MQTTQualityOfService)qos
+               retain:(BOOL)retain
+           completion:(MQTTPublishingCompletionBlock)completion
+{
+    [self publishData:[payload dataUsingEncoding:NSUTF8StringEncoding]
+              toTopic:topic
+              withQos:qos
+               retain:retain
+           completion:completion];
+ }
+
+
 #pragma mark - Subscribe/Unsubscribe methods
 
+/** DEPRECATED */
 - (void)subscribeToTopic:(NSString *)topic
    withCompletionHandler:(MQTTSubscriptionCompletionHandler)completionHandler
 {
@@ -656,6 +738,14 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
 }
 
 
+- (void)subscribeToTopic:(NSString *)topic
+          withCompletion:(MQTTSubscriptionCompletionBlock)completion
+{
+    [self subscribeToTopic:topic withQos:defaultQoS completion:completion];
+}
+
+
+/** DEPRECATED */
 - (void)subscribeToTopic:(NSString *)topic
                  withQos:(MQTTQualityOfService)qos
        completionHandler:(MQTTSubscriptionCompletionHandler)completionHandler
@@ -667,7 +757,40 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     
     if (completionHandler) {
         
-        [self.subscriptionHandlers setObject:[completionHandler copy] forKey:[NSNumber numberWithInteger:mid]];
+        [self.subscriptionHandlers setObject:[completionHandler copy] forKey:[NSNumber numberWithInt:mid]];
+    }
+}
+
+
+- (void)subscribeToTopic:(NSString *)topic
+                 withQos:(MQTTQualityOfService)qos
+              completion:(MQTTSubscriptionCompletionBlock)completion
+{
+    const char *cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
+    int mid;
+    int result;
+    
+    result = mosquitto_subscribe(mosq, &mid, cstrTopic, qos);
+    
+    if (result == 4) {
+
+        //Build the error message based on the returned int value
+        
+        if (completion) {
+            
+            NSError *error = [NSError errorWithDomain:@"com.ca.MASFoundation.localError:ErrorDomain"
+                                                 code:911001
+                                             userInfo:@{ NSLocalizedDescriptionKey:@"MQTT error. No connection available" }];
+            
+            completion(NO, error, @[[NSNumber numberWithInt:mid]]);
+        }
+    }
+    else {
+
+        if (completion) {
+            
+            [self.subscriptionBlocks setObject:[completion copy] forKey:[NSNumber numberWithInt:mid]];
+        }
     }
 }
 
@@ -678,6 +801,7 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     const char *cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
     int mid;
     int result;
+    
     result = mosquitto_unsubscribe(mosq, &mid, cstrTopic);
     
     if (result == 4) {
@@ -696,7 +820,7 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     else {
         if (completionHandler) {
             
-            [self.unsubscriptionHandlers setObject:[completionHandler copy] forKey:[NSNumber numberWithInteger:mid]];
+            [self.unsubscriptionHandlers setObject:[completionHandler copy] forKey:[NSNumber numberWithInt:mid]];
         }
     }
 }

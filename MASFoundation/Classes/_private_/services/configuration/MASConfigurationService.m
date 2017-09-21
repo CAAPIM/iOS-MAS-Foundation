@@ -18,6 +18,7 @@ static NSString *_configurationFileName_ = @"msso_config";
 static NSString *_configurationFileType_ = @"json";
 static NSDictionary *_newConfigurationObject_ = nil;
 static BOOL _newConfigurationDetected_ = NO;
+static NSMutableDictionary *_securityConfigurations_;
 
 
 # pragma mark - Properties
@@ -64,6 +65,42 @@ static BOOL _newConfigurationDetected_ = NO;
     }
     
     return info;
+}
+
+
+# pragma mark - Security Configuration
+
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration
+{
+    if (!_securityConfigurations_)
+    {
+        _securityConfigurations_ = [NSMutableDictionary dictionary];
+    }
+    
+    if ([securityConfiguration.host absoluteString])
+    {
+        [_securityConfigurations_ setObject:securityConfiguration forKey:[securityConfiguration.host absoluteString]];
+    }
+}
+
+
++ (void)removeSecurityConfigurationForDomain:(NSURL *)domain
+{
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", domain.scheme, domain.host, domain.port]];
+    [_securityConfigurations_ removeObjectForKey:[thisDomain absoluteString]];
+}
+
+
++ (NSArray *)securityConfigurations
+{
+    return _securityConfigurations_ ? [_securityConfigurations_ allValues] : nil;
+}
+
+
++ (MASSecurityConfiguration *)securityConfigurationForDomain:(NSURL *)domain
+{
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", domain.scheme, domain.host, domain.port]];
+    return thisDomain ? [_securityConfigurations_ objectForKey:[thisDomain absoluteString]] : nil;
 }
 
 
@@ -226,6 +263,17 @@ static BOOL _newConfigurationDetected_ = NO;
         }
     }
     
+    //
+    //  Construct and set MASSecurityConfiguration for the primary gateway
+    //
+    NSURL *currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayHostName, _currentConfiguration.gatewayPort]];
+    MASSecurityConfiguration *defaultSecurityConfiguration = [[MASSecurityConfiguration alloc] initWithURL:currentURL];
+    defaultSecurityConfiguration.trustPublicPKI = _currentConfiguration.enabledTrustedPublicPKI;
+    defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublickKeyHashes;
+    defaultSecurityConfiguration.certificates = _currentConfiguration.gatewayCertificates;
+    
+    [MASConfiguration setSecurityConfiguration:defaultSecurityConfiguration];
+    
     //DLog(@"\n\ndone and current configuration is:\n\n%@\n\n", [_currentConfiguration debugDescription]);
     
     [super serviceWillStart];
@@ -248,6 +296,15 @@ static BOOL _newConfigurationDetected_ = NO;
 
 - (void)serviceDidStop
 {
+    //
+    //  Remove the security configuration upon SDK termination
+    //
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayUrl.host, _currentConfiguration.gatewayUrl.port]];
+    MASSecurityConfiguration *securityConfiguration = [MASConfigurationService securityConfigurationForDomain:thisDomain];
+    if (thisDomain && securityConfiguration)
+    {
+        [_securityConfigurations_ removeObjectForKey:[thisDomain absoluteString]];
+    }
     
     if (_newConfigurationObject_)
     {

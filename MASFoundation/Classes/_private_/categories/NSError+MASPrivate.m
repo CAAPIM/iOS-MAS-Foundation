@@ -130,6 +130,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     MASUrlErrorCodeNetworkUnacceptableContentType = -1016,
     MASUrlErrorCodeNetworkUnacceptableContentType2 = -1011,
     MASUrlErrorCodeSSLConnectionCannotBeMade = -1200,
+    MASUrlErrorCodeSSLAuthenticationChallengeFailure = -999,
     
     MASUrlErrorCodeResponseSerializeFailedToParseResponse = 3840,
 
@@ -559,6 +560,31 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorStringFormatWithDescription:(NSString *)description code:(MASFoundationErrorCode)code
+{
+    //
+    // UserInfo
+    //
+    NSMutableDictionary *userInfo = [NSMutableDictionary new];
+    
+    //
+    // Description
+    //
+    NSString *format = [self descriptionForFoundationErrorCode:code];
+    NSString *localDescription = [NSString stringWithFormat:format, description];
+    
+    userInfo[NSLocalizedDescriptionKey] = localDescription;
+    
+    return [self errorForFoundationCode:code info:userInfo errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorDeviceCanNotRegisterWithGivenAuthCredentials
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorDeviceAlreadyRegistered
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeDeviceAlreadyRegistered errorDomain:MASFoundationErrorDomainLocal];
@@ -899,7 +925,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASUrlErrorCodeNetworkIsOffline: return MASFoundationErrorCodeNetworkIsOffline;
         case MASUrlErrorCodeNetworkUnacceptableContentType: return MASFoundationErrorCodeNetworkUnacceptableContentType;
         case MASUrlErrorCodeSSLConnectionCannotBeMade: return MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade;
-        
+        case MASUrlErrorCodeSSLAuthenticationChallengeFailure: return MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure;
         //
         // Response serialization
         //
@@ -971,7 +997,8 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope: return @"Attempted to register the device with a Scope that isn't registered in the application record on the Gateway";
         case MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters: return @"The device registration does not have the required parameters";
         case MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication: return @"The device does not support or have valid local authnetication method";
-        
+        case MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration: return @"Device registration is not supported with given MASAuthCredentials object.";
+            
         //
         // Flow
         //
@@ -999,6 +1026,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeNetworkNotStarted: return @"The network is not started";
         case MASFoundationErrorCodeNetworkNotReachable: return @"The network host is not currently reachable";
         case MASFoundationErrorCodeNetworkRequestTimedOut: return @"The network request has timed out";
+        case MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure: return @"SSL pinning validation failed: ensure the target domain’s MASSecurityConfiguration is correctly configured.";
         
         case MASFoundationErrorCodeResponseSerializationFailedToParseResponse: return @"Invalid response format - failed to parse response";
         
@@ -1067,6 +1095,13 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code proximity login authentication failed with specific information on userInfo.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for proximity login.";
         case MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL: return @"Invalid authorization url.";
+          
+        //
+        // JWT
+        //
+        case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
+        case MASFoundationErrorCodeJWTUnexpectedClassType: return @"Mis-match of reserved JWT claim value's type (%@)";
+        case MASFoundationErrorCodeJWTSerializationError: return @"Claim value (%@) cannot be serialized";
             
         //
         // Default

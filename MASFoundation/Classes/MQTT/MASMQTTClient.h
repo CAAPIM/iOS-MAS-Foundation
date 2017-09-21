@@ -77,6 +77,20 @@ typedef void (^MQTTCompletionErrorBlock)(BOOL completed, NSError *_Nullable erro
 
 
 /**
+ * MQTTSubscriptionCompletionBlock
+ */
+typedef void (^MQTTSubscriptionCompletionBlock)(BOOL completed, NSError *_Nullable error, NSArray *grantedQos);
+
+
+
+/**
+ * MQTTPublishingCompletionBlock
+ */
+typedef void (^MQTTPublishingCompletionBlock)(BOOL completed, NSError *_Nullable error, int mid);
+
+
+
+/**
  *  MQTTMessageHandler
  *
  *  @param message The MASMQTTMessage object
@@ -303,7 +317,24 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
               toTopic:(NSString *)topic
               withQos:(MQTTQualityOfService)qos
                retain:(BOOL)retain
-    completionHandler:(void(^)(int mid))completionHandler;
+    completionHandler:(void(^)(int mid))completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new publishString:toTopic:withQoS:retain:completion method instead.");
+
+
+    
+/**
+ *  Used to Publish a message on a given topic
+ *
+ *  @param payload           The Payload to be sent
+ *  @param topic             The Topic to be sent
+ *  @param qos               The Quality of Service to be used
+ *  @param retain            Set to true to make the message retained
+ *  @param completion        The completion code block
+ */
+- (void)publishString:(NSString *)payload
+              toTopic:(NSString *)topic
+              withQos:(MQTTQualityOfService)qos
+               retain:(BOOL)retain
+           completion:(MQTTPublishingCompletionBlock _Nullable)completion;
 
 
 #pragma mark - Subscribe methods
@@ -315,10 +346,21 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  *  @param completionHandler The completionHandler code block
  */
 - (void)subscribeToTopic:(NSString *)topic
-   withCompletionHandler:(MQTTSubscriptionCompletionHandler)completionHandler;
+   withCompletionHandler:(MQTTSubscriptionCompletionHandler)completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new subscribeToTopic:withCompletion method instead.");
 
 
 
+/**
+ *  Used to Subscribe to a topic using QoS = 0. Use subscribeToTopicWithQos method to set a different QoS level
+ *
+ *  @param topic             The Topic to be subscribed
+ *  @param completion        The completion code block
+ */
+- (void)subscribeToTopic:(NSString *)topic
+          withCompletion:(MQTTSubscriptionCompletionBlock _Nullable)completion;
+
+    
+    
 /**
  *  Used to Subscribe to a topic using a specific Quality of Service
  *
@@ -328,7 +370,20 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  */
 - (void)subscribeToTopic:(NSString *)topic
                  withQos:(MQTTQualityOfService)qos
-       completionHandler:(MQTTSubscriptionCompletionHandler)completionHandler;
+       completionHandler:(MQTTSubscriptionCompletionHandler)completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new subscribeToTopic:withQos:completion method instead.");
+
+    
+    
+/**
+ *  Used to Subscribe to a topic using a specific Quality of Service
+ *
+ *  @param topic             The Topic to be subscribed to
+ *  @param qos               The Quality of Service to be used
+ *  @param completionHandler The completionHandler code block
+ */
+- (void)subscribeToTopic:(NSString *)topic
+                 withQos:(MQTTQualityOfService)qos
+              completion:(MQTTSubscriptionCompletionBlock _Nullable)completion;
 
 
 
@@ -341,7 +396,7 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  *  @param completionHandler The completionHandler code block
  */
 - (void)unsubscribeFromTopic:(NSString *)topic
-       withCompletionHandler:(MQTTCompletionErrorBlock)completionHandler;
+       withCompletionHandler:(MQTTCompletionErrorBlock _Nullable)completionHandler;
 
 @end
 

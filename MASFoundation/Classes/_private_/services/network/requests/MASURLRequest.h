@@ -16,7 +16,20 @@
 /**
  * The MAS specific base class which all of it's version's of NSURLRequest extend.
  */
-@interface MASURLRequest : NSURLRequest
+@interface MASURLRequest : NSMutableURLRequest
+
+///--------------------------------------
+/// @name Property
+///--------------------------------------
+
+# pragma mark - Property
+
+@property (assign) BOOL isPublic;
+@property (assign) MASRequestResponseType requestType;
+@property (assign) MASRequestResponseType responseType;
+@property (nonatomic, strong) NSString *endPoint;
+@property (nonatomic, strong) NSDictionary *parameterInfo;
+@property (nonatomic, strong) NSDictionary *headerInfo;
 
 
 ///--------------------------------------
@@ -24,6 +37,8 @@
 ///--------------------------------------
 
 # pragma mark - Public
+
+- (MASURLRequest *)rebuildRequest;
 
 /**
  * Format the incoming parameter info dictionary specified by the request type and turn it into

@@ -1,3 +1,28 @@
+# Version 1.5.00
+
+NOTE: From this version on the frameworks changed to Dynamic instead of Static library
+
+### Bug fixes
+- In the implicit authentication flow, errors are now only reported once during the authentication flow or actual result of the endpoint. Previously, the original request was notified for every error that happened during the authentication flow. [DE311261]
+- Logout and login notifications now broadcast correctly. Previously, notifications were not sent at the correct time, and the SDK also represented incorrect status for these activities. [DE310488]
+- BLE authentication now restarts when authorization is denied. Previously, BLE authentication reported authorization was in progress and did not restart, even after the device denied authorization. [DE310490]
+- The SDK now generates the correct URL for external API requests (non Gateway request), when the Gateway has an instance modifier. [DE310249]
+- `MASMQTTClient` now connects to a public broker without requiring the username, and password. Previously, `MASMQTTClient` was forcing all brokers to provide user credentials. [DE306921]
+- The SDK now properly validates the request response type as defined. Previously, the SDK accepted mismatch content-type for the 200 response as a valid response. [US349551]
+- The SDK no longer requires Keychain Sharing to be enabled in Xcode. However, to establish SSO across multiple applications, Keychain Sharing must be enabled. [US320771]
+- Mobile SDK now only validates against the leaf certificate for SSL pinning validation by default. The configuration can be changed to validate against entire certificate chain through `MASSecurityConfiguration`. [US374086]
+
+### New Features
+- Mobile SDK introduces an ability to configure security configuration for external APIs (such as SSL pinning), so that Mobile SDK can securely connect to external API (other than primary Gateway). [US344780]
+- The SDK handles multiple concurrent API requests with proper authentication processes. [US362800]
+- The SDK supports dynamic framework. All you need to do is update your Xcode settings. [US367604]
+- The SDK introduces more flexible and extensible authentication with different types of credentials. For details, see `MASAuthCredentials`. [US349497]
+- The SDK introduces the ability to digitally sign the request as JWT. See `MASClaims` to sign the request. [US313137]
+
+### Deprecated Methods
+- `[MAS setUserLoginBlock:]` is deprecated.  Please use `[MAS setAuthCredentials:]` block to perform implicit authentication with `MASAuthCredentials` object.
+
+
 # Version 1.4.00
 
 ### Bug fixes

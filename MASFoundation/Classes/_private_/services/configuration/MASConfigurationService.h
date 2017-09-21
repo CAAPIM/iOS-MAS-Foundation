@@ -17,6 +17,50 @@
 @interface MASConfigurationService : MASService
 
 
+///--------------------------------------
+/// @name Security Configuration
+///--------------------------------------
+
+# pragma mark - Security Configuration
+
+/**
+ Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object
+ 
+ @warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASSecurityConfiguration object will be overwritten. If primary gateway's security configuration has to be modified, ensure to set security configuration after SDK initialization.
+ @param securityConfiguration MASSecurityConfiguration object with host, and security measure configuration values.
+ */
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration;
+
+
+
+
+/**
+ Removes security configuration object based on the domain.
+
+ @param domain NSURL of the domain to delete security configuration.
+ */
++ (void)removeSecurityConfigurationForDomain:(NSURL *)domain;
+
+
+
+/**
+ Returns an array of MASSecurityConfiguration objects for each host.
+ 
+ @return Returns an array of currently active MASSecurityConfigurations.
+ */
++ (NSArray *)securityConfigurations;
+
+
+
+/**
+ Returns MASSecurityConfiguration object for a specific domain.
+ 
+ @param domain NSURL of the domain for the MASSecurityConfiguration object.
+ @return Returns a MASSecurityConfiguration object for the domain.
+ */
++ (MASSecurityConfiguration *)securityConfigurationForDomain:(NSURL *)domain;
+
+
 
 ///--------------------------------------
 /// @name Properties

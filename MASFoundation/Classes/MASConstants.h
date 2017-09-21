@@ -11,8 +11,8 @@
 @import Foundation;
 
 @class CLLocation;
+@class MASAuthCredentials;
 @class MASUser;
-
 
 
 ///--------------------------------------
@@ -56,21 +56,15 @@ typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nul
 
 
 /**
- * The Basic Credentials (NSString *userName, NSString *password, BOOL cancel) block.
+ *  The MASAuthCredentialsBlcok to provide auth credentials for device registration and/or user authentication.
  */
-typedef void (^MASBasicCredentialsBlock)(NSString *_Nonnull userName, NSString *_Nonnull password, BOOL cancel, MASCompletionErrorBlock _Nullable);
+typedef void (^MASAuthCredentialsBlock)(MASAuthCredentials *_Nullable authCredentials, BOOL cancel, MASCompletionErrorBlock _Nullable);
 
 
 /**
- * The Authorization Code Credentials (NSString *authorizationCode, BOOL cancel, MAScompletionErrorBlock) block.
+ *  The user auth credentials blcok that will be invoked by SDK to notify developers to provide auth credentials.
  */
-typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authorizationCode, BOOL cancel, MASCompletionErrorBlock _Nullable);
-
-
-/**
- * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
- */
-typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock);
+typedef void (^MASUserAuthCredentialsBlock)(MASAuthCredentialsBlock _Nonnull authCredentialBlock);
 
 
 /**
@@ -353,6 +347,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeNetworkRequestTimedOut = 100405,
     MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade = 100406,
     MASFoundationErrorCodeResponseSerializationFailedToParseResponse = 100407,
+    MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure = 100408,
     
     //
     // Application
@@ -375,6 +370,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
     MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
     MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120009,
+    MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration = 120010,
     
     //
     // Authorization
@@ -455,6 +451,13 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeOTPRetryBarred = 160107,
     MASFoundationErrorCodeOTPChannelSelectionCancelled = 160201,
     MASFoundationErrorCodeOTPAuthenticationCancelled = 160202,
+    
+    //
+    //  JWT
+    //
+    MASFoundationErrorCodeJWTInvalidClaims = 170001,
+    MASFoundationErrorCodeJWTUnexpectedClassType = 170002,
+    MASFoundationErrorCodeJWTSerializationError = 170003,
     
     MASFoundationErrorCodeCount = -999999
 };
@@ -745,3 +748,28 @@ static NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification = @"MA
  * retrieve new status value.
  */
 static NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
+
+
+
+///--------------------------------------
+/// @name Deprecated
+///--------------------------------------
+
+# pragma mark - Deprecated
+
+/**
+ * The Basic Credentials (NSString *userName, NSString *password, BOOL cancel) block.
+ */
+typedef void (^MASBasicCredentialsBlock)(NSString *_Nonnull userName, NSString *_Nonnull password, BOOL cancel, MASCompletionErrorBlock _Nullable) DEPRECATED_MSG_ATTRIBUTE("MASBasicCredentialsBlock is deprecated as of MAS 1.5. Use MASAuthCredentialsBlock instead.");
+
+
+/**
+ * The Authorization Code Credentials (NSString *authorizationCode, BOOL cancel, MAScompletionErrorBlock) block.
+ */
+typedef void (^MASAuthorizationCodeCredentialsBlock)(NSString *_Nonnull authorizationCode, BOOL cancel, MASCompletionErrorBlock _Nullable) DEPRECATED_MSG_ATTRIBUTE("MASAuthorizationCodeCredentialsBlock is deprecated as of MAS 1.5. Use MASAuthCredentialsBlock instead.");
+
+
+/**
+ * The User Login with User Credentials (MASBasicCredentialsBlock,. MASAuthorizationCodeCredentialsBlock) block.
+ */
+typedef void (^MASUserLoginWithUserCredentialsBlock)(MASBasicCredentialsBlock _Nonnull basicBlock, MASAuthorizationCodeCredentialsBlock _Nonnull authorizationCodeBlock) DEPRECATED_MSG_ATTRIBUTE("MASBasicCredentialsBlock is deprecated as of MAS 1.5. Use MASUserAuthCredentialsBlock instead.");

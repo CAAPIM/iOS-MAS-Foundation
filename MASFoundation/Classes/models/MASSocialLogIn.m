@@ -8,7 +8,7 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import "MASSocialLogin.h"
+#import "MASSocialLogIn.h"
 
 #import <WebKit/WKNavigationDelegate.h>
 
