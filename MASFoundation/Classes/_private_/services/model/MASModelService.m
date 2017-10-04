@@ -1309,10 +1309,10 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                                          [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
                                          
                                          //
-                                         // Remove signedCertificate MASFile for re-generation
+                                         // Remove device's client MASFile for re-generation
                                          //
-                                         MASFile *signedCertificate = [[MASSecurityService sharedService] getSignedCertificate];
-                                         [MASFile removeItemAtFilePath:[signedCertificate filePath]];
+                                         MASFile *deviceClientCert = [[MASSecurityService sharedService] getDeviceClientCertificate];
+                                         [MASFile removeItemAtFilePath:[deviceClientCert filePath]];
                                          
                                          //
                                          // Updated with latest info

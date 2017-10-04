@@ -415,7 +415,7 @@ static MASSecurityService *_sharedService_ = nil;
 
 # pragma mark - MASFile Security
 
-- (MASFile *)getSignedCertificate
+- (MASFile *)getDeviceClientCertificate
 {
     NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
     MASFile *signedCert = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASSignedCertificate]];
@@ -435,7 +435,7 @@ static MASSecurityService *_sharedService_ = nil;
 }
 
 
-- (MASFile *)getClientCertificate
+- (MASFile *)getServerCertificate
 {
     NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
     MASFile *clientCert = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate]];
@@ -446,17 +446,18 @@ static MASSecurityService *_sharedService_ = nil;
         // Create the public server certificate file
         //
         NSArray *certs = [[MASConfiguration currentConfiguration] gatewayCertificatesAsPEMData];
-        if(certs.count > 0)
+        NSMutableData *certificateData = [NSMutableData data];
+        
+        for (NSData *cert in certs)
         {
-            NSData *certificateData = certs[0];
-            
-            //DLog(@"\n\nServer Certificate class is: %@\n\n  and value: %@\n\n", [[certificateData class] debugDescription], certificateData);
-            
-            if(certificateData)
-            {
-                clientCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate] contents:certificateData];
-                [clientCert save];
-            }
+            [certificateData appendData:cert];
+            [certificateData appendData:[@"\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+        
+        if (certificateData)
+        {
+            clientCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate] contents:certificateData];
+            [clientCert save];
         }
     }
     
@@ -496,22 +497,22 @@ static MASSecurityService *_sharedService_ = nil;
 - (void)removeAllFiles
 {
     MASFile *privateKey = [self getPrivateKey];
-    MASFile *clientCert = [self getClientCertificate];
-    MASFile *signedCert = [self getSignedCertificate];
+    MASFile *serverCert = [self getServerCertificate];
+    MASFile *deviceClientCert = [self getDeviceClientCertificate];
     
     if ([privateKey filePath])
     {
         [MASFile removeItemAtFilePath:[privateKey filePath]];
     }
     
-    if ([clientCert filePath])
+    if ([serverCert filePath])
     {
-        [MASFile removeItemAtFilePath:[clientCert filePath]];
+        [MASFile removeItemAtFilePath:[serverCert filePath]];
     }
     
-    if ([signedCert filePath])
+    if ([deviceClientCert filePath])
     {
-        [MASFile removeItemAtFilePath:[signedCert filePath]];
+        [MASFile removeItemAtFilePath:[deviceClientCert filePath]];
     }
 }
 
