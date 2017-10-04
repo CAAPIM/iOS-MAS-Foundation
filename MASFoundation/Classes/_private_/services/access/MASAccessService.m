@@ -102,36 +102,32 @@ static BOOL _isPKCEEnabled_ = YES;
     //
     _gatewayIdentifier = [MASConfiguration currentConfiguration].gatewayUrl.absoluteString;
 
-    
     _localStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessLocalStorageServiceName];
     
     _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
     
+    //
+    // Local storage
+    //
+    MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
+    localStorage.synchronizable = FALSE;
+    localStorage.accessibility = MASIKeyChainStoreAccessibilityAfterFirstUnlockThisDeviceOnly;
+
     if ([MASConfiguration currentConfiguration].ssoEnabled && [self isAccessGroupAccessible])
     {
-        
-        //
-        // Local storage
-        //
-        MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
-        
         //
         // Shared storage
         //
         MASIKeyChainStore *sharedStorage = [MASIKeyChainStore keyChainStoreWithService:_sharedStorageServiceName accessGroup:self.accessGroup];
-        
+        sharedStorage.synchronizable = FALSE;
+        sharedStorage.accessibility = MASIKeyChainStoreAccessibilityAfterFirstUnlockThisDeviceOnly;
+
         //
         // storage dictionary property
         //
         _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, sharedStorage, kMASAccessSharedStorageKey, nil];
     }
     else {
-        
-        //
-        // Local storage
-        //
-        MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
-        
         //
         // storage dictionary property
         //
