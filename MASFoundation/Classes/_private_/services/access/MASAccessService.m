@@ -110,7 +110,7 @@ static BOOL _isPKCEEnabled_ = YES;
     // Local storage
     //
     MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
-    localStorage.synchronizable = FALSE;
+    localStorage.synchronizable = NO;
     localStorage.accessibility = MASIKeyChainStoreAccessibilityAfterFirstUnlockThisDeviceOnly;
 
     if ([MASConfiguration currentConfiguration].ssoEnabled && [self isAccessGroupAccessible])
@@ -119,7 +119,7 @@ static BOOL _isPKCEEnabled_ = YES;
         // Shared storage
         //
         MASIKeyChainStore *sharedStorage = [MASIKeyChainStore keyChainStoreWithService:_sharedStorageServiceName accessGroup:self.accessGroup];
-        sharedStorage.synchronizable = FALSE;
+        sharedStorage.synchronizable = NO;
         sharedStorage.accessibility = MASIKeyChainStoreAccessibilityAfterFirstUnlockThisDeviceOnly;
 
         //
