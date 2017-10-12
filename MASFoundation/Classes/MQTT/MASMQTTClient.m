@@ -110,7 +110,7 @@ static MASMQTTClient *_sharedClient = nil;
         
         if ([blockSelf isEqual:_sharedClient])
         {
-            @synchronized(self)
+            @synchronized(blockSelf)
             {
                 _sharedClient = nil;
             }
