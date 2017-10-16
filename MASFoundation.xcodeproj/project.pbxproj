@@ -11,7 +11,8 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 1059D3BC1B61C00500223267 /* Build configuration list for PBXAggregateTarget "UniversalFrameworkMASFoundation" */;
 			buildPhases = (
-				1059D3BD1B61C00D00223267 /* ShellScript */,
+				69DE19DB1F8E8A2300F4C7FE /* Log Build Settings */,
+				1059D3BD1B61C00D00223267 /* Run Script */,
 			);
 			dependencies = (
 			);
@@ -1984,18 +1985,33 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1059D3BD1B61C00D00223267 /* ShellScript */ = {
+		1059D3BD1B61C00D00223267 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\n#---------------\n#Framework Name\n#---------------\n\nFRAMEWORK_NAME=MASFoundation\n\n\n#---------------\n#SDK Directory\n#---------------\n\nSDK_DIR=../iOS_SDK\n\n\n#-----------------------\n#CleanUp Build Cache\n#-----------------------\n\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Debug -alltargets clean\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Release -alltargets clean\n\n\n#-----------------------\n#CleanUp Previous Builds\n#-----------------------\n\n# Remove the framework from the Project Folder\nrm -Rf \"${PROJECT_DIR}/${FRAMEWORK_NAME}.framework\"\n\n# Remove Build folder from DerivedData\nrm -Rf \"${BUILD_DIR}\"\n\n\n#-----------------------\n#Creating New Builds\n#-----------------------\n\n# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\nARCHIVE_OUTPUTFOLDER=${BUILD_DIR}/../Intermediates/ArchiveIntermediates/$PROJECT_NAME/IntermediateBuildFilesPath/UninstalledProducts/iphoneos\n\n# Archive framework for iPhoneOS with BitCode enabled\n#xcodebuild -scheme $PROJECT_NAME  -configuration Release archive\n\nxcodebuild OTHER_CFLAGS=\"-fembed-bitcode\" -scheme $PROJECT_NAME  -configuration Release archive CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\" -archivePath \"${BUILD_DIR}\"\n\n# Build framework for iPhoneOS\n#xcodebuild -target ${FRAMEWORK_NAME} ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n# Build framework for iPhoneSimulator\nxcodebuild -target ${FRAMEWORK_NAME} -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n\n#-----------------------\n#Creating Universal Framework\n#-----------------------\n\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\nmkdir -p \"${SDK_DIR}\"\n\n\n# Build the universal library\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Copy the .framework folder of iphoneos\ncp -R \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Delete the library for iphoneos\nrm \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Move the Universal Library into our framework\nmv \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/\"\n\n# Remove the _CodeSignature from the UniversalFramework\nrm -Rf \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/_CodeSignature\"\n\n# Copy the framework\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${SDK_DIR}\"\n\n#-----------------------\n#Deleting Build Folder\n#-----------------------\n\n# Remove build folder from the Project Folder\nrm -Rf \"${PROJECT_DIR}/build\"\n\n";
+			shellScript = "set -e\n\n#---------------\n#Framework Name\n#---------------\n\nFRAMEWORK_NAME=MASFoundation\n\n\n#---------------\n#SDK Directory\n#---------------\n\nSDK_DIR=../iOS_SDK\n\n\n#-----------------------\n#CleanUp Build Cache\n#-----------------------\n\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Debug -alltargets clean\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Release -alltargets clean\n\n\n#-----------------------\n#CleanUp Previous Builds\n#-----------------------\n\n# Remove the framework from the Project Folder\nrm -Rf \"${PROJECT_DIR}/${FRAMEWORK_NAME}.framework\"\n\n# Remove Build folder from DerivedData\nrm -Rf \"${BUILD_DIR}\"\n\n\n#-----------------------\n#Creating New Builds\n#-----------------------\n\n# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\nARCHIVE_OUTPUTFOLDER=${OBJROOT}/ArchiveIntermediates/$PROJECT_NAME/IntermediateBuildFilesPath/UninstalledProducts/iphoneos\n\n# Archive framework for iPhoneOS with BitCode enabled\n#xcodebuild -scheme $PROJECT_NAME  -configuration Release archive\n\nxcodebuild OTHER_CFLAGS=\"-fembed-bitcode\" -scheme $PROJECT_NAME  -configuration Release archive CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\" -archivePath \"${BUILD_DIR}\"\n\n# Build framework for iPhoneOS\n#xcodebuild -target ${FRAMEWORK_NAME} ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n# Build framework for iPhoneSimulator\nxcodebuild -target ${FRAMEWORK_NAME} -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n\n#-----------------------\n#Creating Universal Framework\n#-----------------------\n\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\nmkdir -p \"${SDK_DIR}\"\n\n\n# Build the universal library\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Copy the .framework folder of iphoneos\ncp -R \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Delete the library for iphoneos\nrm \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Move the Universal Library into our framework\nmv \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/\"\n\n# Remove the _CodeSignature from the UniversalFramework\nrm -Rf \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/_CodeSignature\"\n\n# Copy the framework\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${SDK_DIR}\"\n\n#-----------------------\n#Deleting Build Folder\n#-----------------------\n\n# Remove build folder from the Project Folder\nrm -Rf \"${PROJECT_DIR}/build\"\n\n";
+		};
+		69DE19DB1F8E8A2300F4C7FE /* Log Build Settings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Log Build Settings";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = export;
 		};
 /* End PBXShellScriptBuildPhase section */
 
