@@ -844,13 +844,13 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     //
     if (!certPath) {
         
-        thisFile = [[MASSecurityService sharedService] getClientCertificate];
+        thisFile = [[MASSecurityService sharedService] getServerCertificate];
         certPath = [thisFile filePath];
         //[[MASFile findFileWithName:@"MAS.crt"] filePath];
     }
     if (!clientCertPath) {
         
-        thisFile = [[MASSecurityService sharedService] getSignedCertificate];
+        thisFile = [[MASSecurityService sharedService] getDeviceClientCertificate];
         clientCertPath = [thisFile filePath];
         //[[MASFile findFileWithName:@"MASSigned.crt"] filePath];
     }

@@ -83,20 +83,20 @@
 # pragma mark - MASFile Security
 
 /**
- *  Generate MASFile object for current gateway's signed certificate.
+ *  Generate MASFile object for current device's client certificate.
  *
- *  @return Returns MASFile object of signed certificate for current configuration's gateway.
+ *  @return Returns MASFile object of device's client for current configuration's gateway.
  */
-- (MASFile *)getSignedCertificate;
+- (MASFile *)getDeviceClientCertificate;
 
 
 
 /**
- *  Generate MASFile object for current gateway's client certificate.
+ *  Generate MASFile object for current gateway's server certificate.
  *
- *  @return Returns MASFile object of client certificate for current configuration's gateway.
+ *  @return Returns MASFile object of server certificate for current configuration's gateway.
  */
-- (MASFile *)getClientCertificate;
+- (MASFile *)getServerCertificate;
 
 
 
