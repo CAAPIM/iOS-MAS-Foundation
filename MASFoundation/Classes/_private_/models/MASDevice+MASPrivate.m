@@ -146,6 +146,15 @@
     }
     
     //
+    // Device Vendor Id
+    //
+    NSString *deviceVendorId = [MASDevice deviceVendorId];    
+    if (deviceVendorId)
+    {
+        [accessService setAccessValueString:deviceVendorId withAccessValueType:MASAccessValueTypeDeviceVendorId];
+    }
+    
+    //
     // Reload MASAccess object after storing id-token and type
     //
     [[MASAccessService sharedService].currentAccessObj refresh];
@@ -183,7 +192,7 @@
 
 + (NSString *)deviceIdBase64Encoded
 {
-    NSString *deviceId = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString *deviceId = [MASDevice deviceVendorId];
     
     //
     //  If the sso is disabled, generate unique device id to differentiate the application's registration record from others.
@@ -214,5 +223,12 @@
     
     return [deviceNameData base64EncodedStringWithOptions:0];
 }
+
+
++ (NSString *)deviceVendorId
+{
+    return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+}
+
 
 @end
