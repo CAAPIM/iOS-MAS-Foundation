@@ -148,6 +148,26 @@
 
 
 
+/**
+ *  Sets BOOL indicator whether the Keychain is synchronized through iCloud.
+ *  By default, the Keychain is not synchronized through iCloud.
+ *
+ *  @param enabled BOOL YES to enable synchroniztion, NO to disable it.
+ */
++ (void)setKeychainSynchronizable:(BOOL)enabled;
+
+
+
+/**
+ *  Gets BOOL indicator of Keychain sincronization enabled or not.
+ *  By default, the Keychain is not synchronized through iCloud.
+ *
+ *  @return return BOOL value indicating Keychain sincronization is enabled or not
+ */
++ (BOOL)isKeychainSynchronizable;
+
+
+
 ///--------------------------------------
 /// @name Start & Stop
 ///--------------------------------------
