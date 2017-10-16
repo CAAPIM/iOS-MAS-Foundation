@@ -166,10 +166,16 @@ static NSString *const MASConfigurationIsLoadedPropertyKey = @"isLoaded"; // boo
 @end
 
 
+@interface MASConfiguration ()
+
+@property (strong, nonatomic) NSMutableDictionary *endpointKeysToPaths;
+
+@end
+
+
 @implementation MASConfiguration
 
 static NSDictionary *_configurationInfo_;
-static NSMutableDictionary *_endpointKeysToPaths_;
 static float _systemVersionNumber_;
 
 
@@ -226,12 +232,12 @@ static float _systemVersionNumber_;
     //
     // If the dictionary already exists ignore the call
     //
-    if(_endpointKeysToPaths_) return;
+    if(_endpointKeysToPaths) return;
     
     //
     // Create the dictionary
     //
-    _endpointKeysToPaths_ = [NSMutableDictionary new];
+    _endpointKeysToPaths = [NSMutableDictionary new];
     
     //
     // OAuth Endpoints
@@ -241,11 +247,11 @@ static float _systemVersionNumber_;
     {
         // System Endpoints
         NSDictionary *endpointsInfo = oauthInfo[MASSystemEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if(endpointsInfo) [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
         
         // Protected Endpoints
         endpointsInfo = oauthInfo[MASProtectedEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if(endpointsInfo) [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
     }
     
     
@@ -257,11 +263,11 @@ static float _systemVersionNumber_;
     {
         // System Endpoints
         NSDictionary *endpointsInfo = magInfo[MASSystemEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if(endpointsInfo) [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
         
         // Protected Endpoints
         endpointsInfo = magInfo[MASProtectedEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if(endpointsInfo) [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
     }
     
     //
@@ -278,14 +284,14 @@ static float _systemVersionNumber_;
         NSString *scimPathInfo = masInfo[MASScimPathEndpoint];
         if(scimPathInfo)
         {
-            [_endpointKeysToPaths_ addEntriesFromDictionary:@{MASScimPathEndpoint : scimPathInfo}];
+            [_endpointKeysToPaths addEntriesFromDictionary:@{MASScimPathEndpoint : scimPathInfo}];
         }
         
         //storage-path
         NSString *storagePathInfo = masInfo[MASStoragePathEndpoint];
         if(scimPathInfo)
         {
-            [_endpointKeysToPaths_ addEntriesFromDictionary:@{MASStoragePathEndpoint : storagePathInfo}];
+            [_endpointKeysToPaths addEntriesFromDictionary:@{MASStoragePathEndpoint : storagePathInfo}];
         }
     }
     
@@ -293,18 +299,18 @@ static float _systemVersionNumber_;
     // Custom Endpoints
     //
     NSDictionary *customInfo = _configurationInfo_[MASCustomConfigurationKey];
-    if(customInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:customInfo];
+    if(customInfo) [_endpointKeysToPaths addEntriesFromDictionary:customInfo];
     
     
     //
     // Temporary Hardcoded Endpoints
     //
-    _endpointKeysToPaths_[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
+    _endpointKeysToPaths[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
     
-    _endpointKeysToPaths_[MASUsersLDAPEndpoint] = @"/scim/ldap/v2/users";
-    _endpointKeysToPaths_[MASUserGroupsLDAPEndpoint] = @"/scim/ldap/v2/groups";
-    _endpointKeysToPaths_[MASUsersMSADEndpoint] = @"/scim/msad/v2/users";
-    _endpointKeysToPaths_[MASUserGroupsMSADEndpoint] = @"/scim/msad/v2/groups";
+    _endpointKeysToPaths[MASUsersLDAPEndpoint] = @"/scim/ldap/v2/users";
+    _endpointKeysToPaths[MASUserGroupsLDAPEndpoint] = @"/scim/ldap/v2/groups";
+    _endpointKeysToPaths[MASUsersMSADEndpoint] = @"/scim/msad/v2/users";
+    _endpointKeysToPaths[MASUserGroupsMSADEndpoint] = @"/scim/msad/v2/groups";
 }
 
 
@@ -600,7 +606,7 @@ static float _systemVersionNumber_;
 
 - (NSString *)endpointPathForKey:(NSString *)endpointKey
 {
-    NSString *endpointPath = _endpointKeysToPaths_[endpointKey];
+    NSString *endpointPath = _endpointKeysToPaths[endpointKey];
     
     return endpointPath;
 }
@@ -610,97 +616,97 @@ static float _systemVersionNumber_;
 
 - (NSString *)scimPathEndpointPath
 {
-    return _endpointKeysToPaths_[MASScimPathEndpoint];
+    return _endpointKeysToPaths[MASScimPathEndpoint];
 }
 
 
 - (NSString *)storagePathEndpointPath
 {
-    return _endpointKeysToPaths_[MASStoragePathEndpoint];
+    return _endpointKeysToPaths[MASStoragePathEndpoint];
 }
 
 
 - (NSString *)authorizationEndpointPath
 {
-    return _endpointKeysToPaths_[MASAuthorizationEndpoint];
+    return _endpointKeysToPaths[MASAuthorizationEndpoint];
 }
 
 
 - (NSString *)clientInitializeEndpointPath
 {
-    return _endpointKeysToPaths_[MASClientInitializeEndpoint];
+    return _endpointKeysToPaths[MASClientInitializeEndpoint];
 }
 
 
 - (NSString *)authenticateOTPEndpointPath
 {
-    return _endpointKeysToPaths_[MASAuthenticateOTPEndpoint];
+    return _endpointKeysToPaths[MASAuthenticateOTPEndpoint];
 }
 
 
 - (NSString *)deviceListAllEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceListEndpoint];
+    return _endpointKeysToPaths[MASDeviceListEndpoint];
 }
 
 
 - (NSString *)deviceRegisterEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRegisterEndpoint];
+    return _endpointKeysToPaths[MASDeviceRegisterEndpoint];
 }
 
 
 - (NSString *)deviceRegisterClientEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRegisterClientEndpoint];
+    return _endpointKeysToPaths[MASDeviceRegisterClientEndpoint];
 }
 
 
 - (NSString *)deviceRenewEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRenewEndpoint];
+    return _endpointKeysToPaths[MASDeviceRenewEndpoint];
 }
 
 
 - (NSString *)deviceRemoveEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRemoveEndpoint];
+    return _endpointKeysToPaths[MASDeviceRemoveEndpoint];
 }
 
 
 - (NSString *)enterpriseBrowserEndpointPath
 {
-    return _endpointKeysToPaths_[MASEnterpriseBrowserEndpoint];
+    return _endpointKeysToPaths[MASEnterpriseBrowserEndpoint];
 }
 
 
 - (NSString *)tokenEndpointPath
 {
-    return _endpointKeysToPaths_[MASTokenEndpoint];
+    return _endpointKeysToPaths[MASTokenEndpoint];
 }
 
 
 - (NSString *)tokenRevokeEndpointPath
 {
-    return _endpointKeysToPaths_[MASTokenRevokeEndpoint];
+    return _endpointKeysToPaths[MASTokenRevokeEndpoint];
 }
 
 
 - (NSString *)userInfoEndpointPath
 {
-    return _endpointKeysToPaths_[MASUserInfoEndpoint];
+    return _endpointKeysToPaths[MASUserInfoEndpoint];
 }
 
 
 - (NSString *)userSessionLogoutEndpointPath
 {
-    return _endpointKeysToPaths_[MASUserSessionLogoutEndpoint];
+    return _endpointKeysToPaths[MASUserSessionLogoutEndpoint];
 }
 
 
 - (NSString *)userSessionStatusEndpointPath
 {
-    return _endpointKeysToPaths_[MASUserSessionStatusEndpoint];
+    return _endpointKeysToPaths[MASUserSessionStatusEndpoint];
 }
 
 
@@ -876,9 +882,9 @@ static float _systemVersionNumber_;
     NSMutableString *endpoints = [[NSMutableString alloc] initWithString:@"\n\n        {\n"];
     
     NSString *keyToEndpoint;
-    for(NSString *endpointKey in _endpointKeysToPaths_)
+    for(NSString *endpointKey in _endpointKeysToPaths)
     {
-        keyToEndpoint = [NSString stringWithFormat:@"            %@ = %@\n", endpointKey, _endpointKeysToPaths_[endpointKey]];
+        keyToEndpoint = [NSString stringWithFormat:@"            %@ = %@\n", endpointKey, _endpointKeysToPaths[endpointKey]];
         [endpoints appendString:keyToEndpoint];
     }
     [endpoints appendString:@"        }"];
