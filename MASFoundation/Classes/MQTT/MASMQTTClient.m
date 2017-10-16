@@ -80,28 +80,42 @@ static MASMQTTClient *_sharedClient = nil;
 
 + (instancetype)sharedClient
 {
-    static dispatch_once_t onceToken;
-    
     if (!_sharedClient) {
 
-        dispatch_once(&onceToken, ^{
-            
+        @synchronized(self)
+        {
             if ([MASUser currentUser].isAuthenticated && [MASDevice currentDevice].isRegistered) {
-
+                
                 //
                 // Init MQTT client for current gateway
                 //
                 _sharedClient = [[MASMQTTClient alloc] initWithClientId:[MASMQTTHelper mqttClientId] cleanSession:NO];
             }
             else {
-            
+                
                 //Return nil in case Authentication or Registration is not done yet.
                 _sharedClient = nil;
             }
-        });
+        }
     }
     
     return _sharedClient;
+}
+
+
+- (void)clearConnection
+{
+    __block MASMQTTClient *blockSelf = self;
+    [self disconnectWithCompletionHandler:^(NSUInteger code) {
+        
+        if ([blockSelf isEqual:_sharedClient])
+        {
+            @synchronized(blockSelf)
+            {
+                _sharedClient = nil;
+            }
+        }
+    }];
 }
 
 
@@ -151,12 +165,26 @@ static MASMQTTClient *_sharedClient = nil;
 //        }
         
         self.queue = dispatch_queue_create(cstrClientId, NULL);
+        
+        //
+        //  Subscribe following information to reset the current MQTT session due to the change in SDK's authenticated session
+        //
+        //  - user logout
+        //  - device de-registration
+        //  - device reset locally
+        //  - gateway switch
+        //
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearConnection) name:MASUserDidLogoutNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearConnection) name:MASDeviceDidDeregisterNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearConnection) name:MASDeviceDidResetLocallyNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearConnection) name:MASWillSwitchGatewayServerNotification object:nil];
     }
     
     _sharedClient = self;
     
     return self;
 }
+
 
 #pragma mark - Setup methods
 
@@ -589,6 +617,7 @@ static int on_password_callback(char *buf, int size, int rwflag, void *userdata)
     
     mosquitto_disconnect(mosq);
 }
+
 
 - (void)reconnect:(NSNotification *)notification
 {

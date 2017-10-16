@@ -1480,7 +1480,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
              //
              // Post the notification
              //
-             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
              
              return;
          }
@@ -1495,6 +1495,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
              //
              [blockSelf clearCurrentUserForLogout];
          }
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
          
          //
          // Set id_token and id_token_type to nil
