@@ -49,6 +49,7 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 static BOOL _isPKCEEnabled_ = YES;
 
+static BOOL _isKeychainSynchronizable_ = NO;
 
 # pragma mark - Properties
 
@@ -61,6 +62,18 @@ static BOOL _isPKCEEnabled_ = YES;
 + (void)enablePKCE:(BOOL)enable
 {
     _isPKCEEnabled_ = enable;
+}
+
+
++ (BOOL)isKeychainSynchronizable
+{
+    return _isKeychainSynchronizable_;
+}
+
+
++ (void)setKeychainSynchronizable:(BOOL)enable
+{
+    _isKeychainSynchronizable_ = enable;
 }
 
 
@@ -102,36 +115,30 @@ static BOOL _isPKCEEnabled_ = YES;
     //
     _gatewayIdentifier = [MASConfiguration currentConfiguration].gatewayUrl.absoluteString;
 
-    
     _localStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessLocalStorageServiceName];
     
     _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
     
+    //
+    // Local storage
+    //
+    MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
+    localStorage.synchronizable = _isKeychainSynchronizable_;
+
     if ([MASConfiguration currentConfiguration].ssoEnabled && [self isAccessGroupAccessible])
     {
-        
-        //
-        // Local storage
-        //
-        MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
-        
         //
         // Shared storage
         //
         MASIKeyChainStore *sharedStorage = [MASIKeyChainStore keyChainStoreWithService:_sharedStorageServiceName accessGroup:self.accessGroup];
-        
+        sharedStorage.synchronizable = _isKeychainSynchronizable_;
+
         //
         // storage dictionary property
         //
         _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, sharedStorage, kMASAccessSharedStorageKey, nil];
     }
     else {
-        
-        //
-        // Local storage
-        //
-        MASIKeyChainStore *localStorage = [MASIKeyChainStore keyChainStoreWithService:_localStorageServiceName];
-        
         //
         // storage dictionary property
         //

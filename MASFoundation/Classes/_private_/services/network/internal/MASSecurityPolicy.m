@@ -115,7 +115,7 @@ static unsigned char rsa2048Asn1Header[] = {
         //
         //  As of this point, if the configuration forces to validate the entire chain, validate entire chain of certificates
         //
-        if (securityConfiguration.validateCertificateChain)
+        if ([securityConfiguration validateCertificateChain])
         {
             int matchingCertificatesCount = 0;
             
@@ -177,7 +177,7 @@ static unsigned char rsa2048Asn1Header[] = {
         //
         //  if security configuration is set to not validate entire chain, only validate with the first item
         //
-        if (!securityConfiguration.validateCertificateChain && [serverPublicKeyHashes count] > 0)
+        if (![securityConfiguration validateCertificateChain] && [serverPublicKeyHashes count] > 0)
         {
             serverPublicKeyHashes = @[[serverPublicKeyHashes firstObject]];
         }
@@ -195,7 +195,7 @@ static unsigned char rsa2048Asn1Header[] = {
         //  or matching public key hash count is not equal to # of public key presented in server trust while the security configuration expects entire chain to be validated,
         //  reject connection
         //
-        if (trustedPublicKeyHashCount == 0 || (securityConfiguration.validateCertificateChain && trustedPublicKeyHashCount != [serverPublicKeyHashes count]))
+        if (trustedPublicKeyHashCount == 0 || ([securityConfiguration validateCertificateChain] && trustedPublicKeyHashCount != [serverPublicKeyHashes count]))
         {
             return NO;
         }

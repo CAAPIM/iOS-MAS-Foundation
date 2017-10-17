@@ -98,6 +98,18 @@
 }
 
 
++ (void)setKeychainSynchronizable:(BOOL)enabled
+{
+    [MASAccessService setKeychainSynchronizable:enabled];
+}
+
+
++ (BOOL)isKeychainSynchronizable
+{
+    return [MASAccessService isKeychainSynchronizable];
+}
+
+
 + (MASState)MASState
 {
     //

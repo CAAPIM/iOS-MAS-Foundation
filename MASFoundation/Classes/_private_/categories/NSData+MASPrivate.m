@@ -316,10 +316,17 @@ bool _encrypted = NO;
     i2d_X509_bio(outDerBio, x);
     
     int len = BIO_pending(outDerBio);
-    char *out = calloc(len + 1, 1);
-    int i = BIO_read(outDerBio, out, len);
     
-    return [NSData dataWithBytes:out length:i];
+    if (len > 0)
+    {
+        char *out = calloc(len + 1, 1);
+        int i = BIO_read(outDerBio, out, len);
+        
+        return [NSData dataWithBytes:out length:i];
+    }
+    else {
+        return nil;
+    }
 }
 
 

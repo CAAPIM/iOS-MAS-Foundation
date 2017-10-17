@@ -556,6 +556,13 @@ static NSString *const _Nonnull MASDeviceDidFailToDeregisterNotification = @"MAS
 static NSString *const _Nonnull MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
 
 
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has reset locally.
+ */
+static NSString *const _Nonnull MASDeviceDidResetLocallyNotification = @"MASDeviceDidResetLocallyNotification";
+
+
 
 ///--------------------------------------
 /// @name User Notifications
