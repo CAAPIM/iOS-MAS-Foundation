@@ -11,7 +11,8 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 1059D3BC1B61C00500223267 /* Build configuration list for PBXAggregateTarget "UniversalFrameworkMASFoundation" */;
 			buildPhases = (
-				1059D3BD1B61C00D00223267 /* ShellScript */,
+				69DE19DB1F8E8A2300F4C7FE /* Log Build Settings */,
+				1059D3BD1B61C00D00223267 /* Run Script */,
 			);
 			dependencies = (
 			);
@@ -151,6 +152,12 @@
 		10E027A51F72B10100EAB103 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 10E0279B1F72B10100EAB103 /* RNDecryptor.m */; };
 		10E027A61F72B10100EAB103 /* RNEncryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 10E0279C1F72B10100EAB103 /* RNEncryptor.h */; };
 		10E027A71F72B10100EAB103 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 10E0279D1F72B10100EAB103 /* RNEncryptor.m */; };
+		69B7DF681F9675600056DD3A /* MASRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17911F9585BC008C1B11 /* MASRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69B7DF691F9675600056DD3A /* MASRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17901F9585BC008C1B11 /* MASRequest.m */; };
+		69B7DF6A1F9675600056DD3A /* MASRequestBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17921F9585BC008C1B11 /* MASRequestBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69B7DF6B1F9675600056DD3A /* MASRequestBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17931F9585BD008C1B11 /* MASRequestBuilder.m */; };
+		69B7DF6C1F96756B0056DD3A /* MASRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */; };
+		69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */; };
 		A4150E6F1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */; };
 		A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */; };
 		A4150E711BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */; };
@@ -563,6 +570,12 @@
 		10E0279B1F72B10100EAB103 /* RNDecryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDecryptor.m; sourceTree = "<group>"; };
 		10E0279C1F72B10100EAB103 /* RNEncryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNEncryptor.h; sourceTree = "<group>"; };
 		10E0279D1F72B10100EAB103 /* RNEncryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEncryptor.m; sourceTree = "<group>"; };
+		699C17901F9585BC008C1B11 /* MASRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequest.m; sourceTree = "<group>"; };
+		699C17911F9585BC008C1B11 /* MASRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASRequest.h; sourceTree = "<group>"; };
+		699C17921F9585BC008C1B11 /* MASRequestBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASRequestBuilder.h; sourceTree = "<group>"; };
+		699C17931F9585BD008C1B11 /* MASRequestBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequestBuilder.m; sourceTree = "<group>"; };
+		699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASRequest+MASPrivate.h"; sourceTree = "<group>"; };
+		699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASRequest+MASPrivate.m"; sourceTree = "<group>"; };
 		A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASIJSONResponseSerializer+MASPrivate.h"; sourceTree = "<group>"; };
 		A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MASIJSONResponseSerializer+MASPrivate.m"; sourceTree = "<group>"; };
 		A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+MASPrivate.h"; sourceTree = "<group>"; };
@@ -1043,6 +1056,15 @@
 			path = libmosquitto123;
 			sourceTree = "<group>";
 		};
+		699C17941F958660008C1B11 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */,
+				699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		A4150EBD1BF16D9A00037E27 /* network */ = {
 			isa = PBXGroup;
 			children = (
@@ -1406,6 +1428,7 @@
 			isa = PBXGroup;
 			children = (
 				CB99752B1EDCA749006CEBB1 /* AuthCredentials */,
+				699C17941F958660008C1B11 /* Network */,
 				CB1907F11C1794FC00A5EF16 /* MASAccess.h */,
 				CB1907F21C1794FC00A5EF16 /* MASAccess.m */,
 				A4831AE81BD1A87C007B4AE6 /* MASApplication+MASPrivate.h */,
@@ -1455,6 +1478,10 @@
 		CB23578A1F0EE35A00D4C420 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				699C17911F9585BC008C1B11 /* MASRequest.h */,
+				699C17901F9585BC008C1B11 /* MASRequest.m */,
+				699C17921F9585BC008C1B11 /* MASRequestBuilder.h */,
+				699C17931F9585BD008C1B11 /* MASRequestBuilder.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1650,6 +1677,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69B7DF6A1F9675600056DD3A /* MASRequestBuilder.h in Headers */,
+				69B7DF681F9675600056DD3A /* MASRequest.h in Headers */,
 				CBAFD24C1F2BD46C0034DF02 /* MASSecurityConfiguration.h in Headers */,
 				CB9975421EDF5761006CEBB1 /* MASAuthCredentials.h in Headers */,
 				CB99754A1EDF57D6006CEBB1 /* MASAuthCredentialsPassword.h in Headers */,
@@ -1873,6 +1902,7 @@
 				CBD25AFB1E78C47C00DFB47F /* JWTClaimsSet.h in Headers */,
 				105B2F461CA6B3EA0005A2D0 /* pkcs7.h in Headers */,
 				105B2F441CA6B3EA0005A2D0 /* pem2.h in Headers */,
+				69B7DF6C1F96756B0056DD3A /* MASRequest+MASPrivate.h in Headers */,
 				A417BA511BF033C300EC9BCB /* CLLocation+MASPrivate.h in Headers */,
 				CBD25B011E78C47C00DFB47F /* JWTCoding+ResultTypes.h in Headers */,
 				A4831AF61BD1A8CA007B4AE6 /* MASDevice+MASPrivate.h in Headers */,
@@ -1984,18 +2014,33 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1059D3BD1B61C00D00223267 /* ShellScript */ = {
+		1059D3BD1B61C00D00223267 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\n#---------------\n#Framework Name\n#---------------\n\nFRAMEWORK_NAME=MASFoundation\n\n\n#---------------\n#SDK Directory\n#---------------\n\nSDK_DIR=../iOS_SDK\n\n\n#-----------------------\n#CleanUp Build Cache\n#-----------------------\n\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Debug -alltargets clean\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Release -alltargets clean\n\n\n#-----------------------\n#CleanUp Previous Builds\n#-----------------------\n\n# Remove the framework from the Project Folder\nrm -Rf \"${PROJECT_DIR}/${FRAMEWORK_NAME}.framework\"\n\n# Remove Build folder from DerivedData\nrm -Rf \"${BUILD_DIR}\"\n\n\n#-----------------------\n#Creating New Builds\n#-----------------------\n\n# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\nARCHIVE_OUTPUTFOLDER=${BUILD_DIR}/../Intermediates/ArchiveIntermediates/$PROJECT_NAME/IntermediateBuildFilesPath/UninstalledProducts/iphoneos\n\n# Archive framework for iPhoneOS with BitCode enabled\n#xcodebuild -scheme $PROJECT_NAME  -configuration Release archive\n\nxcodebuild OTHER_CFLAGS=\"-fembed-bitcode\" -scheme $PROJECT_NAME  -configuration Release archive CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\" -archivePath \"${BUILD_DIR}\"\n\n# Build framework for iPhoneOS\n#xcodebuild -target ${FRAMEWORK_NAME} ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n# Build framework for iPhoneSimulator\nxcodebuild -target ${FRAMEWORK_NAME} -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n\n#-----------------------\n#Creating Universal Framework\n#-----------------------\n\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\nmkdir -p \"${SDK_DIR}\"\n\n\n# Build the universal library\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Copy the .framework folder of iphoneos\ncp -R \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Delete the library for iphoneos\nrm \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Move the Universal Library into our framework\nmv \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/\"\n\n# Remove the _CodeSignature from the UniversalFramework\nrm -Rf \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/_CodeSignature\"\n\n# Copy the framework\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${SDK_DIR}\"\n\n#-----------------------\n#Deleting Build Folder\n#-----------------------\n\n# Remove build folder from the Project Folder\nrm -Rf \"${PROJECT_DIR}/build\"\n\n";
+			shellScript = "set -e\n\n#---------------\n#Framework Name\n#---------------\n\nFRAMEWORK_NAME=MASFoundation\n\n\n#---------------\n#SDK Directory\n#---------------\n\nSDK_DIR=../iOS_SDK\n\n\n#-----------------------\n#CleanUp Build Cache\n#-----------------------\n\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Debug -alltargets clean\nxcodebuild -project $PROJECT_NAME.xcodeproj -configuration Release -alltargets clean\n\n\n#-----------------------\n#CleanUp Previous Builds\n#-----------------------\n\n# Remove the framework from the Project Folder\nrm -Rf \"${PROJECT_DIR}/${FRAMEWORK_NAME}.framework\"\n\n# Remove Build folder from DerivedData\nrm -Rf \"${BUILD_DIR}\"\n\n\n#-----------------------\n#Creating New Builds\n#-----------------------\n\n# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\nARCHIVE_OUTPUTFOLDER=${OBJROOT}/ArchiveIntermediates/$PROJECT_NAME/IntermediateBuildFilesPath/UninstalledProducts/iphoneos\n\n# Archive framework for iPhoneOS with BitCode enabled\n#xcodebuild -scheme $PROJECT_NAME  -configuration Release archive\n\nxcodebuild OTHER_CFLAGS=\"-fembed-bitcode\" -scheme $PROJECT_NAME  -configuration Release archive CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\" -archivePath \"${BUILD_DIR}\"\n\n# Build framework for iPhoneOS\n#xcodebuild -target ${FRAMEWORK_NAME} ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n# Build framework for iPhoneSimulator\nxcodebuild -target ${FRAMEWORK_NAME} -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" CODE_SIGN_IDENTITY=\"iPhone Distribution: CA, Inc (RAKRWMN9VH)\"\n\n\n#-----------------------\n#Creating Universal Framework\n#-----------------------\n\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\nmkdir -p \"${SDK_DIR}\"\n\n\n# Build the universal library\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Copy the .framework folder of iphoneos\ncp -R \"${ARCHIVE_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Delete the library for iphoneos\nrm \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}\"\n\n# Move the Universal Library into our framework\nmv \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}\" \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/\"\n\n# Remove the _CodeSignature from the UniversalFramework\nrm -Rf \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework/_CodeSignature\"\n\n# Copy the framework\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/${FRAMEWORK_NAME}.framework\" \"${SDK_DIR}\"\n\n#-----------------------\n#Deleting Build Folder\n#-----------------------\n\n# Remove build folder from the Project Folder\nrm -Rf \"${PROJECT_DIR}/build\"\n\n";
+		};
+		69DE19DB1F8E8A2300F4C7FE /* Log Build Settings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Log Build Settings";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = export;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2099,6 +2144,7 @@
 				A46F49C51C2F5FC500A4C370 /* MASIHTTPRequestOperation.m in Sources */,
 				A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */,
 				A417BA521BF033C300EC9BCB /* CLLocation+MASPrivate.m in Sources */,
+				69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */,
 				A4831AB21BD1A551007B4AE6 /* MASFile.m in Sources */,
 				CB0B585A1E258C2A00BC0163 /* MASAuthorizationResponse.m in Sources */,
 				CB5E4C651C1D1B56001B3B8A /* MASGetURLRequest.m in Sources */,
@@ -2121,6 +2167,7 @@
 				CB2357931F0EF53600D4C420 /* MASURLSessionManager.m in Sources */,
 				10738A291C711C2F00B7E87E /* mosquitto.c in Sources */,
 				A4150EE81BF16E5B00037E27 /* MASFileService.m in Sources */,
+				69B7DF691F9675600056DD3A /* MASRequest.m in Sources */,
 				CBD25B081E78C47C00DFB47F /* JWTCoding+VersionTwo.m in Sources */,
 				A483C2021BE6D0C5007572CE /* CBCentralManager+MASPrivate.m in Sources */,
 				CBD25AFA1E78C47C00DFB47F /* JWTClaim.m in Sources */,
@@ -2130,6 +2177,7 @@
 				CB5E4C751C1D26BA001B3B8A /* MASPatchURLRequest.m in Sources */,
 				A46F49CB1C2F5FC500A4C370 /* MASINetworkActivityLogger.m in Sources */,
 				A46F49BB1C2F5FC500A4C370 /* fmemopen.c in Sources */,
+				69B7DF6B1F9675600056DD3A /* MASRequestBuilder.m in Sources */,
 				A4150EFE1BF16EE200037E27 /* MASSecurityService.m in Sources */,
 				10738A371C711C2F00B7E87E /* time_mosq.c in Sources */,
 				A46F49C21C2F5FC500A4C370 /* MASIKeyChainStore.m in Sources */,

@@ -1309,10 +1309,10 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                                          [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
                                          
                                          //
-                                         // Remove signedCertificate MASFile for re-generation
+                                         // Remove device's client MASFile for re-generation
                                          //
-                                         MASFile *signedCertificate = [[MASSecurityService sharedService] getSignedCertificate];
-                                         [MASFile removeItemAtFilePath:[signedCertificate filePath]];
+                                         MASFile *deviceClientCert = [[MASSecurityService sharedService] getDeviceClientCertificate];
+                                         [MASFile removeItemAtFilePath:[deviceClientCert filePath]];
                                          
                                          //
                                          // Updated with latest info
@@ -1480,7 +1480,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
              //
              // Post the notification
              //
-             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToRegisterNotification object:blockSelf];
+             [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
              
              return;
          }
@@ -1495,6 +1495,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
              //
              [blockSelf clearCurrentUserForLogout];
          }
+         
+         //
+         // Post the notification
+         //
+         [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
          
          //
          // Set id_token and id_token_type to nil
