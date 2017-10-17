@@ -98,18 +98,6 @@
 }
 
 
-+ (void)setKeychainSynchronizable:(BOOL)enabled
-{
-    [MASAccessService setKeychainSynchronizable:enabled];
-}
-
-
-+ (BOOL)isKeychainSynchronizable
-{
-    return [MASAccessService isKeychainSynchronizable];
-}
-
-
 + (MASState)MASState
 {
     //
@@ -1475,33 +1463,6 @@ withParameters:(nullable NSDictionary *)parameterInfo
     }
 }
 
-
-+ (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseInfoErrorBlock)completion
-{
-    //
-    // Process the request
-    //
-    if ([request.httpMethod isEqualToString:@"DELETE"])
-    {
-        [self deleteFrom:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
-    }
-    else if ([request.httpMethod isEqualToString:@"GET"])
-    {
-        [self getFrom:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
-    }
-    else if ([request.httpMethod isEqualToString:@"PATCH"])
-    {
-        [self patchTo:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
-    }
-    else if ([request.httpMethod isEqualToString:@"POST"])
-    {
-        [self postTo:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
-    }
-    else if ([request.httpMethod isEqualToString:@"PUT"])
-    {
-        [self putTo:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
-    }
-}
 
 # pragma mark - Private
 

@@ -12,7 +12,7 @@
 
 #import "MASConstants.h"
 #import "MASClaims.h"
-#import "MASRequest.h"
+
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -145,26 +145,6 @@
  *  @param enabled BOOL YES to turn on logging, NO to turn it off.
  */
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled;
-
-
-
-/**
- *  Sets BOOL indicator whether the Keychain is synchronized through iCloud.
- *  By default, the Keychain is not synchronized through iCloud.
- *
- *  @param enabled BOOL YES to enable synchroniztion, NO to disable it.
- */
-+ (void)setKeychainSynchronizable:(BOOL)enabled;
-
-
-
-/**
- *  Gets BOOL indicator of Keychain sincronization enabled or not.
- *  By default, the Keychain is not synchronized through iCloud.
- *
- *  @return return BOOL value indicating Keychain sincronization is enabled or not
- */
-+ (BOOL)isKeychainSynchronizable;
 
 
 
@@ -947,28 +927,6 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  responseType:(MASRequestResponseType)responseType
      isPublic:(BOOL)isPublic
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
-
-
-/**
- *  Invoke the endpoint with the parameters defined in the MASRequest object
- *
- *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
- *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
- *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
- *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
- *
- *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
- *
- *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
- *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
- *  with isPublic being YES.
- *
- *  @param request MASRequest An object containing all parameters to call the endpoint
- *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
- *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
- *      receive the JSON response object or an NSError object if there is a failure.
- */
-+ (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseInfoErrorBlock)completion;
 
 
 ///--------------------------------------

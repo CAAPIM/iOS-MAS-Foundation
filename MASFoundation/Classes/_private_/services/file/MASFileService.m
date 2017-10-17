@@ -57,7 +57,7 @@
     //
     // ServerCertificate
     //
-    MASFile *file = [[MASSecurityService sharedService] getServerCertificate]; //[self findFileWithName:MASCertificate];
+    MASFile *file = [[MASSecurityService sharedService] getClientCertificate]; //[self findFileWithName:MASCertificate];
     if(file)
     {
         filesFound = YES;
@@ -68,7 +68,7 @@
     //
     // SignedCertificate
     //
-    file = [[MASSecurityService sharedService] getDeviceClientCertificate]; //[self findFileWithName:MASSignedCertificate];
+    file = [[MASSecurityService sharedService] getSignedCertificate]; //[self findFileWithName:MASSignedCertificate];
     if(file)
     {
         filesFound = YES;
