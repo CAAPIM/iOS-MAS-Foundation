@@ -564,6 +564,12 @@
 		10E0279B1F72B10100EAB103 /* RNDecryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDecryptor.m; sourceTree = "<group>"; };
 		10E0279C1F72B10100EAB103 /* RNEncryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNEncryptor.h; sourceTree = "<group>"; };
 		10E0279D1F72B10100EAB103 /* RNEncryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEncryptor.m; sourceTree = "<group>"; };
+		699C17901F9585BC008C1B11 /* MASRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequest.m; sourceTree = "<group>"; };
+		699C17911F9585BC008C1B11 /* MASRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASRequest.h; sourceTree = "<group>"; };
+		699C17921F9585BC008C1B11 /* MASRequestBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASRequestBuilder.h; sourceTree = "<group>"; };
+		699C17931F9585BD008C1B11 /* MASRequestBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequestBuilder.m; sourceTree = "<group>"; };
+		699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASRequest+MASPrivate.h"; sourceTree = "<group>"; };
+		699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASRequest+MASPrivate.m"; sourceTree = "<group>"; };
 		A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASIJSONResponseSerializer+MASPrivate.h"; sourceTree = "<group>"; };
 		A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MASIJSONResponseSerializer+MASPrivate.m"; sourceTree = "<group>"; };
 		A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+MASPrivate.h"; sourceTree = "<group>"; };
@@ -1044,6 +1050,15 @@
 			path = libmosquitto123;
 			sourceTree = "<group>";
 		};
+		699C17941F958660008C1B11 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */,
+				699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		A4150EBD1BF16D9A00037E27 /* network */ = {
 			isa = PBXGroup;
 			children = (
@@ -1407,6 +1422,7 @@
 			isa = PBXGroup;
 			children = (
 				CB99752B1EDCA749006CEBB1 /* AuthCredentials */,
+				699C17941F958660008C1B11 /* Network */,
 				CB1907F11C1794FC00A5EF16 /* MASAccess.h */,
 				CB1907F21C1794FC00A5EF16 /* MASAccess.m */,
 				A4831AE81BD1A87C007B4AE6 /* MASApplication+MASPrivate.h */,
@@ -1456,6 +1472,10 @@
 		CB23578A1F0EE35A00D4C420 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				699C17911F9585BC008C1B11 /* MASRequest.h */,
+				699C17901F9585BC008C1B11 /* MASRequest.m */,
+				699C17921F9585BC008C1B11 /* MASRequestBuilder.h */,
+				699C17931F9585BD008C1B11 /* MASRequestBuilder.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
