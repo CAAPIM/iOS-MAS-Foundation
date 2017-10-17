@@ -51,8 +51,6 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASSocialLogin.h>
 #import <MASFoundation/MASProximityLogin.h>
 #import <MASFoundation/MASProximityLoginQRCode.h>
-#import <MASFoundation/MASRequestBuilder.h>
-#import <MASFoundation/MASRequest.h>
 
 //
 //  AuthCredentials Models

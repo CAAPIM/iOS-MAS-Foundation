@@ -119,11 +119,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     // re-establish URL session
     //
     [[MASNetworkingService sharedService] establishURLSession];
-    
-    //
-    // Post the did reset locally notification
-    //
-    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidResetLocallyNotification object:self];
 }
 
 

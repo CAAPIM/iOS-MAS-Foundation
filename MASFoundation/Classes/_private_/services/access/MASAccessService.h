@@ -99,24 +99,6 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 
 
 
-/**
- *  Static boolean property indicating Keychain sincronization is enabled or not.
- *
- *  @return return BOOL value indicating Keychain sincronization is enabled or not
- */
-+ (BOOL)isKeychainSynchronizable;
-
-
-
-/**
- *  Setter of static boolean property indicating Keychain sincronization is enabled or not.
- *
- *  @param enable BOOL value indicating Keychain sincronization is enabled or not
- */
-+ (void)setKeychainSynchronizable:(BOOL)enable;
-
-
-
 ///--------------------------------------
 /// @name Shared Service
 ///--------------------------------------
