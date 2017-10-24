@@ -65,48 +65,18 @@
 - (void)startLoading
 {
     NSMutableURLRequest *newRequest = [self.request mutableCopy];
-    if ([MASApplication currentApplication].isAuthenticated) {
-        
-        if ([self.class isProtectedResource:self.request.URL])
-        {
-            NSString *authorization = [MASUser authorizationBearerWithAccessToken];
-            [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
-            [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
-        }
-        else {
-            [NSURLProtocol setProperty:@NO forKey:@"AuthorizationSet" inRequest:newRequest];
-        }
-        
-        self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
-    }
-    else
+    
+    if ([MASApplication currentApplication].isAuthenticated && [self.class isProtectedResource:self.request.URL])
     {
-        [self stopLoading];
-        
-        [MAS setGrantFlow:MASGrantFlowClientCredentials];
-        
-        [MAS start:^(BOOL completed, NSError *error) {
-            
-            if(error)
-            {
-                return;
-            }
-            else if (completed){
-                
-                if ([self.class isProtectedResource:self.request.URL])
-                {
-                    NSString *authorization = [MASUser authorizationBearerWithAccessToken];
-                    [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
-                    [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
-                }
-                else {
-                    [NSURLProtocol setProperty:@NO forKey:@"AuthorizationSet" inRequest:newRequest];
-                }
-                
-                self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
-            }
-        }];
+        NSString *authorization = [MASUser authorizationBearerWithAccessToken];
+        [newRequest setValue:authorization forHTTPHeaderField:@"Authorization"];
+        [NSURLProtocol setProperty:@YES forKey:@"AuthorizationSet" inRequest:newRequest];
     }
+    else {
+        [NSURLProtocol setProperty:@NO forKey:@"AuthorizationSet" inRequest:newRequest];
+    }
+    
+    self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
 }
 
 
