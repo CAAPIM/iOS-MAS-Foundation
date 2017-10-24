@@ -1,11 +1,11 @@
-# Contribute to CA Mobile App Services SDK
+# Contribute to iOS Mobile SDK
 Contributions are welcome and much appreciated. Just follow these easy steps to contribute.
 
 ## Code Standard and Guideline
-For consistency, we ask that you adhere to some basic code guidelines when contributing to the MAS SDK. See the [Code Standard and Guideline][guidelines] for details.
+For consistency, we ask that you adhere to some basic code guidelines when contributing to the iOS Mobile SDK. See the [Code Standard and Guideline][guidelines] for details.
 
 ## Our Development Process
-To continue improving the SDK, the MAS development team will work on the same GitHub repos as you. The `develop branch` is used for development, and the `master branch` is used only for stable releases.
+To continue improving the SDK, our development team will work on the same GitHub repos as you. The `develop branch` is used for development, and the `master branch` is used only for stable releases.
 **Note:** For production environments, please use releases only from the master branch.
 
 ### Pull Requests
@@ -14,7 +14,7 @@ We welcome and encourage pull requests. When we get a pull request, it is peer r
 Follow these steps for pull requests:
 
 1. Fork the repo and create your branch from `master`.
-4. For any new code, add unit tests.
+2. For any new code, add unit tests.
 3. If you've changed APIs, update code comments for AppleDocs.
 4. Verify that the test suite passes.
 5. Verify that your code follows the [Code Standard Guideline][guidelines]
@@ -44,12 +44,12 @@ Before filing a new issue, check Known Issues to see if your problem already exi
 * Anything else that seems relevant. 
 
 ## License
-By contributing to CA Mobile App Services SDK, you agree that your contributions will be licensed under its [license][license-link].
+By contributing to iOS Mobile SDK, you agree that your contributions will be licensed under its [license][license-link].
 
 
- [guidelines]: /GUIDELINES.md
- [community]: https://communities.ca.com/community/ca-api-management-community/content?filterID=contentstatus%5Bpublished%5D~category%5Bca-mobile-api-gateway%5D
- [license-link]: /LICENSE
- [cla]: https://www.clahub.com/agreements/CAAPIM/iOS-MAS-Foundation
- [casupport]: https://support.ca.com/irj/portal/implsvcnewcase
- 
+[guidelines]: /GUIDELINES.md
+[community]: https://communities.ca.com/community/ca-api-management-community/content?filterID=contentstatus%5Bpublished%5D~category%5Bca-mobile-api-gateway%5D
+[license-link]: /LICENSE
+[cla]: https://www.clahub.com/agreements/CAAPIM/iOS-MAS-Foundation
+[casupport]: https://support.ca.com/irj/portal/implsvcnewcase
+
