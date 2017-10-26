@@ -245,7 +245,7 @@
 @property (nonatomic, copy, readonly, nullable) NSString *userInfoEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *userSessionLogoutEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *userSessionStatusEndpointPath;
-
+@property (nonatomic, copy, readonly, nullable) NSString *pushNotificationRegisterEndpoint;
 
 
 ///--------------------------------------

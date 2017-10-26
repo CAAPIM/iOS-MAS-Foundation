@@ -198,6 +198,7 @@ static NSString *_Nonnull const MASUserPhoneRequestResponseKey = @"phone_number"
 static NSString *_Nonnull const MASUserPictureRequestResponseKey = @"picture"; // string
 static NSString *_Nonnull const MASUserRefreshTokenRequestResponseKey = @"refresh_token"; // string
 
+static NSString *_Nonnull const MASPushNotificationDeviceTokenRequestResponseKey = @"device_token"; // string
 
 # pragma mark - GrantType Constants
 
