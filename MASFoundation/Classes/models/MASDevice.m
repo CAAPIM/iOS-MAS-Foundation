@@ -50,15 +50,26 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 - (BOOL)isRegistered
 {
+    _isRegistered = NO;
+    
     //
     // Obtain key chain items to determine registration status
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSString *magIdentifier = [accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    NSData *certificateData = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
-    
-    _isRegistered = (magIdentifier && certificateData);
+    NSString *vendorIdFromKeychain = [accessService getAccessValueStringWithType:MASAccessValueTypeDeviceVendorId];
+    NSString *vendorIdCurrent = [MASDevice deviceVendorId];
+
+    //
+    // Check if the vendorId in Keychain macth with current vendorId
+    //
+    if([vendorIdCurrent isEqualToString:vendorIdFromKeychain])
+    {
+        NSString *magIdentifier = [accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
+        NSData *certificateData = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+        
+        _isRegistered = (magIdentifier && certificateData);
+    }
     
     return _isRegistered;
 }
@@ -125,7 +136,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     //
     [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidResetLocallyNotification object:self];
 }
-
 
 
 # pragma mark - Lifecycle

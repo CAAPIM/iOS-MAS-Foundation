@@ -1,4 +1,4 @@
-MASFoundation is the core iOS framework of the Mobile SDK, which is part of [CA Mobile App Services][mas.ca.com]. MASFoundation handles the communication and authentication layer of the Mobile SDK, making it easy for developers to establish a secure connection (TLS, Mutual SSL) to any CA Mobile API Gateway (MAG).
+MASFoundation is the core iOS framework of the iOS Mobile SDK, which is part of CA Mobile API Gateway. MASFoundation handles the communication and authentication layer of the iOS Mobile SDK, making it easy for developers to establish a secure connection (TLS, Mutual SSL) to any CA Mobile API Gateway (MAG).
 
 ## Features
 
@@ -15,15 +15,15 @@ The MASFoundation framework has the following features:
     + OTP - One Time Password
     + PKCE - Proof Key for Code Exchange
     + SSL Pinning with certificate, public key, or public key hash
+    + Fingerprint Sessions Lock - Support phone unlocking using fingerprint recognition
 - Dynamic SDK Configuration
 - Enterprise Browser
 - Geo Location
 
 ## Get Started
 
+- Check out our [documentation][docs] for sample code, video tutorials, and more.
 - [Download MASFoundation][download] 
-- Read the ["Getting Started" guide][get-started] or watch some [video tutorials][videos]
-- Check out our [documentation][docs] for more details and sample codes
 
 
 ## Communication

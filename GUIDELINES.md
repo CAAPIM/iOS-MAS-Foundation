@@ -1,21 +1,19 @@
-# CA Technologies Mobile App Services Objective-C Style Guide
+# CA Technologies Objective-C Style Guide
 
-This document describes the Objective-C coding style of iOS team for CA Technologies Mobile App Services.  This guideline is recommended to comply with all Objective-C implementations of our products.
+This document describes the Objective-C coding style of the iOS Mobile SDK team.  This guideline is recommended to comply with all Objective-C implementations of our products.
 
-## Review Apple's Official Coding Guideline
+## Review Apple Official Coding Guideline
 
-Beyond the guidelines defined in this document, we also recommend reviewing Apple's official coding guidelines.  
+Beyond the guidelines defined in this document, we also recommend reviewing the Apple official coding guidelines.  
 
 * [Programming with Objective-C](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjectiveC/Introduction/introObjectiveC.html)
 * [Cocoa Fundamentals Guide](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/Introduction/Introduction.html)
 * [Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html)
 * [App Programming Guide for iOS](http://developer.apple.com/library/ios/#documentation/iphone/conceptual/iphoneosprogrammingguide/Introduction/Introduction.html)
 
-### MAS Products
+### iOS Mobile SDK
 
-For more information about MAS, see [Mobile App Service developer](http://mas.ca.com).
-
-Mobile App Services consists of multiple functional products separated into individual frameworks.
+The iOS Mobile SDK consists these frameworks.
 
 * MASFoundation
 * MASUI
@@ -23,7 +21,7 @@ Mobile App Services consists of multiple functional products separated into indi
 * MASIdentityManagement
 * MASStorage
 
-All of frameworks are recommended to comply with the coding guideline.
+All of frameworks are recommended to comply with the coding guideline. For more information about the iOS Mobile SDK, see [developer website](http://mas.ca.com).
 
 ## Table of Contents
 
@@ -346,7 +344,7 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
 + (MASObject *)currentObject;
 
 - (void)setObject:(id)object forKeyedSubscript:(id <NSCopying>)key;
-``` 
+```
 
 **Not:**
 
@@ -356,7 +354,7 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
 +(MASObject*)currentObject;
 
 -(void)setObject:(id)object forKeyedSubscript:(id<NSCopying>)key;
-``` 
+```
 
 #### Newline
 

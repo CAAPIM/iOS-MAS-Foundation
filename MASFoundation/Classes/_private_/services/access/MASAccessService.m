@@ -745,6 +745,9 @@ static BOOL _isKeychainSynchronizable_ = NO;
         case MASAccessValueTypeMASUserObjectData:
             storageKey = kMASAccessSharedStorageKey;
             break;
+        case MASAccessValueTypeDeviceVendorId:
+            storageKey = kMASAccessSharedStorageKey;
+            break;
         default:
             //
             // MASAccessValueTypeUknonw
@@ -857,24 +860,33 @@ static BOOL _isKeychainSynchronizable_ = NO;
         case MASAccessValueTypeSignedPublicCertificateExpirationDate:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeSignedPublicCertificateExpirationDate"];
             break;
+            //AuthenticatedTimestamp
         case MASAccessValueTypeAuthenticatedTimestamp:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeAuthenticatedTimestamp"];
             break;
+            //IsDeviceLocked:
         case MASAccessValueTypeIsDeviceLocked:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeIsDeviceLocked"];
             break;
+            //CurrentAuthCredentialsGrantType
         case MASAccessValueTypeCurrentAuthCredentialsGrantType:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, @"kMASAccessValueTypeCurrentAuthCredentialsGrantType"];
             break;
+            //MASUserObjectData
         case MASAccessValueTypeMASUserObjectData:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayHostName, @"kMASAccessValueTypeMASUserObjectData"];
+            break;
+            //DeviceVendorId
+        case MASAccessValueTypeDeviceVendorId:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayHostName, @"kMASKeyChainDeviceVendorId"];
+            break;
         default:
             //
             // MASAccessValueTypeUknonw
             //
             break;
     }
-    
+
     if (![self isAccessGroupAccessible])
     {
         accessTypeToString = [NSString stringWithFormat:@"_%@", accessTypeToString];
