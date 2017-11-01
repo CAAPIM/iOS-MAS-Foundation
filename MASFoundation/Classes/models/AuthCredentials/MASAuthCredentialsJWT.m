@@ -49,7 +49,7 @@
         }
         
         _canRegisterDevice = YES;
-        _isReuseable = YES;
+        _isReuseable = NO;
     }
     
     return self;
