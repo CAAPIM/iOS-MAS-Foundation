@@ -684,6 +684,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     //
     MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
     
+    //
+    // Post the Mobile SDK will attempt to deregister device
+    //
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillDeregisterNotification object:self];
+    
     __block MASModelService *blockSelf = self;
     
     //
@@ -694,6 +699,23 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
         andHeaders:mutableHeaderInfo
         completion:^(NSDictionary *responseInfo, NSError *error)
         {
+            //
+            // Detect if error, if so stop here
+            //
+            if(error)
+            {
+                //
+                // Post the did fail to deregister in cloud notification
+                //
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterNotification object:self];
+                
+                //
+                // Notify
+                //
+                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                
+                return;
+            }
             
             //
             // Clear currentUser object upon log-out
@@ -726,24 +748,6 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             // Post the did deregister on device notification
             //
             [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidDeregisterOnDeviceNotification object:self];
-            
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Post the did fail to deregister in cloud notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidFailToDeregisterNotification object:self];
-
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
             
             //
             // Post the did deregister in cloud notification
