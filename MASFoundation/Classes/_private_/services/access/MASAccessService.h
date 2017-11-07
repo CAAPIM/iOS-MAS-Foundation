@@ -163,7 +163,7 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  *  Store the certificate as data format into keychain
  *
  *  @param certificate NSData form of certificate
- *  @param type        MASAccessValueType enum specifying the value key
+ *  @param storageKey NSString value for the data key
  */
 - (void)setAccessValueCertificate:(NSData *)certificate storageKey:(NSString *)storageKey;
 
@@ -172,7 +172,7 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 /**
  *  Retrieve the certificate data by the value key
  *
- *  @param type MASAccessValueType enum value for key
+ *  @param storageKey NSString value for the data key
  *
  *  @return Certificate value by the specified value key
  */
@@ -181,19 +181,32 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
- *  Store NSData of access value into keychain
- *
- *  @param data NSData to store into keychain
- *  @param type MASAccessValueType enum value for the value key
+ Store NSData of access value into keychain
+
+ @param data NSData to be stored into keychain
+ @param storageKey NSString value for the data key
+ @return BOOL result of operation
  */
-- (void)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey;
+- (BOOL)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey;
+
+
+
+/**
+ Store NSData of access value into keychain
+
+ @param data NSData to be stored into keychain
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return BOOL result of operation
+ */
+- (BOOL)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey error:(NSError **)error;
 
 
 
 /**
  *  Retrieve NSData of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSData of the access data by the specified value key
  */
@@ -202,19 +215,43 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
+ Retrieve NSData of access value from keychain
+
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return NSData of the access data by the specified value key
+ */
+- (NSData *)getAccessValueDataWithStorageKey:(NSString *)storageKey error:(NSError **)error;
+
+
+
+/**
  *  Store NSString of access value into keychain
  *
  *  @param string NSString to store into keychain
- *  @param type   MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
+ *  @return BOOL result of operation
  */
-- (void)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey;
+- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey;
+
+
+
+/**
+ Store NSString of access value into keychain
+
+ @param string NSString to store into keychain
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return BOOL result of operation
+ */
+- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey error:(NSError **)error;
 
 
 
 /**
  *  Retrieve NSString of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSString of the access data by the specified value key
  */
@@ -223,19 +260,30 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
+ Retrieve NSString of access value from keychain
+
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return NSString of the access data by the specified value key
+ */
+- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey error:(NSError **)error;
+
+
+
+/**
  *  Store NSDictionary of access value into keychain
  *
  *  @param dictionary NSDictionary to store into keychain
- *  @param type       MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  */
-- (void)setAccessValueDictionary:(NSDictionary *)dictionary storageKey:(NSString *)storageKey;
+- (BOOL)setAccessValueDictionary:(NSDictionary *)dictionary storageKey:(NSString *)storageKey;
 
 
 
 /**
  *  Retrieve NSDictionary of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSDictionary of the access data by the specified value key
  */
@@ -247,16 +295,16 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  *  Store NSNumber of access value into keychain
  *
  *  @param number NSNumber to store into keychain
- *  @param type   MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  */
-- (void)setAccessValueNumber:(NSNumber *)number storageKey:(NSString *)storageKey;
+- (BOOL)setAccessValueNumber:(NSNumber *)number storageKey:(NSString *)storageKey;
 
 
 
 /**
  *  Retrieve NSNumber of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSNumber of the access data by the specified value key
  */
@@ -272,7 +320,7 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  *  Other access type value will not be stored.
  *
  *  @param cryptoKey SecKeyRef to store into keychain
- *  @param type      MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  */
 - (void)setAccessValueCryptoKey:(SecKeyRef)cryptoKey storageKey:(NSString *)storageKey;
 
@@ -285,7 +333,7 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  *  MASAccessValueTypePublicKey and MASAccessValueTypePrivateKey.
  *  Other access type value will not be retrieved.
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return SecKeyRef of the access data by the specified value key
  */

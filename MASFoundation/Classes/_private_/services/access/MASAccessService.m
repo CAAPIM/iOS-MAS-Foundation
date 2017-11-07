@@ -25,6 +25,7 @@ static NSString *const kMASAccessLocalStorageServiceName = @"LocalStorageService
 
 static NSString *const kMASAccessSharedStorageKey = @"sharedStorage";
 static NSString *const kMASAccessLocalStorageKey = @"localStorage";
+static NSString *const kMASAccessCustomSharedStorageKey = @"customSharedStorage";
 
 static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
@@ -69,6 +70,7 @@ NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendo
 
 @property (strong, nonatomic, readwrite) NSString *sharedStorageServiceName;
 @property (strong, nonatomic, readwrite) NSString *localStorageServiceName;
+@property (strong, nonatomic, readwrite) NSString *customSharedStorageServiceName;
 
 @property (strong, nonatomic, readwrite) NSString *gatewayHostName;
 @property (strong, nonatomic, readwrite) NSString *gatewayIdentifier;
@@ -194,8 +196,14 @@ static BOOL _isKeychainSynchronizable_ = NO;
     _gatewayIdentifier = [MASConfiguration currentConfiguration].gatewayUrl.absoluteString;
 
     _localStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessLocalStorageServiceName];
-    
     _sharedStorageServiceName = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, kMASAccessSharedStorageServiceName];
+    _customSharedStorageServiceName = [NSString stringWithFormat:@"MAS.%@", kMASAccessCustomSharedStorageKey];
+    
+    //
+    // Custom shared storage
+    //
+    MASIKeyChainStore *customSharedStorage = [MASIKeyChainStore keyChainStoreWithService:_customSharedStorageServiceName];
+    customSharedStorage.synchronizable = _isKeychainSynchronizable_;
     
     //
     // Local storage
@@ -214,13 +222,13 @@ static BOOL _isKeychainSynchronizable_ = NO;
         //
         // storage dictionary property
         //
-        _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, sharedStorage, kMASAccessSharedStorageKey, nil];
+        _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, sharedStorage, kMASAccessSharedStorageKey, customSharedStorage, kMASAccessCustomSharedStorageKey, nil];
     }
     else {
         //
         // storage dictionary property
         //
-        _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, localStorage, kMASAccessSharedStorageKey, nil];
+        _storages = [NSDictionary dictionaryWithObjectsAndKeys:localStorage, kMASAccessLocalStorageKey, localStorage, kMASAccessSharedStorageKey, customSharedStorage, kMASAccessCustomSharedStorageKey, nil];
     }
     
     
@@ -368,14 +376,21 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
-- (void)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey
+- (BOOL)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey
 {
-    
+    return [self setAccessValueData:data storageKey:storageKey error:nil];
+}
+
+
+- (BOOL)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey error:(NSError **)error
+{
     NSString *storageType = [self getStorageTypeWithKey:storageKey];
     NSString *accessValueAsString = [self convertKeyString:storageKey];
     MASIKeyChainStore *destinationStorage = _storages[storageType];
+    NSError *operationError = nil;
     
     BOOL isSecuredData = [self isSecureData:storageKey];
+    BOOL result = NO;
     
     if (isSecuredData)
     {
@@ -387,49 +402,69 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (data)
     {
-        [destinationStorage setData:data forKey:accessValueAsString];
+        result = [destinationStorage setData:data forKey:accessValueAsString error:&operationError];
     }
     //
     // Removal
     //
     else
     {
-        [destinationStorage removeItemForKey:accessValueAsString];
+        result = [destinationStorage removeItemForKey:accessValueAsString error:&operationError];
     }
     
     if (isSecuredData)
     {
         [destinationStorage setAccessibility:MASIKeyChainStoreAccessibilityAfterFirstUnlock authenticationPolicy:0];
     }
+    
+    if (error)
+    {
+        *error = operationError;
+    }
+    
+    return result;
 }
 
 
 - (NSData *)getAccessValueDataWithStorageKey:(NSString *)storageKey
 {
-    
+    return [self getAccessValueDataWithStorageKey:storageKey error:nil];
+}
+
+
+- (NSData *)getAccessValueDataWithStorageKey:(NSString *)storageKey error:(NSError **)error
+{
     NSString *storageType = [self getStorageTypeWithKey:storageKey];
     NSString *accessValueAsString = [self convertKeyString:storageKey];
     MASIKeyChainStore *destinationStorage = _storages[storageType];
+    NSError *operationError = nil;
     
-    NSData *keychainData = [destinationStorage dataForKey:accessValueAsString];
-
+    NSData *keychainData = [destinationStorage dataForKey:accessValueAsString error:&operationError];
+    
+    if (error)
+    {
+        *error = operationError;
+    }
+    
     return keychainData;
 }
 
 
-- (void)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey
+- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey
 {
-    [self setAccessValueString:string storageKey:storageKey error:nil];
+    return [self setAccessValueString:string storageKey:storageKey error:nil];
 }
 
 
-- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey error:(NSError * __nullable __autoreleasing * __nullable)error
+- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey error:(NSError **)error
 {
     
     NSString *storageType = [self getStorageTypeWithKey:storageKey];
     NSString *accessValueAsString = [self convertKeyString:storageKey];
     MASIKeyChainStore *destinationStorage = _storages[storageType];
+    NSError *operationError = nil;
     
+    BOOL result = NO;
     BOOL isSecuredData = [self isSecureData:storageKey];
     
     if (isSecuredData)
@@ -442,14 +477,14 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (string)
     {
-        [destinationStorage setString:string forKey:accessValueAsString error:error];
+        result = [destinationStorage setString:string forKey:accessValueAsString error:&operationError];
     }
     //
     // Removal
     //
     else
     {
-        [destinationStorage removeItemForKey:accessValueAsString error:error];
+        result = [destinationStorage removeItemForKey:accessValueAsString error:&operationError];
     }
     
     if (isSecuredData)
@@ -459,61 +494,73 @@ static BOOL _isKeychainSynchronizable_ = NO;
     
     if (error)
     {
-        return NO;
+        *error = operationError;
     }
-    else {
-        return YES;
-    }
+    
+    return result;
 }
 
 
 - (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey
 {
-    
     return [self getAccessValueStringWithStorageKey:storageKey error:nil];
 }
 
 
-- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey userOperationPrompt:(NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error
+- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey userOperationPrompt:(NSString *)userOperationPrompt error:(NSError **)error
 {
     NSString *storageType = [self getStorageTypeWithKey:storageKey];
     NSString *accessValueAsString = [self convertKeyString:storageKey];
     MASIKeyChainStore *destinationStorage = _storages[storageType];
+    NSError *operationError = nil;
     
-    NSString *securedString = [destinationStorage stringForKey:accessValueAsString userOperationPrompt:userOperationPrompt error:error];
+    NSString *securedString = [destinationStorage stringForKey:accessValueAsString userOperationPrompt:userOperationPrompt error:&operationError];
+    
+    if (error)
+    {
+        *error = operationError;
+    }
     
     return securedString;
 }
 
 
-- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey error:(NSError * __nullable __autoreleasing * __nullable)error
+- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey error:(NSError **)error
 {
-    
     NSString *storageType = [self getStorageTypeWithKey:storageKey];
     NSString *accessValueAsString = [self convertKeyString:storageKey];
     MASIKeyChainStore *destinationStorage = _storages[storageType];
+    NSError *operationError = nil;
     
-    NSString *securedString = [destinationStorage stringForKey:accessValueAsString error:error];
+    NSString *securedString = [destinationStorage stringForKey:accessValueAsString error:&operationError];
+    
+    if (error)
+    {
+        *error = operationError;
+    }
     
     return securedString;
 }
 
 
-- (void)setAccessValueDictionary:(NSDictionary *)dictionary storageKey:(NSString *)storageKey
+- (BOOL)setAccessValueDictionary:(NSDictionary *)dictionary storageKey:(NSString *)storageKey
 {
     
     //
     // convert dictionary to data
     //
     NSData *thisData = [NSKeyedArchiver archivedDataWithRootObject:dictionary];
+    BOOL result = NO;
     
     //
     // make sure the data exists
     //
     if(thisData)
     {
-        [self setAccessValueData:thisData storageKey:storageKey];
+        result = [self setAccessValueData:thisData storageKey:storageKey];
     }
+    
+    return result;
 }
 
 
@@ -531,19 +578,22 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
-- (void)setAccessValueNumber:(NSNumber *)number storageKey:(NSString *)storageKey
+- (BOOL)setAccessValueNumber:(NSNumber *)number storageKey:(NSString *)storageKey
 {
     // convert dictionary to data
     //
     NSData *thisData = [NSKeyedArchiver archivedDataWithRootObject:number];
+    BOOL result = NO;
     
     //
     // make sure the data exists
     //
     if(thisData)
     {
-        [self setAccessValueData:thisData storageKey:storageKey];
+        result = [self setAccessValueData:thisData storageKey:storageKey];
     }
+    
+    return result;
 }
 
 
@@ -699,14 +749,28 @@ static BOOL _isKeychainSynchronizable_ = NO;
 
 - (NSString *)convertKeyString:(NSString *)key
 {
-    NSString *accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, key];
+    NSString *accessTypeToString = nil;
     
     //
-    //  When access gruop is not accessiable, differentiate the key to make sure there is no conflict of device registration record in the future
+    //  Internal system data
     //
-    if (![self isAccessGroupAccessible])
+    if ([_sharedStorageKeys containsObject:key] || [_localStorageKeys containsObject:key])
     {
-        accessTypeToString = [NSString stringWithFormat:@"_%@", accessTypeToString];
+        accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayIdentifier, key];
+        
+        //
+        //  When access gruop is not accessiable, differentiate the key to make sure there is no conflict of device registration record in the future
+        //
+        if (![self isAccessGroupAccessible])
+        {
+            accessTypeToString = [NSString stringWithFormat:@"_%@", accessTypeToString];
+        }
+    }
+    //
+    //  External custom data in shared keychain storage
+    //
+    else {
+        accessTypeToString = [NSString stringWithFormat:@"%@.%@", kMASAccessCustomSharedStorageKey, key];
     }
     
     return accessTypeToString;
@@ -733,7 +797,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //  If the key is not defined in either of shared nor local storage, the key must be custom data which will always be stored in shared
     //
     else {
-        return kMASAccessSharedStorageKey;
+        return kMASAccessCustomSharedStorageKey;
     }
 }
 
