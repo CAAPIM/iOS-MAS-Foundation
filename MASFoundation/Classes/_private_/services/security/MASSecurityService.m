@@ -102,7 +102,7 @@ static MASSecurityService *_sharedService_ = nil;
 - (NSURLCredential *)createUrlCredential
 {
     NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
-    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
 
     //DLog(@"\n\ncalled and identities is: %@ and certificates is: %@", identities, certificates);
     
@@ -235,7 +235,7 @@ static MASSecurityService *_sharedService_ = nil;
         //
         // Store private key bits into keychain
         //
-        [[MASAccessService sharedService] setAccessValueString:keyContents withAccessValueType:MASAccessValueTypePrivateKeyBits];
+        [[MASAccessService sharedService] setAccessValueString:keyContents storageKey:MASKeychainStorageKeyPrivateKeyBits];
     }
     
     if (!X509_REQ_sign(req, privatekey, EVP_sha1()))
@@ -337,12 +337,12 @@ static MASSecurityService *_sharedService_ = nil;
     //
     if(privateKeyRef)
     {
-        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef withAccessValueType:MASAccessValueTypePrivateKey];
+        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
     }
     
     if(publicKeyRef)
     {
-        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef withAccessValueType:MASAccessValueTypePublicKey];
+        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
     }
     
     privateKeyRef = NULL;
@@ -422,7 +422,7 @@ static MASSecurityService *_sharedService_ = nil;
     
     if (!signedCert)
     {
-        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithType:MASAccessValueTypeSignedPublicCertificateData];
+        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:MASKeychainStorageKeyPublicCertificateData];
 
         if (signedCertificateData)
         {
@@ -478,7 +478,7 @@ static MASSecurityService *_sharedService_ = nil;
         //
         // Retrieve privateKeyBits from keychain.
         //
-        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypePrivateKeyBits];
+        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyPrivateKeyBits];
         
         if (privateKeyBits)
         {

@@ -57,7 +57,7 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSString *vendorIdFromKeychain = [accessService getAccessValueStringWithType:MASAccessValueTypeDeviceVendorId];
+    NSString *vendorIdFromKeychain = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
     NSString *vendorIdCurrent = [MASDevice deviceVendorId];
 
     //
@@ -65,8 +65,8 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     //
     if([vendorIdCurrent isEqualToString:vendorIdFromKeychain])
     {
-        NSString *magIdentifier = [accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-        NSData *certificateData = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+        NSString *magIdentifier = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
+        NSData *certificateData = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
         
         _isRegistered = (magIdentifier && certificateData);
     }

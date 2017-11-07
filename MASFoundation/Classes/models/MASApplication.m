@@ -108,9 +108,9 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     MASAccessService *accessService = [MASAccessService sharedService];
 
-    NSNumber *clientExpiration = [accessService getAccessValueNumberWithType:MASAccessValueTypeClientExpiration];
-    NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
-    NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+    NSNumber *clientExpiration = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyClientExpiration];
+    NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
 
     _isRegistered = (clientExpiration && clientId && clientSecret && !self.isExpired);
     return _isRegistered;

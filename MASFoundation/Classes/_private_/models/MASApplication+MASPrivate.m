@@ -56,8 +56,7 @@
                         nil) forKey:@"redirectUri"];
 
         MASAccessService *accessService = [MASAccessService sharedService];
-        
-        NSData *trustedServerCertificate = [accessService getAccessValueDataWithType:MASAccessValueTypeTrustedServerCertificate];
+        NSData *trustedServerCertificate = [accessService getAccessValueDataWithStorageKey:MASKeychainStorageKeyTrustedServerCertificate];
         if(!trustedServerCertificate)
         {
             //
@@ -67,7 +66,7 @@
             if(certificates && certificates.count > 0)
             {
                 trustedServerCertificate = certificates[0];
-                [accessService setAccessValueData:trustedServerCertificate withAccessValueType:MASAccessValueTypeTrustedServerCertificate];
+                [accessService setAccessValueData:trustedServerCertificate storageKey:MASKeychainStorageKeyTrustedServerCertificate];
             }
         }
         
@@ -200,7 +199,7 @@
     NSNumber *clientExpiration = bodyInfo[MASClientExpirationRequestResponseKey];
     if(clientExpiration)
     {
-        [accessService setAccessValueNumber:clientExpiration withAccessValueType:MASAccessValueTypeClientExpiration];
+        [accessService setAccessValueNumber:clientExpiration storageKey:MASKeychainStorageKeyClientExpiration];
     }
     
     //
@@ -209,7 +208,7 @@
     NSString *clientId = bodyInfo[MASClientKeyRequestResponseKey];
     if(clientId)
     {
-        [accessService setAccessValueString:clientId withAccessValueType:MASAccessValueTypeClientId];
+        [accessService setAccessValueString:clientId storageKey:MASKeychainStorageKeyClientId];
     }
     
     //
@@ -218,7 +217,7 @@
     NSString *clientSecret = bodyInfo[MASClientSecretRequestResponseKey];
     if(clientSecret)
     {
-        [accessService setAccessValueString:clientSecret withAccessValueType:MASAccessValueTypeClientSecret];
+        [accessService setAccessValueString:clientSecret storageKey:MASKeychainStorageKeyClientSecret];
     }
     
     //
@@ -232,9 +231,9 @@
 {
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    [accessService setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
-    [accessService setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
-    [accessService setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeClientExpiration];
+    [accessService setAccessValueString:nil storageKey:MASKeychainStorageKeyClientId];
+    [accessService setAccessValueString:nil storageKey:MASKeychainStorageKeyClientSecret];
+    [accessService setAccessValueNumber:nil storageKey:MASKeychainStorageKeyClientExpiration];
     
     [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASApplication.class description]];
 }
@@ -268,7 +267,7 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSNumber *clientExpiration = [accessService getAccessValueNumberWithType:MASAccessValueTypeClientExpiration];
+    NSNumber *clientExpiration = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyClientExpiration];
     if(!clientExpiration)
     {
         return nil;
@@ -291,8 +290,8 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
-    NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+    NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
 
     NSString *clientAuthStr = [NSString stringWithFormat:@"%@:%@", clientId, clientSecret];
     NSData *clientAuthData = [clientAuthStr dataUsingEncoding:NSUTF8StringEncoding];
@@ -310,9 +309,9 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSNumber *clientExpiration = [accessService getAccessValueNumberWithType:MASAccessValueTypeClientExpiration];
-    NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
-    NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+    NSNumber *clientExpiration = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyClientExpiration];
+    NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
 
     //
     // Expiration is nil, then it is considered expired

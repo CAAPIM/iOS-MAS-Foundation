@@ -46,7 +46,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Attempt to retrieve from keychain
     //
     
-    NSData *data = [[MASAccessService sharedService] getAccessValueDataWithType:MASAccessValueTypeMASUserObjectData];
+    NSData *data = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:MASKeychainStorageKeyMASUserObjectData];
     
     if(data)
     {
@@ -65,7 +65,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
     if(data)
     {
-        [[MASAccessService sharedService] setAccessValueData:data withAccessValueType:MASAccessValueTypeMASUserObjectData];
+        [[MASAccessService sharedService] setAccessValueData:data storageKey:MASKeychainStorageKeyMASUserObjectData];
     }
 }
 
@@ -172,12 +172,12 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // set authenticated timestamp
     //
     NSNumber *authenticatedTimestamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
-    [accessService setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    [accessService setAccessValueNumber:authenticatedTimestamp storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     //
     // set authenticated user's objectId
     //
-    [accessService setAccessValueString:self.objectId withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
+    [accessService setAccessValueString:self.objectId storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
     //
     // storing access information into keychain
@@ -203,7 +203,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 {
     [self resetPartial];
     
-    [[MASAccessService sharedService] setAccessValueData:nil withAccessValueType:MASAccessValueTypeMASUserObjectData];
+    [[MASAccessService sharedService] setAccessValueData:nil storageKey:MASKeychainStorageKeyMASUserObjectData];
 }
 
 - (void)resetPartial
