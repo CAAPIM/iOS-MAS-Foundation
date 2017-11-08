@@ -12,11 +12,10 @@
 
 
 /**
- MASSharedStorage class is designed for developers to store, and retrieve NSString or NSData data into shared keychain storage,
+ MASSharedStorage class is designed for developers to write, read, and delete NSString or NSData data into shared keychain storage,
  so that multiple applications with same keychain sharing group in the same device can share data between applications.
  
- @warning *Important:* there are some of the keys that are reserved by MASFoundation framework which will not store, or retrieve value with the same key.
- Key should be generic to its use-case, and any internal system data reserved by MASFoundation framework will not be readable through this class.
+ @warning *Important:* MASSharedStorage will not be available if MASFoundation framework is not initialized; the framework should be initialized prior to write/read/delete any data into MASSharedStorage.
  */
 @interface MASSharedStorage : MASObject
 
@@ -53,6 +52,7 @@
 
 /**
  Saves NSString data with the specified key into shared keychain storage.
+ Save method can also be used to delete the data from the shared keychain storage by passing nil in string parameter with the key.
 
  @param string NSString data to be stored
  @param key NSString of the key used to store the NSString data
@@ -65,6 +65,7 @@
 
 /**
  Saves NSData object with the specified key into shared keychain storage.
+ Save method can also be used to delete the data from the shared keychain storage by passing nil in data parameter with the key.
 
  @param data NSData object to be stored
  @param key NSString of the key used to store the NSData object

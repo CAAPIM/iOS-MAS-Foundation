@@ -459,11 +459,6 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeJWTUnexpectedClassType = 170002,
     MASFoundationErrorCodeJWTSerializationError = 170003,
     
-    //
-    //  Shared Keychain Storage
-    //
-    MASFoundationErrorCodeSharedStorageNotAllowedDataKey = 180001,
-    
     MASFoundationErrorCodeCount = -999999
 };
 

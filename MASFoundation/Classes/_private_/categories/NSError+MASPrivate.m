@@ -1104,11 +1104,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeJWTSerializationError: return @"Claim value (%@) cannot be serialized";
             
         //
-        // Custom shared keychain storage
-        //
-        case MASFoundationErrorCodeSharedStorageNotAllowedDataKey: return @"Data key is reserved, and not allowed to read and/or modify.";
-            
-        //
         // Default
         //
         

@@ -30,19 +30,6 @@
     }
     
     //
-    //  Check if key is reserved for internal system data or not
-    //
-    if ([[MASAccessService sharedService] isInternalDataForStorageKey:key])
-    {
-        if (error)
-        {
-            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotAllowedDataKey errorDomain:MASFoundationErrorDomainLocal];
-        }
-        
-        return nil;
-    }
-    
-    //
     //  Retrieve NSString from shared keychain storage
     //
     NSError *operationError = nil;
@@ -75,19 +62,6 @@
         if (error)
         {
             *error = [NSError errorMASIsNotStarted];
-        }
-        
-        return nil;
-    }
-    
-    //
-    //  Check if key is reserved for internal system data or not
-    //
-    if ([[MASAccessService sharedService] isInternalDataForStorageKey:key])
-    {
-        if (error)
-        {
-            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotAllowedDataKey errorDomain:MASFoundationErrorDomainLocal];
         }
         
         return nil;
@@ -132,19 +106,6 @@
     }
     
     //
-    //  Check if key is reserved for internal system data or not
-    //
-    if ([[MASAccessService sharedService] isInternalDataForStorageKey:key])
-    {
-        if (error)
-        {
-            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotAllowedDataKey errorDomain:MASFoundationErrorDomainLocal];
-        }
-        
-        return NO;
-    }
-    
-    //
     //  Store NSString into shared keychain storage
     //
     NSError *operationError = nil;
@@ -177,19 +138,6 @@
         if (error)
         {
             *error = [NSError errorMASIsNotStarted];
-        }
-        
-        return NO;
-    }
-    
-    //
-    //  Check if key is reserved for internal system data or not
-    //
-    if ([[MASAccessService sharedService] isInternalDataForStorageKey:key])
-    {
-        if (error)
-        {
-            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotAllowedDataKey errorDomain:MASFoundationErrorDomainLocal];
         }
         
         return NO;
