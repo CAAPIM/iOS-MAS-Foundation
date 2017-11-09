@@ -620,11 +620,11 @@ static BOOL _isKeychainSynchronizable_ = NO;
     NSString *keyIdentifierStr = nil;
     
     
-    if ([storageType isEqualToString:MASKeychainStorageKeyPublicKey])
+    if ([storageKey isEqualToString:MASKeychainStorageKeyPublicKey])
     {
         keyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"publicKey"];
     }
-    else if ([storageType isEqualToString:MASKeychainStorageKeyPrivateKey])
+    else if ([storageKey isEqualToString:MASKeychainStorageKeyPrivateKey])
     {
         keyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"privateKey"];
     }
