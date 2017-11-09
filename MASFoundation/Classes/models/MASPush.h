@@ -12,10 +12,8 @@
 
 
 /**
- * MASPush is the front facing class where a valid `deviceToken` is stored and saved to MAG. There it
- * can be used to target push notifications.
- * The device is automatically registered when the deviceToken is set and credentials become available. 
- * It can disabled to perform a manual registration if necessary.
+ * MASPush is the front facing class where a valid `deviceToken` is stored and saved to MAG. There it can be used to target push notifications.
+ * The device is automatically registered when the deviceToken is set and credentials become available. It can disabled to perform a manual registration if necessary.
  *
  * @warning *Important:* The device registration will not be available if MASFoundation framework is not initialized; the framework should be initialized prior registration.
  */
@@ -75,7 +73,7 @@
  *  Gets BOOL indicator of Auto Registration enabled or not.
  *  By default auto registration is enabled.
  *
- *  @return return BOOL value indicating Keychain sincronization is enabled or not
+ *  @return return BOOL value indicating auto registration is enabled or not
  */
 + (BOOL)isKAutoRegistrationEnabled;
 

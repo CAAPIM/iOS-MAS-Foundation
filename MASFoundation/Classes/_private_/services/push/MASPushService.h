@@ -28,7 +28,7 @@
 /**
  * Retrieve the shared, singleton service.
  *
- * @return Returns the MASAccessService singleton.
+ * @return Returns the MASPushService singleton.
  */
 + (instancetype _Nonnull)sharedService;
 
