@@ -10,7 +10,17 @@
 
 #import <MASFoundation/MASFoundation.h>
 
+
+/**
+ * MASPush is the front facing class where a valid `deviceToken` is stored and saved to MAG. There it
+ * can be used to target push notifications.
+ * The device is automatically registered when the deviceToken is set and credentials become available. 
+ * It can disabled to perform a manual registration if necessary.
+ *
+ */
 @interface MASPush : MASObject
+
+
 
 ///--------------------------------------
 /// @name Properties
