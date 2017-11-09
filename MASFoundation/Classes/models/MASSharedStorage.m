@@ -30,6 +30,19 @@
     }
     
     //
+    //  Check for data key
+    //
+    if (key == nil || [key length] <= 0)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotNilKey errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return nil;
+    }
+    
+    //
     //  Retrieve NSString from shared keychain storage
     //
     NSError *operationError = nil;
@@ -62,6 +75,19 @@
         if (error)
         {
             *error = [NSError errorMASIsNotStarted];
+        }
+        
+        return nil;
+    }
+    
+    //
+    //  Check for data key
+    //
+    if (key == nil || [key length] <= 0)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotNilKey errorDomain:MASFoundationErrorDomainLocal];
         }
         
         return nil;
@@ -106,6 +132,19 @@
     }
     
     //
+    //  Check for data key
+    //
+    if (key == nil || [key length] <= 0)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotNilKey errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return NO;
+    }
+    
+    //
     //  Store NSString into shared keychain storage
     //
     NSError *operationError = nil;
@@ -138,6 +177,19 @@
         if (error)
         {
             *error = [NSError errorMASIsNotStarted];
+        }
+        
+        return NO;
+    }
+    
+    //
+    //  Check for data key
+    //
+    if (key == nil || [key length] <= 0)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotNilKey errorDomain:MASFoundationErrorDomainLocal];
         }
         
         return NO;

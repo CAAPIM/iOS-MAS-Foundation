@@ -459,6 +459,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeJWTUnexpectedClassType = 170002,
     MASFoundationErrorCodeJWTSerializationError = 170003,
     
+    //
+    //  SharedStorage
+    //
+    MASFoundationErrorCodeSharedStorageNotNilKey = 180001,
+    
     MASFoundationErrorCodeCount = -999999
 };
 
