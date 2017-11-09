@@ -126,7 +126,7 @@ static BOOL _autoRegistration_ = YES;
         //
         // Register for Push after user authenticates
         //
-        if ([notification.name isEqualToString: MASUserDidAuthenticateNotification]) {
+        else if ([notification.name isEqualToString: MASUserDidAuthenticateNotification]) {
             if([notification.object isKindOfClass:[MASAuthCredentials class]]) //remove refresh token
             {
                 [self registerDevice:nil];
