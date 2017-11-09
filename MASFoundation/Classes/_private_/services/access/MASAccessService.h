@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
     MASAccessValueTypeCurrentAuthCredentialsGrantType,
     MASAccessValueTypeMASUserObjectData,
     MASAccessValueTypeDeviceVendorId,
+    MASAccessValueTypeDeviceToken,
 };
 
 

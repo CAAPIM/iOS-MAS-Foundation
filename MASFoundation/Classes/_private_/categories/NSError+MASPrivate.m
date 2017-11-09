@@ -835,6 +835,18 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorPushDeviceTokenInvalid
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodePushDeviceTokenInvalid errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
++ (NSError *)errorPushDeviceAlreadyRegistered
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodePushDeviceAlreadyRegistered errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 # pragma mark - Foundation Errors Private
 
 + (MASFoundationErrorCode)foundationErrorCodeForApiCode:(MASApiErrorCode)apiCode
@@ -975,6 +987,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeApplicationRedirectUriInvalid: return @"redirect_uri is invalid";
         case MASFoundationErrorCodeApplicationInvalidMagIdentifer: return @"Given mag-identifer is invalid.";
         
+        //
+        // Push Notification
+        //
+        case MASFoundationErrorCodePushDeviceTokenInvalid: return @"APN Device Token was not set or is invalid. Make sure to set the Device Token in the AppDelegate";
+        case MASFoundationErrorCodePushDeviceAlreadyRegistered: return @"The Device Token was already registered with MAS. Skipping registration process.";
+            
         //
         // Configuration
         //

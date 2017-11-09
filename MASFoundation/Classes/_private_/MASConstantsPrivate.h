@@ -46,6 +46,7 @@ static NSString *_Nonnull const MASModelServiceUUID = @"37a4f3f3-e029-430d-a2d2-
 static NSString *_Nonnull const MASNetworkServiceUUID = @"cd460414-b248-47a4-af8a-4eadfdb937f8";
 static NSString *_Nonnull const MASSecurityServiceUUID = @"8a1e8e72-e714-11e5-9730-9a79f06e9478";
 static NSString *_Nonnull const MASOTPServiceUUID = @"1dcd2f44-bdc2-449c-9ffc-084592feb046";
+static NSString *_Nonnull const MASPushServiceUUID = @"22cbb622-7f11-4440-a93f-f1f3010fbacb";
 
 // Known external MAS service UUIDs, these are optional and pluggable services
 static NSString const *_Nonnull MASDebugServiceUUID = @"018c9134-688e-4f47-ace9-f18b4430ca42";
@@ -198,7 +199,7 @@ static NSString *_Nonnull const MASUserPhoneRequestResponseKey = @"phone_number"
 static NSString *_Nonnull const MASUserPictureRequestResponseKey = @"picture"; // string
 static NSString *_Nonnull const MASUserRefreshTokenRequestResponseKey = @"refresh_token"; // string
 
-static NSString *_Nonnull const MASPushNotificationDeviceTokenRequestResponseKey = @"device_token"; // string
+static NSString *_Nonnull const MASPushNotificationDeviceTokenRequestResponseKey = @"registration_token"; // string
 
 # pragma mark - GrantType Constants
 

@@ -1005,27 +1005,6 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 
 
-///--------------------------------------
-/// @name Push Notification
-///--------------------------------------
-
-# pragma mark - Push Notification
-
-
-
-/**
- *  Register the current app for Push Notification.
- *  Invoke the register endpoint in MAG to enroll the current app + device for Push Notification.
- *
- *  @param deviceToken The deviceToken received from APN service as NSString
- *  @param completion An MASCompletionErrorBlock type (BOOL completed, NSError *error) that will
- *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
- *      is a failure.
- */
-+ (void)registerForPushNotification:(NSString *_Nonnull)deviceToken completion:(MASCompletionErrorBlock _Nullable)completion;
-
-
-
 #ifdef DEBUG
 
 ///--------------------------------------

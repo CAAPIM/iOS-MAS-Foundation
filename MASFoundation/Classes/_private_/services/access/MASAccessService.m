@@ -748,6 +748,9 @@ static BOOL _isKeychainSynchronizable_ = NO;
         case MASAccessValueTypeDeviceVendorId:
             storageKey = kMASAccessSharedStorageKey;
             break;
+        case MASAccessValueTypeDeviceToken:
+            storageKey = kMASAccessLocalStorageKey;
+            break;
         default:
             //
             // MASAccessValueTypeUknonw
@@ -879,6 +882,10 @@ static BOOL _isKeychainSynchronizable_ = NO;
             //DeviceVendorId
         case MASAccessValueTypeDeviceVendorId:
             accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayHostName, @"kMASKeyChainDeviceVendorId"];
+            break;
+            //DeviceToken
+        case MASAccessValueTypeDeviceToken:
+            accessTypeToString = [NSString stringWithFormat:@"%@.%@", _gatewayHostName, @"kMASKeyChainDeviceToken"];
             break;
         default:
             //

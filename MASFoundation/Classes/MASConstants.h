@@ -359,6 +359,12 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeApplicationRedirectUriInvalid = 110005,
     
     //
+    //  Push Notification
+    //
+    MASFoundationErrorCodePushDeviceTokenInvalid = 110006,
+    MASFoundationErrorCodePushDeviceAlreadyRegistered = 110007,
+    
+    //
     // Device
     //
     MASFoundationErrorCodeDeviceAlreadyRegistered = 120001,
@@ -755,6 +761,55 @@ static NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification = @"MA
  * retrieve new status value.
  */
 static NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
+
+
+
+///--------------------------------------
+/// @name Push Registration Notifications
+///--------------------------------------
+
+# pragma mark - Push Registration Notifications
+
+/**
+ * The NSString constant for the application notification indicating that the MASPush
+ * has begun the process of registering for Push Notification.
+ */
+static NSString *_Nonnull const MASPushWillRegisterNotification = @"MASPushWillRegisterNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASPush
+ * has failed to successfully register for Push Notification.
+ */
+static NSString *_Nonnull const MASPushDidFailToRegisterNotification = @"MASPushDidFailToRegisterNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASPush
+ * has successfully registered for Push Notification.
+ */
+static NSString *_Nonnull const MASPushDidRegisterNotification = @"MASPushDidRegisterNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASPush
+ * has begun the process of remove device from Push Notification.
+ */
+static NSString *_Nonnull const MASPushWillRemoveNotification = @"MASPushWillRemoveNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASPush
+ * has failed to successfully remove device from Push Notification.
+ */
+static NSString *_Nonnull const MASPushDidFailToRemoveNotification = @"MASPushDidFailToRemoveNotification";
+
+
+/**
+ * The NSString constant for the application notification indicating that the MASPush
+ * has successfully removed device from Push Notification.
+ */
+static NSString *_Nonnull const MASPushDidRemoveNotification = @"MASPushDidRemoveNotification";
 
 
 

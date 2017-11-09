@@ -641,6 +641,7 @@
 + (NSError *)errorProximityLoginAuthorizationInProgress;
 
 
+
 /**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL.
  *
@@ -648,5 +649,27 @@
  *  error MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL
  */
 + (NSError *)errorProximityLoginInvalidAuthroizeURL;
+
+
+
+/**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodePushDeviceTokenInvalid.
+ *
+ *  @return REturns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error MASFoundationErrorCodePushDeviceTokenInvalid
+ */
++ (NSError *)errorPushDeviceTokenInvalid;
+
+
+
+/**
+ *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodePushDeviceAlreadyRegistered.
+ *
+ *  @return REturns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  error MASFoundationErrorCodePushDeviceAlreadyRegistered
+ */
++ (NSError *)errorPushDeviceAlreadyRegistered;
+
+
 
 @end

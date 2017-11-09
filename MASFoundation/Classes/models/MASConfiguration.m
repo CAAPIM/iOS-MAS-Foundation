@@ -117,6 +117,7 @@ static NSString *const MASUsersMSADEndpoint = @"users_msad_endpoint_path"; // st
 static NSString *const MASUserGroupsMSADEndpoint = @"user_groups_msad_endpoint_path"; // string
 
 static NSString *const MASPushNotificationRegisterEndpoint = @"push_notification_register_endpoint_path"; // string
+static NSString *const MASPushNotificationRemoveEndpoint = @"push_notification_remove_endpoint_path"; // string
 
 
 # pragma mark - Property Constants
@@ -710,9 +711,16 @@ static float _systemVersionNumber_;
     return _endpointKeysToPaths[MASUserSessionStatusEndpoint];
 }
 
+
 - (NSString *)pushNotificationRegisterEndpoint
 {
     return _endpointKeysToPaths[MASPushNotificationRegisterEndpoint];
+}
+
+
+- (NSString *)pushNotificationRemoveEndpoint
+{
+    return _endpointKeysToPaths[MASPushNotificationRemoveEndpoint];
 }
 
 

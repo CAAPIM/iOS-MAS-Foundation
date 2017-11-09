@@ -152,6 +152,10 @@
 		10E027A51F72B10100EAB103 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 10E0279B1F72B10100EAB103 /* RNDecryptor.m */; };
 		10E027A61F72B10100EAB103 /* RNEncryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 10E0279C1F72B10100EAB103 /* RNEncryptor.h */; };
 		10E027A71F72B10100EAB103 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 10E0279D1F72B10100EAB103 /* RNEncryptor.m */; };
+		690126531FB1217400D4ABDC /* MASPushService.h in Headers */ = {isa = PBXBuildFile; fileRef = 690126511FB1217400D4ABDC /* MASPushService.h */; };
+		690126541FB1217400D4ABDC /* MASPushService.m in Sources */ = {isa = PBXBuildFile; fileRef = 690126521FB1217400D4ABDC /* MASPushService.m */; };
+		698E08091FAA7F350000C5B7 /* MASPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 698E08071FAA7F350000C5B7 /* MASPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		698E080A1FAA7F350000C5B7 /* MASPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 698E08081FAA7F350000C5B7 /* MASPush.m */; };
 		69B7DF681F9675600056DD3A /* MASRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17911F9585BC008C1B11 /* MASRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69B7DF691F9675600056DD3A /* MASRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17901F9585BC008C1B11 /* MASRequest.m */; };
 		69B7DF6A1F9675600056DD3A /* MASRequestBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17921F9585BC008C1B11 /* MASRequestBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -570,6 +574,10 @@
 		10E0279B1F72B10100EAB103 /* RNDecryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDecryptor.m; sourceTree = "<group>"; };
 		10E0279C1F72B10100EAB103 /* RNEncryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNEncryptor.h; sourceTree = "<group>"; };
 		10E0279D1F72B10100EAB103 /* RNEncryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEncryptor.m; sourceTree = "<group>"; };
+		690126511FB1217400D4ABDC /* MASPushService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASPushService.h; sourceTree = "<group>"; };
+		690126521FB1217400D4ABDC /* MASPushService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPushService.m; sourceTree = "<group>"; };
+		698E08071FAA7F350000C5B7 /* MASPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASPush.h; sourceTree = "<group>"; };
+		698E08081FAA7F350000C5B7 /* MASPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPush.m; sourceTree = "<group>"; };
 		699C17901F9585BC008C1B11 /* MASRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequest.m; sourceTree = "<group>"; };
 		699C17911F9585BC008C1B11 /* MASRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASRequest.h; sourceTree = "<group>"; };
 		699C17921F9585BC008C1B11 /* MASRequestBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASRequestBuilder.h; sourceTree = "<group>"; };
@@ -1056,6 +1064,15 @@
 			path = libmosquitto123;
 			sourceTree = "<group>";
 		};
+		6901264C1FB120C200D4ABDC /* push */ = {
+			isa = PBXGroup;
+			children = (
+				690126511FB1217400D4ABDC /* MASPushService.h */,
+				690126521FB1217400D4ABDC /* MASPushService.m */,
+			);
+			path = push;
+			sourceTree = "<group>";
+		};
 		699C17941F958660008C1B11 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -1342,6 +1359,8 @@
 				CB14D2181D02266D004F772E /* MASProximityLoginQRCode.m */,
 				CBA3EB2C1E945F2400E64D9D /* MASClaims.h */,
 				CBA3EB2D1E945F2400E64D9D /* MASClaims.m */,
+				698E08071FAA7F350000C5B7 /* MASPush.h */,
+				698E08081FAA7F350000C5B7 /* MASPush.m */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1359,6 +1378,7 @@
 				A4150EBD1BF16D9A00037E27 /* network */,
 				A4150EE91BF16EB200037E27 /* model */,
 				A858C6621D0978A6001FB9AD /* otp */,
+				6901264C1FB120C200D4ABDC /* push */,
 				A4150EF61BF16EE200037E27 /* security */,
 			);
 			path = services;
@@ -1677,6 +1697,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				698E08091FAA7F350000C5B7 /* MASPush.h in Headers */,
 				69B7DF6A1F9675600056DD3A /* MASRequestBuilder.h in Headers */,
 				69B7DF681F9675600056DD3A /* MASRequest.h in Headers */,
 				CBAFD24C1F2BD46C0034DF02 /* MASSecurityConfiguration.h in Headers */,
@@ -1725,6 +1746,7 @@
 				105B2F5F1CA6B3EA0005A2D0 /* x509_vfy.h in Headers */,
 				105B2F361CA6B3EA0005A2D0 /* krb5_asn.h in Headers */,
 				CB2357921F0EF53600D4C420 /* MASURLSessionManager.h in Headers */,
+				690126531FB1217400D4ABDC /* MASPushService.h in Headers */,
 				A46F49CA1C2F5FC500A4C370 /* MASINetworkActivityLogger.h in Headers */,
 				A4E340F91B9E9F2000883AD3 /* MAS.h in Headers */,
 				105B2F581CA6B3EA0005A2D0 /* tls1.h in Headers */,
@@ -2054,6 +2076,7 @@
 				A858C6661D0978A6001FB9AD /* MASOTPService.m in Sources */,
 				CBD25AE71E78C47C00DFB47F /* JWTAlgorithmNone.m in Sources */,
 				CB1C151F1E450109002B31A5 /* NSURL+MASPrivate.m in Sources */,
+				698E080A1FAA7F350000C5B7 /* MASPush.m in Sources */,
 				CB14D2241D02328C004F772E /* MASProximityLoginQRCode+MASPrivate.m in Sources */,
 				CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */,
 				10738A321C711C2F00B7E87E /* read_handle_shared.c in Sources */,
@@ -2126,6 +2149,7 @@
 				CB9975471EDF5799006CEBB1 /* MASAuthCredentials+MASPrivate.m in Sources */,
 				CB273F011DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m in Sources */,
 				CB9975531EDF591C006CEBB1 /* MASAuthCredentialsJWT.m in Sources */,
+				690126541FB1217400D4ABDC /* MASPushService.m in Sources */,
 				CBD25B041E78C47C00DFB47F /* JWTCoding+VersionOne.m in Sources */,
 				CB0A8AE01D01F64F00B1DCCC /* MASProximityLogin.m in Sources */,
 				CB99754B1EDF57D6006CEBB1 /* MASAuthCredentialsPassword.m in Sources */,
