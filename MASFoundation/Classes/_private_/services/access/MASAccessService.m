@@ -202,7 +202,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // Custom shared storage
     //
-    MASIKeyChainStore *customSharedStorage = [MASIKeyChainStore keyChainStoreWithService:_customSharedStorageServiceName];
+    MASIKeyChainStore *customSharedStorage = [MASIKeyChainStore keyChainStoreWithService:_customSharedStorageServiceName accessGroup:self.accessGroup];
     customSharedStorage.synchronizable = _isKeychainSynchronizable_;
     
     //
@@ -1362,6 +1362,17 @@ static BOOL _isKeychainSynchronizable_ = NO;
     [keychainDescription appendString:value];
     
     for(NSString *key in [_storages[kMASAccessSharedStorageKey] allKeys])
+    {
+        [keychainDescription appendString:[NSString stringWithFormat:@"\n      key: %@", key]];
+    }
+    
+    //
+    //  Custom
+    //
+    value = [NSString stringWithFormat:@"\n\n  Custom (%@):\n", kMASAccessCustomSharedStorageKey];
+    [keychainDescription appendString:value];
+    
+    for(NSString *key in [_storages[kMASAccessCustomSharedStorageKey] allKeys])
     {
         [keychainDescription appendString:[NSString stringWithFormat:@"\n      key: %@", key]];
     }
