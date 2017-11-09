@@ -17,6 +17,7 @@
  * The device is automatically registered when the deviceToken is set and credentials become available. 
  * It can disabled to perform a manual registration if necessary.
  *
+ * @warning *Important:* The device registration will not be available if MASFoundation framework is not initialized; the framework should be initialized prior registration.
  */
 @interface MASPush : MASObject
 

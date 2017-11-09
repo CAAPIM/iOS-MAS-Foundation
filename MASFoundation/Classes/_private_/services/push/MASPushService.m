@@ -196,6 +196,19 @@ static BOOL _autoRegistration_ = YES;
 - (void)registerDevice:(MASCompletionErrorBlock _Nullable)completion
 {
     //
+    //  Check if SDK was initialized
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorMASIsNotStarted]);
+        
+        return;
+    }
+    
+    //
     // Check if the device token was set
     //
     if(!_deviceToken_)
@@ -309,6 +322,19 @@ static BOOL _autoRegistration_ = YES;
 
 - (void)deregisterDevice:(MASCompletionErrorBlock _Nullable)completion
 {
+    //
+    //  Check if SDK was initialized
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(NO, [NSError errorMASIsNotStarted]);
+        
+        return;
+    }
+    
     if(!_deviceToken_)
     {
         //
