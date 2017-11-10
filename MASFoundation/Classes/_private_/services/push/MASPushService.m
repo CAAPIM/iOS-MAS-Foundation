@@ -15,7 +15,7 @@
 @implementation MASPushService
 
 static NSString *_deviceToken_ = nil;
-static BOOL _autoRegistration_ = YES;
+static BOOL _autoBindding_ = YES;
 
 
 # pragma mark - Shared Service
@@ -55,7 +55,7 @@ static BOOL _autoRegistration_ = YES;
     //
     // Subscribe for MAS events if auto registration is enabled
     //
-    if(_autoRegistration_)
+    if(_autoBindding_)
     {
         [self registerForEvents];
     }
@@ -75,7 +75,7 @@ static BOOL _autoRegistration_ = YES;
     //
     // Unsubscribe for MAS events if auto registration is enabled
     //
-    if (_autoRegistration_)
+    if (_autoBindding_)
     {
         [self unregisterForEvents];
     }
@@ -146,17 +146,17 @@ static BOOL _autoRegistration_ = YES;
 }
 
 
-# pragma mark - Push methods
+# pragma mark - Properties
 
-- (void)enableAutoBidding:(BOOL)enable
+- (void)enableAutoBindding:(BOOL)enable
 {
-    _autoRegistration_ = enable;
+    _autoBindding_ = enable;
 }
 
 
-- (BOOL)isAutoBiddingEnabled
+- (BOOL)isAutoBinddingEnabled
 {
-    return _autoRegistration_;
+    return _autoBindding_;
 }
 
 
@@ -188,6 +188,8 @@ static BOOL _autoRegistration_ = YES;
     return _deviceToken_;
 }
 
+
+# pragma mark - Push methods
 
 - (void)bind:(MASCompletionErrorBlock _Nullable)completion
 {

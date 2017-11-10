@@ -76,22 +76,22 @@
 
 
 /**
- *  Setter of static boolean property indicating auto bidding is enabled or not.
+ *  Setter of static boolean property indicating auto bindding is enabled or not.
  *  By default auto registration is enabled.
  *
- *  @param enable BOOL value indicating auto bidding is enabled or not
+ *  @param enable BOOL value indicating auto bindding is enabled or not
  */
-- (void)enableAutoBidding:(BOOL)enable;
+- (void)enableAutoBindding:(BOOL)enable;
 
 
 
 /**
- *  Gets BOOL indicator of auto bidding enabled or not.
+ *  Gets BOOL indicator of auto bindding enabled or not.
  *  By default auto registration is enabled.
  *
- *  @return return BOOL value indicating auto bidding is enabled or not
+ *  @return return BOOL value indicating auto bindding is enabled or not
  */
-- (BOOL)isAutoBiddingEnabled;
+- (BOOL)isAutoBinddingEnabled;
 
 
 
