@@ -770,7 +770,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //  External custom data in shared keychain storage
     //
     else {
-        accessTypeToString = [NSString stringWithFormat:@"%@.%@", kMASAccessCustomSharedStorageKey, key];
+        accessTypeToString = key;
     }
     
     return accessTypeToString;

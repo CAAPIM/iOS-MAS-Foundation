@@ -11,6 +11,7 @@
 #import "MASSharedStorage.h"
 
 #import "MASAccessService.h"
+#import "MASConstantsPrivate.h"
 
 @implementation MASSharedStorage
 
@@ -46,7 +47,7 @@
     //  Retrieve NSString from shared keychain storage
     //
     NSError *operationError = nil;
-    NSString *resultString = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:key error:&operationError];
+    NSString *resultString = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:[NSString stringWithFormat:@"%@.%@", MASSharedStorageCustomPrefix, key] error:&operationError];
     
     //
     //  If an error occurred while keychain operation, convert it into MASFoundationErrorDomainLocal error object
@@ -97,7 +98,7 @@
     //  Retrieve NSData from shared keychain storage
     //
     NSError *operationError = nil;
-    NSData *resultData = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:key error:&operationError];
+    NSData *resultData = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:[NSString stringWithFormat:@"%@.%@", MASSharedStorageCustomPrefix, key] error:&operationError];
     
     //
     //  If an error occurred while keychain operation, convert it into MASFoundationErrorDomainLocal error object
@@ -148,7 +149,7 @@
     //  Store NSString into shared keychain storage
     //
     NSError *operationError = nil;
-    BOOL result = [[MASAccessService sharedService] setAccessValueString:string storageKey:key error:&operationError];
+    BOOL result = [[MASAccessService sharedService] setAccessValueString:string storageKey:[NSString stringWithFormat:@"%@.%@", MASSharedStorageCustomPrefix, key] error:&operationError];
     
     //
     //  If an error occurred while keychain operation, convert it into MASFoundationErrorDomainLocal error object
@@ -196,7 +197,7 @@
     }
     
     NSError *operationError = nil;
-    BOOL result = [[MASAccessService sharedService] setAccessValueData:data storageKey:key error:&operationError];
+    BOOL result = [[MASAccessService sharedService] setAccessValueData:data storageKey:[NSString stringWithFormat:@"%@.%@", MASSharedStorageCustomPrefix, key] error:&operationError];
     
     //
     //  If an error occurred while keychain operation, convert it into MASFoundationErrorDomainLocal error object
