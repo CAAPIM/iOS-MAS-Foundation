@@ -44,6 +44,12 @@
 }
 
 
++ (void)setDeviceToken:(NSString *_Nonnull)deviceToken
+{
+    [[MASPushService sharedService] setDeviceToken:deviceToken];
+}
+
+
 # pragma mark - Push Notification
 
 + (void)enableAutoRegistration:(BOOL)enable

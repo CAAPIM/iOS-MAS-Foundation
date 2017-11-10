@@ -42,13 +42,18 @@
 
 /**
  *  DeviceToken static property
+ *
+ *  @return return NSString value representing the deviceToken registered for Push Notifications
  */
 - (NSString *_Nullable)deviceToken;
 
 
 
 /**
- *  Set the device token
+ *  Sets the device token string property.
+ *  Usually received from APN in AppDelegate through 'application: didRegisterForRemoteNotificationsWithDeviceToken:' method.
+ *
+ *  @param deviceToken NSString A token that identifies the device.
  */
 - (void)setDeviceToken:(NSString *_Nonnull)deviceToken;
 
@@ -117,7 +122,7 @@
 
 
 /**
- *  Deegister the current app for Push Notification.
+ *  Deregister the current app for Push Notification.
  *
  *  This method invokes the deregister endpoint in MAG to remove the device from Push Notification.
  *
