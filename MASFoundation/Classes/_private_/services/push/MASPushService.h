@@ -89,9 +89,9 @@
  *  Gets BOOL indicator of Auto Registration enabled or not.
  *  By default auto registration is enabled.
  *
- *  @return return BOOL value indicating Keychain sincronization is enabled or not
+ *  @return return BOOL value indicating auto registration is enabled or not
  */
-- (BOOL)isKAutoRegistrationEnabled;
+- (BOOL)isAutoRegistrationEnabled;
 
 
 

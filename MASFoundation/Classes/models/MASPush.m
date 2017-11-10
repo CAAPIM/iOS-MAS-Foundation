@@ -50,30 +50,4 @@
 }
 
 
-# pragma mark - Push Notification
-
-+ (void)enableAutoRegistration:(BOOL)enable
-{
-    [[MASPushService sharedService] enableAutoRegistration:enable];
-}
-
-
-+ (BOOL)isKAutoRegistrationEnabled
-{
-    return [[MASPushService sharedService] isKAutoRegistrationEnabled];
-}
-
-
-+ (void)registerDevice:(MASCompletionErrorBlock _Nullable)completion
-{
-    [[MASPushService sharedService] registerDevice:completion];
-}
-
-
-+ (void)deregisterDevice:(MASCompletionErrorBlock _Nullable)completion
-{
-    [[MASPushService sharedService] deregisterDevice:completion];
-}
-
-
 @end

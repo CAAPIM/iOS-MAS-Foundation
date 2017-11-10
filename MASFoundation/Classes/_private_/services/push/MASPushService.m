@@ -56,7 +56,9 @@ static BOOL _autoRegistration_ = YES;
     // Subscribe for MAS events if auto registration is enabled
     //
     if(_autoRegistration_)
+    {
         [self registerForEvents];
+    }
 }
 
 
@@ -73,8 +75,10 @@ static BOOL _autoRegistration_ = YES;
     //
     // Unsubscribe for MAS events if auto registration is enabled
     //
-    if(_autoRegistration_)
+    if (_autoRegistration_)
+    {
         [self unregisterForEvents];
+    }
 }
 
 
@@ -110,14 +114,18 @@ static BOOL _autoRegistration_ = YES;
 
 - (void)notificationReceived:(NSNotification*)notification
 {
-    if(!self.isRegistered)
+    //
+    // Check if device is not already registered and deviceToken was set
+    //
+    if (!self.isRegistered && _deviceToken_)
     {
         //
         // Register for Push if application is already authenticated after MAS starts
         //
-        if ([notification.name isEqualToString: MASDidStartNotification]) {
+        if ([notification.name isEqualToString: MASDidStartNotification])
+        {
             
-            if([MASApplication currentApplication].isAuthenticated)
+            if ([MASApplication currentApplication].isAuthenticated)
             {
                 [self registerDevice:nil];
             }
@@ -126,25 +134,13 @@ static BOOL _autoRegistration_ = YES;
         //
         // Register for Push after user authenticates
         //
-        else if ([notification.name isEqualToString: MASUserDidAuthenticateNotification]) {
-            if([notification.object isKindOfClass:[MASAuthCredentials class]]) //remove refresh token
+        else if ([notification.name isEqualToString: MASUserDidAuthenticateNotification])
+        {
+            if ([notification.object isKindOfClass:[MASAuthCredentials class]]) //remove refresh token, to be revisited once developers can extend MASAuthCredentials
             {
                 [self registerDevice:nil];
             }
         }
-        
-        //
-        // Placeholder to cover aditional user cases
-        //
-//        else if ([notification.name isEqualToString: MASDidSwitchGatewayServerNotification]) {
-//            
-//        }
-//        else if ([notification.name isEqualToString: MASUserDidLogoutNotification]) {
-//            
-//        }
-//        else if ([notification.name isEqualToString: MASDeviceDidDeregisterNotification]) {
-//            
-//        }
     }
 
 }
@@ -158,7 +154,7 @@ static BOOL _autoRegistration_ = YES;
 }
 
 
-- (BOOL)isKAutoRegistrationEnabled
+- (BOOL)isAutoRegistrationEnabled
 {
     return _autoRegistration_;
 }
@@ -203,7 +199,10 @@ static BOOL _autoRegistration_ = YES;
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorMASIsNotStarted]);
+        if(completion)
+        {
+            completion(NO, [NSError errorMASIsNotStarted]);
+        }
         
         return;
     }
@@ -211,12 +210,15 @@ static BOOL _autoRegistration_ = YES;
     //
     // Check if the device token was set
     //
-    if(!_deviceToken_)
+    if (!_deviceToken_)
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorForFoundationCode:(MASFoundationErrorCodePushDeviceTokenInvalid) errorDomain:MASFoundationErrorDomainLocal]);
+        if (completion)
+        {
+            completion(NO, [NSError errorForFoundationCode:(MASFoundationErrorCodePushDeviceTokenInvalid) errorDomain:MASFoundationErrorDomainLocal]);
+        }
         
         return;
     }
@@ -224,12 +226,15 @@ static BOOL _autoRegistration_ = YES;
     //
     // Check if device token was already registered
     //
-    if(self.isRegistered)
+    if (self.isRegistered)
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorForFoundationCode:(MASFoundationErrorCodePushDeviceAlreadyRegistered) errorDomain:MASFoundationErrorDomainLocal]);
+        if (completion)
+        {
+            completion(NO, [NSError errorForFoundationCode:(MASFoundationErrorCodePushDeviceAlreadyRegistered) errorDomain:MASFoundationErrorDomainLocal]);
+        }
         
         return;
     }
@@ -245,19 +250,6 @@ static BOOL _autoRegistration_ = YES;
     NSString *endPoint = [MASConfiguration currentConfiguration].pushNotificationRegisterEndpoint;
     
     //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-
-    // Client Authorization with 'Authorization' header key
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // MAG Identifier
-    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
-    
-    //
     // Parameters
     //
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
@@ -268,20 +260,13 @@ static BOOL _autoRegistration_ = YES;
     //
     // Trigger the request
     //
-    [[MASNetworkingService sharedService] postTo:endPoint
-                                  withParameters:parameterInfo
-                                      andHeaders:headerInfo
-                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
-                                    responseType:MASRequestResponseTypeJson
-     //
-     // Handle the response
-     //
-                                      completion:^(NSDictionary *responseInfo, NSError *error)
+    [MAS postTo:endPoint withParameters:parameterInfo andHeaders:nil requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeJson
+     completion:^(NSDictionary *responseInfo, NSError *error)
      {
          //
          // If error stop here
          //
-         if(error)
+         if (error)
          {
              NSError *apiError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
              
@@ -313,7 +298,10 @@ static BOOL _autoRegistration_ = YES;
          //
          // Notify
          //
-         if(completion) completion(YES, nil);
+         if (completion)
+         {
+             completion(YES, nil);
+         }
 
      }
      ];
@@ -330,17 +318,23 @@ static BOOL _autoRegistration_ = YES;
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorMASIsNotStarted]);
+        if (completion)
+        {
+            completion(NO, [NSError errorMASIsNotStarted]);
+        }
         
         return;
     }
     
-    if(!_deviceToken_)
+    if (!_deviceToken_)
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorForFoundationCode:(MASFoundationErrorCodePushDeviceTokenInvalid) errorDomain:MASFoundationErrorDomainLocal]);
+        if (completion)
+        {
+            completion(NO, [NSError errorForFoundationCode:(MASFoundationErrorCodePushDeviceTokenInvalid) errorDomain:MASFoundationErrorDomainLocal]);
+        }
         
         return;
     }
@@ -353,20 +347,7 @@ static BOOL _autoRegistration_ = YES;
     //
     // Endpoint
     //
-    NSString *endPoint = [MASConfiguration currentConfiguration].pushNotificationRegisterEndpoint;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    // Client Authorization with 'Authorization' header key
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    
-    // MAG Identifier
-    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
+    NSString *endPoint = [MASConfiguration currentConfiguration].pushNotificationRemoveEndpoint;
     
     //
     // Parameters
@@ -379,20 +360,13 @@ static BOOL _autoRegistration_ = YES;
     //
     // Trigger the request
     //
-    [[MASNetworkingService sharedService] postTo:endPoint
-                                  withParameters:parameterInfo
-                                      andHeaders:headerInfo
-                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
-                                    responseType:MASRequestResponseTypeJson
-     //
-     // Handle the response
-     //
-                                      completion:^(NSDictionary *responseInfo, NSError *error)
+    [MAS postTo:endPoint withParameters:parameterInfo andHeaders:nil requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeJson
+     completion:^(NSDictionary *responseInfo, NSError *error)
      {
          //
          // If error stop here
          //
-         if(error)
+         if (error)
          {
              NSError *apiError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
              
@@ -424,7 +398,10 @@ static BOOL _autoRegistration_ = YES;
          //
          // Notify
          //
-         if(completion) completion(YES, nil);
+         if (completion)
+         {
+             completion(YES, nil);
+         }
          
      }
      ];
