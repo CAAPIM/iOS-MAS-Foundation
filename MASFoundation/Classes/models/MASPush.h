@@ -12,10 +12,10 @@
 
 
 /**
- *  MASPush is the front facing class where a valid `deviceToken` is stored and saved to MAG. There it can be used to target push notifications.
- *  The device is automatically registered when the deviceToken is set and credentials become available.
+ *  MASPush is the front facing class where a valid `deviceToken` is stored and bound to MAG. There it can be used to target push notifications.
+ *  The device is automatically bound when the deviceToken is set and credentials become available.
  *
- *  @warning *Important:* The device registration will not be available if MASFoundation framework is not initialized; the framework should be initialized prior registration.
+ *  @warning *Important:* The device bidding will not be available if MASFoundation framework is not initialized; the framework should be initialized prior registration.
  */
 @interface MASPush : MASObject
 
@@ -33,7 +33,7 @@
  *
  *  @param return BOOL value indicating if device is registered or not
  */
-+ (BOOL)isRegistered;
++ (BOOL)isBound;
 
 
 

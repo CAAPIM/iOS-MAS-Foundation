@@ -18,9 +18,9 @@
 
 # pragma mark - Properties
 
-+ (BOOL)isRegistered
++ (BOOL)isBound
 {
-    return [[MASPushService sharedService] isRegistered];
+    return [[MASPushService sharedService] isBound];
 }
 
 

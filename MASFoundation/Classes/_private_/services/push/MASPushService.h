@@ -71,34 +71,34 @@
  *
  *  @return return BOOL value indicating is registered for Push Notifications or not
  */
-- (BOOL)isRegistered;
+- (BOOL)isBound;
 
 
 
 /**
- *  Setter of static boolean property indicating auto registration is enabled or not.
+ *  Setter of static boolean property indicating auto bidding is enabled or not.
  *  By default auto registration is enabled.
  *
- *  @param enable BOOL value indicating auto registration is enabled or not
+ *  @param enable BOOL value indicating auto bidding is enabled or not
  */
-- (void)enableAutoRegistration:(BOOL)enable;
+- (void)enableAutoBidding:(BOOL)enable;
 
 
 
 /**
- *  Gets BOOL indicator of Auto Registration enabled or not.
+ *  Gets BOOL indicator of auto bidding enabled or not.
  *  By default auto registration is enabled.
  *
- *  @return return BOOL value indicating auto registration is enabled or not
+ *  @return return BOOL value indicating auto bidding is enabled or not
  */
-- (BOOL)isAutoRegistrationEnabled;
+- (BOOL)isAutoBiddingEnabled;
 
 
 
 /**
- *  Register the current app for Push Notification.
+ *  Bind the current app for Push Notification on MAG.
  *
- *  Device is automatically registered when the deviceToken is set and credentials become available.
+ *  Device is automatically bound when the deviceToken is set and credentials become available.
  *  Call this method explicitly if you require to refresh the register manually. It's usually required if
  *  you disabled a register by calling the the method 'deregisterForPushNotification:'
  *
@@ -117,14 +117,14 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-- (void)registerDevice:(MASCompletionErrorBlock _Nullable)completion;
+- (void)bind:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
 /**
- *  Deregister the current app for Push Notification.
+ *  Unbind the current app for Push Notification.
  *
- *  This method invokes the deregister endpoint in MAG to remove the device from Push Notification.
+ *  This method invokes the unbind endpoint in MAG to remove the device from Push Notification.
  *
  *  Although an asynchronous block callback parameter is provided for response usage,
  *  optionally you can set that to nil and the caller can observe the lifecycle
@@ -139,7 +139,7 @@
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-- (void)deregisterDevice:(MASCompletionErrorBlock _Nullable)completion;
+- (void)unbind:(MASCompletionErrorBlock _Nullable)completion;
 
 
 @end

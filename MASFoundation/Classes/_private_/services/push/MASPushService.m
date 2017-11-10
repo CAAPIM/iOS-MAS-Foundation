@@ -117,7 +117,7 @@ static BOOL _autoRegistration_ = YES;
     //
     // Check if device is not already registered and deviceToken was set
     //
-    if (!self.isRegistered && _deviceToken_)
+    if (!self.isBound && _deviceToken_)
     {
         //
         // Register for Push if application is already authenticated after MAS starts
@@ -127,7 +127,7 @@ static BOOL _autoRegistration_ = YES;
             
             if ([MASApplication currentApplication].isAuthenticated)
             {
-                [self registerDevice:nil];
+                [self bind:nil];
             }
         }
         
@@ -138,7 +138,7 @@ static BOOL _autoRegistration_ = YES;
         {
             if ([notification.object isKindOfClass:[MASAuthCredentials class]]) //remove refresh token, to be revisited once developers can extend MASAuthCredentials
             {
-                [self registerDevice:nil];
+                [self bind:nil];
             }
         }
     }
@@ -148,19 +148,19 @@ static BOOL _autoRegistration_ = YES;
 
 # pragma mark - Push methods
 
-- (void)enableAutoRegistration:(BOOL)enable
+- (void)enableAutoBidding:(BOOL)enable
 {
     _autoRegistration_ = enable;
 }
 
 
-- (BOOL)isAutoRegistrationEnabled
+- (BOOL)isAutoBiddingEnabled
 {
     return _autoRegistration_;
 }
 
 
-- (BOOL)isRegistered
+- (BOOL)isBound
 {
     //
     // Retrieve deviceToken from Keychain, if it was already registered should be the same
@@ -189,7 +189,7 @@ static BOOL _autoRegistration_ = YES;
 }
 
 
-- (void)registerDevice:(MASCompletionErrorBlock _Nullable)completion
+- (void)bind:(MASCompletionErrorBlock _Nullable)completion
 {
     //
     //  Check if SDK was initialized
@@ -226,7 +226,7 @@ static BOOL _autoRegistration_ = YES;
     //
     // Check if device token was already registered
     //
-    if (self.isRegistered)
+    if (self.isBound)
     {
         //
         // Notify
@@ -308,7 +308,7 @@ static BOOL _autoRegistration_ = YES;
 }
 
 
-- (void)deregisterDevice:(MASCompletionErrorBlock _Nullable)completion
+- (void)unbind:(MASCompletionErrorBlock _Nullable)completion
 {
     //
     //  Check if SDK was initialized
