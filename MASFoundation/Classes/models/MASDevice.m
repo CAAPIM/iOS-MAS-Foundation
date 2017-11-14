@@ -63,7 +63,7 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     //
     // Check if the vendorId in Keychain macth with current vendorId
     //
-    if([vendorIdCurrent isEqualToString:vendorIdFromKeychain])
+    if ([vendorIdCurrent isEqualToString:vendorIdFromKeychain])
     {
         NSString *magIdentifier = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
         NSData *certificateData = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
@@ -215,7 +215,7 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if(self = [super initWithCoder:aDecoder])
+    if (self = [super initWithCoder:aDecoder])
     {
         [self setValue:[aDecoder decodeObjectForKey:MASDeviceIdentifierPropertyKey] forKey:@"identifier"];
         [self setValue:[aDecoder decodeObjectForKey:MASDeviceNamePropertyKey] forKey:@"name"];

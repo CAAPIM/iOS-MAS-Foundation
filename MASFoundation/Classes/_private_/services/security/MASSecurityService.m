@@ -140,7 +140,7 @@ static MASSecurityService *_sharedService_ = nil;
     // Delete the private key
 	//
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPrivateKey);
-    if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
         DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck );
     }
@@ -149,7 +149,7 @@ static MASSecurityService *_sharedService_ = nil;
     // Delete the public key
 	//
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPublicKey);
-    if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
         DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
     }
@@ -226,7 +226,7 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // Store new value in keychain
     //
-    if(privateKeyBits)
+    if (privateKeyBits)
     {
         NSString *keyContents = [self evpKeyToString:privatekey];
     
@@ -327,7 +327,7 @@ static MASSecurityService *_sharedService_ = nil;
 	[keyPairAttr setObject:publicKeyAttr forKey:(__bridge id)kSecPublicKeyAttrs];
     
 	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
-    if(!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
+    if (!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
     {
         DLog(@"Error with something really bad went wrong with generating the key pair");
     }
@@ -335,12 +335,12 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // Storing privateKey and publicKey into keychain
     //
-    if(privateKeyRef)
+    if (privateKeyRef)
     {
         [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
     }
     
-    if(publicKeyRef)
+    if (publicKeyRef)
     {
         [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
     }

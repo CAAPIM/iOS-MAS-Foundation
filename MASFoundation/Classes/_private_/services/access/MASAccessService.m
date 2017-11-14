@@ -301,7 +301,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // if the user chooses to overwite whatever SDK contains with the provided dictionary, reset the object
     //
-    if(forceToOverwrite)
+    if (forceToOverwrite)
     {
         [_currentAccessObj reset];
         _currentAccessObj = nil;
@@ -555,7 +555,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // make sure the data exists
     //
-    if(thisData)
+    if (thisData)
     {
         result = [self setAccessValueData:thisData storageKey:storageKey];
     }
@@ -588,7 +588,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // make sure the data exists
     //
-    if(thisData)
+    if (thisData)
     {
         result = [self setAccessValueData:thisData storageKey:storageKey];
     }
@@ -789,7 +789,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     {
         return kMASAccessSharedStorageKey;
     }
-    else if([_localStorageKeys containsObject:key])
+    else if ([_localStorageKeys containsObject:key])
     {
         return kMASAccessLocalStorageKey;
     }
@@ -837,7 +837,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // if accessGroup is not defined
     //
-    if(!_accessGroup)
+    if (!_accessGroup)
     {
 
         NSString *groupSuffix = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"MSSOSDKKeychainGroup"];
@@ -1119,7 +1119,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     NSDictionary *headerDisctionary = [MASAccessService unwrap:headerString];
     
-    if ([[headerDisctionary objectForKey:@"alg"] isEqualToString:@"HS256"]){
+    if ([[headerDisctionary objectForKey:@"alg"] isEqualToString:@"HS256"])
+    {
         
         //
         // check signature
@@ -1155,7 +1156,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
     NSString *azp = [payloadDictionary valueForKey:@"azp"];
     NSDate *exp = [NSDate dateWithTimeIntervalSince1970:[[payloadDictionary valueForKey:@"exp"] floatValue]];
     
-    if (!aud || !azp || !exp){
+    if (!aud || !azp || !exp)
+    {
         
         if (error)
         {
@@ -1167,7 +1169,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // case 2: aud doesn't match with clientId
     //
-    if (![aud isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId]]){
+    if (![aud isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId]])
+    {
         
         if (error)
         {
@@ -1179,7 +1182,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // case 3: azp doesn't match with mag-identifier
     //
-    if (![azp isEqualToString:magIdentifier]){
+    if (![azp isEqualToString:magIdentifier])
+    {
         
         if (error)
         {
@@ -1191,7 +1195,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     // case 4: JWT expired
     //
-    if ([exp timeIntervalSinceNow] < 0){
+    if ([exp timeIntervalSinceNow] < 0)
+    {
         
         if (error)
         {
@@ -1264,9 +1269,11 @@ static BOOL _isKeychainSynchronizable_ = NO;
     if (certificateX509 != NULL)
     {
         ASN1_TIME *certificateExpiryASN1 = X509_get_notAfter(certificateX509);
-        if (certificateExpiryASN1 != NULL) {
+        if (certificateExpiryASN1 != NULL)
+        {
             ASN1_GENERALIZEDTIME *certificateExpiryASN1Generalized = ASN1_TIME_to_generalizedtime(certificateExpiryASN1, NULL);
-            if (certificateExpiryASN1Generalized != NULL) {
+            if (certificateExpiryASN1Generalized != NULL)
+            {
                 unsigned char *certificateExpiryData = ASN1_STRING_data(certificateExpiryASN1Generalized);
                 
                 // ASN1 generalized times look like this: "20131114230046Z"
@@ -1350,7 +1357,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     NSString *value = [NSString stringWithFormat:@"\n\n(MASAccessService)\n\n  Local (%@):\n", kMASAccessLocalStorageServiceName];
     NSMutableString *keychainDescription = [[NSMutableString alloc] initWithString:value];
     
-    for(NSString *key in [_storages[kMASAccessLocalStorageKey] allKeys])
+    for (NSString *key in [_storages[kMASAccessLocalStorageKey] allKeys])
     {
         [keychainDescription appendString:[NSString stringWithFormat:@"\n      key: %@", key]];
     }
@@ -1361,7 +1368,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     value = [NSString stringWithFormat:@"\n\n  Shared (%@):\n", kMASAccessSharedStorageServiceName];
     [keychainDescription appendString:value];
     
-    for(NSString *key in [_storages[kMASAccessSharedStorageKey] allKeys])
+    for (NSString *key in [_storages[kMASAccessSharedStorageKey] allKeys])
     {
         [keychainDescription appendString:[NSString stringWithFormat:@"\n      key: %@", key]];
     }
@@ -1372,7 +1379,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     value = [NSString stringWithFormat:@"\n\n  Custom (%@):\n", kMASAccessCustomSharedStorageKey];
     [keychainDescription appendString:value];
     
-    for(NSString *key in [_storages[kMASAccessCustomSharedStorageKey] allKeys])
+    for (NSString *key in [_storages[kMASAccessCustomSharedStorageKey] allKeys])
     {
         [keychainDescription appendString:[NSString stringWithFormat:@"\n      key: %@", key]];
     }

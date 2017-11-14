@@ -287,7 +287,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         //
         // Detect if there is id_token
         //
-        if([accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
+        if ([accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
             [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES completion:completion];
         }
