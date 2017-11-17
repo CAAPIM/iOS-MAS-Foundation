@@ -56,25 +56,24 @@
                         nil) forKey:@"redirectUri"];
 
         MASAccessService *accessService = [MASAccessService sharedService];
-        
-        NSData *trustedServerCertificate = [accessService getAccessValueDataWithType:MASAccessValueTypeTrustedServerCertificate];
-        if(!trustedServerCertificate)
+        NSData *trustedServerCertificate = [accessService getAccessValueDataWithStorageKey:MASKeychainStorageKeyTrustedServerCertificate];
+        if (!trustedServerCertificate)
         {
             //
             // Trusted Server Certificate (not sure if this really belongs here, think about that)
             //
             NSArray *certificates = [MASConfiguration currentConfiguration].gatewayCertificatesAsPEMData;
-            if(certificates && certificates.count > 0)
+            if (certificates && certificates.count > 0)
             {
                 trustedServerCertificate = certificates[0];
-                [accessService setAccessValueData:trustedServerCertificate withAccessValueType:MASAccessValueTypeTrustedServerCertificate];
+                [accessService setAccessValueData:trustedServerCertificate storageKey:MASKeychainStorageKeyTrustedServerCertificate];
             }
         }
         
         //
         // If the credentials are NOT dynamic set them here
         //
-        if(!configuration.applicationCredentialsAreDynamic)
+        if (!configuration.applicationCredentialsAreDynamic)
         {
             NSDictionary *credentialsFromConfiguration = @
             {
@@ -108,7 +107,7 @@
     // Attempt to retrieve from keychain
     //
     NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASApplication.class description]];
-    if(data)
+    if (data)
     {
         application = (MASApplication *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
@@ -160,14 +159,14 @@
     // Save to the keychain
     //
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
-    if(data)
+    if (data)
     {
         NSError *error;
         [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data
                                                                                                                          forKey:[MASApplication.class description]
                                                                                                                           error:&error];
     
-        if(error)
+        if (error)
         {
             DLog(@"Error attempting to save data: %@", [error localizedDescription]);
             return;
@@ -198,27 +197,27 @@
     // Client Expiration
     //
     NSNumber *clientExpiration = bodyInfo[MASClientExpirationRequestResponseKey];
-    if(clientExpiration)
+    if (clientExpiration)
     {
-        [accessService setAccessValueNumber:clientExpiration withAccessValueType:MASAccessValueTypeClientExpiration];
+        [accessService setAccessValueNumber:clientExpiration storageKey:MASKeychainStorageKeyClientExpiration];
     }
     
     //
     // Client Key
     //
     NSString *clientId = bodyInfo[MASClientKeyRequestResponseKey];
-    if(clientId)
+    if (clientId)
     {
-        [accessService setAccessValueString:clientId withAccessValueType:MASAccessValueTypeClientId];
+        [accessService setAccessValueString:clientId storageKey:MASKeychainStorageKeyClientId];
     }
     
     //
     // Client Secret
     //
     NSString *clientSecret = bodyInfo[MASClientSecretRequestResponseKey];
-    if(clientSecret)
+    if (clientSecret)
     {
-        [accessService setAccessValueString:clientSecret withAccessValueType:MASAccessValueTypeClientSecret];
+        [accessService setAccessValueString:clientSecret storageKey:MASKeychainStorageKeyClientSecret];
     }
     
     //
@@ -232,9 +231,9 @@
 {
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    [accessService setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
-    [accessService setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
-    [accessService setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeClientExpiration];
+    [accessService setAccessValueString:nil storageKey:MASKeychainStorageKeyClientId];
+    [accessService setAccessValueString:nil storageKey:MASKeychainStorageKeyClientSecret];
+    [accessService setAccessValueNumber:nil storageKey:MASKeychainStorageKeyClientExpiration];
     
     [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASApplication.class description]];
 }
@@ -245,7 +244,7 @@
     //DLog(@"\n\ncalled with info: %@\n\n", info);
     
     self = [super init];
-    if(self)
+    if (self)
     {
         [self setValue:info[MASApplicationIdRequestResponseKey] forKey:@"identifier"];
         [self setValue:info[MASApplicationNameRequestResponseKey] forKey:@"name"];
@@ -268,8 +267,8 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSNumber *clientExpiration = [accessService getAccessValueNumberWithType:MASAccessValueTypeClientExpiration];
-    if(!clientExpiration)
+    NSNumber *clientExpiration = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyClientExpiration];
+    if (!clientExpiration)
     {
         return nil;
     }
@@ -291,8 +290,8 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
-    NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+    NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
 
     NSString *clientAuthStr = [NSString stringWithFormat:@"%@:%@", clientId, clientSecret];
     NSData *clientAuthData = [clientAuthStr dataUsingEncoding:NSUTF8StringEncoding];
@@ -310,14 +309,14 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSNumber *clientExpiration = [accessService getAccessValueNumberWithType:MASAccessValueTypeClientExpiration];
-    NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
-    NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+    NSNumber *clientExpiration = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyClientExpiration];
+    NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
 
     //
     // Expiration is nil, then it is considered expired
     //
-    if(!clientExpiration)
+    if (!clientExpiration)
     {
         isExpired = YES;
     }
@@ -326,7 +325,7 @@
     // If the value is zero AND both the client id and secret are set then it is not expired and
     // the expiry is actually infinite
     //
-    else if([clientExpiration doubleValue] == 0 && clientId && clientSecret)
+    else if ([clientExpiration doubleValue] == 0 && clientId && clientSecret)
     {
         isExpired = NO;
     }
@@ -334,7 +333,7 @@
     //
     // If a positive time interval remains compared to the current time and date then it is not expired
     //
-    else if([[MASApplication expirationAsDate] timeIntervalSinceNow] > 0)
+    else if ([[MASApplication expirationAsDate] timeIntervalSinceNow] > 0)
     {
         isExpired = NO;
     }
@@ -349,7 +348,7 @@
     //
     // Detect status and respond appropriately
     //
-    switch([self authenticationStatus])
+    switch ([self authenticationStatus])
     {
             //
             // Not Logged In
@@ -382,7 +381,7 @@
     //
     // Detect type and respond appropriately
     //
-    switch(scopeType)
+    switch (scopeType)
     {
         //
         // OpenId

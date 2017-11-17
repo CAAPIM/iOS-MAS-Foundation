@@ -1102,6 +1102,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
         case MASFoundationErrorCodeJWTUnexpectedClassType: return @"Mis-match of reserved JWT claim value's type (%@)";
         case MASFoundationErrorCodeJWTSerializationError: return @"Claim value (%@) cannot be serialized";
+        
+        //
+        //  Shared Storage
+        //
+        case MASFoundationErrorCodeSharedStorageNotNilKey: return @"Data key cannot be nil or empty string.";
             
         //
         // Default

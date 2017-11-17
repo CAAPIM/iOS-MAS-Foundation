@@ -29,7 +29,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 - (id)initWithInfo:(NSDictionary *)info
 {
     self = [super init];
-    if(self)
+    if (self)
     {
         [self saveWithUpdatedInfo:info];
     }
@@ -46,9 +46,9 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Attempt to retrieve from keychain
     //
     
-    NSData *data = [[MASAccessService sharedService] getAccessValueDataWithType:MASAccessValueTypeMASUserObjectData];
+    NSData *data = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:MASKeychainStorageKeyMASUserObjectData];
     
-    if(data)
+    if (data)
     {
         user = (MASUser *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
@@ -63,9 +63,9 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Save to the keychain
     //
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
-    if(data)
+    if (data)
     {
-        [[MASAccessService sharedService] setAccessValueData:data withAccessValueType:MASAccessValueTypeMASUserObjectData];
+        [[MASAccessService sharedService] setAccessValueData:data storageKey:MASKeychainStorageKeyMASUserObjectData];
     }
 }
 
@@ -88,13 +88,19 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Uid --> ObjectId
     //
     NSString *uid = bodyInfo[MASUserPreferredNameRequestResponseKey];
-    if(uid && ![uid isKindOfClass:[NSNull class]]) [self setValue:uid forKey:@"objectId"];
+    if (uid && ![uid isKindOfClass:[NSNull class]])
+    {
+        [self setValue:uid forKey:@"objectId"];
+    }
     
     //
     // Preferred UserName
     //
     NSString *userName = bodyInfo[MASUserPreferredNameRequestResponseKey];
-    if(userName && ![userName isKindOfClass:[NSNull class]]) [self setValue:userName forKey:@"userName"];
+    if (userName && ![userName isKindOfClass:[NSNull class]])
+    {
+        [self setValue:userName forKey:@"userName"];
+    }
     
     //
     // Family Name
@@ -116,24 +122,33 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSMutableString *mutableCopy = [NSMutableString new];
     
     // Given name, if any
-    if(self.givenName && ![self.givenName isKindOfClass:[NSNull class]]) [mutableCopy appendString:self.givenName];
+    if (self.givenName && ![self.givenName isKindOfClass:[NSNull class]])
+    {
+        [mutableCopy appendString:self.givenName];
+    }
     
     // Family name, if any
-    if(self.familyName && ![self.familyName isKindOfClass:[NSNull class]])
+    if (self.familyName && ![self.familyName isKindOfClass:[NSNull class]])
     {
         // Check if there was a given name first, if so add a space
-        if(mutableCopy.length > 0) [mutableCopy appendString:MASDefaultEmptySpace];
+        if (mutableCopy.length > 0)
+        {
+            [mutableCopy appendString:MASDefaultEmptySpace];
+        }
         
         [mutableCopy appendString:self.familyName];
     }
     
-    if(mutableCopy.length > 0) [self setValue:mutableCopy forKey:@"formattedName"];
+    if (mutableCopy.length > 0)
+    {
+        [self setValue:mutableCopy forKey:@"formattedName"];
+    }
     
     //
     // Email Addresses
     //
     NSString *emailValue = bodyInfo[MASUserEmailRequestResponseKey];
-    if(emailValue && ![emailValue isKindOfClass:[NSNull class]])
+    if (emailValue && ![emailValue isKindOfClass:[NSNull class]])
     {
         [self setValue:@{ MASInfoTypeWork : emailValue } forKey:@"emailAddresses"];
     }
@@ -142,7 +157,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Phone Numbers
     //
     NSString *phoneValue = bodyInfo[MASUserPhoneRequestResponseKey];
-    if(phoneValue && ![phoneValue isKindOfClass:[NSNull class]])
+    if (phoneValue && ![phoneValue isKindOfClass:[NSNull class]])
     {
         [self setValue:@{ MASInfoTypeWork : phoneValue } forKey:@"phoneNumbers"];
     }
@@ -151,7 +166,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Addresses
     //
     NSDictionary *addressInfo = bodyInfo[MASUserAddressRequestResponseKey];
-    if(addressInfo && ![addressInfo isKindOfClass:[NSNull class]])
+    if (addressInfo && ![addressInfo isKindOfClass:[NSNull class]])
     {
         [self setValue:@{ MASInfoTypeWork : addressInfo } forKey:@"addresses"];
     }
@@ -160,7 +175,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // Picture
     //
     NSString *imageUriAsString = bodyInfo[MASUserPictureRequestResponseKey];
-    if(imageUriAsString && ![imageUriAsString isKindOfClass:[NSNull class]])
+    if (imageUriAsString && ![imageUriAsString isKindOfClass:[NSNull class]])
     {
         NSURL *imageUrl = [NSURL URLWithString:imageUriAsString];
         NSData *imageData = [NSData dataWithContentsOfURL:imageUrl];
@@ -172,12 +187,12 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // set authenticated timestamp
     //
     NSNumber *authenticatedTimestamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
-    [accessService setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    [accessService setAccessValueNumber:authenticatedTimestamp storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     //
     // set authenticated user's objectId
     //
-    [accessService setAccessValueString:self.objectId withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
+    [accessService setAccessValueString:self.objectId storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
     //
     // storing access information into keychain
@@ -203,7 +218,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 {
     [self resetPartial];
     
-    [[MASAccessService sharedService] setAccessValueData:nil withAccessValueType:MASAccessValueTypeMASUserObjectData];
+    [[MASAccessService sharedService] setAccessValueData:nil storageKey:MASKeychainStorageKeyMASUserObjectData];
 }
 
 - (void)resetPartial
@@ -223,7 +238,10 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // If was logged off remove the keychain stored values
     //
-    if(wasLoggedOff) [self resetPartial];
+    if (wasLoggedOff)
+    {
+        [self resetPartial];
+    }
     
     //
     // Save

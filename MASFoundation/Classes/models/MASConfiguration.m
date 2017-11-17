@@ -774,7 +774,7 @@ static float _systemVersionNumber_;
 - (BOOL)ssoEnabled
 {
     MASAccessService *accessService = [MASAccessService sharedService];
-    NSString *ssoEnabledString = [accessService getAccessValueStringWithType:MASAccessValueTypeMSSOEnabled];
+    NSString *ssoEnabledString = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyMSSOEnabled];
 
     if (ssoEnabledString)
     {
@@ -793,7 +793,7 @@ static float _systemVersionNumber_;
 {
     MASAccessService *accessService = [MASAccessService sharedService];
 
-    [accessService setAccessValueString:(ssoEnabled ? @"true":@"false") withAccessValueType:MASAccessValueTypeMSSOEnabled];
+    [accessService setAccessValueString:(ssoEnabled ? @"true":@"false") storageKey:MASKeychainStorageKeyMSSOEnabled];
 }
 
 

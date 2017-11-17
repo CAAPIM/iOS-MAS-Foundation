@@ -212,6 +212,11 @@ static NSString *_Nonnull const MASGrantTypeRefreshToken = @"refresh_token"; // 
 static int const MASExceptionErrorCodeInvalidCertificate = 9999; // integer
 
 
+# pragma mark - MASSharedStorage custom prefix
+
+static NSString *_Nonnull const MASSharedStorageCustomPrefix = @"MAS.customSharedStorage";
+
+
 ///--------------------------------------
 /// @name Location Monitoring Constants
 ///--------------------------------------
