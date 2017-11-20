@@ -29,6 +29,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 @interface MASModelService ()
 
 @property (nonatomic, strong, readwrite) MASAuthenticationProviders *currentProviders;
+@property (nonatomic) BOOL isBrowserBasedLogin;
 
 @end
 
@@ -38,7 +39,6 @@ static NSString *const MASEnterpriseAppKey = @"app";
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
-
 
 # pragma mark - Properties
 
@@ -70,6 +70,19 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     
     _currentUser = user;
 }
+
+
+-(void)setBrowserBasedLogin : (BOOL)browserBasedLogin
+{
+    self.isBrowserBasedLogin = browserBasedLogin;
+}
+
+
+-(BOOL)browserBasedLogin
+{
+    return self.isBrowserBasedLogin;
+}
+
 
 # pragma mark - Shared Service
 
@@ -367,7 +380,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     //
     // If the user was already authenticated, we don't have to retrieve the authentication provider
     //
-    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked)
+    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked || self.isBrowserBasedLogin)
     {
         
         //
@@ -906,9 +919,15 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                  @"\n\n********************************************************\n\n\n");
             
             //
-            // If the UI handling framework is present and will handle this stop here
+            // If the UI handling framework or browser based login is present and will handle this stop here
             //
             MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+            
+            if([serviceRegistry browserBasedLoginWillHandleAuthentication:completion])
+            {
+                return;
+            }
+            
             if([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
             {
                 return;
@@ -1712,6 +1731,11 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     // If the UI handling framework is present and will handle this stop here
     //
     MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
+    if([serviceRegistry browserBasedLoginWillHandleAuthentication:completion])
+    {
+        return;
+    }
+    
     if([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
     {
         return;

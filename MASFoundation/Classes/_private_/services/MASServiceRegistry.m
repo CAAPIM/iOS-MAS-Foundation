@@ -15,6 +15,8 @@
 #import "MASConfigurationService.h"
 #import "MASModelService.h"
 #import "MASService.h"
+#import "MASServiceRegistry.h"
+#import "MASBrowserBasedAuthentication.h"
 
 
 //
@@ -930,6 +932,19 @@ static NSArray const *_serviceUUIDs_;
 #pragma clang diagnostic pop
     
     return YES;
+}
+
+
+-(BOOL)browserBasedLoginWillHandleAuthentication : (MASCompletionErrorBlock)bbaLoginBlock
+{
+    if(![[MASModelService sharedService] browserBasedLogin])
+    {
+        return NO;
+    }
+    
+    [[MASBrowserBasedAuthentication sharedInstance] loadWebLoginTemplate:bbaLoginBlock];
+    return YES;
+    
 }
 
 @end

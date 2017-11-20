@@ -92,6 +92,12 @@
 }
 
 
++(void)enableBrowserBasedAuthentication:(BOOL)enable
+{
+    [[MASModelService sharedService] setBrowserBasedLogin:enable];
+}
+
+
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
     [MASNetworkingService setGatewayMonitor:monitor];
