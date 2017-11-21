@@ -155,9 +155,9 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     //
     if (![keychainApplication.identifier isEqualToString:_currentApplication.identifier])
     {
-        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
-        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
-        [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientExpiration];
+        [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyClientId];
+        [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyClientSecret];
+        [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyClientExpiration];
         
         [[MASModelService sharedService] clearCurrentUserForLogout];
     }
@@ -396,7 +396,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
     
     // ClientId
-    parameterInfo[MASClientKeyRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId];
+    parameterInfo[MASClientKeyRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
     
     // RedirectUri
     parameterInfo[MASRedirectUriRequestResponseKey] = [[MASApplication currentApplication].redirectUri absoluteString];
@@ -1308,9 +1308,9 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                                          //
                                          // Remove signed client certificate from the keychain storage
                                          //
-                                         [[MASAccessService sharedService] setAccessValueData:nil withAccessValueType:MASAccessValueTypeSignedPublicCertificateData];
-                                         [[MASAccessService sharedService] setAccessValueCertificate:nil withAccessValueType:MASAccessValueTypeSignedPublicCertificate];
-                                         [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+                                         [[MASAccessService sharedService] setAccessValueData:nil storageKey:MASKeychainStorageKeyPublicCertificateData];
+                                         [[MASAccessService sharedService] setAccessValueCertificate:nil storageKey:MASKeychainStorageKeySignedPublicCertificate];
+                                         [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
                                          
                                          //
                                          // Remove device's client MASFile for re-generation
@@ -1406,7 +1406,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     //
     // Detect if device is already logged out (which is basically checking if id_token exists), if so stop here
     //
-    if(![accessService getAccessValueStringWithType:MASAccessValueTypeIdToken])
+    if(![accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
     {
         //
         // Notify
@@ -1444,14 +1444,14 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     parameterInfo[MASDeviceLogoutAppRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
     
     // IdToken
-    NSString *idToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken];
+    NSString *idToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken];
     if (idToken)
     {
         parameterInfo[MASIdTokenBodyRequestResponseKey] = idToken;
     }
     
     // IdTokenType
-    NSString *idTokenType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdTokenType];
+    NSString *idTokenType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdTokenType];
     if (idTokenType)
     {
         parameterInfo[MASIdTokenTypeBodyRequestResponseKey]= idTokenType;
@@ -1508,8 +1508,8 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
          //
          // Set id_token and id_token_type to nil
          //
-         [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
-         [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
+         [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+         [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
          
          [[MASAccessService sharedService].currentAccessObj refresh];
          //
@@ -1946,7 +1946,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
     
     // MAG Identifier
-    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
+    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
     if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
     
     //
@@ -2015,7 +2015,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
                 //
                 // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
                 //
-                [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
+                [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
                 [[MASAccessService sharedService].currentAccessObj refresh];
                 [blockSelf validateCurrentUserSession:completion];
             
@@ -2039,7 +2039,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             {
                 NSError *idTokenValidationError = nil;
                 BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
-                                                          magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
+                                                          magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier]
                                                                   error:&idTokenValidationError];
                 
                 if (!isIdTokenValid && idTokenValidationError)

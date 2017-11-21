@@ -48,8 +48,8 @@
         //  If iss was not prepare upon MASClaims object construction which most likley happened due to registration status of the client,
         //  re-prepare iss with registered client id
         //
-        NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-        NSString *clientId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId];
+        NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
+        NSString *clientId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
         
         if (magIdentifier && clientId)
         {

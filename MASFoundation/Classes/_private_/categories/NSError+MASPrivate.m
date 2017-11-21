@@ -985,6 +985,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeConfigurationInvalidEndpoint: return @"Invalid endpoint";
             
         //
+        //  Security Configuration
+        //
+        case MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration: return @"Invalid host information for security configuration.  NSURL host or port cannot be nil.";
+        case MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration: return @"Invalid pinning information for security configuration.  At least one pinning information should be provided or public PKI should be trusted.";
+            
+        //
         // Device
         //
         
@@ -1102,6 +1108,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
         case MASFoundationErrorCodeJWTUnexpectedClassType: return @"Mis-match of reserved JWT claim value's type (%@)";
         case MASFoundationErrorCodeJWTSerializationError: return @"Claim value (%@) cannot be serialized";
+        
+        //
+        //  Shared Storage
+        //
+        case MASFoundationErrorCodeSharedStorageNotNilKey: return @"Data key cannot be nil or empty string.";
             
         //
         // Default

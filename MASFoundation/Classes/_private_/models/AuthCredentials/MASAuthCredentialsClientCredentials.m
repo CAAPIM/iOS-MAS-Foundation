@@ -109,14 +109,14 @@
     else {
         
         // ClientId
-        NSString *clientId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientId];
+        NSString *clientId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
         if (clientId)
         {
             parameterInfo[MASClientIdentifierRequestResponseKey] = clientId;
         }
         
         // ClientSecret
-        NSString *clientSecret = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+        NSString *clientSecret = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
         if (clientSecret)
         {
             parameterInfo[MASClientSecretRequestResponseKey] = clientSecret;

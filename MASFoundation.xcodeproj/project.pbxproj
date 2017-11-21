@@ -310,6 +310,8 @@
 		CB1907F91C17950700A5EF16 /* MASAccessService.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907F71C17950700A5EF16 /* MASAccessService.m */; };
 		CB1C151E1E450109002B31A5 /* NSURL+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1C151C1E450109002B31A5 /* NSURL+MASPrivate.h */; };
 		CB1C151F1E450109002B31A5 /* NSURL+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1C151D1E450109002B31A5 /* NSURL+MASPrivate.m */; };
+		CB1FD14B1FB23701000AFA25 /* MASSharedStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1FD1491FB23701000AFA25 /* MASSharedStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CB1FD14C1FB23701000AFA25 /* MASSharedStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1FD14A1FB23701000AFA25 /* MASSharedStorage.m */; };
 		CB2357921F0EF53600D4C420 /* MASURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CB2357901F0EF53600D4C420 /* MASURLSessionManager.h */; };
 		CB2357931F0EF53600D4C420 /* MASURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB2357911F0EF53600D4C420 /* MASURLSessionManager.m */; };
 		CB2357961F0EFDEA00D4C420 /* MASSessionTaskOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = CB2357941F0EFDEA00D4C420 /* MASSessionTaskOperation.h */; };
@@ -735,6 +737,8 @@
 		CB1907F71C17950700A5EF16 /* MASAccessService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASAccessService.m; sourceTree = "<group>"; };
 		CB1C151C1E450109002B31A5 /* NSURL+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+MASPrivate.h"; sourceTree = "<group>"; };
 		CB1C151D1E450109002B31A5 /* NSURL+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+MASPrivate.m"; sourceTree = "<group>"; };
+		CB1FD1491FB23701000AFA25 /* MASSharedStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASSharedStorage.h; sourceTree = "<group>"; };
+		CB1FD14A1FB23701000AFA25 /* MASSharedStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASSharedStorage.m; sourceTree = "<group>"; };
 		CB2357901F0EF53600D4C420 /* MASURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASURLSessionManager.h; sourceTree = "<group>"; };
 		CB2357911F0EF53600D4C420 /* MASURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASURLSessionManager.m; sourceTree = "<group>"; };
 		CB2357941F0EFDEA00D4C420 /* MASSessionTaskOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSessionTaskOperation.h; sourceTree = "<group>"; };
@@ -1342,6 +1346,8 @@
 				CB14D2181D02266D004F772E /* MASProximityLoginQRCode.m */,
 				CBA3EB2C1E945F2400E64D9D /* MASClaims.h */,
 				CBA3EB2D1E945F2400E64D9D /* MASClaims.m */,
+				CB1FD1491FB23701000AFA25 /* MASSharedStorage.h */,
+				CB1FD14A1FB23701000AFA25 /* MASSharedStorage.m */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1677,6 +1683,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB1FD14B1FB23701000AFA25 /* MASSharedStorage.h in Headers */,
 				69B7DF6A1F9675600056DD3A /* MASRequestBuilder.h in Headers */,
 				69B7DF681F9675600056DD3A /* MASRequest.h in Headers */,
 				CBAFD24C1F2BD46C0034DF02 /* MASSecurityConfiguration.h in Headers */,
@@ -2091,6 +2098,7 @@
 				CBA3EB2F1E945F2400E64D9D /* MASClaims.m in Sources */,
 				CBD25B151E7A0A9200DFB47F /* MF_Base64Additions.m in Sources */,
 				10738A3B1C711C2F00B7E87E /* util_mosq.c in Sources */,
+				CB1FD14C1FB23701000AFA25 /* MASSharedStorage.m in Sources */,
 				10E027A71F72B10100EAB103 /* RNEncryptor.m in Sources */,
 				10738A2F1C711C2F00B7E87E /* read_handle.c in Sources */,
 				CB9975571EDF5986006CEBB1 /* MASAuthCredentialsClientCredentials.m in Sources */,

@@ -330,6 +330,12 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeConfigurationInvalidEndpoint = 100204,
     
     //
+    //  Security Configuration
+    //
+    MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration = 100211,
+    MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration = 100212,
+    
+    //
     // Geolocation
     //
     MASFoundationErrorCodeGeolocationIsInvalid = 100301,
@@ -458,6 +464,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeJWTInvalidClaims = 170001,
     MASFoundationErrorCodeJWTUnexpectedClassType = 170002,
     MASFoundationErrorCodeJWTSerializationError = 170003,
+    
+    //
+    //  SharedStorage
+    //
+    MASFoundationErrorCodeSharedStorageNotNilKey = 180001,
     
     MASFoundationErrorCodeCount = -999999
 };

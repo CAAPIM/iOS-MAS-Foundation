@@ -49,7 +49,7 @@
         }
         
         _canRegisterDevice = YES;
-        _isReuseable = YES;
+        _isReuseable = NO;
     }
     
     return self;
@@ -79,8 +79,8 @@
             // If there is an error from the server complaining about invalid token,
             // invalidate local id_token and id_token_type and revalidate the user's session.
             //
-            [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
-            [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
+            [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+            [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
             [[MASAccessService sharedService].currentAccessObj refresh];
         }
         
