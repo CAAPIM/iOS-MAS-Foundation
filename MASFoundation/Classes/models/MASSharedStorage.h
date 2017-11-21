@@ -74,4 +74,14 @@
  */
 + (BOOL)saveData:(NSData *_Nonnull)data key:(NSString *_Nonnull)key error:(NSError * __nullable __autoreleasing * __nullable)error;
 
+
+
+/**
+ Deletes any data type with the specified key from shared keychain storage.
+
+ @param key NSString of the key used to store the data
+ @param error NSError object reference that would notify if there was any error while deleting the data
+ */
++ (void)deleteForKey:(NSString *_Nonnull)key error:(NSError * __nullable __autoreleasing * __nullable)error;
+
 @end

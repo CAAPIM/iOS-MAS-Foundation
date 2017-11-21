@@ -671,6 +671,23 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
+- (void)deleteForStorageKey:(NSString *)storageKey error:(NSError **)error
+{
+    NSString *storageType = [self getStorageTypeWithKey:storageKey];
+    NSString *accessValueAsString = [self convertKeyString:storageKey];
+    MASIKeyChainStore *destinationStorage = _storages[storageType];
+    
+    NSError *operationError = nil;
+    
+    [destinationStorage removeItemForKey:storageKey error:&operationError];
+    
+    if (operationError && error)
+    {
+        *error = operationError;
+    }
+}
+
+
 #pragma mark - Private
 
 + (NSString *)padding:(NSString *)encodedString{

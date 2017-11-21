@@ -215,4 +215,50 @@
     return result;
 }
 
+
++ (void)deleteForKey:(NSString *_Nonnull)key error:(NSError * __nullable __autoreleasing * __nullable)error
+{
+    //
+    //  Check if SDK was initialized
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (error)
+        {
+            *error = [NSError errorMASIsNotStarted];
+        }
+        
+        return;
+    }
+    
+    //
+    //  Check for data key
+    //
+    if (key == nil || [key length] <= 0)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeSharedStorageNotNilKey errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return;
+    }
+    
+    NSError *operationError = nil;
+    [[MASAccessService sharedService] deleteForStorageKey:[NSString stringWithFormat:@"%@.%@", MASSharedStorageCustomPrefix, key] error:&operationError];
+    
+    //
+    //  If an error occurred while keychain operation, convert it into MASFoundationErrorDomainLocal error object
+    //
+    if (operationError)
+    {
+        NSError *thisError = [NSError errorWithDomain:MASFoundationErrorDomainLocal code:operationError.code userInfo:@{NSLocalizedDescriptionKey : operationError.localizedDescription}];
+        
+        if (error)
+        {
+            *error = thisError;
+        }
+    }
+}
+
 @end
