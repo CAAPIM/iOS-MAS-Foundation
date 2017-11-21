@@ -679,7 +679,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
     
     NSError *operationError = nil;
     
-    [destinationStorage removeItemForKey:storageKey error:&operationError];
+    [destinationStorage removeItemForKey:accessValueAsString error:&operationError];
     
     if (operationError && error)
     {
