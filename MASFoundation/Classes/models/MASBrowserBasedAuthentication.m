@@ -15,7 +15,7 @@
 #import "MASGetURLRequest.h"
 #import "MASModelService.h"
 
-@interface MASBrowserBasedAuthentication () <MASAuthorizationResponseDelegate>
+@interface MASBrowserBasedAuthentication () <MASAuthorizationResponseDelegate,SFSafariViewControllerDelegate>
 {
     
 }
@@ -49,7 +49,7 @@
     MASModelService* service = [MASModelService sharedService];
     [[MASAuthorizationResponse sharedInstance] setDelegate:self];
     __block MASBrowserBasedAuthentication *blockSelf = self;
-    
+    __weak __typeof__(self) weakSelf = self;
     //
     // Try to register so that all the essential things are set up in that API call and we get a valid URL. If Application is already registered the API returns without doing any work.
     //
@@ -58,6 +58,7 @@
         NSURL* url = [blockSelf getURLForWebLogin];
         DLog(@"url used for browser based authentication is %@",url.absoluteString);
         blockSelf.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
+        blockSelf.safariViewController.delegate = weakSelf;
         __block UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:blockSelf.safariViewController];
         
         dispatch_async(dispatch_get_main_queue(), ^
@@ -176,6 +177,14 @@
     }
     
     return [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeUnknown responseType:MASRequestResponseTypeUnknown isPublic:YES].URL;
+}
+
+
+#pragma mark - SafariViewController Delegates
+
+-(void)safariViewControllerDidFinish:(SFSafariViewController *)controller
+{
+    self.webLoginCallBack(NO, nil);
 }
 
 

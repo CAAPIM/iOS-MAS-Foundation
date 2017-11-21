@@ -250,6 +250,18 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
++(void)initializeBrowserBasedLoginWithCompletion : (MASCompletionErrorBlock _Nullable)completion
+{
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        
+        return;
+    }
+    
+    [[MASModelService sharedService] validateCurrentUserSession:completion];
+}
+
 - (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion
 {
     [[MASModelService sharedService] requestUserInfoWithCompletion:completion];
