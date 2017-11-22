@@ -985,6 +985,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeConfigurationInvalidEndpoint: return @"Invalid endpoint";
             
         //
+        //  Security Configuration
+        //
+        case MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration: return @"Invalid host information for security configuration.  NSURL host or port cannot be nil.";
+        case MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration: return @"Invalid pinning information for security configuration.  At least one pinning information should be provided or public PKI should be trusted.";
+            
+        //
         // Device
         //
         

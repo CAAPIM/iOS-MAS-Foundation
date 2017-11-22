@@ -330,6 +330,12 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeConfigurationInvalidEndpoint = 100204,
     
     //
+    //  Security Configuration
+    //
+    MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration = 100211,
+    MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration = 100212,
+    
+    //
     // Geolocation
     //
     MASFoundationErrorCodeGeolocationIsInvalid = 100301,
