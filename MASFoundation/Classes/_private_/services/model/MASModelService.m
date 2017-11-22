@@ -923,7 +923,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
             //
             MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
             
-            if([serviceRegistry browserBasedLoginWillHandleAuthentication:completion])
+            if([serviceRegistry browserBasedLoginWillHandleAuthentication:authCredentialsBlock])
             {
                 return;
             }
@@ -1731,7 +1731,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     // If the UI handling framework is present and will handle this stop here
     //
     MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-    if([serviceRegistry browserBasedLoginWillHandleAuthentication:completion])
+    if([serviceRegistry browserBasedLoginWillHandleAuthentication:authCredentialsBlock])
     {
         return;
     }

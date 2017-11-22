@@ -193,9 +193,9 @@ typedef NS_ENUM(NSInteger, MASRegistryState)
  * For this method to handle authentication it requires browser based login to be enabled.
  * @see enableBrowserBasedAuthentication
  *
- * @param bbaLoginBlock The MASCompletionErrorBlock to receive login result.
+ * @param bbaLoginBlock The MASAuthCredentialsBlock to receive login result.
  * @return Return YES if handled, NO if not.
  */
--(BOOL)browserBasedLoginWillHandleAuthentication : (MASCompletionErrorBlock)bbaLoginBlock;
+-(BOOL)browserBasedLoginWillHandleAuthentication : (MASAuthCredentialsBlock)bbaLoginBlock;
 
 @end

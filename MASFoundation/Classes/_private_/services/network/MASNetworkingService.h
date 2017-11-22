@@ -9,10 +9,11 @@
 //
 
 #import "MASService.h"
-
 #import "MASConstantsPrivate.h"
+
 #import "MASAuthValidationOperation.h"
 
+typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *_Nonnull session, NSURLSessionTask *_Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest *_Nonnull request);
 
 @interface MASNetworkingService : MASService
 
@@ -25,6 +26,10 @@
 # pragma mark - Properties
 
 @property (nonatomic, assign, readonly) MASGatewayMonitoringStatus monitoringStatus;
+
+@property (nonatomic) MASSessionDataTaskHTTPRedirectBlock httpRedirectionBlock;
+
+//@property (nonatomic, copy) MASSessionDataTask1CompletionBlock httpBlock;
 
 
 /**

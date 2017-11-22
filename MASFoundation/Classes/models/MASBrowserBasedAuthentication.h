@@ -29,6 +29,6 @@
  *
  * @param webLoginBlock completion MASCompletionErrorBlock that receives the results.
  */
--(void)loadWebLoginTemplate : (MASCompletionErrorBlock)webLoginBlock;
+-(void)loadWebLoginTemplate : (MASAuthCredentialsBlock)webLoginBlock;
 
 @end
