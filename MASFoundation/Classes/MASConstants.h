@@ -460,6 +460,10 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeJWTSerializationError = 170003,
     
     //
+    // Browser Based Login
+    //
+    MASFoundationErrorCodeBBANotEnabled = 180000,
+    //
     //  SharedStorage
     //
     MASFoundationErrorCodeSharedStorageNotNilKey = 180001,

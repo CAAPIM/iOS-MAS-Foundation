@@ -250,8 +250,14 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-+(void)initializeBrowserBasedLoginWithCompletion : (MASCompletionErrorBlock _Nullable)completion
++(void)initializeBrowserBasedAuthenticationWithCompletion:(MASCompletionErrorBlock _Nullable)completion
 {
+    if(![MASModelService browserBasedAuthentication])
+    {
+        if(completion) completion(NO, [NSError errorBrowserBasedAuthenticaionNotEnabled]);
+        return;
+    }
+    
     if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
     {
         if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);

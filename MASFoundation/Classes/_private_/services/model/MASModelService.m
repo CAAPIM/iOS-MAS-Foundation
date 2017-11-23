@@ -29,7 +29,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 @interface MASModelService ()
 
 @property (nonatomic, strong, readwrite) MASAuthenticationProviders *currentProviders;
-@property (nonatomic) BOOL isBrowserBasedLogin;
+
 
 @end
 
@@ -39,7 +39,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
-
+static BOOL _isBrowserBasedAuthentication_;
 # pragma mark - Properties
 
 
@@ -72,15 +72,15 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
 }
 
 
--(void)setBrowserBasedLogin : (BOOL)browserBasedLogin
++(void)setBrowserBasedAuthentication : (BOOL)browserBasedAuthentication
 {
-    self.isBrowserBasedLogin = browserBasedLogin;
+    _isBrowserBasedAuthentication_ = browserBasedAuthentication;
 }
 
 
--(BOOL)browserBasedLogin
++(BOOL)browserBasedAuthentication
 {
-    return self.isBrowserBasedLogin;
+    return _isBrowserBasedAuthentication_;
 }
 
 
@@ -380,7 +380,7 @@ static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
     //
     // If the user was already authenticated, we don't have to retrieve the authentication provider
     //
-    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked || self.isBrowserBasedLogin)
+    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked || _isBrowserBasedAuthentication_)
     {
         
         //

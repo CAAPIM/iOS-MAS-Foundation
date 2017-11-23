@@ -267,7 +267,7 @@
  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
  available via [MASUser currentUser] has been updated with the new information.
  */
-+(void)initializeBrowserBasedLoginWithCompletion : (MASCompletionErrorBlock _Nullable)completion;
++(void)initializeBrowserBasedAuthenticationWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 

@@ -2,8 +2,10 @@
 //  MASBrowserBasedAuthentication.m
 //  MASFoundation
 //
-//  Created by nimma01 on 20/11/17.
-//  Copyright © 2017 CA Technologies. All rights reserved.
+//  Copyright (c) 2017 CA. All rights reserved.
+//
+//  This software may be modified and distributed under the terms
+//  of the MIT license. See the LICENSE file for details.
 //
 
 #import "MASBrowserBasedAuthentication.h"
@@ -43,7 +45,7 @@
 }
 
 
--(void)loadWebLoginTemplate : (MASAuthCredentialsBlock)webLoginBlock
+-(void)loadWebLoginTemplate:(MASAuthCredentialsBlock)webLoginBlock
 {
     self.webLoginCallBack = webLoginBlock;
     MASModelService* service = [MASModelService sharedService];
@@ -54,36 +56,14 @@
     // Try to register so that all the essential things are set up in that API call and we get a valid URL. If Application is already registered the API returns without doing any work.
     //
     [service  registerApplication:^(BOOL completed, NSError *error) {
-        
-        NSURL* url = [blockSelf getURLForWebLogin];
+        [blockSelf getURLForWebLogin];
         DLog(@"url used for browser based authentication is %@",url.absoluteString);
-       /* blockSelf.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
-        blockSelf.safariViewController.delegate = weakSelf;
-        __block UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:blockSelf.safariViewController];
-        
-        dispatch_async(dispatch_get_main_queue(), ^
-                       {
-                           [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-                           
-                           [[UIAlertController rootViewController] presentViewController:navigationController animated:YES
-                                                                              completion:^{
-                                                                                  
-                                                                                  navigationController = nil;
-                                                                              }];
-                           
-                           return;
-                       });*/
-        }];
+    }];
 }
 
 
-- (NSURL*)getURLForWebLogin
+- (void)getURLForWebLogin
 {
-    //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].authorizationEndpointPath;
-    
     //
     // Headers
     //
@@ -176,40 +156,49 @@
         parameterInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
     }
     
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].authorizationEndpointPath;
+    
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:[self getRedirectionBlock]];
-    [[MASNetworkingService sharedService] getFrom:@"/auth/oauth/v2/authorize" withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeWwwFormUrlEncoded isPublic:YES completion:^(NSDictionary* response, NSError* error){
+    [[MASNetworkingService sharedService] getFrom:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeWwwFormUrlEncoded completion:^(NSDictionary* response, NSError* error){
         
         if(error)
         {
-            NSLog(@"error is %@",error.localizedDescription);
+            DLog(@"error is %@",error.localizedDescription);
             
         }
         
-        NSLog(@"response is %@",response);
+        DLog(@"response is %@",response);
     }];
-    
-    
-    
-    return [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeUnknown responseType:MASRequestResponseTypeUnknown isPublic:YES].URL;
 }
 
 -(MASSessionDataTaskHTTPRedirectBlock)getRedirectionBlock
 {
     MASSessionDataTaskHTTPRedirectBlock redirectionBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSURLResponse * response, NSURLRequest *request){
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        if(httpResponse.statusCode == 302)
+        if(httpResponse.statusCode == 302 && [self isBBARedirection:task.originalRequest])
         {
-            NSLog(@"all headers %@",httpResponse.allHeaderFields);
+            DLog(@"all headers %@",httpResponse.allHeaderFields);
             NSString* locationURL = [httpResponse.allHeaderFields objectForKey:@"Location"];
             NSURL* redirectURL = [NSURL URLWithString:locationURL];
             [task cancel];
             [self launchBrowserWithURL:redirectURL];
         }
-        
         return request;
     };
     
     return redirectionBlock;
+}
+
+-(BOOL)isBBARedirection : (NSURLRequest*)request
+{
+    if([request.URL.absoluteString containsString:[MASConfiguration currentConfiguration].authorizationEndpointPath] && [request.URL.absoluteString containsString:@"display=template"])
+    {
+        return YES;
+    }
+    return NO;
 }
 
 -(void)launchBrowserWithURL : (NSURL*)templatizedURL
@@ -239,7 +228,12 @@
 
 -(void)safariViewControllerDidFinish:(SFSafariViewController *)controller
 {
-    //self.webLoginCallBack(NO, nil);
+    self.webLoginCallBack(nil, YES, ^(BOOL completed, NSError* error){
+        if(error)
+        {
+            DLog(@"Browser dismissed");
+        }
+    });
 }
 
 
@@ -254,7 +248,7 @@
         {
             //error
         }
-        NSLog(@"successfully logged in");
+        DLog(@"successfully logged in");
         [self dismissBrowser];
     });
 }
