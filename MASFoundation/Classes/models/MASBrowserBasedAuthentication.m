@@ -51,13 +51,12 @@
     MASModelService* service = [MASModelService sharedService];
     [[MASAuthorizationResponse sharedInstance] setDelegate:self];
     __block MASBrowserBasedAuthentication *blockSelf = self;
-    __weak __typeof__(self) weakSelf = self;
+    
     //
     // Try to register so that all the essential things are set up in that API call and we get a valid URL. If Application is already registered the API returns without doing any work.
     //
     [service  registerApplication:^(BOOL completed, NSError *error) {
         [blockSelf getURLForWebLogin];
-        //DLog(@"url used for browser based authentication is %@",url.absoluteString);
     }];
 }
 
@@ -82,14 +81,6 @@
     
     // Scope
     NSString *scope = [MASApplication currentApplication].scopeAsString;
-    
-    //Remove register scopes if device is already registered (required for BBA to work)
-  /*  if([[MASDevice currentDevice] isRegistered])
-    {
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso_client_register" withString:@""];
-        scope = [scope stringByReplacingOccurrencesOfString:@"msso_register" withString:@""];
-        
-    }*/
     
     //
     // Workaround - msso_register scope should NOT be used to retrieve authenticationProviders when it is going to be used to "authenticate"
@@ -161,15 +152,24 @@
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].authorizationEndpointPath;
     
-    MASSessionDataTaskHTTPRedirectBlock oldRedirectionBlock = [[MASNetworkingService sharedService] httpRedirectionBlock];
+    //
+    // preserve the redirection block that was set earlier
+    //
+    MASSessionDataTaskHTTPRedirectBlock previousRedirectionBlock = [[MASNetworkingService sharedService] httpRedirectionBlock];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:[self getRedirectionBlock]];
+    //
+    // This get request would result in a redirection which contains the actual URL to be loaded into browser and hence this would be canceled after the redirection
+    //
     [[MASNetworkingService sharedService] getFrom:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeWwwFormUrlEncoded completion:^(NSDictionary* response, NSError* error){
         
         if(error)
         {
+            //
+            // This error is expected as we cancel the Get request after the redirection
+            //
             DLog(@"original request to get the url cancelled");
         }
-        [[MASNetworkingService sharedService] setHttpRedirectionBlock:oldRedirectionBlock];
+        [[MASNetworkingService sharedService] setHttpRedirectionBlock:previousRedirectionBlock];
         //DLog(@"response is %@",response);
     }];
 }
@@ -192,7 +192,7 @@
     return redirectionBlock;
 }
 
--(BOOL)isBBARedirection : (NSURLRequest*)request
+-(BOOL)isBBARedirection:(NSURLRequest*)request
 {
     if([request.URL.absoluteString containsString:[MASConfiguration currentConfiguration].authorizationEndpointPath] && [request.URL.absoluteString containsString:@"display=template"])
     {
@@ -201,25 +201,31 @@
     return NO;
 }
 
--(void)launchBrowserWithURL : (NSURL*)templatizedURL
+-(void)launchBrowserWithURL:(NSURL*)templatizedURL
 {
     __block MASBrowserBasedAuthentication *blockSelf = self;
     __weak __typeof__(self) weakSelf = self;
     blockSelf.safariViewController = [[SFSafariViewController alloc] initWithURL:templatizedURL];
+   
+    if (@available(iOS 11.0, *)) {
+        blockSelf.safariViewController.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
+    } else {
+        // Fallback on earlier versions
+    }
      blockSelf.safariViewController.delegate = weakSelf;
+    
      __block UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:blockSelf.safariViewController];
      
-     dispatch_async(dispatch_get_main_queue(), ^
-     {
-     [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-     
-     [[UIAlertController rootViewController] presentViewController:navigationController animated:YES
-     completion:^{
-     
-     navigationController = nil;
-     }];
-     
-     return;
+     dispatch_async(dispatch_get_main_queue(), ^{
+         [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+         
+         [[UIAlertController rootViewController] presentViewController:navigationController animated:YES
+         completion:^{
+         
+         navigationController = nil;
+         }];
+         
+         return;
      });
 }
 
@@ -231,7 +237,7 @@
     self.webLoginCallBack(nil, YES, ^(BOOL completed, NSError* error){
         if(error)
         {
-            DLog(@"Browser dismissed");
+            DLog(@"Browser cancel clicked");
         }
     });
 }
@@ -244,9 +250,12 @@
     MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:code];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:nil];
     self.webLoginCallBack(authCredentials, NO, ^(BOOL completed, NSError* error){
+        //
+        // In either success or error case dismiss the browser and just log the status. The caller would pass the error state/success back to user.
+        //
         if(error)
         {
-            //error
+            DLog(@"successfully logged in");
         }
         DLog(@"successfully logged in");
         [self dismissBrowser];

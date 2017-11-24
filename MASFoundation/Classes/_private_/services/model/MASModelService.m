@@ -39,7 +39,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserLoginWithUserCredentialsBlock _userLoginBlock_ = nil;
 static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
-static BOOL _isBrowserBasedAuthentication_;
+static BOOL _isBrowserBasedAuthentication_ = NO;
 # pragma mark - Properties
 
 

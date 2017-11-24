@@ -16,6 +16,11 @@
     
 }
 
+///--------------------------------------
+/// @name Public
+///--------------------------------------
+
+# pragma mark - Browser Based Authentication
 
 /**
  * Retrieve the shared MASBrowserBasedAuthentication singleton.
