@@ -256,7 +256,12 @@
 
 -(void)didReceiveError:(NSError *)error
 {
-    //self.webLoginCallBack(NO, error);
+    self.webLoginCallBack(nil, YES, ^(BOOL completed, NSError* error){
+        if(error)
+        {
+            DLog(@"Did not receive Authorization code");
+        }
+    });
 }
 
 #pragma mark - UI
