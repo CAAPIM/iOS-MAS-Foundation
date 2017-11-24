@@ -57,7 +57,7 @@
     //
     [service  registerApplication:^(BOOL completed, NSError *error) {
         [blockSelf getURLForWebLogin];
-        DLog(@"url used for browser based authentication is %@",url.absoluteString);
+        //DLog(@"url used for browser based authentication is %@",url.absoluteString);
     }];
 }
 
@@ -161,16 +161,16 @@
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].authorizationEndpointPath;
     
+    MASSessionDataTaskHTTPRedirectBlock oldRedirectionBlock = [[MASNetworkingService sharedService] httpRedirectionBlock];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:[self getRedirectionBlock]];
     [[MASNetworkingService sharedService] getFrom:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeWwwFormUrlEncoded completion:^(NSDictionary* response, NSError* error){
         
         if(error)
         {
-            DLog(@"error is %@",error.localizedDescription);
-            
+            DLog(@"original request to get the url cancelled");
         }
-        
-        DLog(@"response is %@",response);
+        [[MASNetworkingService sharedService] setHttpRedirectionBlock:oldRedirectionBlock];
+        //DLog(@"response is %@",response);
     }];
 }
 
