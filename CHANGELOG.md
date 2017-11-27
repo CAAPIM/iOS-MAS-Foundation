@@ -1,3 +1,23 @@
+# Version 1.6.00
+
+### Bug fixes
+- `MASAuthCredentialsJWT` credentials was marked as re-usable, so the Mobile SDK tried to consume the same credentials for a certain period of time. JWT credentials can now be consumed only one time, and is not reusable. [DE324462]
+- Device deregistration was removing all credentials from the Mobile SDK regardless of the result of deregistration request.  Now, the Mobile SDK removes credentials only when the deregistration request succeeds.
+- Mobile SDK was changing `MASGrantFlow` to client credentials in a specific scenario with Cordova SDK. The Mobile SDK no longer switches the `MASGrantFlow` by itself.
+- Mobile SDK enhances the device registration flow so it handles the device registration record more smoothly. This removes the hassle of developers seeing "This device has already been registered and has not been configured to accept updates" error message in development phase. [US406920]
+- `MASConfiguration` was not properly updating the updated endpoint values when switching to a different configuration. It is fixed. [DE321925]
+- `MASConfiguration` had some hard-coded values for client credentials device registration endpoint. `MASConfiguration` now reads the value from the configuration. [DE321921]
+- `MASMQTTClient` was unable to reestablish MQTT connection when the user session was logged out, and logged in with a different account. Mobile SDK now properly handles session changes for MQTT connection. [US408725]
+- Mobile SDK now stores all credentials only to the device. Data will not be backed-up or transferred with iCloud unless `[MAS setKeychainSynchroizable:]` is explicitly set to `YES`. [US388853]
+- Mobile SDK's MQTT connection was unable to establish mutual SSL connection with public CA certificate. The Mobile SDK now establishes mutual SSL with public CA certificate when **entire certificate chain** is exported in JSON configuration. [US399506]
+
+### New features
+- Mobile SDK introduces a secure way of storing and sharing data across multiple applications using same keychain sharing group with MASFoundation's `MASSharedStorage` class. [US416558]
+- Mobile SDK introduces a new way of building API CRUD request with `MASRequestBuilder` and `MASRequest` classes to provide seamless developer experience Android SDK. [US374082]
+
+### Deprecated methods
+- `[MASConfiguration setSecurityConfiguration:]` is deperecated.  Please use `[MASSecurityConfiguration setSecurityConfiguration:error:]` for better handling of error cases when setting the security configuration object. [DE328373]
+
 # Version 1.5.00
 
 NOTE: From this version on the frameworks changed to Dynamic instead of Static library
@@ -12,14 +32,14 @@ NOTE: From this version on the frameworks changed to Dynamic instead of Static l
 - The SDK no longer requires Keychain Sharing to be enabled in Xcode. However, to establish SSO across multiple applications, Keychain Sharing must be enabled. [US320771]
 - Mobile SDK now only validates against the leaf certificate for SSL pinning validation by default. The configuration can be changed to validate against entire certificate chain through `MASSecurityConfiguration`. [US374086]
 
-### New Features
+### New features
 - Mobile SDK introduces an ability to configure security configuration for external APIs (such as SSL pinning), so that Mobile SDK can securely connect to external API (other than primary Gateway). [US344780]
 - The SDK handles multiple concurrent API requests with proper authentication processes. [US362800]
 - The SDK supports dynamic framework. All you need to do is update your Xcode settings. [US367604]
 - The SDK introduces more flexible and extensible authentication with different types of credentials. For details, see `MASAuthCredentials`. [US349497]
 - The SDK introduces the ability to digitally sign the request as JWT. See `MASClaims` to sign the request. [US313137]
 
-### Deprecated Methods
+### Deprecated methods
 - `[MAS setUserLoginBlock:]` is deprecated.  Please use `[MAS setAuthCredentials:]` block to perform implicit authentication with `MASAuthCredentials` object.
 
 
