@@ -110,13 +110,14 @@
 + (void)setOTPCredentialsBlock:(MASOTPCredentialsBlock _Nullable)oneTimePassword;
 
 
+
 /**
  * Sets Bool indicator of Browser Based Authentication (templatized login) enabled or not for authorization process.
  * By default, it is disabled.
 
  @param enable BOOL value indicating whether Browser Based Authentication is enabled or not.
  */
-+(void)enableBrowserBasedAuthentication:(BOOL)enable;
++ (void)enableBrowserBasedAuthentication:(BOOL)enable;
 
 
 

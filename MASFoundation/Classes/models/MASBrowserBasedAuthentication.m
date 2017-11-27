@@ -8,27 +8,26 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import "MASBrowserBasedAuthentication.h"
-#import <SafariServices/SafariServices.h>
-#import "MASAuthorizationResponse.h"
-#import "UIAlertController+MAS.h"
-#import "MASConfigurationService.h"
 #import "MASAccessService.h"
+#import "MASAuthorizationResponse.h"
+#import "MASBrowserBasedAuthentication.h"
+#import "MASConfigurationService.h"
 #import "MASGetURLRequest.h"
 #import "MASModelService.h"
+#import "UIAlertController+MAS.h"
+#import <SafariServices/SafariServices.h>
 
 @interface MASBrowserBasedAuthentication () <MASAuthorizationResponseDelegate,SFSafariViewControllerDelegate>
 {
     
 }
 
-@property (nonatomic) SFSafariViewController* safariViewController;
+@property (nonatomic) SFSafariViewController *safariViewController;
 @property (nonatomic) MASAuthCredentialsBlock webLoginCallBack;
 
 @end
 
 @implementation MASBrowserBasedAuthentication
-
 
 # pragma mark - Shared Service
 
@@ -141,7 +140,7 @@
     
     //Put the mag-identifier in the url as query parameter for the device to be identified
     NSString* magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
-    //DLog(@"mag-identifier is %@",magIdentifier);
+    
     if(magIdentifier && magIdentifier.length > 0)
     {
         parameterInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
@@ -157,36 +156,37 @@
     //
     MASSessionDataTaskHTTPRedirectBlock previousRedirectionBlock = [[MASNetworkingService sharedService] httpRedirectionBlock];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:[self getRedirectionBlock]];
+    
     //
     // This get request would result in a redirection which contains the actual URL to be loaded into browser and hence this would be canceled after the redirection
     //
     [[MASNetworkingService sharedService] getFrom:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeWwwFormUrlEncoded completion:^(NSDictionary* response, NSError* error){
         
-        if(error)
-        {
-            //
-            // This error is expected as we cancel the Get request after the redirection
-            //
-            DLog(@"original request to get the url cancelled");
-        }
-        [[MASNetworkingService sharedService] setHttpRedirectionBlock:previousRedirectionBlock];
-        //DLog(@"response is %@",response);
+            if(error)
+            {
+                //
+                // This error is expected as we cancel the Get request after the redirection
+                //
+                DLog(@"original request to get the url cancelled");
+            }
+        
+            [[MASNetworkingService sharedService] setHttpRedirectionBlock:previousRedirectionBlock];
     }];
 }
 
 -(MASSessionDataTaskHTTPRedirectBlock)getRedirectionBlock
 {
     MASSessionDataTaskHTTPRedirectBlock redirectionBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSURLResponse * response, NSURLRequest *request){
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        if(httpResponse.statusCode == 302 && [self isBBARedirection:task.originalRequest])
-        {
-            DLog(@"all headers %@",httpResponse.allHeaderFields);
-            NSString* locationURL = [httpResponse.allHeaderFields objectForKey:@"Location"];
-            NSURL* redirectURL = [NSURL URLWithString:locationURL];
-            [task cancel];
-            [self launchBrowserWithURL:redirectURL];
-        }
-        return request;
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+            if(httpResponse.statusCode == 302 && [self isBBARedirection:task.originalRequest])
+            {
+                DLog(@"all headers %@",httpResponse.allHeaderFields);
+                NSString* locationURL = [httpResponse.allHeaderFields objectForKey:@"Location"];
+                NSURL* redirectURL = [NSURL URLWithString:locationURL];
+                [task cancel];
+                [self launchBrowserWithURL:redirectURL];
+            }
+            return request;
     };
     
     return redirectionBlock;
@@ -198,6 +198,7 @@
     {
         return YES;
     }
+    
     return NO;
 }
 
@@ -209,7 +210,8 @@
    
     if (@available(iOS 11.0, *)) {
         blockSelf.safariViewController.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
-    } else {
+    }
+    else {
         // Fallback on earlier versions
     }
      blockSelf.safariViewController.delegate = weakSelf;
@@ -222,7 +224,7 @@
          [[UIAlertController rootViewController] presentViewController:navigationController animated:YES
          completion:^{
          
-         navigationController = nil;
+             navigationController = nil;
          }];
          
          return;
@@ -249,6 +251,7 @@
 {
     MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:code];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:nil];
+    
     self.webLoginCallBack(authCredentials, NO, ^(BOOL completed, NSError* error){
         //
         // In either success or error case dismiss the browser and just log the status. The caller would pass the error state/success back to user.

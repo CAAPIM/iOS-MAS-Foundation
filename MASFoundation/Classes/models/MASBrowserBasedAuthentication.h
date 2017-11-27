@@ -11,14 +11,11 @@
 #import <Foundation/Foundation.h>
 #import "MASConstants.h"
 
+/**
+ MASBrowserBasedAuthentication class is a helper class to utilize SFSafariViewController to launch a customized login template.
+ * This class will get the redirection to receive the authorization code to perform login.
+ */
 @interface MASBrowserBasedAuthentication : NSObject
-{
-    
-}
-
-///--------------------------------------
-/// @name Public
-///--------------------------------------
 
 # pragma mark - Browser Based Authentication
 
@@ -36,6 +33,6 @@
  *
  * @param webLoginBlock completion MASCompletionErrorBlock that receives the results.
  */
--(void)loadWebLoginTemplate:(MASAuthCredentialsBlock)webLoginBlock;
+- (void)loadWebLoginTemplate:(MASAuthCredentialsBlock)webLoginBlock;
 
 @end

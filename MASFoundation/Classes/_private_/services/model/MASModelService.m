@@ -72,13 +72,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 }
 
 
-+(void)setBrowserBasedAuthentication : (BOOL)browserBasedAuthentication
++ (void)setBrowserBasedAuthentication : (BOOL)browserBasedAuthentication
 {
     _isBrowserBasedAuthentication_ = browserBasedAuthentication;
 }
 
 
-+(BOOL)browserBasedAuthentication
++ (BOOL)browserBasedAuthentication
 {
     return _isBrowserBasedAuthentication_;
 }

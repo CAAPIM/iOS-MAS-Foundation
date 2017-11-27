@@ -92,7 +92,7 @@
 }
 
 
-+(void)enableBrowserBasedAuthentication:(BOOL)enable
++ (void)enableBrowserBasedAuthentication:(BOOL)enable
 {
     [MASModelService setBrowserBasedAuthentication:enable];
 }
