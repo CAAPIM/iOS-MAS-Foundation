@@ -341,6 +341,16 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 
+/**
+ Deletes keychain storage item based on storage key
+
+ @param storageKey NSString of storage key.
+ @param error NSError object reference.
+ */
+- (void)deleteForStorageKey:(NSString *)storageKey error:(NSError **)error;
+
+
+
 ///--------------------------------------
 /// @name Public
 ///--------------------------------------
