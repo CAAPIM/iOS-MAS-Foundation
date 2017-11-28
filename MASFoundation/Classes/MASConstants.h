@@ -91,6 +91,27 @@ typedef void (^MASOTPChannelSelectionBlock)(NSArray *_Nonnull supportedOTPChanne
 typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock _Nonnull otpBlock, NSError *_Nullable otpError);
 
 
+/**
+ * The Selected Biometric modalities (NSArray *_Nullable biometricModalities, BOOL cancel, MASCompletionErrorBlock _Nullable)
+ *  block.
+ */
+typedef void (^MASBiometricModalitiesBlock)(NSArray *_Nullable biometricModalities, BOOL cancel, MASCompletionErrorBlock _Nullable);
+
+
+/**
+ * The Biometric registration with available modalities (NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock
+ * _Nonnull biometricModalitiesBlock) block.
+ */
+typedef void (^MASBiometricRegistrationModalitiesSelectionBlock)(NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock _Nonnull biometricModalitiesBlock);
+
+
+/**
+ * The Biometric deregistration with available modalities (NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock
+ * _Nonnull biometricModalitiesBlock) block.
+ */
+typedef void (^MASBiometricDeregistrationModalitiesSelectionBlock)(NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock _Nonnull biometricModalitiesBlock);
+
+
 ///--------------------------------------
 /// @name MAS Constants
 ///--------------------------------------
