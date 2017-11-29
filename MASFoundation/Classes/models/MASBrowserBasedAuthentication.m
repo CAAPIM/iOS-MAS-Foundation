@@ -207,24 +207,15 @@
     __block MASBrowserBasedAuthentication *blockSelf = self;
     __weak __typeof__(self) weakSelf = self;
     blockSelf.safariViewController = [[SFSafariViewController alloc] initWithURL:templatizedURL];
-   
-    if (@available(iOS 11.0, *)) {
-        blockSelf.safariViewController.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
-    }
-    else {
-        // Fallback on earlier versions
-    }
-     blockSelf.safariViewController.delegate = weakSelf;
-    
-     __block UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:blockSelf.safariViewController];
+    blockSelf.safariViewController.delegate = weakSelf;
      
      dispatch_async(dispatch_get_main_queue(), ^{
          [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
          
-         [[UIAlertController rootViewController] presentViewController:navigationController animated:YES
+         [[UIAlertController rootViewController] presentViewController:blockSelf.safariViewController animated:YES
          completion:^{
          
-             navigationController = nil;
+             DLog(@"Successfully displayed login template");
          }];
          
          return;
