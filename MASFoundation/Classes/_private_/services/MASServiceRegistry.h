@@ -187,4 +187,15 @@ typedef NS_ENUM(NSInteger, MASRegistryState)
 - (BOOL)uiServiceWillHandleOTPChannelSelection:(NSArray *)supportedChannels
                             otpGenerationBlock:(MASOTPGenerationBlock)generationBlock;
 
+
+/**
+ * Calling this method will attempt to launch a browser which handles the user authentication steps.
+ * For this method to handle authentication it requires browser based login to be enabled.
+ * @see enableBrowserBasedAuthentication
+ *
+ * @param bbaLoginBlock The MASAuthCredentialsBlock to receive login result.
+ * @return Return YES if handled, NO if not.
+ */
+-(BOOL)browserBasedLoginWillHandleAuthentication : (MASAuthCredentialsBlock)bbaLoginBlock;
+
 @end

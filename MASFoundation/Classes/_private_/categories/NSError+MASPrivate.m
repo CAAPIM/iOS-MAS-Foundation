@@ -835,6 +835,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorBrowserBasedAuthenticaionNotEnabled
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeBBANotEnabled errorDomain:MASFoundationErrorDomainLocal];
+}
+
 # pragma mark - Foundation Errors Private
 
 + (MASFoundationErrorCode)foundationErrorCodeForApiCode:(MASApiErrorCode)apiCode
@@ -1113,7 +1118,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //  Shared Storage
         //
         case MASFoundationErrorCodeSharedStorageNotNilKey: return @"Data key cannot be nil or empty string.";
-            
+         
+        //
+        // Browser Based Authentication
+        //
+        case MASFoundationErrorCodeBBANotEnabled : return @"MAS Browser Based Authentication is Not Enabled";
         //
         // Default
         //

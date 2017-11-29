@@ -82,6 +82,25 @@
 - (void)setUserObject:(MASUser *)user;
 
 
+
+/**
+ * Sets the browser based authentication property. Default is NO.
+ *
+ * @param browserBasedLogin The state of browser based authentication.
+ * If this is set to true, a URL which has a templatized login is launched in a browser and this would disable the Social Login, Proximity Login and also prevents the launch of MASUI.
+ */
++ (void)setBrowserBasedAuthentication:(BOOL)browserBasedAuthentication;
+
+
+
+/**
+ * The current state of browser based login.
+ *
+ * @return BOOL value is returned.
+ */
++ (BOOL)browserBasedAuthentication;
+
+
 ///--------------------------------------
 /// @name Application
 ///--------------------------------------
