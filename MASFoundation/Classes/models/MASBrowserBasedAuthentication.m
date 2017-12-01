@@ -44,7 +44,7 @@
 }
 
 
--(void)loadWebLoginTemplate:(MASAuthCredentialsBlock)webLoginBlock
+- (void)loadWebLoginTemplate:(MASAuthCredentialsBlock)webLoginBlock
 {
     self.webLoginCallBack = webLoginBlock;
     MASModelService* service = [MASModelService sharedService];
@@ -174,8 +174,9 @@
     }];
 }
 
--(MASSessionDataTaskHTTPRedirectBlock)getRedirectionBlock
+- (MASSessionDataTaskHTTPRedirectBlock)getRedirectionBlock
 {
+    __block MASBrowserBasedAuthentication *blockSelf = self;
     MASSessionDataTaskHTTPRedirectBlock redirectionBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSURLResponse * response, NSURLRequest *request){
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
             if(httpResponse.statusCode == 302 && [self isBBARedirection:task.originalRequest])
@@ -184,7 +185,14 @@
                 NSString* locationURL = [httpResponse.allHeaderFields objectForKey:@"Location"];
                 NSURL* redirectURL = [NSURL URLWithString:locationURL];
                 [task cancel];
-                [self launchBrowserWithURL:redirectURL];
+                
+                if(![blockSelf redirectURLHasErrors:redirectURL])
+                {
+                    [blockSelf launchBrowserWithURL:redirectURL];
+                }
+                else{
+                    blockSelf.webLoginCallBack(nil, YES, nil);
+                }
             }
             return request;
     };
@@ -192,7 +200,7 @@
     return redirectionBlock;
 }
 
--(BOOL)isBBARedirection:(NSURLRequest*)request
+- (BOOL)isBBARedirection:(NSURLRequest*)request
 {
     if([request.URL.absoluteString containsString:[MASConfiguration currentConfiguration].authorizationEndpointPath] && [request.URL.absoluteString containsString:@"display=template"])
     {
@@ -202,7 +210,19 @@
     return NO;
 }
 
--(void)launchBrowserWithURL:(NSURL*)templatizedURL
+
+- (BOOL)redirectURLHasErrors :(NSURL*)redirectURL
+{
+    NSString* redirectURLString = redirectURL.absoluteString;
+    if([redirectURLString containsString:@"x-ca-err"] && [redirectURLString containsString:@"error"] && [redirectURLString containsString:@"error_description"])
+    {
+        return YES;
+    }
+    return NO;
+}
+
+
+- (void)launchBrowserWithURL:(NSURL*)templatizedURL
 {
     __block MASBrowserBasedAuthentication *blockSelf = self;
     __weak __typeof__(self) weakSelf = self;
@@ -225,7 +245,7 @@
 
 #pragma mark - SafariViewController Delegates
 
--(void)safariViewControllerDidFinish:(SFSafariViewController *)controller
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller
 {
     self.webLoginCallBack(nil, YES, ^(BOOL completed, NSError* error){
         if(error)
@@ -238,7 +258,7 @@
 
 #pragma mark - Authorization Response delegate
 
--(void)didReceiveAuthorizationCode:(NSString *)code
+- (void)didReceiveAuthorizationCode:(NSString *)code
 {
     MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:code];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:nil];
@@ -257,7 +277,7 @@
 }
 
 
--(void)didReceiveError:(NSError *)error
+- (void)didReceiveError:(NSError *)error
 {
     self.webLoginCallBack(nil, YES, ^(BOOL completed, NSError* error){
         if(error)
@@ -269,7 +289,7 @@
 
 #pragma mark - UI
 
--(void)dismissBrowser
+- (void)dismissBrowser
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIAlertController rootViewController] dismissViewControllerAnimated:YES completion:nil];

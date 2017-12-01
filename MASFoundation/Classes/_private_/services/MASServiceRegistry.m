@@ -935,7 +935,7 @@ static NSArray const *_serviceUUIDs_;
 }
 
 
--(BOOL)browserBasedLoginWillHandleAuthentication : (MASAuthCredentialsBlock)bbaLoginBlock
+- (BOOL)browserBasedLoginWillHandleAuthentication : (MASAuthCredentialsBlock)bbaLoginBlock
 {
     if(![MASModelService browserBasedAuthentication])
     {

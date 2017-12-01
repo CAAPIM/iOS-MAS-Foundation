@@ -196,6 +196,6 @@ typedef NS_ENUM(NSInteger, MASRegistryState)
  * @param bbaLoginBlock The MASAuthCredentialsBlock to receive login result.
  * @return Return YES if handled, NO if not.
  */
--(BOOL)browserBasedLoginWillHandleAuthentication : (MASAuthCredentialsBlock)bbaLoginBlock;
+- (BOOL)browserBasedLoginWillHandleAuthentication : (MASAuthCredentialsBlock)bbaLoginBlock;
 
 @end
