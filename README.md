@@ -72,9 +72,7 @@ For manual install, you add the Mobile SDK to your Xcode project. Note that you 
 
 ## Set Up Project and Start the SDK
 
-The following ***video*** describes how to set up the project and start the Mobile SDK.
-
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/h95MF55Uuuw/0.jpg)](http://www.youtube.com/watch?v=h95MF55Uuuw "Starting the SDK")
+To start your project, see [developer site](https://mas.ca.com/docs)
 
 After your project is properly configured, you must start the SDK to establish a secure connection with the backend services. The startup process includes: initialize necessary services for library (such as geo-location, BLE, and network services), and load configuration.
 
