@@ -259,10 +259,28 @@ static BOOL _autoBindding_ = YES;
     // DeviceToken
     parameterInfo[MASPushNotificationDeviceTokenRequestResponseKey] = _deviceToken_;
     
+    // system version
+    parameterInfo[MASDeviceSystemVersionRequestResponseKey] = [[UIDevice currentDevice] systemVersion];
+
+    // device model
+    parameterInfo[MASDeviceModelRequestResponseKey] = [[UIDevice currentDevice] model];
+
+    // device locale
+    if ([[NSLocale currentLocale] localeIdentifier])
+    {
+        parameterInfo[MASDeviceSystemLocaleRequestResponseKey] = [[NSLocale currentLocale] localeIdentifier];
+    }
+
+    // device time zone
+    if ([[NSTimeZone localTimeZone] name])
+    {
+        parameterInfo[MASDeviceSystemLocalTimeZone] = [[NSTimeZone localTimeZone] name];
+    }
+
     //
     // Trigger the request
     //
-    [MAS postTo:endPoint withParameters:parameterInfo andHeaders:nil requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeJson
+    [MAS postTo:endPoint withParameters:parameterInfo andHeaders:nil requestType:MASRequestResponseTypeJson responseType:MASRequestResponseTypeJson
      completion:^(NSDictionary *responseInfo, NSError *error)
      {
          //
@@ -362,7 +380,7 @@ static BOOL _autoBindding_ = YES;
     //
     // Trigger the request
     //
-    [MAS postTo:endPoint withParameters:parameterInfo andHeaders:nil requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeJson
+    [MAS postTo:endPoint withParameters:parameterInfo andHeaders:nil requestType:MASRequestResponseTypeJson responseType:MASRequestResponseTypeJson
      completion:^(NSDictionary *responseInfo, NSError *error)
      {
          //

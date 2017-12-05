@@ -136,10 +136,16 @@ static NSString *_Nonnull const MASClientSecretRequestResponseKey = @"client_sec
 static NSString *_Nonnull const MASCodeRequestResponseKey = @"code"; // string
 static NSString *_Nonnull const MASContentTypeRequestResponseKey = @"content-type"; // string
 static NSString *_Nonnull const MASCreateSessionRequestResponseKey = @"create-session"; // string
+
 static NSString *_Nonnull const MASDeviceIdRequestResponseKey = @"device-id"; // string
 static NSString *_Nonnull const MASDeviceLogoutAppRequestResponseKey = @"logout_apps"; // string
+static NSString *_Nonnull const MASDeviceModelRequestResponseKey = @"device_model"; // string
 static NSString *_Nonnull const MASDeviceNameRequestResponseKey = @"device-name"; // string
 static NSString *_Nonnull const MASDeviceStatusRequestResponseKey = @"device-status"; // string
+static NSString *_Nonnull const MASDeviceSystemLocaleRequestResponseKey = @"device_system_locale"; // string
+static NSString *_Nonnull const MASDeviceSystemLocalTimeZone = @"device_system_timezone"; // string
+static NSString *_Nonnull const MASDeviceSystemVersionRequestResponseKey = @"device_system_version"; // string
+
 static NSString *_Nonnull const MASDisplayRequestResponseKey = @"display"; // string
 static NSString *_Nonnull const MASEnvironmentRequestResponseKey = @"environment"; // string
 static NSString *_Nonnull const MASErrorDescriptionRequestResponseKey = @"error_description"; // string
