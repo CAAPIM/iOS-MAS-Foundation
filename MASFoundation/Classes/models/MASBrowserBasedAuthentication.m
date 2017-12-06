@@ -156,18 +156,21 @@
     //
     MASSessionDataTaskHTTPRedirectBlock previousRedirectionBlock = [[MASNetworkingService sharedService] httpRedirectionBlock];
     [[MASNetworkingService sharedService] setHttpRedirectionBlock:[self getRedirectionBlock]];
+    __block MASBrowserBasedAuthentication *blockSelf = self;
     
     //
     // This get request would result in a redirection which contains the actual URL to be loaded into browser and hence this would be canceled after the redirection
     //
     [[MASNetworkingService sharedService] getFrom:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:MASRequestResponseTypeWwwFormUrlEncoded responseType:MASRequestResponseTypeWwwFormUrlEncoded completion:^(NSDictionary* response, NSError* error){
         
-            if(error)
+            //
+            // We expect this API to be cancelled in the redirection and hence the only acceptable error here is cancel.Any other error could mean an error for authenticaion itself. Hence cancel authorization.
+            //
+            if(error.code != NSURLErrorCancelled)
             {
-                //
-                // This error is expected as we cancel the Get request after the redirection
-                //
-                DLog(@"original request to get the url cancelled");
+                DLog(@"error occured in BBA error info: %@",error);
+                blockSelf.webLoginCallBack(nil, YES, nil);
+                return;
             }
         
             [[MASNetworkingService sharedService] setHttpRedirectionBlock:previousRedirectionBlock];
