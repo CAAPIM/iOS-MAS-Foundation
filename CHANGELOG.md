@@ -2,8 +2,8 @@
 
 ### Bug fixes
 - `MASAuthCredentialsJWT` credentials was marked as re-usable, so the Mobile SDK tried to consume the same credentials for a certain period of time. JWT credentials can now be consumed only one time, and is not reusable. [DE324462]
-- Device deregistration was removing all credentials from the Mobile SDK regardless of the result of deregistration request.  Now, the Mobile SDK removes credentials only when the deregistration request succeeds.
-- Mobile SDK was changing `MASGrantFlow` to client credentials in a specific scenario with Cordova SDK. The Mobile SDK no longer switches the `MASGrantFlow` by itself.
+- Device deregistration was removing all credentials from the Mobile SDK regardless of the result of deregistration request.  Now, the Mobile SDK removes credentials only when the deregistration request succeeds. [DE324142]
+- Mobile SDK was changing `MASGrantFlow` to client credentials in a specific scenario with Cordova SDK. The Mobile SDK no longer switches the `MASGrantFlow` by itself. [DE311841]
 - Mobile SDK enhances the device registration flow so it handles the device registration record more smoothly. This removes the hassle of developers seeing "This device has already been registered and has not been configured to accept updates" error message in development phase. [US406920]
 - `MASConfiguration` was not properly updating the updated endpoint values when switching to a different configuration. It is fixed. [DE321925]
 - `MASConfiguration` had some hard-coded values for client credentials device registration endpoint. `MASConfiguration` now reads the value from the configuration. [DE321921]
@@ -16,7 +16,7 @@
 - Mobile SDK introduces a new way of building API CRUD request with `MASRequestBuilder` and `MASRequest` classes to provide seamless developer experience Android SDK. [US374082]
 
 ### Deprecated methods
-- `[MASConfiguration setSecurityConfiguration:]` is deperecated.  Please use `[MASSecurityConfiguration setSecurityConfiguration:error:]` for better handling of error cases when setting the security configuration object. [DE328373]
+- `[MASConfiguration setSecurityConfiguration:]` is deprecated.  Please use `[MASSecurityConfiguration setSecurityConfiguration:error:]` for better handling of error cases when setting the security configuration object. [DE328373]
 
 # Version 1.5.00
 
