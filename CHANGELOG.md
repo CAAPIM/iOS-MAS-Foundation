@@ -16,7 +16,7 @@
 - Mobile SDK introduces a new way of building API CRUD request with `MASRequestBuilder` and `MASRequest` classes to provide seamless developer experience Android SDK. [US374082]
 
 ### Deprecated methods
-- `[MASConfiguration setSecurityConfiguration:]` is deperecated.  Please use `[MASSecurityConfiguration setSecurityConfiguration:error:]` for better handling of error cases when setting the security configuration object. [DE328373]
+- `[MASConfiguration setSecurityConfiguration:]` is deprecated.  Please use `[MASSecurityConfiguration setSecurityConfiguration:error:]` for better handling of error cases when setting the security configuration object. [DE328373]
 
 # Version 1.5.00
 
