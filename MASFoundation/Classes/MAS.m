@@ -92,9 +92,27 @@
 }
 
 
++ (void)enableBrowserBasedAuthentication:(BOOL)enable
+{
+    [MASModelService setBrowserBasedAuthentication:enable];
+}
+
+
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
     [MASNetworkingService setGatewayMonitor:monitor];
+}
+
+
++ (void)setKeychainSynchronizable:(BOOL)enabled
+{
+    [MASAccessService setKeychainSynchronizable:enabled];
+}
+
+
++ (BOOL)isKeychainSynchronizable
+{
+    return [MASAccessService isKeychainSynchronizable];
 }
 
 
@@ -194,7 +212,7 @@
         //
         //  If the device is registered, and id_token exists, which means MSSO can be used for this application
         //
-        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken])
+        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
             //
             //  Make sure to register the client (application)
@@ -1464,6 +1482,33 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseInfoErrorBlock)completion
+{
+    //
+    // Process the request
+    //
+    if ([request.httpMethod isEqualToString:@"DELETE"])
+    {
+        [self deleteFrom:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
+    }
+    else if ([request.httpMethod isEqualToString:@"GET"])
+    {
+        [self getFrom:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
+    }
+    else if ([request.httpMethod isEqualToString:@"PATCH"])
+    {
+        [self patchTo:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
+    }
+    else if ([request.httpMethod isEqualToString:@"POST"])
+    {
+        [self postTo:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
+    }
+    else if ([request.httpMethod isEqualToString:@"PUT"])
+    {
+        [self putTo:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic completion:completion];
+    }
+}
+
 # pragma mark - Private
 
 
@@ -1602,7 +1647,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
     //
     //  Retrieve private key from registered device's client certificate
     //
-    SecKeyRef pemPrivateRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithType:MASAccessValueTypePrivateKey];
+    SecKeyRef pemPrivateRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithStorageKey:MASKeychainStorageKeyPrivateKey];
     NSData *privateKeyData = [NSData converKeyRefToNSData:pemPrivateRef];
  
     return [self signWithClaims:claims privateKey:privateKeyData error:error];

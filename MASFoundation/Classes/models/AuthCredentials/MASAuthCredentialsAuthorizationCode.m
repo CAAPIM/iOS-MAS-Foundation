@@ -142,13 +142,13 @@
         MASAccessService *accessService = [MASAccessService sharedService];
         
         // ClientId
-        NSString *clientId = [accessService getAccessValueStringWithType:MASAccessValueTypeClientId];
+        NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
         if (clientId)
         {
             parameterInfo[MASClientIdentifierRequestResponseKey] = clientId;
         }
         
-        NSString *clientSecret = [accessService getAccessValueStringWithType:MASAccessValueTypeClientSecret];
+        NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
         if (clientSecret)
         {
             parameterInfo[MASClientSecretRequestResponseKey] = clientSecret;

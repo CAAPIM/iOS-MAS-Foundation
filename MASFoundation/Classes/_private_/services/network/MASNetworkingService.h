@@ -9,10 +9,11 @@
 //
 
 #import "MASService.h"
-
 #import "MASConstantsPrivate.h"
+
 #import "MASAuthValidationOperation.h"
 
+typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *_Nonnull session, NSURLSessionTask *_Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest *_Nonnull request);
 
 @interface MASNetworkingService : MASService
 
@@ -25,6 +26,12 @@
 # pragma mark - Properties
 
 @property (nonatomic, assign, readonly) MASGatewayMonitoringStatus monitoringStatus;
+
+/**
+ Http redirection block. Set this block only if you want to handle the redirection coming from the original NSURLRequest.
+ */
+@property (nonatomic) MASSessionDataTaskHTTPRedirectBlock httpRedirectionBlock;
+
 
 
 /**

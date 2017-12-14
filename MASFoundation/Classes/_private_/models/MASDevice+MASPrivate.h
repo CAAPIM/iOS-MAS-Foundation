@@ -81,4 +81,13 @@
  */
 + (NSString *)deviceNameBase64Encoded;
 
+
+/**
+ * Retrieves the device vendor identifier that is uniquely generated for the
+ * specific device the framework is running upon.
+ *
+ * @return Returns the unique NSString device vendor identifier.
+ */
++ (NSString *)deviceVendorId;
+
 @end

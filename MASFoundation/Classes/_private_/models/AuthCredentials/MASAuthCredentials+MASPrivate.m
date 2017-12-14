@@ -333,7 +333,7 @@
                                           {
                                               NSError *idTokenValidationError = nil;
                                               BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodyInfo objectForKey:MASIdTokenBodyRequestResponseKey]
-                                                                                        magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier]
+                                                                                        magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier]
                                                                                                 error:&idTokenValidationError];
                                               
                                               if (!isIdTokenValid && idTokenValidationError)
@@ -355,7 +355,7 @@
                                           //
                                           // Persist current authCredentials type
                                           //
-                                          [[MASAccessService sharedService] setAccessValueString:self.credentialsType withAccessValueType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+                                          [[MASAccessService sharedService] setAccessValueString:self.credentialsType storageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
                                           
                                           //
                                           // Create a new instance of MASUser if not client credentials
@@ -371,7 +371,7 @@
                                               // set authenticated timestamp
                                               //
                                               NSNumber *authenticatedTimestamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
-                                              [[MASAccessService sharedService] setAccessValueNumber:authenticatedTimestamp withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+                                              [[MASAccessService sharedService] setAccessValueNumber:authenticatedTimestamp storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
                                               
                                               //
                                               //  Store credential information into keychain

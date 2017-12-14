@@ -1,4 +1,4 @@
-MASFoundation is the core iOS framework of the Mobile SDK, which is part of [CA Mobile App Services][mas.ca.com]. MASFoundation handles the communication and authentication layer of the Mobile SDK, making it easy for developers to establish a secure connection (TLS, Mutual SSL) to any CA Mobile API Gateway (MAG).
+MASFoundation is the core iOS framework of the iOS Mobile SDK, which is part of CA Mobile API Gateway. MASFoundation handles the communication and authentication layer of the iOS Mobile SDK, making it easy for developers to establish a secure connection (TLS, Mutual SSL) to any CA Mobile API Gateway (MAG).
 
 ## Features
 
@@ -15,15 +15,15 @@ The MASFoundation framework has the following features:
     + OTP - One Time Password
     + PKCE - Proof Key for Code Exchange
     + SSL Pinning with certificate, public key, or public key hash
+    + Fingerprint Sessions Lock - Support phone unlocking using fingerprint recognition
 - Dynamic SDK Configuration
 - Enterprise Browser
 - Geo Location
 
 ## Get Started
 
+- Check out our [documentation][docs] for sample code, video tutorials, and more.
 - [Download MASFoundation][download] 
-- Read the ["Getting Started" guide][get-started] or watch some [video tutorials][videos]
-- Check out our [documentation][docs] for more details and sample codes
 
 
 ## Communication
@@ -72,9 +72,7 @@ For manual install, you add the Mobile SDK to your Xcode project. Note that you 
 
 ## Set Up Project and Start the SDK
 
-The following ***video*** describes how to set up the project and start the Mobile SDK.
-
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/h95MF55Uuuw/0.jpg)](http://www.youtube.com/watch?v=h95MF55Uuuw "Starting the SDK")
+To start your project, see [developer site](https://mas.ca.com/docs)
 
 After your project is properly configured, you must start the SDK to establish a secure connection with the backend services. The startup process includes: initialize necessary services for library (such as geo-location, BLE, and network services), and load configuration.
 

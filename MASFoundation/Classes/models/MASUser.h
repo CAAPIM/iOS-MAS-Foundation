@@ -262,6 +262,16 @@
 
 
 /**
+ Authenticate a user by launching a Browser which in turn loads a URL (templatized).
+
+ @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
+ available via [MASUser currentUser] has been updated with the new information.
+ */
++(void)initializeBrowserBasedAuthenticationWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+/**
  *  Requesting userInfo for the MASUser object.
  *  This method will retrieve additional information on the MASUser object.
  *

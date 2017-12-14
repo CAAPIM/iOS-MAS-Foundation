@@ -50,15 +50,26 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 - (BOOL)isRegistered
 {
+    _isRegistered = NO;
+    
     //
     // Obtain key chain items to determine registration status
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSString *magIdentifier = [accessService getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    NSData *certificateData = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
-    
-    _isRegistered = (magIdentifier && certificateData);
+    NSString *vendorIdFromKeychain = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
+    NSString *vendorIdCurrent = [MASDevice deviceVendorId];
+
+    //
+    // Check if the vendorId in Keychain macth with current vendorId
+    //
+    if ([vendorIdCurrent isEqualToString:vendorIdFromKeychain])
+    {
+        NSString *magIdentifier = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
+        NSData *certificateData = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
+        
+        _isRegistered = (magIdentifier && certificateData);
+    }
     
     return _isRegistered;
 }
@@ -119,8 +130,12 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     // re-establish URL session
     //
     [[MASNetworkingService sharedService] establishURLSession];
+    
+    //
+    // Post the did reset locally notification
+    //
+    [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceDidResetLocallyNotification object:self];
 }
-
 
 
 # pragma mark - Lifecycle
@@ -200,7 +215,7 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if(self = [super initWithCoder:aDecoder])
+    if (self = [super initWithCoder:aDecoder])
     {
         [self setValue:[aDecoder decodeObjectForKey:MASDeviceIdentifierPropertyKey] forKey:@"identifier"];
         [self setValue:[aDecoder decodeObjectForKey:MASDeviceNamePropertyKey] forKey:@"name"];

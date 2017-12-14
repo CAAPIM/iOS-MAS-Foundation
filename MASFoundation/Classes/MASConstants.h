@@ -91,6 +91,27 @@ typedef void (^MASOTPChannelSelectionBlock)(NSArray *_Nonnull supportedOTPChanne
 typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock _Nonnull otpBlock, NSError *_Nullable otpError);
 
 
+/**
+ * The Selected Biometric modalities (NSArray *_Nullable biometricModalities, BOOL cancel, MASCompletionErrorBlock _Nullable)
+ *  block.
+ */
+typedef void (^MASBiometricModalitiesBlock)(NSArray *_Nullable biometricModalities, BOOL cancel, MASCompletionErrorBlock _Nullable);
+
+
+/**
+ * The Biometric registration with available modalities (NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock
+ * _Nonnull biometricModalitiesBlock) block.
+ */
+typedef void (^MASBiometricRegistrationModalitiesSelectionBlock)(NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock _Nonnull biometricModalitiesBlock);
+
+
+/**
+ * The Biometric deregistration with available modalities (NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock
+ * _Nonnull biometricModalitiesBlock) block.
+ */
+typedef void (^MASBiometricDeregistrationModalitiesSelectionBlock)(NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock _Nonnull biometricModalitiesBlock);
+
+
 ///--------------------------------------
 /// @name MAS Constants
 ///--------------------------------------
@@ -330,6 +351,12 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeConfigurationInvalidEndpoint = 100204,
     
     //
+    //  Security Configuration
+    //
+    MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration = 100211,
+    MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration = 100212,
+    
+    //
     // Geolocation
     //
     MASFoundationErrorCodeGeolocationIsInvalid = 100301,
@@ -459,6 +486,15 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeJWTUnexpectedClassType = 170002,
     MASFoundationErrorCodeJWTSerializationError = 170003,
     
+    //
+    // Browser Based Login
+    //
+    MASFoundationErrorCodeBBANotEnabled = 180000,
+    //
+    //  SharedStorage
+    //
+    MASFoundationErrorCodeSharedStorageNotNilKey = 180001,
+    
     MASFoundationErrorCodeCount = -999999
 };
 
@@ -554,6 +590,13 @@ static NSString *const _Nonnull MASDeviceDidFailToDeregisterNotification = @"MAS
  * has successfully deregistered.
  */
 static NSString *const _Nonnull MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
+
+
+/**
+ * The NSString constant for the device notification indicating that the MASDevice
+ * has reset locally.
+ */
+static NSString *const _Nonnull MASDeviceDidResetLocallyNotification = @"MASDeviceDidResetLocallyNotification";
 
 
 

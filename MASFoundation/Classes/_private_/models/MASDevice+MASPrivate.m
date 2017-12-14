@@ -96,28 +96,28 @@
     NSString *jwt = headerInfo[MASJwtRequestResponseKey];
     if (jwt)
     {
-        [accessService setAccessValueString:jwt withAccessValueType:MASAccessValueTypeJWT];
+        [accessService setAccessValueString:jwt storageKey:MASKeychainStorageKeyJWT];
     }
     
     // Mag Identifier
     NSString *magIdentifier = headerInfo[MASMagIdentifierRequestResponseKey];
     if (magIdentifier)
     {
-        [accessService setAccessValueString:magIdentifier withAccessValueType:MASAccessValueTypeMAGIdentifier];
+        [accessService setAccessValueString:magIdentifier storageKey:MASKeychainStorageKeyMAGIdentifier];
     }
     
     // Id token
     NSString *idToken = headerInfo[MASIdTokenHeaderRequestResponseKey];
     if (idToken)
     {
-        [accessService setAccessValueString:idToken withAccessValueType:MASAccessValueTypeIdToken];
+        [accessService setAccessValueString:idToken storageKey:MASKeychainStorageKeyIdToken];
     }
     
     // Id token type
     NSString *idTokenType = headerInfo[MASIdTokenTypeHeaderRequestResponseKey];
     if (idTokenType)
     {
-        [accessService setAccessValueString:idTokenType withAccessValueType:MASAccessValueTypeIdTokenType];
+        [accessService setAccessValueString:idTokenType storageKey:MASKeychainStorageKeyIdTokenType];
     }
     
     //
@@ -129,20 +129,29 @@
     
     if (certificateData)
     {
-        [accessService setAccessValueCertificate:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificate];
-        [accessService setAccessValueData:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificateData];
+        [accessService setAccessValueCertificate:certificateData storageKey:MASKeychainStorageKeySignedPublicCertificate];
+        [accessService setAccessValueData:certificateData storageKey:MASKeychainStorageKeyPublicCertificateData];
         
         //
         // Extracting signed client certificate expiration date
         //
-        NSArray * cert = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+        NSArray * cert = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
         SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
 
         //
         // Store client certificate expiration date into shared keychain storage
         //
         NSDate *expirationDate = [accessService extractExpirationDateFromCertificate:certificate];
-        [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
+    }
+    
+    //
+    // Device Vendor Id
+    //
+    NSString *deviceVendorId = [MASDevice deviceVendorId];    
+    if (deviceVendorId)
+    {
+        [accessService setAccessValueString:deviceVendorId storageKey:MASKeychainStorageKeyDeviceVendorId];
     }
     
     //
@@ -183,7 +192,7 @@
 
 + (NSString *)deviceIdBase64Encoded
 {
-    NSString *deviceId = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString *deviceId = [MASDevice deviceVendorId];
     
     //
     //  If the sso is disabled, generate unique device id to differentiate the application's registration record from others.
@@ -214,5 +223,12 @@
     
     return [deviceNameData base64EncodedStringWithOptions:0];
 }
+
+
++ (NSString *)deviceVendorId
+{
+    return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+}
+
 
 @end

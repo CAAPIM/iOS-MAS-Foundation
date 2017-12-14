@@ -100,7 +100,7 @@ static NSString *const MASAuthorizationEndpoint = @"authorization_endpoint_path"
 static NSString *const MASClientInitializeEndpoint = @"client_credential_init_endpoint_path"; // string
 static NSString *const MASDeviceListEndpoint = @"device_list_endpoint_path"; // string
 static NSString *const MASDeviceRegisterEndpoint = @"device_register_endpoint_path"; // string
-static NSString *const MASDeviceRegisterClientEndpoint = @"device_register_client_endpoint_path"; // string
+static NSString *const MASDeviceRegisterClientEndpoint = @"device_client_register_endpoint_path"; // string
 static NSString *const MASDeviceRenewEndpoint = @"device_renew_endpoint_path"; // string
 static NSString *const MASDeviceRemoveEndpoint = @"device_remove_endpoint_path"; // string
 static NSString *const MASEnterpriseBrowserEndpoint = @"enterprise_browser_endpoint_path"; // string
@@ -166,10 +166,16 @@ static NSString *const MASConfigurationIsLoadedPropertyKey = @"isLoaded"; // boo
 @end
 
 
+@interface MASConfiguration ()
+
+@property (strong, nonatomic) NSMutableDictionary *endpointKeysToPaths;
+
+@end
+
+
 @implementation MASConfiguration
 
 static NSDictionary *_configurationInfo_;
-static NSMutableDictionary *_endpointKeysToPaths_;
 static float _systemVersionNumber_;
 
 
@@ -195,7 +201,7 @@ static float _systemVersionNumber_;
 - (id)initPrivate
 {
     self = [super init];
-    if(self)
+    if (self)
     {
         
     }
@@ -206,7 +212,7 @@ static float _systemVersionNumber_;
 
 - (id)initWithConfigurationInfo:(NSDictionary *)info
 {
-    if(self = [super init])
+    if (self = [super init])
     {
         _configurationInfo_ = info;
         
@@ -226,26 +232,35 @@ static float _systemVersionNumber_;
     //
     // If the dictionary already exists ignore the call
     //
-    if(_endpointKeysToPaths_) return;
+    if (_endpointKeysToPaths)
+    {
+        return;
+    }
     
     //
     // Create the dictionary
     //
-    _endpointKeysToPaths_ = [NSMutableDictionary new];
+    _endpointKeysToPaths = [NSMutableDictionary new];
     
     //
     // OAuth Endpoints
     //
     NSDictionary *oauthInfo = _configurationInfo_[MASOAuthConfigurationKey];
-    if(oauthInfo)
+    if (oauthInfo)
     {
         // System Endpoints
         NSDictionary *endpointsInfo = oauthInfo[MASSystemEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if (endpointsInfo)
+        {
+            [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
+        }
         
         // Protected Endpoints
         endpointsInfo = oauthInfo[MASProtectedEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if (endpointsInfo)
+        {
+            [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
+        }
     }
     
     
@@ -253,22 +268,28 @@ static float _systemVersionNumber_;
     // MAG Endpoints
     //
     NSDictionary *magInfo = _configurationInfo_[MASMAGConfigurationKey];
-    if(magInfo)
+    if (magInfo)
     {
         // System Endpoints
         NSDictionary *endpointsInfo = magInfo[MASSystemEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if (endpointsInfo)
+        {
+            [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
+        }
         
         // Protected Endpoints
         endpointsInfo = magInfo[MASProtectedEndpointsConfigurationKey];
-        if(endpointsInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:endpointsInfo];
+        if (endpointsInfo)
+        {
+            [_endpointKeysToPaths addEntriesFromDictionary:endpointsInfo];
+        }
     }
     
     //
     // MAS Endpoints
     //
     NSDictionary *masInfo = _configurationInfo_[MASConfigurationKey];
-    if(masInfo)
+    if (masInfo)
     {
         //
         // currently scim-path is configured as String, maybe later when it comes as dictionary change it
@@ -276,16 +297,16 @@ static float _systemVersionNumber_;
         
         //scim-path
         NSString *scimPathInfo = masInfo[MASScimPathEndpoint];
-        if(scimPathInfo)
+        if (scimPathInfo)
         {
-            [_endpointKeysToPaths_ addEntriesFromDictionary:@{MASScimPathEndpoint : scimPathInfo}];
+            [_endpointKeysToPaths addEntriesFromDictionary:@{MASScimPathEndpoint : scimPathInfo}];
         }
         
         //storage-path
         NSString *storagePathInfo = masInfo[MASStoragePathEndpoint];
-        if(scimPathInfo)
+        if (scimPathInfo)
         {
-            [_endpointKeysToPaths_ addEntriesFromDictionary:@{MASStoragePathEndpoint : storagePathInfo}];
+            [_endpointKeysToPaths addEntriesFromDictionary:@{MASStoragePathEndpoint : storagePathInfo}];
         }
     }
     
@@ -293,18 +314,20 @@ static float _systemVersionNumber_;
     // Custom Endpoints
     //
     NSDictionary *customInfo = _configurationInfo_[MASCustomConfigurationKey];
-    if(customInfo) [_endpointKeysToPaths_ addEntriesFromDictionary:customInfo];
-    
+    if (customInfo)
+    {
+        [_endpointKeysToPaths addEntriesFromDictionary:customInfo];
+    }
     
     //
     // Temporary Hardcoded Endpoints
     //
-    _endpointKeysToPaths_[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
+    _endpointKeysToPaths[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
     
-    _endpointKeysToPaths_[MASUsersLDAPEndpoint] = @"/scim/ldap/v2/users";
-    _endpointKeysToPaths_[MASUserGroupsLDAPEndpoint] = @"/scim/ldap/v2/groups";
-    _endpointKeysToPaths_[MASUsersMSADEndpoint] = @"/scim/msad/v2/users";
-    _endpointKeysToPaths_[MASUserGroupsMSADEndpoint] = @"/scim/msad/v2/groups";
+    _endpointKeysToPaths[MASUsersLDAPEndpoint] = @"/scim/ldap/v2/users";
+    _endpointKeysToPaths[MASUserGroupsLDAPEndpoint] = @"/scim/ldap/v2/groups";
+    _endpointKeysToPaths[MASUsersMSADEndpoint] = @"/scim/msad/v2/users";
+    _endpointKeysToPaths[MASUserGroupsMSADEndpoint] = @"/scim/msad/v2/groups";
 }
 
 
@@ -316,7 +339,7 @@ static float _systemVersionNumber_;
     // Attempt to retrieve from keychain
     //
     NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASConfiguration.class description]];
-    if(data)
+    if (data)
     {
         configuration = (MASConfiguration *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
@@ -331,11 +354,11 @@ static float _systemVersionNumber_;
     // Save to the keychain
     //
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
-    if(data)
+    if (data)
     {
         NSError *error;
         [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] setData:data forKey:[MASConfiguration.class description] error:&error];
-        if(error)
+        if (error)
         {
             DLog(@"Error attempting to save data: %@", [error localizedDescription]);
         }
@@ -359,13 +382,16 @@ static float _systemVersionNumber_;
     MASKeyChainService *keyChainService = [MASKeyChainService keyChainService];
     
     // Configuration
-    if(_configurationInfo_) [keyChainService setConfiguration:_configurationInfo_];
+    if (_configurationInfo_)
+    {
+        [keyChainService setConfiguration:_configurationInfo_];
+    }
 }
 
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if(self = [super init])
+    if (self = [super init])
     {
         MASKeyChainService *keyChainService = [MASKeyChainService keyChainService];
         
@@ -380,9 +406,38 @@ static float _systemVersionNumber_;
 }
 
 
-+ (void)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration
++ (BOOL)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration error:(NSError **)error
 {
+    //
+    //  Validate the NSURL host for security configuration.
+    //
+    if (!securityConfiguration.host || !securityConfiguration.host.port)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return NO;
+    }
+    
+    //
+    //  Validate pinning information for the security configuration.
+    //  At least one pinning information (certificates or public key hashes) should be defined, or public PKI should be trusted.
+    //
+    if (!securityConfiguration.trustPublicPKI && (!securityConfiguration.certificates || [securityConfiguration.certificates count]== 0) && (!securityConfiguration.publicKeyHashes || [securityConfiguration.publicKeyHashes count] == 0))
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return NO;
+    }
+    
     [MASConfigurationService setSecurityConfiguration:securityConfiguration];
+    
+    return YES;
 }
 
 
@@ -547,7 +602,7 @@ static float _systemVersionNumber_;
                                               error:nil];
     NSUInteger numberOfMatches = [regexToValidateIP numberOfMatchesInString:gatewayInfo[MASGatewayHostNameKey] options:0 range:NSMakeRange(0, [gatewayInfo[MASGatewayHostNameKey] length])];
     
-    if(_systemVersionNumber_ < 9.0 && numberOfMatches != 1)
+    if (_systemVersionNumber_ < 9.0 && numberOfMatches != 1)
     {
         if (![MASDevice currentDevice].isRegistered)
         {
@@ -600,7 +655,7 @@ static float _systemVersionNumber_;
 
 - (NSString *)endpointPathForKey:(NSString *)endpointKey
 {
-    NSString *endpointPath = _endpointKeysToPaths_[endpointKey];
+    NSString *endpointPath = _endpointKeysToPaths[endpointKey];
     
     return endpointPath;
 }
@@ -610,97 +665,97 @@ static float _systemVersionNumber_;
 
 - (NSString *)scimPathEndpointPath
 {
-    return _endpointKeysToPaths_[MASScimPathEndpoint];
+    return _endpointKeysToPaths[MASScimPathEndpoint];
 }
 
 
 - (NSString *)storagePathEndpointPath
 {
-    return _endpointKeysToPaths_[MASStoragePathEndpoint];
+    return _endpointKeysToPaths[MASStoragePathEndpoint];
 }
 
 
 - (NSString *)authorizationEndpointPath
 {
-    return _endpointKeysToPaths_[MASAuthorizationEndpoint];
+    return _endpointKeysToPaths[MASAuthorizationEndpoint];
 }
 
 
 - (NSString *)clientInitializeEndpointPath
 {
-    return _endpointKeysToPaths_[MASClientInitializeEndpoint];
+    return _endpointKeysToPaths[MASClientInitializeEndpoint];
 }
 
 
 - (NSString *)authenticateOTPEndpointPath
 {
-    return _endpointKeysToPaths_[MASAuthenticateOTPEndpoint];
+    return _endpointKeysToPaths[MASAuthenticateOTPEndpoint];
 }
 
 
 - (NSString *)deviceListAllEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceListEndpoint];
+    return _endpointKeysToPaths[MASDeviceListEndpoint];
 }
 
 
 - (NSString *)deviceRegisterEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRegisterEndpoint];
+    return _endpointKeysToPaths[MASDeviceRegisterEndpoint];
 }
 
 
 - (NSString *)deviceRegisterClientEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRegisterClientEndpoint];
+    return _endpointKeysToPaths[MASDeviceRegisterClientEndpoint];
 }
 
 
 - (NSString *)deviceRenewEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRenewEndpoint];
+    return _endpointKeysToPaths[MASDeviceRenewEndpoint];
 }
 
 
 - (NSString *)deviceRemoveEndpointPath
 {
-    return _endpointKeysToPaths_[MASDeviceRemoveEndpoint];
+    return _endpointKeysToPaths[MASDeviceRemoveEndpoint];
 }
 
 
 - (NSString *)enterpriseBrowserEndpointPath
 {
-    return _endpointKeysToPaths_[MASEnterpriseBrowserEndpoint];
+    return _endpointKeysToPaths[MASEnterpriseBrowserEndpoint];
 }
 
 
 - (NSString *)tokenEndpointPath
 {
-    return _endpointKeysToPaths_[MASTokenEndpoint];
+    return _endpointKeysToPaths[MASTokenEndpoint];
 }
 
 
 - (NSString *)tokenRevokeEndpointPath
 {
-    return _endpointKeysToPaths_[MASTokenRevokeEndpoint];
+    return _endpointKeysToPaths[MASTokenRevokeEndpoint];
 }
 
 
 - (NSString *)userInfoEndpointPath
 {
-    return _endpointKeysToPaths_[MASUserInfoEndpoint];
+    return _endpointKeysToPaths[MASUserInfoEndpoint];
 }
 
 
 - (NSString *)userSessionLogoutEndpointPath
 {
-    return _endpointKeysToPaths_[MASUserSessionLogoutEndpoint];
+    return _endpointKeysToPaths[MASUserSessionLogoutEndpoint];
 }
 
 
 - (NSString *)userSessionStatusEndpointPath
 {
-    return _endpointKeysToPaths_[MASUserSessionStatusEndpoint];
+    return _endpointKeysToPaths[MASUserSessionStatusEndpoint];
 }
 
 
@@ -768,7 +823,7 @@ static float _systemVersionNumber_;
 - (BOOL)ssoEnabled
 {
     MASAccessService *accessService = [MASAccessService sharedService];
-    NSString *ssoEnabledString = [accessService getAccessValueStringWithType:MASAccessValueTypeMSSOEnabled];
+    NSString *ssoEnabledString = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyMSSOEnabled];
 
     if (ssoEnabledString)
     {
@@ -787,7 +842,7 @@ static float _systemVersionNumber_;
 {
     MASAccessService *accessService = [MASAccessService sharedService];
 
-    [accessService setAccessValueString:(ssoEnabled ? @"true":@"false") withAccessValueType:MASAccessValueTypeMSSOEnabled];
+    [accessService setAccessValueString:(ssoEnabled ? @"true":@"false") storageKey:MASKeychainStorageKeyMSSOEnabled];
 }
 
 
@@ -876,9 +931,9 @@ static float _systemVersionNumber_;
     NSMutableString *endpoints = [[NSMutableString alloc] initWithString:@"\n\n        {\n"];
     
     NSString *keyToEndpoint;
-    for(NSString *endpointKey in _endpointKeysToPaths_)
+    for (NSString *endpointKey in _endpointKeysToPaths)
     {
-        keyToEndpoint = [NSString stringWithFormat:@"            %@ = %@\n", endpointKey, _endpointKeysToPaths_[endpointKey]];
+        keyToEndpoint = [NSString stringWithFormat:@"            %@ = %@\n", endpointKey, _endpointKeysToPaths[endpointKey]];
         [endpoints appendString:keyToEndpoint];
     }
     [endpoints appendString:@"        }"];
@@ -898,13 +953,13 @@ static float _systemVersionNumber_;
 - (NSDictionary *)defaultApplicationClientInfo
 {
     NSMutableArray *applicationClientInfoFound = [NSMutableArray new];
-    for(NSDictionary *info in self.applicationClients)
+    for (NSDictionary *info in self.applicationClients)
     {
         [applicationClientInfoFound addObject:info];
     }
     
     // Should there be two or more allowed in the list that meet that criteria?  Can it happen?
-    if(applicationClientInfoFound.count > 1)
+    if (applicationClientInfoFound.count > 1)
     {
         DLog(@"Warning: found %ld iOS clients that are enabled, just choosing first in the list",
              (long)applicationClientInfoFound.count);
@@ -973,6 +1028,14 @@ static float _systemVersionNumber_;
     }
     
     return certificatesAsDER;
+}
+
+
+# pragma mark - Deprecated
+
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration
+{
+    [self setSecurityConfiguration:securityConfiguration error:nil];
 }
 
 @end

@@ -102,7 +102,7 @@ static MASSecurityService *_sharedService_ = nil;
 - (NSURLCredential *)createUrlCredential
 {
     NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
-    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
 
     //DLog(@"\n\ncalled and identities is: %@ and certificates is: %@", identities, certificates);
     
@@ -140,7 +140,7 @@ static MASSecurityService *_sharedService_ = nil;
     // Delete the private key
 	//
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPrivateKey);
-    if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
         DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck );
     }
@@ -149,7 +149,7 @@ static MASSecurityService *_sharedService_ = nil;
     // Delete the public key
 	//
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPublicKey);
-    if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
         DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
     }
@@ -226,7 +226,7 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // Store new value in keychain
     //
-    if(privateKeyBits)
+    if (privateKeyBits)
     {
         NSString *keyContents = [self evpKeyToString:privatekey];
     
@@ -235,7 +235,7 @@ static MASSecurityService *_sharedService_ = nil;
         //
         // Store private key bits into keychain
         //
-        [[MASAccessService sharedService] setAccessValueString:keyContents withAccessValueType:MASAccessValueTypePrivateKeyBits];
+        [[MASAccessService sharedService] setAccessValueString:keyContents storageKey:MASKeychainStorageKeyPrivateKeyBits];
     }
     
     if (!X509_REQ_sign(req, privatekey, EVP_sha1()))
@@ -327,7 +327,7 @@ static MASSecurityService *_sharedService_ = nil;
 	[keyPairAttr setObject:publicKeyAttr forKey:(__bridge id)kSecPublicKeyAttrs];
     
 	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
-    if(!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
+    if (!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
     {
         DLog(@"Error with something really bad went wrong with generating the key pair");
     }
@@ -335,14 +335,14 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // Storing privateKey and publicKey into keychain
     //
-    if(privateKeyRef)
+    if (privateKeyRef)
     {
-        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef withAccessValueType:MASAccessValueTypePrivateKey];
+        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
     }
     
-    if(publicKeyRef)
+    if (publicKeyRef)
     {
-        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef withAccessValueType:MASAccessValueTypePublicKey];
+        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
     }
     
     privateKeyRef = NULL;
@@ -415,14 +415,14 @@ static MASSecurityService *_sharedService_ = nil;
 
 # pragma mark - MASFile Security
 
-- (MASFile *)getSignedCertificate
+- (MASFile *)getDeviceClientCertificate
 {
     NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
     MASFile *signedCert = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASSignedCertificate]];
     
     if (!signedCert)
     {
-        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithType:MASAccessValueTypeSignedPublicCertificateData];
+        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:MASKeychainStorageKeyPublicCertificateData];
 
         if (signedCertificateData)
         {
@@ -435,7 +435,7 @@ static MASSecurityService *_sharedService_ = nil;
 }
 
 
-- (MASFile *)getClientCertificate
+- (MASFile *)getServerCertificate
 {
     NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
     MASFile *clientCert = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate]];
@@ -446,17 +446,18 @@ static MASSecurityService *_sharedService_ = nil;
         // Create the public server certificate file
         //
         NSArray *certs = [[MASConfiguration currentConfiguration] gatewayCertificatesAsPEMData];
-        if(certs.count > 0)
+        NSMutableData *certificateData = [NSMutableData data];
+        
+        for (NSData *cert in certs)
         {
-            NSData *certificateData = certs[0];
-            
-            //DLog(@"\n\nServer Certificate class is: %@\n\n  and value: %@\n\n", [[certificateData class] debugDescription], certificateData);
-            
-            if(certificateData)
-            {
-                clientCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate] contents:certificateData];
-                [clientCert save];
-            }
+            [certificateData appendData:cert];
+            [certificateData appendData:[@"\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+        
+        if (certificateData)
+        {
+            clientCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate] contents:certificateData];
+            [clientCert save];
         }
     }
     
@@ -477,7 +478,7 @@ static MASSecurityService *_sharedService_ = nil;
         //
         // Retrieve privateKeyBits from keychain.
         //
-        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypePrivateKeyBits];
+        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyPrivateKeyBits];
         
         if (privateKeyBits)
         {
@@ -496,22 +497,22 @@ static MASSecurityService *_sharedService_ = nil;
 - (void)removeAllFiles
 {
     MASFile *privateKey = [self getPrivateKey];
-    MASFile *clientCert = [self getClientCertificate];
-    MASFile *signedCert = [self getSignedCertificate];
+    MASFile *serverCert = [self getServerCertificate];
+    MASFile *deviceClientCert = [self getDeviceClientCertificate];
     
     if ([privateKey filePath])
     {
         [MASFile removeItemAtFilePath:[privateKey filePath]];
     }
     
-    if ([clientCert filePath])
+    if ([serverCert filePath])
     {
-        [MASFile removeItemAtFilePath:[clientCert filePath]];
+        [MASFile removeItemAtFilePath:[serverCert filePath]];
     }
     
-    if ([signedCert filePath])
+    if ([deviceClientCert filePath])
     {
-        [MASFile removeItemAtFilePath:[signedCert filePath]];
+        [MASFile removeItemAtFilePath:[deviceClientCert filePath]];
     }
 }
 

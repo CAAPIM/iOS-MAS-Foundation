@@ -150,4 +150,12 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 - (void)setSessionDidReceiveAuthenticationChallengeBlock:(NSURLSessionAuthChallengeDisposition (^)(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential **credential))block;
 
 
+
+/**
+ Set code block of session level redirection for the current NSURLRequest object.
+
+ @param block http redirection code block.
+ */
+- (void)setSessionDidReceiveHTTPRedirectBlock:(NSURLRequest* (^)(NSURLSession *session,NSURLSessionTask *task, NSURLResponse* response,NSURLRequest *request))block;
+
 @end
