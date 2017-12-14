@@ -11,7 +11,6 @@
 #import "MASNetworkingService.h"
 
 #import "MASAccessService.h"
-#import "MASConstantsPrivate.h"
 #import "MASConfigurationService.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
@@ -603,9 +602,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 //
                 //  Remove slave client_id and client_secret from keychain
                 //
-                [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientId];
-                [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientSecret];
-                [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeClientExpiration];
+                [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyClientId];
+                [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyClientSecret];
+                [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyClientExpiration];
                 
                 //
                 // Remove access_token from keychain
@@ -655,6 +654,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     
     return taskCompletionBlock;
 }
+
 
 
 - (BOOL)isMAGEndpoint:(NSString *)endpoint
@@ -1273,6 +1273,11 @@ withParameters:(NSDictionary *)parameterInfo
         //
         //  Construct MASSessionDataTaskOperation with request, and completion block to handle any responsive re-authentication or re-registration.
         //
+        if(self.httpRedirectionBlock)
+        {
+            [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
+        }
+        
         MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request
                                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
                                                                                                                                  parameters:parameterInfo
@@ -1282,6 +1287,7 @@ withParameters:(NSDictionary *)parameterInfo
                                                                                                                                responseType:responseType
                                                                                                                                    isPublic:isPublic
                                                                                                                             completionBlock:blockCompletion]];
+        
         
         if (![self isMAGEndpoint:endPoint])
         {

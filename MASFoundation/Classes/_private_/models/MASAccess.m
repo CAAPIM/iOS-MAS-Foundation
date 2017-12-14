@@ -60,14 +60,14 @@
     //
     // retrieve all values from keychain and initialize with dictionary as those values shouold be read only.
     //
-    NSString *accessToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAccessToken];
-    NSString *tokenType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeTokenType];
-    NSString *refreshToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeRefreshToken];
-    NSString *idToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken];
-    NSString *idTokenType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdTokenType];
-    NSNumber *expiresIn = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeExpiresIn];
-    NSString *scopeAsString = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeScope];
-    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    NSString *accessToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAccessToken];
+    NSString *tokenType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyTokenType];
+    NSString *refreshToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyRefreshToken];
+    NSString *idToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken];
+    NSString *idTokenType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdTokenType];
+    NSNumber *expiresIn = [[MASAccessService sharedService] getAccessValueNumberWithStorageKey:MASKeychainStorageKeyExpiresIn];
+    NSString *scopeAsString = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyScope];
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
     
     NSMutableDictionary *accessDictionary = [NSMutableDictionary dictionary];
     
@@ -149,14 +149,14 @@
     //
     // Save to the keychain
     //
-    [[MASAccessService sharedService] setAccessValueString:self.accessToken withAccessValueType:MASAccessValueTypeAccessToken];
-    [[MASAccessService sharedService] setAccessValueString:self.tokenType withAccessValueType:MASAccessValueTypeTokenType];
-    [[MASAccessService sharedService] setAccessValueString:self.refreshToken withAccessValueType:MASAccessValueTypeRefreshToken];
-    [[MASAccessService sharedService] setAccessValueString:self.idToken withAccessValueType:MASAccessValueTypeIdToken];
-    [[MASAccessService sharedService] setAccessValueString:self.idTokenType withAccessValueType:MASAccessValueTypeIdTokenType];
-    [[MASAccessService sharedService] setAccessValueNumber:self.expiresIn withAccessValueType:MASAccessValueTypeExpiresIn];
-    [[MASAccessService sharedService] setAccessValueString:self.scopeAsString withAccessValueType:MASAccessValueTypeScope];
-    [[MASAccessService sharedService] setAccessValueString:self.authCredentialsType withAccessValueType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    [[MASAccessService sharedService] setAccessValueString:self.accessToken storageKey:MASKeychainStorageKeyAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:self.tokenType storageKey:MASKeychainStorageKeyTokenType];
+    [[MASAccessService sharedService] setAccessValueString:self.refreshToken storageKey:MASKeychainStorageKeyRefreshToken];
+    [[MASAccessService sharedService] setAccessValueString:self.idToken storageKey:MASKeychainStorageKeyIdToken];
+    [[MASAccessService sharedService] setAccessValueString:self.idTokenType storageKey:MASKeychainStorageKeyIdTokenType];
+    [[MASAccessService sharedService] setAccessValueNumber:self.expiresIn storageKey:MASKeychainStorageKeyExpiresIn];
+    [[MASAccessService sharedService] setAccessValueString:self.scopeAsString storageKey:MASKeychainStorageKeyScope];
+    [[MASAccessService sharedService] setAccessValueString:self.authCredentialsType storageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
 }
 
 
@@ -262,7 +262,7 @@
     //
     // authCredentialsType
     //
-    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
     if (authCredentialsType)
     {
         _authCredentialsType = authCredentialsType;
@@ -278,29 +278,29 @@
 - (void)refresh
 {
     _accessToken = nil;
-    _accessToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAccessToken];
+    _accessToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAccessToken];
     
     _tokenType = nil;
-    _tokenType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeTokenType];
+    _tokenType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyTokenType];
     
     _refreshToken = nil;
-    _refreshToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeRefreshToken];
+    _refreshToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyRefreshToken];
     
     _idToken = nil;
-    _idToken = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken];
+    _idToken = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken];
     
     _idTokenType = nil;
-    _idTokenType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdTokenType];
+    _idTokenType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdTokenType];
     
     _expiresIn = nil;
-    _expiresIn = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeExpiresIn];
+    _expiresIn = [[MASAccessService sharedService] getAccessValueNumberWithStorageKey:MASKeychainStorageKeyExpiresIn];
     
     _scope = nil;
     _scopeAsString = nil;
-    _scopeAsString = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeScope];
+    _scopeAsString = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyScope];
     
     _authCredentialsType = nil;
-    _authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    _authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
 }
 
 
@@ -328,7 +328,6 @@
 }
 
 
-
 - (void)deleteAll
 {
     
@@ -336,38 +335,37 @@
     // remove all data from the keychain
     //
     _accessToken = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
     
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     _tokenType = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyTokenType];
     
     _refreshToken = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
     
     _idToken = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
     
     _idTokenType = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeIdTokenType];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
     
     _expiresIn = nil;
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeExpiresIn];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyExpiresIn];
     
     _scope = nil;
     _scopeAsString = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyScope];
     
     //
     // Clena up the tokens from Local Authentication protected keychain storage
     //
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeSecuredIdToken];
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeIsDeviceLocked];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeySecuredIdToken];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyIsDeviceLocked];
 }
-
 
 
 - (void)deleteForLogOff
@@ -377,24 +375,24 @@
     // remove all data from the keychain
     //
     _accessToken = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
     
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAuthenticatedUserObjectId];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     _tokenType = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyTokenType];
     
     _refreshToken = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeRefreshToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
     
     _expiresIn = nil;
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeExpiresIn];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyExpiresIn];
     
     _scope = nil;
     _scopeAsString = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyScope];
 }
 
 
@@ -404,19 +402,19 @@
     // remove all data from the keychain
     //
     _accessToken = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeAccessToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
     
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeAuthenticatedTimestamp];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     _tokenType = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeTokenType];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyTokenType];
 
     _expiresIn = nil;
-    [[MASAccessService sharedService] setAccessValueNumber:nil withAccessValueType:MASAccessValueTypeExpiresIn];
+    [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyExpiresIn];
     
     _scope = nil;
     _scopeAsString = nil;
-    [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeScope];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyScope];
 }
 
 
@@ -491,7 +489,7 @@
     //
     MASAccessService *accessService = [MASAccessService sharedService];
     
-    NSNumber *isLocked = [accessService getAccessValueNumberWithType:MASAccessValueTypeIsDeviceLocked];
+    NSNumber *isLocked = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyIsDeviceLocked];
     
     return [isLocked boolValue];
 }
@@ -576,7 +574,7 @@
     }
     
     // Authentication timestamp
-    NSNumber *authenticatedTimestamp = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeAuthenticatedTimestamp];
+    NSNumber *authenticatedTimestamp = [[MASAccessService sharedService] getAccessValueNumberWithStorageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     double expiresInDateNumber = [authenticatedTimestamp doubleValue] + [_expiresIn doubleValue];
     
     NSDate *expiresInDate = [NSDate dateWithTimeIntervalSince1970:expiresInDateNumber];
@@ -589,7 +587,7 @@
 {
     if (!_clientCertificateExpirationDate)
     {
-        NSNumber *clientCertExpTimestamp = [[MASAccessService sharedService] getAccessValueNumberWithType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        NSNumber *clientCertExpTimestamp = [[MASAccessService sharedService] getAccessValueNumberWithStorageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
         
         if (clientCertExpTimestamp)
         {
@@ -600,7 +598,7 @@
             //
             // Extracting signed client certificate expiration date
             //
-            NSArray * cert = [[MASAccessService sharedService] getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+            NSArray * cert = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
             SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
             
             //
@@ -608,7 +606,7 @@
             //
             _clientCertificateExpirationDate = [[MASAccessService sharedService] extractExpirationDateFromCertificate:certificate];
             [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithDouble:[_clientCertificateExpirationDate timeIntervalSince1970]]
-                                               withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+                                               storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
         }
     }
     

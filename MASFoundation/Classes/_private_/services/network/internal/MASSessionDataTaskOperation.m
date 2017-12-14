@@ -75,9 +75,9 @@
     {
         NSMutableDictionary *mutableHeader = [self.request.headerInfo mutableCopy];
         
-        if (![[self.request.headerInfo allKeys] containsObject:MASMagIdentifierRequestResponseKey] && [MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
+        if (![[self.request.headerInfo allKeys] containsObject:MASMagIdentifierRequestResponseKey] && [MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier])
         {
-            [mutableHeader setObject:[[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier] forKey:MASMagIdentifierRequestResponseKey];
+            [mutableHeader setObject:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier] forKey:MASMagIdentifierRequestResponseKey];
         }
         
         if (![[self.request.headerInfo allKeys] containsObject:MASAuthorizationRequestResponseKey] && [MASAccessService sharedService].currentAccessObj.accessToken)

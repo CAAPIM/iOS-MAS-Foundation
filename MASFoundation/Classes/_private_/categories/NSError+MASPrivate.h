@@ -644,9 +644,17 @@
 /**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL.
  *
- *  @return REturns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  *  error MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL
  */
 + (NSError *)errorProximityLoginInvalidAuthroizeURL;
 
+
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeBBANotEnabled.
+ *
+ * @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error MASFoundationErrorCodeBBANotEnabled
+ */
++ (NSError *)errorBrowserBasedAuthenticaionNotEnabled;
 @end

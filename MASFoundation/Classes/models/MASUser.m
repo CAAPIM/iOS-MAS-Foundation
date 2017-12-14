@@ -42,7 +42,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 + (NSString *_Nullable)authCredentialsType
 {
-    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeCurrentAuthCredentialsGrantType];
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
     
     return authCredentialsType;
 }
@@ -142,7 +142,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
     //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
     return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
 }
@@ -154,7 +154,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
     //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
     //
     // if the user status is not MASUserStatusNotLoggedIn,
@@ -169,7 +169,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
     //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeAuthenticatedUserObjectId];
+    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
     if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
     {
@@ -250,6 +250,24 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
++(void)initializeBrowserBasedAuthenticationWithCompletion:(MASCompletionErrorBlock _Nullable)completion
+{
+    if(![MASModelService browserBasedAuthentication])
+    {
+        if(completion) completion(NO, [NSError errorBrowserBasedAuthenticaionNotEnabled]);
+        return;
+    }
+    
+    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
+    {
+        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
+        
+        return;
+    }
+    
+    [[MASModelService sharedService] validateCurrentUserSession:completion];
+}
+
 - (void)requestUserInfoWithCompletion:(MASUserResponseErrorBlock)completion
 {
     [[MASModelService sharedService] requestUserInfoWithCompletion:completion];
@@ -287,7 +305,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         //
         // Detect if there is id_token
         //
-        if([accessService getAccessValueStringWithType:MASAccessValueTypeIdToken])
+        if ([accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
             [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES completion:completion];
         }

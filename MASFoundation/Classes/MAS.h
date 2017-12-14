@@ -112,6 +112,16 @@
 
 
 /**
+ * Sets Bool indicator of Browser Based Authentication (templatized login) enabled or not for authorization process.
+ * By default, it is disabled.
+
+ @param enable BOOL value indicating whether Browser Based Authentication is enabled or not.
+ */
++ (void)enableBrowserBasedAuthentication:(BOOL)enable;
+
+
+
+/**
  *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
  *  This block will be triggered when any change to the current monitoring status
  *  takes place with a MASGatewayMonitoringStatus.

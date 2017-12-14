@@ -46,7 +46,7 @@
     NSURL *url = [NSURL URLWithString:endPointWithQueryParameters relativeToURL:[MASConfiguration currentConfiguration].gatewayUrl];
     
     NSAssert(url, @"URL cannot be nil");
-    
+    NSLog(@"url in sdk is %@",url.absoluteString);
     //
     // Create the request
     //
