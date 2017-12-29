@@ -967,9 +967,7 @@ static MASMQTTClient *_sharedClient = nil;
 
 + (NSString *)version
 {
-    int major, minor, revision;
-    mosquitto_lib_version(&major, &minor, &revision);
-    return [NSString stringWithFormat:@"%d.%d.%d", major, minor, revision];
+    return @"";
 }
 
 
