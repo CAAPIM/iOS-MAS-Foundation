@@ -197,15 +197,6 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
 
 
 /**
- *  Used to Set the number of seconds to wait before retrying messages.
- *
- *  @param seconds - The number of seconds until the next retry
- */
-- (void)setMessageRetry:(NSUInteger)seconds;
-
-
-
-/**
  *  Used to Configure Will information for a MASMQTTClient instance. This message will be sent when client disconnected from the server.
  *
  *  @param payload   - Message Payload
@@ -218,14 +209,6 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
         withQos:(MQTTQualityOfService)willQos
          retain:(BOOL)retain;
 
-
-
-/**
- *  Shows the version of the Mosquitto Library used
- *
- *  @return The libmosquitto version
- */
-+ (NSString*)version;
 
 
 #pragma mark - Connection methods
@@ -271,23 +254,6 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
 
 
 /**
- *  Connect with remote server with host name, tls flag , port number and server certificate file.
- *
- *  @param hostName          The host to connect to
- *  @param port              The port to be used in the connection
- *  @param tls               Set TLS to True or False during connection
- *  @param certFile          The path to the cert file
- *  @param completionHandler The completionHandler code block
- */
--(void)connectWithHost:(NSString *)hostName
-              withPort:(int)port
-             enableTLS:(BOOL)tls
-        usingSSLCACert:(NSString *)certFile
-     completionHandler:(void(^)(MQTTConnectionReturnCode code))completionHandler;
-
-
-
-/**
  *  Used to Disconnect from the host. It uses a completion handler that allows the developer to take actions after the disconnect.
  *
  *  @param completionHandler The completionHandler code block
@@ -302,25 +268,9 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
 - (void)reconnect;
 
 
+
 #pragma mark - Publish methods
 
-/**
- *  Used to Publish a message on a given topic
- *
- *  @param payload           The Payload to be sent
- *  @param topic             The Topic to be sent
- *  @param qos               The Quality of Service to be used
- *  @param retain            Set to true to make the message retained
- *  @param completionHandler The completionHandler code block
- */
-- (void)publishString:(NSString *)payload
-              toTopic:(NSString *)topic
-              withQos:(MQTTQualityOfService)qos
-               retain:(BOOL)retain
-    completionHandler:(void(^)(int mid))completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new publishString:toTopic:withQoS:retain:completion method instead.");
-
-
-    
 /**
  *  Used to Publish a message on a given topic
  *
@@ -337,18 +287,8 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
            completion:(MQTTPublishingCompletionBlock _Nullable)completion;
 
 
-#pragma mark - Subscribe methods
 
-/**
- *  Used to Subscribe to a topic using QoS = 0. Use subscribeToTopicWithQos method to set a different QoS level
- *
- *  @param topic             The Topic to be subscribed
- *  @param completionHandler The completionHandler code block
- */
-- (void)subscribeToTopic:(NSString *)topic
-   withCompletionHandler:(MQTTSubscriptionCompletionHandler)completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new subscribeToTopic:withCompletion method instead.");
-
-
+#pragma mark - Subscribe/Unsubscribe methods
 
 /**
  *  Used to Subscribe to a topic using QoS = 0. Use subscribeToTopicWithQos method to set a different QoS level
@@ -370,24 +310,9 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  */
 - (void)subscribeToTopic:(NSString *)topic
                  withQos:(MQTTQualityOfService)qos
-       completionHandler:(MQTTSubscriptionCompletionHandler)completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new subscribeToTopic:withQos:completion method instead.");
-
-    
-    
-/**
- *  Used to Subscribe to a topic using a specific Quality of Service
- *
- *  @param topic             The Topic to be subscribed to
- *  @param qos               The Quality of Service to be used
- *  @param completionHandler The completionHandler code block
- */
-- (void)subscribeToTopic:(NSString *)topic
-                 withQos:(MQTTQualityOfService)qos
               completion:(MQTTSubscriptionCompletionBlock _Nullable)completion;
 
 
-
-#pragma mark - Unsubscribe methods
 
 /**
  *  Used to Unsubscribe from a topic
@@ -397,6 +322,90 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  */
 - (void)unsubscribeFromTopic:(NSString *)topic
        withCompletionHandler:(MQTTCompletionErrorBlock _Nullable)completionHandler;
+
+
+
+# pragma mark - Deprecated
+
+/**
+ *  Connect with remote server with host name, tls flag , port number and server certificate file.
+ *
+ *  @deprecated in MAG 1.7 - Use [MASMQTTClient connectWithHost:withPort:enableTLS:completionHandler:] along with MASSecurityConfiguration.  Starting from MAG 1.7, MQTT connection's mutual SSL will also be established based on MASSecurityConfiguration like HTTP connection.
+ *
+ *  @param hostName          The host to connect to
+ *  @param port              The port to be used in the connection
+ *  @param tls               Set TLS to True or False during connection
+ *  @param certFile          The path to the cert file
+ *  @param completionHandler The completionHandler code block
+ */
+-(void)connectWithHost:(NSString *)hostName
+              withPort:(int)port
+             enableTLS:(BOOL)tls
+        usingSSLCACert:(NSString *)certFile
+     completionHandler:(void(^)(MQTTConnectionReturnCode code))completionHandler DEPRECATED_MSG_ATTRIBUTE("This method has been deprecated as in MAG 1.7; use [MASMQTTClient connectWithHost:withPort:enableTLS:completionHandler:] along with MASSecurityConfiguration.");
+
+
+
+/**
+ *  Used to Set the number of seconds to wait before retrying messages.
+ *
+ *  @deprecated in MAG 1.7
+ *
+ *  @param seconds - The number of seconds until the next retry
+ */
+- (void)setMessageRetry:(NSUInteger)seconds DEPRECATED_MSG_ATTRIBUTE("This method has been deprecated as in MAG 1.7");
+
+
+
+/**
+ *  Shows the version of the Mosquitto Library used
+ *
+ *  @deprecated in MAG 1.7
+ *
+ *  @return The libmosquitto version
+ */
++ (NSString*)version DEPRECATED_MSG_ATTRIBUTE("This static method has been deprecated as in MAG 1.7");
+
+
+
+/**
+ *  Used to Subscribe to a topic using a specific Quality of Service
+ *
+ *  @param topic             The Topic to be subscribed to
+ *  @param qos               The Quality of Service to be used
+ *  @param completionHandler The completionHandler code block
+ */
+- (void)subscribeToTopic:(NSString *)topic
+                 withQos:(MQTTQualityOfService)qos
+       completionHandler:(MQTTSubscriptionCompletionHandler)completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new subscribeToTopic:withQos:completion method instead.");
+
+
+
+/**
+ *  Used to Subscribe to a topic using QoS = 0. Use subscribeToTopicWithQos method to set a different QoS level
+ *
+ *  @param topic             The Topic to be subscribed
+ *  @param completionHandler The completionHandler code block
+ */
+- (void)subscribeToTopic:(NSString *)topic
+   withCompletionHandler:(MQTTSubscriptionCompletionHandler)completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new subscribeToTopic:withCompletion method instead.");
+
+
+
+/**
+ *  Used to Publish a message on a given topic
+ *
+ *  @param payload           The Payload to be sent
+ *  @param topic             The Topic to be sent
+ *  @param qos               The Quality of Service to be used
+ *  @param retain            Set to true to make the message retained
+ *  @param completionHandler The completionHandler code block
+ */
+- (void)publishString:(NSString *)payload
+              toTopic:(NSString *)topic
+              withQos:(MQTTQualityOfService)qos
+               retain:(BOOL)retain
+    completionHandler:(void(^)(int mid))completionHandler DEPRECATED_MSG_ATTRIBUTE("Use the new publishString:toTopic:withQoS:retain:completion method instead.");
 
 @end
 
