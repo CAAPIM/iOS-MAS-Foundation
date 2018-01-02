@@ -99,7 +99,11 @@
     // DeviceName
     if (![headerInfo.allKeys containsObject:MASDeviceNameRequestResponseKey])
     {
-        NSString *deviceName = [MASDevice deviceNameBase64Encoded];
+        //
+        //  For the time being, as DC attribute in DN needs to be clarified with MAG, sending DC as device model to align with Android SDK.
+        //  JG @ January 2, 2017 - DE331046
+        //
+        NSString *deviceName = [[UIDevice currentDevice] model];//[MASDevice deviceNameBase64Encoded];
         
         if (deviceName)
         {

@@ -211,12 +211,12 @@ static MASSecurityService *_sharedService_ = nil;
     //device name
     
     //
-    // changing this for now as base64 encoded string is being stored with double quotes in server's database for some reason - James Go @ December 4th, 2015
+    //  For the time being, as DC attribute in DN needs to be clarified with MAG, sending DC as device model to align with Android SDK.
+    //  JG @ January 2, 2017 - DE331046
     //
-    NSString *deviceName = [[UIDevice currentDevice] name];//[MASDevice deviceNameBase64Encoded];
-    NSString *newDeviceName = [deviceName stringByReplacingOccurrencesOfString:@"’" withString:@"'"];
+    NSString *deviceName = [UIDevice currentDevice].model;//[MASDevice currentDevice].name;
     X509_NAME_add_entry_by_txt(name,"DC",
-                               MBSTRING_ASC, (const unsigned char*)[newDeviceName UTF8String], -1, -1, 0);
+                               MBSTRING_ASC, (const unsigned char*)[deviceName UTF8String], -1, -1, 0);
     
     const unsigned char * privateBits = (unsigned char *) [privateKeyBits bytes];
     unsigned long privateKeyLength = [privateKeyBits length];
