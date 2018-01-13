@@ -29,9 +29,14 @@
 #import "MQTTCFSocketTransport.h"
 #import "MQTTCoreDataPersistence.h"
 #import "MQTTSSLSecurityPolicyTransport.h"
+#import "ReconnectTimer.h"
 //
 //  New
 //
+
+#if TARGET_OS_IPHONE == 1
+#import "MASMQTTForegroundReconnection.h"
+#endif
 
 #define kMQTTDefaultPort    1883
 #define kMQTTDefaultTLSPort 8883
@@ -94,6 +99,14 @@ NSString * const MAG_SERVER_CERTIFICATES= @"mag_server_certificates";
 
 //  MQTT connection status
 @property (readwrite, assign) MQTTConnectionReturnCode connectionStatus;
+
+//  Reconnect timer
+@property (strong, nonatomic) ReconnectTimer *reconnectTimer;
+
+#if TARGET_OS_IPHONE == 1
+//  Foreground reconnection manager
+@property (strong, nonatomic) MASMQTTForegroundReconnection *foregroundReconnection;
+#endif
 
 @end
 
@@ -183,6 +196,10 @@ static MASMQTTClient *_sharedClient = nil;
         _sharedSession.delegate = self;
         _sharedSession.queue = self.queue;
         
+#if TARGET_OS_IPHONE == 1
+        self.foregroundReconnection = [[MASMQTTForegroundReconnection alloc] initWithMQTTClient:self];
+#endif
+        
         //
         //  Subscribe following information to reset the current MQTT session due to the change in SDK's authenticated session
         //
@@ -230,6 +247,14 @@ static MASMQTTClient *_sharedClient = nil;
 
 
 # pragma mark - Setup methods
+
++ (void)setClientPassword:(NSString *)password
+{
+    if(clientPassword != password){
+        clientPassword = password;
+    }
+}
+
 
 -(void)setUsername:(NSString *)username Password:(NSString *)password
 {
@@ -395,6 +420,23 @@ static MASMQTTClient *_sharedClient = nil;
         blockSelf.connectionCompletionHandler(blockSelf.connectionStatus);
     }];
     
+    //
+    //  Configure retry mechanism
+    //
+    if (_reconnectTimer != nil)
+    {
+        [_reconnectTimer stop];
+        _reconnectTimer = nil;
+    }
+    
+    _reconnectTimer = [[ReconnectTimer alloc] initWithRetryInterval:_reconnectDelay maxRetryInterval:_reconnectDelayMax queue:_queue reconnectBlock:^{
+        
+        //
+        //  Reconnect
+        //
+        [blockSelf reconnect];
+    }];
+    
 //    [[NSNotificationCenter defaultCenter] addObserver:self
 //                                             selector:@selector(reconnect:)
 //                                                 name:UIApplicationDidBecomeActiveNotification
@@ -412,6 +454,7 @@ static MASMQTTClient *_sharedClient = nil;
     if (_connected)
     {
         [_sharedSession disconnect];
+        [_reconnectTimer stop];
     }
 }
 
@@ -430,6 +473,14 @@ static MASMQTTClient *_sharedClient = nil;
     }
 }
 
+
+- (void)triggerReconnect
+{
+    if (_reconnectTimer && !_connected)
+    {
+        [_reconnectTimer schedule];
+    }
+}
 
 #pragma mark - Publish methods
 
@@ -550,16 +601,6 @@ static MASMQTTClient *_sharedClient = nil;
 }
 
 
-#pragma mark - SSL / TLS
-
-+ (void)setClientPassword:(NSString *)password
-{
-    if(clientPassword != password){
-        clientPassword = password;
-    }
-}
-
-
 #
 #   pragma mark - MQTTSessionDelegate
 #
@@ -605,6 +646,27 @@ static MASMQTTClient *_sharedClient = nil;
 
 - (void)handleEvent:(MQTTSession *)session event:(MQTTSessionEvent)eventCode error:(NSError *)error
 {
+    switch (eventCode)
+    {
+        case MQTTSessionEventConnected:
+            //
+            //  Reset reconnect interval if the connection is established
+            //
+            [self.reconnectTimer resetRetryInterval];
+            break;
+        case MQTTSessionEventConnectionClosedByBroker:
+        case MQTTSessionEventConnectionClosed:
+        case MQTTSessionEventProtocolError:
+        case MQTTSessionEventConnectionRefused:
+        case MQTTSessionEventConnectionError:
+            //
+            //  Trigger reconnection if it was closed by broker, or closed/refused with an error
+            //
+            [self triggerReconnect];
+            break;
+        default:
+            break;
+    }
     DLog(@"MASMQTT: Event happened (%@): \n\t\tevent:%@\n\t\terror: %@", session, [self convertMQTTEventToString:eventCode], error);
 }
 

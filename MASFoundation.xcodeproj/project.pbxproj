@@ -314,6 +314,8 @@
 		CB1907F91C17950700A5EF16 /* MASAccessService.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1907F71C17950700A5EF16 /* MASAccessService.m */; };
 		CB1C151E1E450109002B31A5 /* NSURL+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1C151C1E450109002B31A5 /* NSURL+MASPrivate.h */; };
 		CB1C151F1E450109002B31A5 /* NSURL+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1C151D1E450109002B31A5 /* NSURL+MASPrivate.m */; };
+		CB1EE31C2009895A0056F24A /* MASMQTTForegroundReconnection.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1EE31A2009895A0056F24A /* MASMQTTForegroundReconnection.h */; };
+		CB1EE31D2009895A0056F24A /* MASMQTTForegroundReconnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1EE31B2009895A0056F24A /* MASMQTTForegroundReconnection.m */; };
 		CB1FD14B1FB23701000AFA25 /* MASSharedStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1FD1491FB23701000AFA25 /* MASSharedStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CB1FD14C1FB23701000AFA25 /* MASSharedStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = CB1FD14A1FB23701000AFA25 /* MASSharedStorage.m */; };
 		CB2357921F0EF53600D4C420 /* MASURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CB2357901F0EF53600D4C420 /* MASURLSessionManager.h */; };
@@ -792,6 +794,8 @@
 		CB1907F71C17950700A5EF16 /* MASAccessService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASAccessService.m; sourceTree = "<group>"; };
 		CB1C151C1E450109002B31A5 /* NSURL+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+MASPrivate.h"; sourceTree = "<group>"; };
 		CB1C151D1E450109002B31A5 /* NSURL+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+MASPrivate.m"; sourceTree = "<group>"; };
+		CB1EE31A2009895A0056F24A /* MASMQTTForegroundReconnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASMQTTForegroundReconnection.h; sourceTree = "<group>"; };
+		CB1EE31B2009895A0056F24A /* MASMQTTForegroundReconnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASMQTTForegroundReconnection.m; sourceTree = "<group>"; };
 		CB1FD1491FB23701000AFA25 /* MASSharedStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASSharedStorage.h; sourceTree = "<group>"; };
 		CB1FD14A1FB23701000AFA25 /* MASSharedStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASSharedStorage.m; sourceTree = "<group>"; };
 		CB2357901F0EF53600D4C420 /* MASURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASURLSessionManager.h; sourceTree = "<group>"; };
@@ -1502,6 +1506,7 @@
 				A4F6712F1BAFC321000E2223 /* categories */,
 				A4831ABB1BD1A822007B4AE6 /* services */,
 				A4FB99191BAF70580083B06C /* models */,
+				CB1EE3192009895A0056F24A /* MQTT */,
 			);
 			path = _private_;
 			sourceTree = "<group>";
@@ -1588,6 +1593,15 @@
 				CB1907F71C17950700A5EF16 /* MASAccessService.m */,
 			);
 			path = access;
+			sourceTree = "<group>";
+		};
+		CB1EE3192009895A0056F24A /* MQTT */ = {
+			isa = PBXGroup;
+			children = (
+				CB1EE31A2009895A0056F24A /* MASMQTTForegroundReconnection.h */,
+				CB1EE31B2009895A0056F24A /* MASMQTTForegroundReconnection.m */,
+			);
+			path = MQTT;
 			sourceTree = "<group>";
 		};
 		CB23578A1F0EE35A00D4C420 /* Network */ = {
@@ -2009,6 +2023,7 @@
 				A483C2011BE6D0C5007572CE /* CBCentralManager+MASPrivate.h in Headers */,
 				A4150EFB1BF16EE200037E27 /* MASKeyChainService.h in Headers */,
 				A46F49C61C2F5FC500A4C370 /* MASIHTTPRequestOperationManager.h in Headers */,
+				CB1EE31C2009895A0056F24A /* MASMQTTForegroundReconnection.h in Headers */,
 				105B2F5A1CA6B3EA0005A2D0 /* txt_db.h in Headers */,
 				CB6491E51FE9DAF300281288 /* MQTTClient.h in Headers */,
 				105B2F2B1CA6B3EA0005A2D0 /* dtls1.h in Headers */,
@@ -2420,6 +2435,7 @@
 				A4831AEF1BD1A87C007B4AE6 /* MASAuthenticationProvider+MASPrivate.m in Sources */,
 				A46F49E81C2F5FC500A4C370 /* UIRefreshControl+MASINetworking.m in Sources */,
 				CB6491DD1FE9DAF300281288 /* ForegroundReconnection.m in Sources */,
+				CB1EE31D2009895A0056F24A /* MASMQTTForegroundReconnection.m in Sources */,
 				10738A341C711C2F00B7E87E /* send_mosq.c in Sources */,
 				A483C1A41BE56BAF007572CE /* CBPeripheralManager+MASPrivate.m in Sources */,
 				CB6491F21FE9DAF300281288 /* MQTTProperties.m in Sources */,
