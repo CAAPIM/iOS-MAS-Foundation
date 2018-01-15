@@ -128,10 +128,8 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
 /**
  *  This class is used to create a MQTT Client to connect to any broker
  */
-@interface MASMQTTClient : NSObject {
-    
-    struct mosquitto *mosq;
-}
+@interface MASMQTTClient : NSObject
+
 
 //Delegate - used to set the delegation class
 @property (nonatomic, weak) id<MASConnectaMessagingClientDelegate> delegate;

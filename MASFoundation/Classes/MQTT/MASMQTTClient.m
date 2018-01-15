@@ -42,9 +42,6 @@
 #define kMQTTDefaultTLSPort 8883
 #define kKeepAliveTime      60
 
-NSString * const MAG_CLIENT_CERTIFICATES= @"mag_client_certificates";
-NSString * const MAG_SERVER_CERTIFICATES= @"mag_server_certificates";
-
 @interface MASMQTTClient () <MQTTSessionDelegate>
 
 @property (nonatomic,copy) void(^connectionCompletionHandler)(NSUInteger code);
@@ -92,7 +89,7 @@ NSString * const MAG_SERVER_CERTIFICATES= @"mag_server_certificates";
 @property (readwrite,assign) BOOL cleanSession;
 
 //  MQTT Session
-@property (readwrite, strong) MQTTSession *sharedSession;
+@property (readwrite, strong) MQTTSession *currentSession;
 
 //  TLS setting
 @property (readwrite, assign) BOOL enableTLS;
@@ -190,11 +187,11 @@ static MASMQTTClient *_sharedClient = nil;
         const char *cstrClientId = [self.clientID cStringUsingEncoding:NSUTF8StringEncoding];
         self.queue = dispatch_queue_create(cstrClientId, NULL);
         
-        _sharedSession = [[MQTTSession alloc] initWithClientId:clientId];
-        _sharedSession.keepAliveInterval = self.keepAlive;
-        _sharedSession.cleanSessionFlag = self.cleanSession;
-        _sharedSession.delegate = self;
-        _sharedSession.queue = self.queue;
+        _currentSession = [[MQTTSession alloc] initWithClientId:clientId];
+        _currentSession.keepAliveInterval = self.keepAlive;
+        _currentSession.cleanSessionFlag = self.cleanSession;
+        _currentSession.delegate = self;
+        _currentSession.queue = self.queue;
         
 #if TARGET_OS_IPHONE == 1
         self.foregroundReconnection = [[MASMQTTForegroundReconnection alloc] initWithMQTTClient:self];
@@ -224,16 +221,16 @@ static MASMQTTClient *_sharedClient = nil;
 
 - (void)dealloc
 {
-    if (_sharedSession)
+    if (_currentSession)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:self];
         
-        if (_sharedSession.status == MQTTSessionStatusConnected || _sharedSession.status == MQTTSessionStatusConnecting)
+        if (_currentSession.status == MQTTSessionStatusConnected || _currentSession.status == MQTTSessionStatusConnecting)
         {
-            [_sharedSession disconnect];
+            [_currentSession disconnect];
         }
         
-        _sharedSession = nil;
+        _currentSession = nil;
     }
 }
 
@@ -242,7 +239,7 @@ static MASMQTTClient *_sharedClient = nil;
 
 - (BOOL)connected
 {
-    return (_sharedSession && _sharedSession.status == MQTTSessionStatusConnected);
+    return (_currentSession && _currentSession.status == MQTTSessionStatusConnected);
 }
 
 
@@ -293,11 +290,11 @@ static MASMQTTClient *_sharedClient = nil;
     NSParameterAssert(willQos >= 0);
     NSParameterAssert(!retain || retain == YES);
     
-    [_sharedSession setWillFlag:YES];
-    [_sharedSession setWillMsg:payload];
-    [_sharedSession setWillQoS:[self converToMQTTQoS:willQos]];
-    [_sharedSession setWillTopic:willTopic];
-    [_sharedSession setWillRetainFlag:retain];
+    [_currentSession setWillFlag:YES];
+    [_currentSession setWillMsg:payload];
+    [_currentSession setWillQoS:[self converToMQTTQoS:willQos]];
+    [_currentSession setWillTopic:willTopic];
+    [_currentSession setWillRetainFlag:retain];
 }
 
 
@@ -305,11 +302,11 @@ static MASMQTTClient *_sharedClient = nil;
 
 - (void)clearWill
 {
-    [_sharedSession setWillFlag:NO];
-    [_sharedSession setWillMsg:nil];
-    [_sharedSession setWillQoS:0];
-    [_sharedSession setWillTopic:nil];
-    [_sharedSession setWillRetainFlag:NO];
+    [_currentSession setWillFlag:NO];
+    [_currentSession setWillMsg:nil];
+    [_currentSession setWillQoS:0];
+    [_currentSession setWillTopic:nil];
+    [_currentSession setWillRetainFlag:NO];
 }
 
 
@@ -379,15 +376,15 @@ static MASMQTTClient *_sharedClient = nil;
     NSMutableArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
     NSArray *clientCertificates = @[[identities objectAtIndex:0], [certificates objectAtIndex:0]];
     transport.certificates = clientCertificates;
-    _sharedSession.transport = transport;
+    _currentSession.transport = transport;
     
     //
     // If provided, pass username and password to mosquitto
     //
     if (self.username && self.password)
     {
-        _sharedSession.userName = self.username;
-        _sharedSession.password = self.password;
+        _currentSession.userName = self.username;
+        _currentSession.password = self.password;
     }
     
     //
@@ -395,13 +392,13 @@ static MASMQTTClient *_sharedClient = nil;
     //
     if ([self.clientID isEqualToString:[MASMQTTHelper mqttClientId]])
     {
-        _sharedSession.userName = [MASUser currentUser].objectId;
-        _sharedSession.password = [MASUser currentUser].accessToken;
+        _currentSession.userName = [MASUser currentUser].objectId;
+        _currentSession.password = [MASUser currentUser].accessToken;
     }
     
     self.connectionCompletionHandler = completionHandler;
     __block MASMQTTClient *blockSelf = self;
-    [_sharedSession connectWithConnectHandler:^(NSError *error) {
+    [_currentSession connectWithConnectHandler:^(NSError *error) {
         
         //
         //  If the session connection was successful
@@ -453,7 +450,7 @@ static MASMQTTClient *_sharedClient = nil;
     
     if (_connected)
     {
-        [_sharedSession disconnect];
+        [_currentSession disconnect];
         [_reconnectTimer stop];
     }
 }
@@ -507,7 +504,7 @@ static MASMQTTClient *_sharedClient = nil;
         [self.publishBlocks setObject:completion forKey:[NSNumber numberWithInt:0]];
     }
     
-    UInt16 messageId = [_sharedSession publishData:payload onTopic:topic retain:retain qos:[self converToMQTTQoS:qos]];
+    UInt16 messageId = [_currentSession publishData:payload onTopic:topic retain:retain qos:[self converToMQTTQoS:qos]];
     NSNumber *msgId = [NSNumber numberWithInt:messageId];
     
     if (completion)
@@ -555,7 +552,7 @@ static MASMQTTClient *_sharedClient = nil;
         //
         //  If the session is connected
         //
-        UInt16 msgId = [_sharedSession subscribeToTopic:topic atLevel:[self converToMQTTQoS:qos]];
+        UInt16 msgId = [_currentSession subscribeToTopic:topic atLevel:[self converToMQTTQoS:qos]];
         
         if (completion && msgId)
         {
@@ -583,7 +580,7 @@ static MASMQTTClient *_sharedClient = nil;
 {
     if (_connected)
     {
-        UInt16 msgId = [_sharedSession unsubscribeTopic:topic];
+        UInt16 msgId = [_currentSession unsubscribeTopic:topic];
         
         if (completionHandler)
         {
@@ -1053,7 +1050,7 @@ static MASMQTTClient *_sharedClient = nil;
         [self.publishHandlers setObject:completionHandler forKey:[NSNumber numberWithInt:0]];
     }
     
-    UInt16 messageId = [_sharedSession publishData:payload onTopic:topic retain:retain qos:[self converToMQTTQoS:qos]];
+    UInt16 messageId = [_currentSession publishData:payload onTopic:topic retain:retain qos:[self converToMQTTQoS:qos]];
     NSNumber *msgId = [NSNumber numberWithInt:messageId];
     
     if (completionHandler)
@@ -1107,7 +1104,7 @@ static MASMQTTClient *_sharedClient = nil;
         //
         //  If the session is connected
         //
-        UInt16 msgId = [_sharedSession subscribeToTopic:topic atLevel:[self converToMQTTQoS:qos]];
+        UInt16 msgId = [_currentSession subscribeToTopic:topic atLevel:[self converToMQTTQoS:qos]];
         
         if (completionHandler && msgId)
         {
