@@ -26,7 +26,7 @@
     if(self)
     {
         [self setValue:[MASDevice deviceIdBase64Encoded] forKey:@"identifier"];
-        NSMutableString *defaultDeviceName = [[[UIDevice currentDevice] name] mutableCopy];
+        NSMutableString *defaultDeviceName = [[[UIDevice currentDevice] model] mutableCopy];
         [self setValue:defaultDeviceName forKey:@"name"];
     }
     
