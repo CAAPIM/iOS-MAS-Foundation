@@ -414,7 +414,10 @@ static MASMQTTClient *_sharedClient = nil;
             }
         }
         
-        blockSelf.connectionCompletionHandler(blockSelf.connectionStatus);
+        if (blockSelf.connectionCompletionHandler)
+        {
+            blockSelf.connectionCompletionHandler(blockSelf.connectionStatus);
+        }
     }];
     
     //
@@ -626,15 +629,15 @@ static MASMQTTClient *_sharedClient = nil;
         NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
         [notificationCenter postNotificationName:MASConnectaOperationDidReceiveMessageNotification object:message];
         
-        if (_sharedClient.messageHandler) {
+        if (self.messageHandler) {
             
-            _sharedClient.messageHandler(message);
+            self.messageHandler(message);
         }
         
         //Delegation callback
-        if (_sharedClient.delegate && [_sharedClient.delegate respondsToSelector:@selector(onMessageReceived:)]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(onMessageReceived:)]) {
             
-            [_sharedClient.delegate onMessageReceived:message];
+            [self.delegate onMessageReceived:message];
         }
     }
 
