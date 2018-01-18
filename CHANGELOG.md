@@ -8,7 +8,7 @@
 - `MASConfiguration` was not properly updating the updated endpoint values when switching to a different configuration. It is fixed. [DE321925]
 - `MASConfiguration` had some hard-coded values for client credentials device registration endpoint. `MASConfiguration` now reads the value from the configuration. [DE321921]
 - `MASMQTTClient` was unable to reestablish MQTT connection when the user session was logged out, and logged in with a different account. Mobile SDK now properly handles session changes for MQTT connection. [US408725]
-- Mobile SDK now stores all credentials only to the device. Data will not be backed-up or transferred with iCloud unless `[MAS setKeychainSynchroizable:]` is explicitly set to `YES`. [US388853]
+- Mobile SDK now stores all credentials only to the device. Data will not be backed-up or transferred with iCloud unless `[MAS setKeychainSynchronizable:]` is explicitly set to `YES`. [US388853]
 - Mobile SDK's MQTT connection was unable to establish mutual SSL connection with public CA certificate. The Mobile SDK now establishes mutual SSL with public CA certificate when **entire certificate chain** is exported in JSON configuration. [US399506]
 
 ### New features
