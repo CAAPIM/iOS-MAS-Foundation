@@ -30,9 +30,6 @@
 #import "MQTTCoreDataPersistence.h"
 #import "MQTTSSLSecurityPolicyTransport.h"
 #import "ReconnectTimer.h"
-//
-//  New
-//
 
 #if TARGET_OS_IPHONE == 1
 #import "MASMQTTForegroundReconnection.h"
@@ -121,7 +118,8 @@ static MASMQTTClient *_sharedClient = nil;
     {
         @synchronized(self)
         {
-            if ([MASUser currentUser].isAuthenticated && [MASDevice currentDevice].isRegistered) {
+            if ([MASUser currentUser].isAuthenticated && [MASDevice currentDevice].isRegistered)
+            {
                 
                 //
                 // Init MQTT client for current gateway
@@ -174,15 +172,9 @@ static MASMQTTClient *_sharedClient = nil;
         self.keepAlive = kKeepAliveTime;
         self.cleanSession = cleanSession;
         
-        //
-        //  TODO
-        //
         self.reconnectDelay = 1;
         self.reconnectDelayMax = 1;
         self.reconnectExponentialBackoff = NO;
-        //
-        //  TODO
-        //
         
         const char *cstrClientId = [self.clientID cStringUsingEncoding:NSUTF8StringEncoding];
         self.queue = dispatch_queue_create(cstrClientId, NULL);
@@ -247,7 +239,8 @@ static MASMQTTClient *_sharedClient = nil;
 
 + (void)setClientPassword:(NSString *)password
 {
-    if(clientPassword != password){
+    if (clientPassword != password)
+    {
         clientPassword = password;
     }
 }
@@ -436,11 +429,6 @@ static MASMQTTClient *_sharedClient = nil;
         //
         [blockSelf reconnect];
     }];
-    
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(reconnect:)
-//                                                 name:UIApplicationDidBecomeActiveNotification
-//                                               object:nil];
 }
 
 
@@ -499,7 +487,10 @@ static MASMQTTClient *_sharedClient = nil;
                                              code:911001
                                          userInfo:@{ NSLocalizedDescriptionKey:@"MQTT error. Invalid parameter(s)." }];
         
-        completion(NO, error, 0);
+        if (completion)
+        {
+            completion(NO, error, 0);
+        }
     }
     
     if (qos == 0 && completion)
@@ -596,7 +587,10 @@ static MASMQTTClient *_sharedClient = nil;
                                              code:911001
                                          userInfo:@{ NSLocalizedDescriptionKey:@"MQTT error. No connection available" }];
         
-        completionHandler(NO, error);
+        if (completionHandler)
+        {
+            completionHandler(NO, error);
+        }
     }
 }
 
@@ -629,13 +623,14 @@ static MASMQTTClient *_sharedClient = nil;
         NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
         [notificationCenter postNotificationName:MASConnectaOperationDidReceiveMessageNotification object:message];
         
-        if (self.messageHandler) {
-            
+        if (self.messageHandler)
+        {
             self.messageHandler(message);
         }
         
         //Delegation callback
-        if (self.delegate && [self.delegate respondsToSelector:@selector(onMessageReceived:)]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(onMessageReceived:)])
+        {
             
             [self.delegate onMessageReceived:message];
         }
@@ -798,12 +793,16 @@ static MASMQTTClient *_sharedClient = nil;
         //  Notify granted QoS
         //
         MQTTSubscriptionCompletionHandler handler = [_sharedClient.subscriptionHandlers objectForKey:msgId];
-        handler(qoss);
-     
-        //
-        //  Remove the handler
-        //
-        [self.subscriptionHandlers removeObjectForKey:msgId];
+        
+        if (handler)
+        {
+            handler(qoss);
+            
+            //
+            //  Remove the handler
+            //
+            [self.subscriptionHandlers removeObjectForKey:msgId];
+        }
     }
     else if ([self.subscriptionBlocks objectForKey:msgId])
     {
@@ -811,12 +810,16 @@ static MASMQTTClient *_sharedClient = nil;
         //  Notify granted QoS
         //
         void (^MQTTSubscriptionCompletionBlock)(BOOL completed, NSError *_Nullable error, NSArray *grantedQos) = [self.subscriptionBlocks objectForKey:msgId];
-        MQTTSubscriptionCompletionBlock(YES, nil, qoss);
-        
-        //
-        //  Remove the completion block
-        //
-        [self.subscriptionBlocks removeObjectForKey:msgId];
+
+        if (MQTTSubscriptionCompletionBlock)
+        {
+            MQTTSubscriptionCompletionBlock(YES, nil, qoss);
+            
+            //
+            //  Remove the completion block
+            //
+            [self.subscriptionBlocks removeObjectForKey:msgId];
+        }
     }
 }
 
@@ -833,12 +836,16 @@ static MASMQTTClient *_sharedClient = nil;
         //  Notify the unsubscription
         //
         void (^completionHandler)(BOOL completed, NSError *_Nullable error) = [self.unsubscriptionHandlers objectForKey:msgId];
-        completionHandler(YES, nil);
-        
-        //
-        //  Remove the completion handler
-        //
-        [self.unsubscriptionHandlers removeObjectForKey:msgId];
+
+        if (completionHandler)
+        {
+            completionHandler(YES, nil);
+            
+            //
+            //  Remove the completion handler
+            //
+            [self.unsubscriptionHandlers removeObjectForKey:msgId];
+        }
     }
 }
 
