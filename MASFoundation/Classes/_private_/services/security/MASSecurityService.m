@@ -102,7 +102,7 @@ static MASSecurityService *_sharedService_ = nil;
 - (NSURLCredential *)createUrlCredential
 {
     NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
-    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
 
     //DLog(@"\n\ncalled and identities is: %@ and certificates is: %@", identities, certificates);
     
@@ -140,7 +140,7 @@ static MASSecurityService *_sharedService_ = nil;
     // Delete the private key
 	//
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPrivateKey);
-    if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
         DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck );
     }
@@ -149,7 +149,7 @@ static MASSecurityService *_sharedService_ = nil;
     // Delete the public key
 	//
     sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPublicKey);
-    if(!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
     {
         DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
     }
@@ -211,12 +211,12 @@ static MASSecurityService *_sharedService_ = nil;
     //device name
     
     //
-    // changing this for now as base64 encoded string is being stored with double quotes in server's database for some reason - James Go @ December 4th, 2015
+    //  For the time being, as DC attribute in DN needs to be clarified with MAG, sending DC as device model to align with Android SDK.
+    //  JG @ January 2, 2017 - DE331046
     //
-    NSString *deviceName = [[UIDevice currentDevice] name];//[MASDevice deviceNameBase64Encoded];
-    NSString *newDeviceName = [deviceName stringByReplacingOccurrencesOfString:@"’" withString:@"'"];
+    NSString *deviceName = [UIDevice currentDevice].model;//[MASDevice currentDevice].name;
     X509_NAME_add_entry_by_txt(name,"DC",
-                               MBSTRING_ASC, (const unsigned char*)[newDeviceName UTF8String], -1, -1, 0);
+                               MBSTRING_ASC, (const unsigned char*)[deviceName UTF8String], -1, -1, 0);
     
     const unsigned char * privateBits = (unsigned char *) [privateKeyBits bytes];
     unsigned long privateKeyLength = [privateKeyBits length];
@@ -226,7 +226,7 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // Store new value in keychain
     //
-    if(privateKeyBits)
+    if (privateKeyBits)
     {
         NSString *keyContents = [self evpKeyToString:privatekey];
     
@@ -235,7 +235,7 @@ static MASSecurityService *_sharedService_ = nil;
         //
         // Store private key bits into keychain
         //
-        [[MASAccessService sharedService] setAccessValueString:keyContents withAccessValueType:MASAccessValueTypePrivateKeyBits];
+        [[MASAccessService sharedService] setAccessValueString:keyContents storageKey:MASKeychainStorageKeyPrivateKeyBits];
     }
     
     if (!X509_REQ_sign(req, privatekey, EVP_sha1()))
@@ -327,7 +327,7 @@ static MASSecurityService *_sharedService_ = nil;
 	[keyPairAttr setObject:publicKeyAttr forKey:(__bridge id)kSecPublicKeyAttrs];
     
 	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
-    if(!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
+    if (!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
     {
         DLog(@"Error with something really bad went wrong with generating the key pair");
     }
@@ -335,14 +335,14 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // Storing privateKey and publicKey into keychain
     //
-    if(privateKeyRef)
+    if (privateKeyRef)
     {
-        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef withAccessValueType:MASAccessValueTypePrivateKey];
+        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
     }
     
-    if(publicKeyRef)
+    if (publicKeyRef)
     {
-        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef withAccessValueType:MASAccessValueTypePublicKey];
+        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
     }
     
     privateKeyRef = NULL;
@@ -422,7 +422,7 @@ static MASSecurityService *_sharedService_ = nil;
     
     if (!signedCert)
     {
-        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithType:MASAccessValueTypeSignedPublicCertificateData];
+        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:MASKeychainStorageKeyPublicCertificateData];
 
         if (signedCertificateData)
         {
@@ -478,7 +478,7 @@ static MASSecurityService *_sharedService_ = nil;
         //
         // Retrieve privateKeyBits from keychain.
         //
-        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypePrivateKeyBits];
+        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyPrivateKeyBits];
         
         if (privateKeyBits)
         {

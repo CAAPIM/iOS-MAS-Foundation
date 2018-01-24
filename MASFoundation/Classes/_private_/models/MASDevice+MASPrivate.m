@@ -26,7 +26,8 @@
     if(self)
     {
         [self setValue:[MASDevice deviceIdBase64Encoded] forKey:@"identifier"];
-        [self setValue:[MASDevice deviceNameBase64Encoded] forKey:@"name"];
+        NSMutableString *defaultDeviceName = [[[UIDevice currentDevice] model] mutableCopy];
+        [self setValue:defaultDeviceName forKey:@"name"];
     }
     
     return self;
@@ -96,28 +97,28 @@
     NSString *jwt = headerInfo[MASJwtRequestResponseKey];
     if (jwt)
     {
-        [accessService setAccessValueString:jwt withAccessValueType:MASAccessValueTypeJWT];
+        [accessService setAccessValueString:jwt storageKey:MASKeychainStorageKeyJWT];
     }
     
     // Mag Identifier
     NSString *magIdentifier = headerInfo[MASMagIdentifierRequestResponseKey];
     if (magIdentifier)
     {
-        [accessService setAccessValueString:magIdentifier withAccessValueType:MASAccessValueTypeMAGIdentifier];
+        [accessService setAccessValueString:magIdentifier storageKey:MASKeychainStorageKeyMAGIdentifier];
     }
     
     // Id token
     NSString *idToken = headerInfo[MASIdTokenHeaderRequestResponseKey];
     if (idToken)
     {
-        [accessService setAccessValueString:idToken withAccessValueType:MASAccessValueTypeIdToken];
+        [accessService setAccessValueString:idToken storageKey:MASKeychainStorageKeyIdToken];
     }
     
     // Id token type
     NSString *idTokenType = headerInfo[MASIdTokenTypeHeaderRequestResponseKey];
     if (idTokenType)
     {
-        [accessService setAccessValueString:idTokenType withAccessValueType:MASAccessValueTypeIdTokenType];
+        [accessService setAccessValueString:idTokenType storageKey:MASKeychainStorageKeyIdTokenType];
     }
     
     //
@@ -129,20 +130,20 @@
     
     if (certificateData)
     {
-        [accessService setAccessValueCertificate:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificate];
-        [accessService setAccessValueData:certificateData withAccessValueType:MASAccessValueTypeSignedPublicCertificateData];
+        [accessService setAccessValueCertificate:certificateData storageKey:MASKeychainStorageKeySignedPublicCertificate];
+        [accessService setAccessValueData:certificateData storageKey:MASKeychainStorageKeyPublicCertificateData];
         
         //
         // Extracting signed client certificate expiration date
         //
-        NSArray * cert = [accessService getAccessValueCertificateWithType:MASAccessValueTypeSignedPublicCertificate];
+        NSArray * cert = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
         SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
 
         //
         // Store client certificate expiration date into shared keychain storage
         //
         NSDate *expirationDate = [accessService extractExpirationDateFromCertificate:certificate];
-        [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] withAccessValueType:MASAccessValueTypeSignedPublicCertificateExpirationDate];
+        [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
     }
     
     //
@@ -151,7 +152,7 @@
     NSString *deviceVendorId = [MASDevice deviceVendorId];    
     if (deviceVendorId)
     {
-        [accessService setAccessValueString:deviceVendorId withAccessValueType:MASAccessValueTypeDeviceVendorId];
+        [accessService setAccessValueString:deviceVendorId storageKey:MASKeychainStorageKeyDeviceVendorId];
     }
     
     //
@@ -218,7 +219,11 @@
 
 + (NSString *)deviceNameBase64Encoded;
 {
-    NSString *deviceName = [[UIDevice currentDevice] name];
+    //
+    //  For the time being, as DC attribute in DN needs to be clarified with MAG, sending DC as device model to align with Android SDK.
+    //  JG @ January 2, 2017 - DE331046
+    //
+    NSString *deviceName = [[UIDevice currentDevice] model];
     NSData *deviceNameData = [deviceName dataUsingEncoding:NSUTF8StringEncoding];
     
     return [deviceNameData base64EncodedStringWithOptions:0];

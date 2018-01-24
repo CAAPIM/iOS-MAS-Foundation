@@ -92,6 +92,12 @@
 }
 
 
++ (void)enableBrowserBasedAuthentication:(BOOL)enable
+{
+    [MASModelService setBrowserBasedAuthentication:enable];
+}
+
+
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
     [MASNetworkingService setGatewayMonitor:monitor];
@@ -206,7 +212,7 @@
         //
         //  If the device is registered, and id_token exists, which means MSSO can be used for this application
         //
-        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeIdToken])
+        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
             //
             //  Make sure to register the client (application)
@@ -1641,7 +1647,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
     //
     //  Retrieve private key from registered device's client certificate
     //
-    SecKeyRef pemPrivateRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithType:MASAccessValueTypePrivateKey];
+    SecKeyRef pemPrivateRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithStorageKey:MASKeychainStorageKeyPrivateKey];
     NSData *privateKeyData = [NSData converKeyRefToNSData:pemPrivateRef];
  
     return [self signWithClaims:claims privateKey:privateKeyData error:error];

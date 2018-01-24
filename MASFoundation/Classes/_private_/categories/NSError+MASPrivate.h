@@ -672,4 +672,12 @@
 
 
 
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeBBANotEnabled.
+ *
+ * @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error MASFoundationErrorCodeBBANotEnabled
+ */
++ (NSError *)errorBrowserBasedAuthenticaionNotEnabled;
+
 @end

@@ -165,7 +165,7 @@ static BOOL _autoBindding_ = YES;
     //
     // Retrieve deviceToken from Keychain, if it was already registered should be the same
     //
-    NSString *deviceTokenFromKeyChain = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeDeviceToken];
+    NSString *deviceTokenFromKeyChain = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceRegistrationToken];
     
     return ([_deviceToken_ isEqualToString:deviceTokenFromKeyChain] && _deviceToken_);
 }
@@ -179,7 +179,7 @@ static BOOL _autoBindding_ = YES;
 
 - (void)clearDeviceToken
 {
-     [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeDeviceToken];
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyDeviceRegistrationToken];
 }
 
 
@@ -307,7 +307,7 @@ static BOOL _autoBindding_ = YES;
          // Store the deviceToken in the keychain
          //
          else {
-             [[MASAccessService sharedService] setAccessValueString:_deviceToken_ withAccessValueType:MASAccessValueTypeDeviceToken];
+             [[MASAccessService sharedService] setAccessValueString:_deviceToken_ storageKey:MASKeychainStorageKeyDeviceRegistrationToken];
          }
          
          //
@@ -407,7 +407,7 @@ static BOOL _autoBindding_ = YES;
          // Remove the deviceToken from keychain
          //
          else {
-             [[MASAccessService sharedService] setAccessValueString:nil withAccessValueType:MASAccessValueTypeDeviceToken];
+             [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyDeviceRegistrationToken];
          }
          
          //

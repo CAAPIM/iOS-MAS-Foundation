@@ -847,6 +847,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorBrowserBasedAuthenticaionNotEnabled
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeBBANotEnabled errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 # pragma mark - Foundation Errors Private
 
 + (MASFoundationErrorCode)foundationErrorCodeForApiCode:(MASApiErrorCode)apiCode

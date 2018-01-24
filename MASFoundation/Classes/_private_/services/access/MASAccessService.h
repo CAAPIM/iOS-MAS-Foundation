@@ -16,44 +16,39 @@
 
 @class MASIKeyChainStore;
 
-
-/**
- * The enumerated MASAccessValueType
- */
-typedef NS_ENUM(NSInteger, MASAccessValueType)
-{
-    MASAccessValueTypeUknonw = -1,
-    MASAccessValueTypeAccessToken,
-    MASAccessValueTypeAuthenticatedTimestamp,
-    MASAccessValueTypeAuthenticatedUserObjectId,
-    MASAccessValueTypeConfiguration,
-    MASAccessValueTypeClientExpiration,
-    MASAccessValueTypeClientId,
-    MASAccessValueTypeClientSecret,
-    MASAccessValueTypeExpiresIn,
-    MASAccessValueTypeIdToken,
-    MASAccessValueTypeIdTokenType,
-    MASAccessValueTypeIsDeviceLocked,
-    MASAccessValueTypeJWT,
-    MASAccessValueTypeMAGIdentifier,
-    MASAccessValueTypeMSSOEnabled,
-    MASAccessValueTypePrivateKey,
-    MASAccessValueTypePrivateKeyBits,
-    MASAccessValueTypePublicKey,
-    MASAccessValueTypeRefreshToken,
-    MASAccessValueTypeScope,
-    MASAccessValueTypeSecuredIdToken,
-    MASAccessValueTypeSignedPublicCertificate,
-    MASAccessValueTypeSignedPublicCertificateData,
-    MASAccessValueTypeSignedPublicCertificateExpirationDate,
-    MASAccessValueTypeTokenExpiration,
-    MASAccessValueTypeTokenType,
-    MASAccessValueTypeTrustedServerCertificate,
-    MASAccessValueTypeCurrentAuthCredentialsGrantType,
-    MASAccessValueTypeMASUserObjectData,
-    MASAccessValueTypeDeviceVendorId,
-    MASAccessValueTypeDeviceToken,
-};
+//
+//  List of constant NSString values for reserved storage keys
+//
+extern NSString * const MASKeychainStorageKeyConfiguration;
+extern NSString * const MASKeychainStorageKeyAccessToken;
+extern NSString * const MASKeychainStorageKeyAuthenticatedUserObjectId;
+extern NSString * const MASKeychainStorageKeyRefreshToken;
+extern NSString * const MASKeychainStorageKeyScope;
+extern NSString * const MASKeychainStorageKeyTokenType;
+extern NSString * const MASKeychainStorageKeyExpiresIn;
+extern NSString * const MASKeychainStorageKeyTokenExpiration;
+extern NSString * const MASKeychainStorageKeySecuredIdToken;
+extern NSString * const MASKeychainStorageKeyIdToken;
+extern NSString * const MASKeychainStorageKeyIdTokenType;
+extern NSString * const MASKeychainStorageKeyClientExpiration;
+extern NSString * const MASKeychainStorageKeyClientId;
+extern NSString * const MASKeychainStorageKeyClientSecret;
+extern NSString * const MASKeychainStorageKeyJWT;
+extern NSString * const MASKeychainStorageKeyMAGIdentifier;
+extern NSString * const MASKeychainStorageKeyMSSOEnabled;
+extern NSString * const MASKeychainStorageKeyPrivateKey;
+extern NSString * const MASKeychainStorageKeyPrivateKeyBits;
+extern NSString * const MASKeychainStorageKeyPublicKey;
+extern NSString * const MASKeychainStorageKeyTrustedServerCertificate;
+extern NSString * const MASKeychainStorageKeySignedPublicCertificate;
+extern NSString * const MASKeychainStorageKeyPublicCertificateData;
+extern NSString * const MASKeychainStorageKeyPublicCertificateExpirationDate;
+extern NSString * const MASKeychainStorageKeyAuthenticatedTimestamp;
+extern NSString * const MASKeychainStorageKeyIsDeviceLocked;
+extern NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType;
+extern NSString * const MASKeychainStorageKeyMASUserObjectData;
+extern NSString * const MASKeychainStorageKeyDeviceVendorId;
+extern NSString * const MASKeychainStorageKeyDeviceRegistrationToken;
 
 
 /**
@@ -134,6 +129,10 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 
 
 
+///--------------------------------------
+/// @name MASAccess object
+///--------------------------------------
+
 # pragma mark - MASAccess object
 
 /**
@@ -146,9 +145,11 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 
 
 
+///--------------------------------------
+/// @name Storage methods
+///--------------------------------------
+
 # pragma mark - Storage methods
-
-
 
 /**
  *  Retrieve list of identities in keychain
@@ -163,41 +164,65 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  Store the certificate as data format into keychain
  *
  *  @param certificate NSData form of certificate
- *  @param type        MASAccessValueType enum specifying the value key
+ *  @param storageKey NSString value for the data key
  */
-- (void)setAccessValueCertificate:(NSData *)certificate withAccessValueType:(MASAccessValueType)type;
+- (void)setAccessValueCertificate:(NSData *)certificate storageKey:(NSString *)storageKey;
 
 
 
 /**
  *  Retrieve the certificate data by the value key
  *
- *  @param type MASAccessValueType enum value for key
+ *  @param storageKey NSString value for the data key
  *
  *  @return Certificate value by the specified value key
  */
-- (id)getAccessValueCertificateWithType:(MASAccessValueType)type;
+- (id)getAccessValueCertificateWithStorageKey:(NSString *)storageKey;
 
 
 
 /**
- *  Store NSData of access value into keychain
- *
- *  @param data NSData to store into keychain
- *  @param type MASAccessValueType enum value for the value key
+ Store NSData of access value into keychain
+
+ @param data NSData to be stored into keychain
+ @param storageKey NSString value for the data key
+ @return BOOL result of operation
  */
-- (void)setAccessValueData:(NSData *)data withAccessValueType:(MASAccessValueType)type;
+- (BOOL)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey;
+
+
+
+/**
+ Store NSData of access value into keychain
+
+ @param data NSData to be stored into keychain
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return BOOL result of operation
+ */
+- (BOOL)setAccessValueData:(NSData *)data storageKey:(NSString *)storageKey error:(NSError **)error;
 
 
 
 /**
  *  Retrieve NSData of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSData of the access data by the specified value key
  */
-- (NSData *)getAccessValueDataWithType:(MASAccessValueType)type;
+- (NSData *)getAccessValueDataWithStorageKey:(NSString *)storageKey;
+
+
+
+/**
+ Retrieve NSData of access value from keychain
+
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return NSData of the access data by the specified value key
+ */
+- (NSData *)getAccessValueDataWithStorageKey:(NSString *)storageKey error:(NSError **)error;
 
 
 
@@ -205,20 +230,44 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  Store NSString of access value into keychain
  *
  *  @param string NSString to store into keychain
- *  @param type   MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
+ *  @return BOOL result of operation
  */
-- (void)setAccessValueString:(NSString *)string withAccessValueType:(MASAccessValueType)type;
+- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey;
+
+
+
+/**
+ Store NSString of access value into keychain
+
+ @param string NSString to store into keychain
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return BOOL result of operation
+ */
+- (BOOL)setAccessValueString:(NSString *)string storageKey:(NSString *)storageKey error:(NSError **)error;
 
 
 
 /**
  *  Retrieve NSString of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSString of the access data by the specified value key
  */
-- (NSString *)getAccessValueStringWithType:(MASAccessValueType)type;
+- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey;
+
+
+
+/**
+ Retrieve NSString of access value from keychain
+
+ @param storageKey NSString value for the data key
+ @param error NSError reference object to notify if there is any error while keychain operation
+ @return NSString of the access data by the specified value key
+ */
+- (NSString *)getAccessValueStringWithStorageKey:(NSString *)storageKey error:(NSError **)error;
 
 
 
@@ -226,20 +275,20 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  Store NSDictionary of access value into keychain
  *
  *  @param dictionary NSDictionary to store into keychain
- *  @param type       MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  */
-- (void)setAccessValueDictionary:(NSDictionary *)dictionary withAccessValueType:(MASAccessValueType)type;
+- (BOOL)setAccessValueDictionary:(NSDictionary *)dictionary storageKey:(NSString *)storageKey;
 
 
 
 /**
  *  Retrieve NSDictionary of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSDictionary of the access data by the specified value key
  */
-- (NSDictionary *)getAccessValueDictionaryWithType:(MASAccessValueType)type;
+- (NSDictionary *)getAccessValueDictionaryWithStorageKey:(NSString *)storageKey;
 
 
 
@@ -247,20 +296,20 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  Store NSNumber of access value into keychain
  *
  *  @param number NSNumber to store into keychain
- *  @param type   MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  */
-- (void)setAccessValueNumber:(NSNumber *)number withAccessValueType:(MASAccessValueType)type;
+- (BOOL)setAccessValueNumber:(NSNumber *)number storageKey:(NSString *)storageKey;
 
 
 
 /**
  *  Retrieve NSNumber of access value from keychain
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return NSNumber of the access data by the specified value key
  */
-- (NSNumber *)getAccessValueNumberWithType:(MASAccessValueType)type;
+- (NSNumber *)getAccessValueNumberWithStorageKey:(NSString *)storageKey;
 
 
 
@@ -272,9 +321,9 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  Other access type value will not be stored.
  *
  *  @param cryptoKey SecKeyRef to store into keychain
- *  @param type      MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  */
-- (void)setAccessValueCryptoKey:(SecKeyRef)cryptoKey withAccessValueType:(MASAccessValueType)type;
+- (void)setAccessValueCryptoKey:(SecKeyRef)cryptoKey storageKey:(NSString *)storageKey;
 
 
 
@@ -285,12 +334,27 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  *  MASAccessValueTypePublicKey and MASAccessValueTypePrivateKey.
  *  Other access type value will not be retrieved.
  *
- *  @param type MASAccessValueType enum value for the value key
+ *  @param storageKey NSString value for the data key
  *
  *  @return SecKeyRef of the access data by the specified value key
  */
-- (SecKeyRef)getAccessValueCryptoKeyWithType:(MASAccessValueType)type;
+- (SecKeyRef)getAccessValueCryptoKeyWithStorageKey:(NSString *)storageKey;
 
+
+
+/**
+ Deletes keychain storage item based on storage key
+
+ @param storageKey NSString of storage key.
+ @param error NSError object reference.
+ */
+- (void)deleteForStorageKey:(NSString *)storageKey error:(NSError **)error;
+
+
+
+///--------------------------------------
+/// @name Public
+///--------------------------------------
 
 # pragma mark - Public
 
@@ -304,6 +368,8 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  */
 + (BOOL)validateIdToken:(NSString *)idToken magIdentifier:(NSString *)magIdentifier error:(NSError *__autoreleasing *)error;
 
+
+
 /**
  *  Validate the expiration date in id_token
  *
@@ -314,6 +380,13 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
 + (BOOL)isIdTokenExpired:(NSString *)idToken error:(NSError *__autoreleasing *)error;
 
 
+
+/**
+ Extracts the expiration date from the SecCertificateRef
+
+ @param certificate SecCertificateRef of the certificate
+ @return NSDate of the expiration date from SecCertificateRef
+ */
 - (NSDate *)extractExpirationDateFromCertificate:(SecCertificateRef)certificate;
 
 
@@ -326,7 +399,6 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  @return BOOL of the result
  */
 - (BOOL)lockSession:(NSError * __autoreleasing *)error;
-
 
 
 
@@ -346,6 +418,16 @@ typedef NS_ENUM(NSInteger, MASAccessValueType)
  Remove all items in protected keychain storage with local authentications and set session lock status to default.
  */
 - (void)removeSessionLock;
+
+
+
+/**
+ Internal method to determine whether the key is reserved for internal system data or not
+
+ @param storageKey NSString of key to be stored
+ @return BOOL result of whether the key is reserved or not by internal system data
+ */
+- (BOOL)isInternalDataForStorageKey:(NSString *)storageKey;
 
 
 

@@ -174,13 +174,17 @@
 # pragma mark - Security Configuration
 
 /**
- Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object
+ Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object.
 
+ 
+ @remark MASSecurityConfiguration must have valid host in NSURL object with port number (port number is mandatory), at least one pinning information (either certificates, or public key hashes), or trust public PKI.  If public PKI is not trusted, and no pinning information is provided, it will fail to store the security configuration object, and eventually fail on evaluating SSL for requests.
  @warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASSecurityConfiguration object will be overwritten. If primary gateway's security configuration has to be modified, ensure to set security configuration after SDK initialization.
- @param securityConfiguration MASSecurityConfiguration object with host, and security measure configuration values.
- */
-+ (void)setSecurityConfiguration:(MASSecurityConfiguration *_Nonnull)securityConfiguration;
 
+ @param securityConfiguration MASSecurityConfiguration object with host, and security measure configuration values
+ @param error NSError object reference to notify any error occurred while validating MASSecurityConfiguration
+ @return YES if security configuration was successfully set
+ */
++ (BOOL)setSecurityConfiguration:(MASSecurityConfiguration *_Nonnull)securityConfiguration error:(NSError *__nullable __autoreleasing *__nullable)error;
 
 
 
@@ -352,5 +356,20 @@
 
 + (NSError *_Nullable)validateJSONConfiguration:(NSDictionary *_Nonnull)configuration;
 
+
+
+///--------------------------------------
+/// @name Deprecated
+///--------------------------------------
+
+# pragma mark - Deprecated
+
+/**
+ Sets security measure for SSL pinning, and SSL validation for specified host in MASSecurityConfiguration object
+ 
+ @warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASSecurityConfiguration object will be overwritten. If primary gateway's security configuration has to be modified, ensure to set security configuration after SDK initialization.
+ @param securityConfiguration MASSecurityConfiguration object with host, and security measure configuration values.
+ */
++ (void)setSecurityConfiguration:(MASSecurityConfiguration *_Nonnull)securityConfiguration DEPRECATED_MSG_ATTRIBUTE("[MASConfiguration setSecurityConfiguration:] is deprecated.  Use [MASConfiguration setSecurityConfiguration:error:] instead for better handling of error cases.");
 
 @end

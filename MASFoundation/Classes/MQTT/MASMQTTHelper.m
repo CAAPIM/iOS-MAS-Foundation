@@ -29,7 +29,7 @@
 
 + (NSString *)mqttClientId
 {
-    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
+    NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
     
     //MQTT ClientId is: <mag_identifier>::<mag_client_id>::<SCIM userID>
     NSString *clientId = [NSString stringWithFormat:@"%@::%@::%@",magIdentifier,[MASApplication currentApplication].identifier,[MASUser currentUser].objectId];

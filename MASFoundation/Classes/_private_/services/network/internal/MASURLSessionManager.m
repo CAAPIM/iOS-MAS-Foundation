@@ -17,6 +17,7 @@
 @property (readwrite, nonatomic, strong) NSURLSession *session;
 @property (readwrite, nonatomic, copy) MASURLSessionDidReceiveAuthenticationChallengeBlock sessionAuthChallengeBlock;
 @property (readwrite, nonatomic, copy) MASTaskDidReceiveAuthenticationChallengeBlock taskAuthChallengeBlock;
+@property (readwrite, nonatomic, copy) MASNetworkWillPerformHTTPRedirectionBlock httpRedirectionBlock;
 @property (readwrite, nonatomic, strong) NSOperationQueue *operationQueue;
 @property (readwrite, nonatomic, strong) NSOperationQueue *internalOperationQueue;
 @property (readwrite, nonatomic, strong) NSMutableArray *operations;
@@ -244,6 +245,12 @@
 }
 
 
+-(void)setSessionDidReceiveHTTPRedirectBlock : (NSURLRequest* (^)(NSURLSession *session,NSURLSessionTask *task, NSURLResponse* response,NSURLRequest *request))block
+{
+    self.httpRedirectionBlock = block;
+}
+
+
 # pragma mark - Private
 
 - (MASSessionTaskOperation *)taskOperationWithTask:(NSURLSessionTask *)task
@@ -359,6 +366,7 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *))completionHandler
 {
     MASSessionTaskOperation *operation = [self taskOperationWithTask:task];
+    operation.willPerformHTTPRedirectBlock = self.httpRedirectionBlock;
     
     if ([operation respondsToSelector:@selector(URLSession:task:willPerformHTTPRedirection:newRequest:completionHandler:)])
     {
