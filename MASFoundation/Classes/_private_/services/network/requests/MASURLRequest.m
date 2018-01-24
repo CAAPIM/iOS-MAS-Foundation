@@ -162,7 +162,9 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
     //
     if ([valueToEscape isKindOfClass:[NSString class]])
     {
-        return [valueToEscape stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+        NSString *escape = @"!*'();:@&=+$,/?%#[] \"";
+        NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:escape] invertedSet];
+        return [valueToEscape stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
     }
     //
     //  Otherwise, just return the value
