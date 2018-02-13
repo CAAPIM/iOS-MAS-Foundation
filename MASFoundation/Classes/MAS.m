@@ -564,7 +564,12 @@
         //
         //  Extract URL parameters from enrolment URL
         //
-        NSMutableDictionary *urlParameters = [[url extractQueryParameters] mutableCopy];
+        NSMutableDictionary *urlParameters;
+        if([[url absoluteString] containsString:@"?"])
+        {
+            urlParameters = [[url extractQueryParameters] mutableCopy];
+        }
+        
         
         //
         //  If enrolment URL does not contain subjectKeyHash or client_id, SDK cannot proceed the enrollment process
