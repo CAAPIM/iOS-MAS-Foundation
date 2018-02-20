@@ -118,6 +118,7 @@
     }
     else {
         self.header = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
+        self.header = [self.header mutableCopy];
     }
 }
 
@@ -130,6 +131,7 @@
     }
     else {
         self.body = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
+        self.body = [self.body mutableCopy];
     }
 }
 
@@ -142,6 +144,7 @@
     }
     else {
         self.query = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
+        self.query = [self.query mutableCopy];
     }
 }
 
