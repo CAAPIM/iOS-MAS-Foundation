@@ -50,6 +50,15 @@ typedef void (^MASResponseInfoErrorBlock)(NSDictionary<NSString *, id> *_Nullabl
 
 
 /**
+ * A standard (NSHTTPURLResponse *response, id responseObject, NSError *error) block.
+ * The block will be executed when a request finishes the task unsuccessfully, or successfully.
+ * All of three arguments in the block can be null depends on the result of the request, 
+ * and response object should be casted to appropriate data type when it is received.
+ */
+typedef void (^MASResponseObjectErrorBlock)(NSHTTPURLResponse *_Nullable response, id _Nullable responseObject, NSError *_Nullable error);
+
+
+/**
  * The MASUser specific (MASUser *user, NSError *error) block.
  */
 typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nullable error);
@@ -279,6 +288,12 @@ static NSString *const _Nonnull MASOTPSuspensionTimeKey = @"MASOTPSuspensionTime
  * The NSString constant key for the header info in the response dictionary.
  */
 static NSString *const _Nonnull MASResponseInfoHeaderInfoKey = @"MASResponseInfoHeaderInfoKey";
+
+
+/**
+ * The NSString constant key for the NSHTTPURLResponse object in the response dictionary.
+ */
+static NSString *const _Nonnull MASNSHTTPURLResponseObjectKey = @"MASNSHTTPURLResponseObjectKey";
 
 
 /**
