@@ -1,10 +1,10 @@
 # Version 1.6.10
 
 ### Bug fixes
-- `MASMQTTClient` was unable to establish MQTT connection if the server presents a chain of certificates, and `msso_config.json` file only contains leaf certificate. Mobile SDK now properly establishes MQTT connection with leaf certificate only in the configuration file. [US436059]
-- iOS device with special or foreign characters in device name failed during device registration. Mobile SDK now uses device model instead to register the device. [DE331046]
-- Special characters in URL query parameters were not properly encoding the values.  Mobile SDK now properly encodes special characters in URL query parameters. [DE339566]
-- When `NSURL` without any URL query parameter was passed in `[MAS startWithURL:completion:]`, Mobile SDK caused crash.  Mobile SDK now properly evaluate `NSURL` and does not cause crash. [DE343807]
+- `MASMQTTClient` was unable to establish MQTT connection if the server presents a chain of certificates and the `msso_config.json` file contains only leaf certificate. The Mobile SDK now properly establishes MQTT connection with leaf certificate only in the configuration file. [US436059]
+- iOS device with special or foreign characters in the device name failed during device registration. The Mobile SDK now uses device model to register the device. [DE331046]
+- Special characters in the URL query parameters were not properly encoding the values. The Mobile SDK now properly encodes special characters in URL query parameters. [DE339566]
+- When `NSURL` without any URL query parameter was passed in `[MAS startWithURL:completion:]`, the Mobile SDK crashed.  The Mobile SDK now properly evaluates `NSURL` and does not crash. [DE343807]
 
 # Version 1.6.00
 
