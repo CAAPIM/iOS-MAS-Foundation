@@ -161,36 +161,4 @@
 
 
 
-# pragma mark - Deprecated
-
-/**
- Append parameter into the header of a request.
- 
- @param key NSString containing name/type of the parameter.
- @param value NSString containing value of the parameter.
- */
-- (void)setHeaderParameter:(NSString *_Nonnull)key value:(NSString *_Nonnull)value DEPRECATED_MSG_ATTRIBUTE("[MASRequestBuilder setHeaderParameter:] is deprecated as of MAS 1.7. Use [MASRequestBuilder setHeader:] instead.");
-
-
-
-/**
- Append parameter into the body of a request.
- 
- @param key NSString containing name/type of the parameter.
- @param value NSString containing value of the parameter.
- */
-- (void)setBodyParameter:(NSString *_Nonnull)key value:(NSString *_Nonnull)value DEPRECATED_MSG_ATTRIBUTE("[MASRequestBuilder setBodyParameter:] is deprecated as of MAS 1.7. Use [MASRequestBuilder setBody:] instead.");
-
-
-
-/**
- Append parameter into the URL of a request.
- 
- @param key NSString containing name/type of the parameter.
- @param value NSString containing value of the parameter.
- */
-- (void)setQueryParameter:(NSString *_Nonnull)key value:(NSString *_Nonnull)value DEPRECATED_MSG_ATTRIBUTE("[MASRequestBuilder setQueryParameter:] is deprecated as of MAS 1.7. Use [MASRequestBuilder setQuery:] instead.");
-
-
-
 @end
