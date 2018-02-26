@@ -6,6 +6,13 @@
 - Special characters in the URL query parameters were not properly encoding the values. The Mobile SDK now properly encodes special characters in URL query parameters. [DE339566]
 - When `NSURL` without any URL query parameter was passed in `[MAS startWithURL:completion:]`, the Mobile SDK crashed.  The Mobile SDK now properly evaluates `NSURL` and does not crash. [DE343807]
 
+### New features
+- `MASResponseObjectErrorBlock` is introduced to better handle response parsing. `MASResponseObjectErrorBlock` is used in alternative of `MASResponseInfoErrorBlock` where it used to return `NSDictionary` as an argument that contains both HTTP response headers, and response payload. `MASResponseObjectErrorBlock` has three arguments in the block: `(^MASResponseObjectErrorBlock)(NSHTTPURLResponse *response, id responseObject, NSError *error)` where you can use `NSHTTPURLResponse` to check HTTP status code, response headers, and response content type from the response.  You should perform proper typecasting for `responseObject` based on `Content-type` in response header.  `responseObject` can be either `nil`, `NSDictionary`, `NSXMLParser`, and/or `NSString`. [US461954] 
+
+### Deprecated methods
+- `+ (void)invoke:(MASRequest *)request completion:(MASResponseInfoErrorBlock)completion` has been completely deprecated and changed to `+ (void)invoke:(MASRequest *)request completion:(MASResponseObjectErrorBlock)completion` [US461954]
+- `[MASReqeustBuilder setHeaderParameter:value:]`, `[MASReqeustBuilder setBodyParameter:value:]`, and `[MASReqeustBuilder setQueryParameter:value:]` have been completely deprecated.  Use `MASRequestBuilder`'s `header`, `body`, and `query` `NSDictionary` properties directly to modify these parameters. [DE346442]
+
 # Version 1.6.00
 
 ### Bug fixes
