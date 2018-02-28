@@ -959,6 +959,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
    completion:(MASResponseInfoErrorBlock _Nullable)completion;
 
 
+
 /**
  *  Invoke the endpoint with the parameters defined in the MASRequest object
  *
@@ -975,10 +976,11 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  *
  *  @param request MASRequest An object containing all parameters to call the endpoint
  *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
- *  @param completion An MASResponseInfoErrorBlock (NSDictionary *responseInfo, NSError *error) that will
- *      receive the JSON response object or an NSError object if there is a failure.
+ *  @param completion An MASResponseObjectErrorBlock (NSHTTPURLResponse *response, id responseObject, NSError *error) that will
+ *      receive the NSHTTPURLResponse object, response object which needs to perform type casting based on the object type, and NSError object when error occurs.
  */
-+ (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseInfoErrorBlock)completion;
++ (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseObjectErrorBlock)completion;
+
 
 
 ///--------------------------------------
@@ -986,8 +988,6 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 ///--------------------------------------
 
 # pragma mark - JWT Signing
-
-
 
 /**
  Signs MASClaims object with default private key from device registration against primary gateway.
@@ -1001,7 +1001,6 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 
 
-
 /**
  Signs MASClaims object with custom private key in NSData format. Private key should be in NSData format and should have been signed using RS256 algorithm.
  Some of read-write claims, such as exp, content, and/or contentType, should properly be prepared.
@@ -1012,6 +1011,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  @return NSString of JWT token.
  */
 + (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error;
+
 
 
 #ifdef DEBUG
