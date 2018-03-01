@@ -110,40 +110,4 @@
 }
 
 
-- (void)setHeaderParameter:(NSString *)key value:(NSString *)value
-{
-    if(self.header)
-    {
-        [self.header setValue:value forKey:key];
-    }
-    else {
-        self.header = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
-    }
-}
-
-
-- (void)setBodyParameter:(NSString *)key value:(NSString *)value
-{
-    if(self.body)
-    {
-        [self.body setValue:value forKey:key];
-    }
-    else {
-        self.body = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
-    }
-}
-
-
-- (void)setQueryParameter:(NSString *)key value:(NSString *)value
-{
-    if(self.query)
-    {
-        [self.query setValue:value forKey:key];
-    }
-    else {
-        self.query = [[NSDictionary alloc] initWithObjectsAndKeys:value,key, nil];
-    }
-}
-
-
 @end

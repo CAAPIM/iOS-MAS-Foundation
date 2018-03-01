@@ -13,7 +13,7 @@
 
 #import "MASAuthValidationOperation.h"
 
-typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *_Nonnull session, NSURLSessionTask *_Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest *_Nonnull request);
+typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *session, NSURLSessionTask *task, NSURLResponse *response, NSURLRequest *request);
 
 @interface MASNetworkingService : MASService
 

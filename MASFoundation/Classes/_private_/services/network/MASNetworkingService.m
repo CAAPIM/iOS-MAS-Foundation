@@ -363,6 +363,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
         __block NSMutableDictionary *responseInfo = [NSMutableDictionary new];
         
+        //
+        // HTTP header info
+        //
         if (headerInfo)
         {
             [responseInfo setObject:headerInfo forKey:MASResponseInfoHeaderInfoKey];
@@ -375,6 +378,15 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         {
             [responseInfo setObject:responseObject forKey:MASResponseInfoBodyInfoKey];
         }
+        
+        //
+        // NSHTTPURLResponse object
+        //
+        if (httpResponse)
+        {
+            [responseInfo setObject:httpResponse forKey:MASNSHTTPURLResponseObjectKey];
+        }
+        
         
         NSString *magErrorCode = nil;
         
