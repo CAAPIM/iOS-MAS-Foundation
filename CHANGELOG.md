@@ -11,7 +11,7 @@
 
 ### Deprecated methods
 - `+ (void)invoke:(MASRequest *)request completion:(MASResponseInfoErrorBlock)completion` are deprecated immediately and replaced with `+ (void)invoke:(MASRequest *)request completion:(MASResponseObjectErrorBlock)completion` [US461954]
-- `[MASReqeustBuilder setHeaderParameter:value:]`, `[MASReqeustBuilder setBodyParameter:value:]`, and `[MASReqeustBuilder setQueryParameter:value:]` are deprecated immediately.  Instead, use `MASRequestBuilder`'s `header`, `body`, and `query` `NSDictionary` properties directly to modify these parameters. [DE346442]
+- `[MASRequestBuilder setHeaderParameter:value:]`, `[MASRequestBuilder setBodyParameter:value:]`, and `[MASRequestBuilder setQueryParameter:value:]` are deprecated immediately.  Instead, use `MASRequestBuilder`'s `header`, `body`, and `query` `NSDictionary` properties directly to modify these parameters. [DE346442]
 
 # Version 1.6.00
 
