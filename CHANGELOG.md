@@ -1,3 +1,18 @@
+# Version 1.6.10
+
+### Bug fixes
+- `MASMQTTClient` was unable to establish MQTT connection if the server presents a chain of certificates and the `msso_config.json` file contains only leaf certificate. The Mobile SDK now properly establishes MQTT connection with leaf certificate only in the configuration file. [US436059]
+- iOS device with special or foreign characters in the device name failed during device registration. The Mobile SDK now uses device model to register the device. [DE331046]
+- Special characters in the URL query parameters were not properly encoding the values. The Mobile SDK now properly encodes special characters in URL query parameters. [DE339566]
+- When `NSURL` without any URL query parameter was passed in `[MAS startWithURL:completion:]`, the Mobile SDK crashed.  The Mobile SDK now properly evaluates `NSURL` and does not crash. [DE343807]
+
+### New features
+- `MASResponseObjectErrorBlock` is a new method that improves response parsing. `MASResponseObjectErrorBlock` replaces the existing `MASResponseInfoErrorBlock`, which returned `NSDictionary` as an argument that included HTTP response headers, and response payload. `MASResponseObjectErrorBlock` has three arguments in the block: `(^MASResponseObjectErrorBlock)(NSHTTPURLResponse *response, id responseObject, NSError *error)` where `NSHTTPURLResponse` checks HTTP status code, response headers, and response content type from the response.  You should perform proper typecasting for `responseObject` based on `Content-type` in the response header.  `responseObject` can either be `nil`, `NSDictionary`, `NSXMLParser`, and/or `NSString`. [US461954] 
+
+### Deprecated methods
+- `+ (void)invoke:(MASRequest *)request completion:(MASResponseInfoErrorBlock)completion` are deprecated immediately and replaced with `+ (void)invoke:(MASRequest *)request completion:(MASResponseObjectErrorBlock)completion` [US461954]
+- `[MASRequestBuilder setHeaderParameter:value:]`, `[MASRequestBuilder setBodyParameter:value:]`, and `[MASRequestBuilder setQueryParameter:value:]` are deprecated immediately.  Instead, use `MASRequestBuilder`'s `header`, `body`, and `query` `NSDictionary` properties directly to modify these parameters. [DE346442]
+
 # Version 1.6.00
 
 ### Bug fixes
