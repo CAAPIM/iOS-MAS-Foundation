@@ -122,7 +122,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     _currentApplication = [MASApplication instanceFromStorage];
     
-    if(!_currentApplication)
+    if (!_currentApplication)
     {
         _currentApplication = [[MASApplication alloc] initWithConfiguration];
     }
@@ -132,7 +132,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // then initialize with default configuration
     //
     _currentDevice = [MASDevice instanceFromStorage];
-    if(!_currentDevice)
+    if (!_currentDevice)
     {
         _currentDevice = [[MASDevice alloc] initWithConfiguration];
     }
@@ -157,7 +157,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     
     NSData *data = [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] dataForKey:[MASApplication.class description]];
     
-    if(data)
+    if (data)
     {
         keychainApplication = (MASApplication *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
@@ -184,7 +184,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // If the current providers exists
     //
-    if(self.currentProviders)
+    if (self.currentProviders)
     {
         [self.currentProviders reset];
         _currentProviders = nil;
@@ -193,7 +193,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // If the current user exists
     //
-    if(self.currentUser)
+    if (self.currentUser)
     {
         [self.currentUser reset];
         _currentUser = nil;
@@ -202,7 +202,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // If the current device exists
     //
-    if(self.currentDevice)
+    if (self.currentDevice)
     {
         [self.currentDevice reset];
         _currentDevice = nil;
@@ -211,7 +211,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // If the current application exists
     //
-    if(self.currentApplication)
+    if (self.currentApplication)
     {
         [self.currentApplication reset];
         _currentApplication = nil;
@@ -242,13 +242,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // If attempting to register a second time while there is a current applicaton record
     // with valid credentials stop here
     //
-    if(self.currentApplication && ![self.currentApplication isExpired])
+    if (self.currentApplication && ![self.currentApplication isExpired])
     {
         //
         // Notify
         //
-        if(completion) completion(YES, nil);
-        
+        if (completion)
+        {
+            completion(YES, nil);
+        }
         return;
     }
     
@@ -283,8 +285,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         //
         // Notify
         //
-        if(completion) completion(YES, nil);
-        
+        if (completion)
+        {
+            completion(YES, nil);
+        }
         return;
     }
     
@@ -305,72 +309,85 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     
     // Client Authorization
     NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    if (clientAuthorization)
+    {
+        headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
+    }
     
     // DeviceId
     NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    if(deviceId) headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
+    if (deviceId)
+    {
+        headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
+    }
     
     //
     // Parameters
     //
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
 
-    if(clientId) parameterInfo[MASClientKeyRequestResponseKey] = clientId;
+    if (clientId)
+    {
+        parameterInfo[MASClientKeyRequestResponseKey] = clientId;
+    }
     
     // Nonce
     NSString *nonce = [NSString stringWithFormat:@"%d", (arc4random() % 10000)];
-    if(nonce) parameterInfo[MASNonceRequestResponseKey] = nonce;
+    if (nonce)
+    {
+        parameterInfo[MASNonceRequestResponseKey] = nonce;
+    }
     
     //
     // Trigger the request
     //
     __block MASModelService *blockSelf = self;
+    __block MASCompletionErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeWwwFormUrlEncoded
-        responseType:MASRequestResponseTypeJson
-     
-        //
-        // Handle the response
-        //
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // If error stop here
-            //
-            if(error)
-            {
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASApplicationDidFailToRegisterNotification object:blockSelf];
-            
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-
-                return;
-            }
-     
-            //
-            // Updated with latest application info
-            //
-            [blockSelf.currentApplication saveWithUpdatedInfo:responseInfo];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASApplicationDidRegisterNotification object:blockSelf];
-    
-            //
-            // Notify
-            //
-            if(completion) completion(YES, nil);
-        }
-    ];
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                    responseType:MASRequestResponseTypeJson
+                                      completion:^(NSDictionary *responseInfo, NSError *error) {
+                                          //
+                                          // If error stop here
+                                          //
+                                          if (error)
+                                          {
+                                              //
+                                              // Post the notification
+                                              //
+                                              [[NSNotificationCenter defaultCenter] postNotificationName:MASApplicationDidFailToRegisterNotification object:blockSelf];
+                                              
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                              }
+                                              
+                                              return;
+                                          }
+                                          
+                                          //
+                                          // Updated with latest application info
+                                          //
+                                          [blockSelf.currentApplication saveWithUpdatedInfo:responseInfo];
+                                          
+                                          //
+                                          // Post the notification
+                                          //
+                                          [[NSNotificationCenter defaultCenter] postNotificationName:MASApplicationDidRegisterNotification object:blockSelf];
+                                          
+                                          //
+                                          // Notify
+                                          //
+                                          if (blockCompletion)
+                                          {
+                                              blockCompletion(YES, nil);
+                                          }
+                                      }];
 }
 
 
@@ -382,12 +399,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked || _isBrowserBasedAuthentication_)
     {
-        
         //
         // Notify
         //
-        if (completion) completion(nil, nil);
-        
+        if (completion)
+        {
+            completion(nil, nil);
+        }
         return;
     }
     
@@ -480,51 +498,58 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Note that security credentials are added automatically by this method
     //
     __block MASModelService *blockSelf = self;
+    __block MASObjectResponseErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] getFrom:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeWwwFormUrlEncoded
-        responseType:MASRequestResponseTypeJson
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Notify
-                //
-                if(completion) completion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
-            
-            //
-            // Retrieve the body info
-            //
-            NSDictionary *bodyInfo = responseInfo[MASResponseInfoBodyInfoKey];
-       
-            if (bodyInfo)
-            {
-                //
-                // Instantiate the new list of authentication providers
-                //
-                blockSelf.currentProviders = [[MASAuthenticationProviders alloc] initWithInfo:bodyInfo];
-                
-                //
-                // Notify
-                //
-                if(completion) completion(blockSelf.currentProviders, nil);
-            }
-            else {
-                //
-                // Notify
-                //
-                if(completion) completion(nil, nil);
-            }
-        }
-    ];
+                                   withParameters:parameterInfo
+                                       andHeaders:headerInfo
+                                      requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                     responseType:MASRequestResponseTypeJson
+                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+                                           //
+                                           // Detect if error, if so stop here
+                                           //
+                                           if(error)
+                                           {
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   blockCompletion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                               }
+                                               return;
+                                           }
+                                           
+                                           //
+                                           // Retrieve the body info
+                                           //
+                                           NSDictionary *bodyInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                           
+                                           if (bodyInfo)
+                                           {
+                                               //
+                                               // Instantiate the new list of authentication providers
+                                               //
+                                               blockSelf.currentProviders = [[MASAuthenticationProviders alloc] initWithInfo:bodyInfo];
+                                               
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   blockCompletion(blockSelf.currentProviders, nil);
+                                               }
+                                           }
+                                           else {
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   blockCompletion(nil, nil);
+                                               }
+                                           }
+                                       }];
 }
 
 
@@ -557,51 +582,58 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Note that security credentials are added automatically by this method
     //
+    __block MASObjectsResponseErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] getFrom:endPoint
-        withParameters:nil
-        andHeaders:headerInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Notify
-                //
-                if(completion) completion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
-            
-            //
-            // Retrieve the body info
-            //
-            NSDictionary *bodyInfo = responseInfo[MASResponseInfoBodyInfoKey];
-            
-            //
-            // Retrieve the enterprise apps
-            //
-            NSArray *appsInfo = bodyInfo[MASEnterpriseAppsKey];
-            
-            NSMutableArray *applications = [NSMutableArray new];
-            MASApplication *application;
-            for(NSDictionary *appInfo in appsInfo)
-            {
-                //
-                // Create a specific enterprise app and store it
-                //
-                application = [[MASApplication alloc] initWithEnterpriseInfo:appInfo[MASEnterpriseAppKey]];
-                if(application) [applications addObject:application];
-            }
-            
-            //
-            // Notify
-            //
-            if(completion) completion(applications, nil);
-        }
-    ];
+                                   withParameters:nil
+                                       andHeaders:headerInfo
+                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+                                           //
+                                           // Detect if error, if so stop here
+                                           //
+                                           if (error)
+                                           {
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   blockCompletion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                               }
+                                               return;
+                                           }
+                                           
+                                           //
+                                           // Retrieve the body info
+                                           //
+                                           NSDictionary *bodyInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                           
+                                           //
+                                           // Retrieve the enterprise apps
+                                           //
+                                           NSArray *appsInfo = bodyInfo[MASEnterpriseAppsKey];
+                                           
+                                           NSMutableArray *applications = [NSMutableArray new];
+                                           MASApplication *application;
+                                           for (NSDictionary *appInfo in appsInfo)
+                                           {
+                                               //
+                                               // Create a specific enterprise app and store it
+                                               //
+                                               application = [[MASApplication alloc] initWithEnterpriseInfo:appInfo[MASEnterpriseAppKey]];
+                                               if (application)
+                                               {
+                                                   [applications addObject:application];
+                                               }
+                                           }
+                                           
+                                           //
+                                           // Notify
+                                           //
+                                           if (blockCompletion)
+                                           {
+                                               blockCompletion(applications, nil);
+                                           }
+                                       }];
 }
 
 
@@ -615,7 +647,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Detect type and respond appropriately
     //
-    switch(grantFlow)
+    switch (grantFlow)
     {
         //
         // Client Credentials
@@ -646,7 +678,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Detect the type and respond appropriately
     //
-    switch(grantFlow)
+    switch (grantFlow)
     {
         //
         // Client Credentials Registration
@@ -671,12 +703,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Detect if there is a device registered, if not stop here
     //
-    if(![self.currentDevice isRegistered])
+    if (![self.currentDevice isRegistered])
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
         
         return;
     }
@@ -707,15 +742,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Trigger the request
     //
+    __block MASCompletionErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] deleteFrom:endPoint
-        withParameters:nil
-        andHeaders:mutableHeaderInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
+                                      withParameters:nil
+                                          andHeaders:mutableHeaderInfo
+                                          completion:^(NSDictionary *responseInfo, NSError *error) {
             //
             // Detect if error, if so stop here
             //
-            if(error)
+            if (error)
             {
                 //
                 // Post the did fail to deregister in cloud notification
@@ -725,8 +760,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 //
                 // Notify
                 //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-                
+                if (blockCompletion)
+                {
+                    blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                }
                 return;
             }
             
@@ -775,7 +812,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             //
             // Notify
             //
-            if(completion) completion(YES, nil);
+            if (blockCompletion)
+            {
+                blockCompletion(YES, nil);
+            }
         }
     ];
 }
@@ -801,8 +841,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         //
         // Notify
         //
-        if(completion) completion(YES, nil);
-        
+        if (completion)
+        {
+            completion(YES, nil);
+        }
         return;
     }
     
@@ -815,8 +857,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
-        
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceRegistrationAttemptedWithUnregisteredScope]);
+        }
         return;
     }
     
@@ -923,12 +967,12 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             //
             MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
             
-            if([serviceRegistry browserBasedLoginWillHandleAuthentication:authCredentialsBlock])
+            if ([serviceRegistry browserBasedLoginWillHandleAuthentication:authCredentialsBlock])
             {
                 return;
             }
             
-            if([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
+            if ([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
             {
                 return;
             }
@@ -977,7 +1021,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                     //
                     // Cancelled stop here
                     //
-                    if(cancel)
+                    if (cancel)
                     {
                         //
                         // Notify
@@ -1005,11 +1049,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                         
                         if (error)
                         {
-                            if (blockCompletion)
-                            {
-                                blockCompletion(NO, error);
-                            }
-                            
                             if (blockAuthCompletion)
                             {
                                 blockAuthCompletion(NO, error);
@@ -1040,11 +1079,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                     //
                                     // Notify
                                     //
-                                    if (blockCompletion)
-                                    {
-                                        blockCompletion(NO, error);
-                                    }
-                                    
                                     if (blockAuthCompletion)
                                     {
                                         blockAuthCompletion(NO, error);
@@ -1093,21 +1127,21 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 
                 __block MASAuthorizationCodeCredentialsBlock authorizationCodeCredentialsBlock;
                 __block MASModelService *blockSelf = self;
-                __block MASCompletionErrorBlock completionBlock = completion;
-                
                 
                 //
                 // Authorization Code Credentials Supported
                 //
-                if([[MASApplication currentApplication] isScopeTypeMssoRegisterSupported])
+                if ([[MASApplication currentApplication] isScopeTypeMssoRegisterSupported])
                 {
                     //
                     // Authorization Code Credentials Block
                     //
-                    authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock completion)
+                    authorizationCodeCredentialsBlock = ^(NSString *authorizationCode, BOOL cancel,  MASCompletionErrorBlock authCompletion)
                     {
                         DLog(@"\n\nAuthorization code credentials block called with code: %@ and cancel: %@\n\n",
                              authorizationCode, (cancel ? @"Yes" : @"No"));
+                        
+                        __block MASCompletionErrorBlock blockAuthCompletion = authCompletion;
                         
                         //
                         // Reset the authenticationProvider as the session id should have been used
@@ -1117,19 +1151,19 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                         //
                         // Cancelled stop here
                         //
-                        if(cancel)
+                        if (cancel)
                         {
                             //
                             // Notify
                             //
-                            if (completion)
+                            if (blockCompletion)
                             {
-                                completion(NO, [NSError errorLoginProcessCancelled]);
+                                blockCompletion(NO, [NSError errorLoginProcessCancelled]);
                             }
                             
-                            if (completionBlock)
+                            if (blockAuthCompletion)
                             {
-                                completionBlock(NO, [NSError errorLoginProcessCancelled]);
+                                blockAuthCompletion(NO, [NSError errorLoginProcessCancelled]);
                             }
                             
                             return;
@@ -1149,14 +1183,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                             //
                             // Error
                             //
-                            if(error)
+                            if (error)
                             {
                                 //
                                 // Notify
                                 //
-                                if (completionBlock) completionBlock(NO, error);
-                                
-                                if (completion) completion(NO, error);
+                                if (blockAuthCompletion)
+                                {
+                                    blockAuthCompletion(NO, error);
+                                }
                                 
                                 return;
                             }
@@ -1164,9 +1199,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                             //
                             // Notify
                             //
-                            if(completionBlock) completionBlock(YES, nil);
+                            if (blockCompletion)
+                            {
+                                blockCompletion(YES, nil);
+                            }
                             
-                            if (completion) completion(YES, nil);
+                            if (blockAuthCompletion)
+                            {
+                                blockAuthCompletion(YES, nil);
+                            }
                         }];
                     };
                 }
@@ -1174,7 +1215,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 //
                 // Else notify block if available
                 //
-                if(_userLoginBlock_)
+                if (_userLoginBlock_)
                 {
                     //
                     // Do this is the main queue since the reciever is almost certainly a UI component.
@@ -1206,19 +1247,22 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         }
         case MASGrantFlowClientCredentials:
         {
-            __block MASCompletionErrorBlock completionBlock = completion;
+            __block MASCompletionErrorBlock blockCompletion = completion;
             MASAuthCredentialsClientCredentials *clientAuthCredentials = [MASAuthCredentialsClientCredentials initClientCredentials];
             [self registerDeviceWithAuthCredentials:clientAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                 
                 //
                 // Error
                 //
-                if(error)
+                if (error)
                 {
                     //
                     // Notify
                     //
-                    if (completionBlock) completionBlock(NO, error);
+                    if (blockCompletion)
+                    {
+                        blockCompletion(NO, error);
+                    }
                     
                     return;
                 }
@@ -1226,7 +1270,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 //
                 // Notify
                 //
-                if(completionBlock) completionBlock(YES, nil);
+                if (blockCompletion)
+                {
+                    blockCompletion(YES, nil);
+                }
             }];
         
             break;
@@ -1275,6 +1322,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Trigger the request
     //
     __block MASModelService *blockSelf = self;
+    __block MASCompletionErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] putTo:endPoint
                                  withParameters:nil
                                      andHeaders:headerInfo
@@ -1283,7 +1331,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                          //
                                          // Detect if error, if so stop here
                                          //
-                                         if(error)
+                                         if (error)
                                          {
                                              //
                                              // Parse the error object
@@ -1306,14 +1354,14 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                                  //
                                                  // Trigger validation process to re-register the device for currently set flow
                                                  //
-                                                 [blockSelf validateCurrentUserSession:completion];
+                                                 [blockSelf validateCurrentUserSession:blockCompletion];
                                              }
                                              //
                                              // If the error is local domain, return the error
                                              //
-                                             else if (completion)
+                                             else if (blockCompletion)
                                              {
-                                                 completion(NO, requestError);
+                                                 blockCompletion(NO, requestError);
                                              }
                                              
                                              //
@@ -1355,8 +1403,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                          //
                                          // Notify
                                          //
-                                         if(completion) completion((self.currentDevice.isRegistered), nil);
-
+                                         if (blockCompletion)
+                                         {
+                                             blockCompletion((self.currentDevice.isRegistered), nil);
+                                         }
                                      }];
 }
 
@@ -1378,15 +1428,16 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Note that security credentials are added automatically by this method
     //
+    __block MASObjectsResponseErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] getFrom:endPoint
-        withParameters:nil
-        andHeaders:headerInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
+                                   withParameters:nil
+                                       andHeaders:headerInfo
+                                       completion:^(NSDictionary *responseInfo, NSError *error)
         {
             //
             // Detect if error, if so stop here
             //
-            if(error)
+            if (error)
             {
                 //DLog(@"Error detected attempting to request registration of the device: %@",
                 //    [error localizedDescription]);
@@ -1394,7 +1445,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 //
                 // Notify
                 //
-                if(completion) completion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                if (blockCompletion)
+                {
+                    blockCompletion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                }
             
                 return;
             }
@@ -1406,12 +1460,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             
             NSMutableArray *devices = [NSMutableArray new];
             
-            // todo:
-            
             //
             // Notify
             //
-            if(completion) completion(devices, nil);
+            if (blockCompletion)
+            {
+                blockCompletion(devices, nil);
+            }
         }
     ];
 }
@@ -1425,13 +1480,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Detect if device is already logged out (which is basically checking if id_token exists), if so stop here
     //
-    if(![accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
+    if (![accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorDeviceNotLoggedIn]);
-        
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotLoggedIn]);
+        }
         return;
     }
     
@@ -1452,7 +1509,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     
     // Client Authorization
     NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    if (clientAuthorization)
+    {
+        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    }
     
     //
     // Parameters
@@ -1480,63 +1540,68 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Trigger the request
     //
     __block MASModelService *blockSelf = self;
+    __block MASCompletionErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] postTo:endPoint
                                   withParameters:parameterInfo
                                       andHeaders:headerInfo
                                      requestType:MASRequestResponseTypeWwwFormUrlEncoded
                                     responseType:MASRequestResponseTypeJson
-                                      completion:^(NSDictionary *responseInfo, NSError *error)
-     {
-         //
-         // Detect if error, if so stop here
-         //
-         if(error)
-         {
-             //DLog(@"Error detected attempting to request registration of the device: %@",
-             //    [error localizedDescription]);
-             
-             //
-             // Notify
-             //
-             if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-             
-             //
-             // Post the notification
-             //
-             [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
-             
-             return;
-         }
-         
-         //
-         // If clearLocal was YES, clear access_token, and refresh_token
-         //
-         if (clearLocal)
-         {
-             //
-             // Clear currentUser object upon log-out
-             //
-             [blockSelf clearCurrentUserForLogout];
-         }
-         
-         //
-         // Post the notification
-         //
-         [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
-         
-         //
-         // Set id_token and id_token_type to nil
-         //
-         [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
-         [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
-         
-         [[MASAccessService sharedService].currentAccessObj refresh];
-         //
-         // Notify
-         //
-         if(completion) completion(YES, nil);
-     }
-     ];
+                                      completion:^(NSDictionary *responseInfo, NSError *error) {
+                                          //
+                                          // Detect if error, if so stop here
+                                          //
+                                          if (error)
+                                          {
+                                              //DLog(@"Error detected attempting to request registration of the device: %@",
+                                              //    [error localizedDescription]);
+                                              
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                              }
+                                              
+                                              //
+                                              // Post the notification
+                                              //
+                                              [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+                                              
+                                              return;
+                                          }
+                                          
+                                          //
+                                          // If clearLocal was YES, clear access_token, and refresh_token
+                                          //
+                                          if (clearLocal)
+                                          {
+                                              //
+                                              // Clear currentUser object upon log-out
+                                              //
+                                              [blockSelf clearCurrentUserForLogout];
+                                          }
+                                          
+                                          //
+                                          // Post the notification
+                                          //
+                                          [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+                                          
+                                          //
+                                          // Set id_token and id_token_type to nil
+                                          //
+                                          [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+                                          [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
+                                          
+                                          [[MASAccessService sharedService].currentAccessObj refresh];
+                                          //
+                                          // Notify
+                                          //
+                                          if (blockCompletion)
+                                          {
+                                              blockCompletion(YES, nil);
+                                          }
+                                      }];
 }
 
 
@@ -1554,8 +1619,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         //
         // Notify
         //
-        if (completion) completion(YES, nil);
-        
+        if (completion)
+        {
+            completion(YES, nil);
+        }
         return;
     }
     
@@ -1584,7 +1651,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             // Refresh
             //
             [self loginAsRefreshTokenWithCompletion:completion];
-            
             return;
         }
     }
@@ -1666,7 +1732,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
     
-    
     __block MASAuthCredentialsBlock authCredentialsBlock = ^(MASAuthCredentials *authCredentials, BOOL cancel, MASCompletionErrorBlock authCompletion)
     {
         //
@@ -1731,12 +1796,12 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // If the UI handling framework is present and will handle this stop here
     //
     MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-    if([serviceRegistry browserBasedLoginWillHandleAuthentication:authCredentialsBlock])
+    if ([serviceRegistry browserBasedLoginWillHandleAuthentication:authCredentialsBlock])
     {
         return;
     }
     
-    if([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
+    if ([serviceRegistry uiServiceWillHandleWithAuthCredentialsBlock:authCredentialsBlock])
     {
         return;
     }
@@ -1755,7 +1820,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Else notify block if available
     //
-    else if(_userLoginBlock_)
+    else if (_userLoginBlock_)
     {
         
         //
@@ -1774,7 +1839,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             //
             // Cancelled stop here
             //
-            if(cancel)
+            if (cancel)
             {
                 //
                 // Notify
@@ -1796,6 +1861,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             // Attempt to log in the user with the credentials
             //
             __block MASAuthCredentialsPassword *authCredentials = [MASAuthCredentialsPassword initWithUsername:userName password:password];
+            __block MASCompletionErrorBlock blockAuthCompletion = completion;
             [blockSelf loginWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                 
                 //
@@ -1811,19 +1877,25 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                     //
                     // Notify
                     //
-                    if (blockCompletion) blockCompletion(NO, error);
-                    
-                    if (completion) completion(NO, error);
-                    
+                    if (blockAuthCompletion)
+                    {
+                        blockAuthCompletion(NO, error);
+                    }
                     return;
                 }
                 
                 //
                 // Notify
                 //
-                if(blockCompletion) blockCompletion(YES, nil);
+                if (blockCompletion)
+                {
+                    blockCompletion(YES, nil);
+                }
                 
-                if (completion) completion(YES, nil);
+                if (blockAuthCompletion)
+                {
+                    blockAuthCompletion(YES, nil);
+                }
             }];
         };
         
@@ -1865,6 +1937,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             // Attempt to log in the user with the authorization code
             //
             __block MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
+            __block MASCompletionErrorBlock blockAuthCompletion = completion;
             [blockSelf loginWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                 
                 //
@@ -1880,19 +1953,25 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                     //
                     // Notify
                     //
-                    if (blockCompletion) blockCompletion(NO, error);
-                    
-                    if (completion) completion(NO, error);
-                    
+                    if (blockAuthCompletion)
+                    {
+                        blockAuthCompletion(NO, error);
+                    }
                     return;
                 }
                 
                 //
                 // Notify
                 //
-                if(blockCompletion) blockCompletion(YES, nil);
+                if (blockCompletion)
+                {
+                    blockCompletion(YES, nil);
+                }
                 
-                if (completion) completion(YES, nil);
+                if (blockAuthCompletion)
+                {
+                    blockAuthCompletion(YES, nil);
+                }
             }];
         };
         
@@ -1932,26 +2011,30 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // The application must be registered else stop here
     //
-    if(![self.currentApplication isRegistered])
+    if (![self.currentApplication isRegistered])
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
-       
+        if (completion)
+        {
+            completion(NO, [NSError errorApplicationNotRegistered]);
+        }
         return;
     }
 
     //
     // The device must be registered else stop here
     //
-    if(![self.currentDevice isRegistered])
+    if (![self.currentDevice isRegistered])
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
-       
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
         return;
     }
 
@@ -1967,11 +2050,17 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     
     // Client Authorization with 'Authorization' header key
     NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    if (clientAuthorization)
+    {
+        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    }
     
     // MAG Identifier
     NSString *magIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
-    if(magIdentifier) headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
+    if (magIdentifier)
+    {
+        headerInfo[MASMagIdentifierRequestResponseKey] = magIdentifier;
+    }
     
     //
     // Parameters
@@ -2009,11 +2098,17 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
     }
     
-    if(scope) parameterInfo[MASScopeRequestResponseKey] = scope;
+    if (scope)
+    {
+        parameterInfo[MASScopeRequestResponseKey] = scope;
+    }
     
     // Refresh Token
     NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
-    if(refreshToken) parameterInfo[MASUserRefreshTokenRequestResponseKey] = refreshToken;
+    if (refreshToken)
+    {
+        parameterInfo[MASUserRefreshTokenRequestResponseKey] = refreshToken;
+    }
     
     // Grant Type
     parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeRefreshToken;
@@ -2023,94 +2118,90 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    
     [[MASNetworkingService sharedService] postTo:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        requestType:MASRequestResponseTypeWwwFormUrlEncoded
-        responseType:MASRequestResponseTypeJson
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
-                //
-                [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
-                [[MASAccessService sharedService].currentAccessObj refresh];
-                [blockSelf validateCurrentUserSession:completion];
-            
-                return;
-            }
-            
-            //
-            // Remove PKCE Code Verifier and state
-            //
-            [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
-            [[MASAccessService sharedService].currentAccessObj deletePKCEState];
-        
-            //
-            // Validate id_token when received from server.
-            //
-            NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
-            
-            if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
-                [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
-            {
-                NSError *idTokenValidationError = nil;
-                BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
-                                                          magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier]
-                                                                  error:&idTokenValidationError];
-                
-                if (!isIdTokenValid && idTokenValidationError)
-                {
-                    //
-                    // Post the notification
-                    //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
-                    
-                    if (blockCompletion)
-                    {
-                        blockCompletion(NO, idTokenValidationError);
-                        
-                        return;
-                    }
-                }
-            }
-            
-            //
-            // Update the current user
-            //
-            [_currentUser saveWithUpdatedInfo:responseInfo];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
-            
-            [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
-                
-                //
-                // Requesting additional userInfo upon successful authentication
-                // and do not depend on the result of userInfo call.
-                // This a workaround to fix other frameworks' dependency issue on userInfo.
-                // James Go @ April 4, 2016
-                //
-                
-                //
-                // Notify
-                //
-                if (blockCompletion)
-                {
-                    blockCompletion(YES, nil);
-                }
-            }];
-        }
-    ];
+                                  withParameters:parameterInfo
+                                      andHeaders:headerInfo
+                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                    responseType:MASRequestResponseTypeJson
+                                      completion:^(NSDictionary *responseInfo, NSError *error) {
+                                          //
+                                          // Detect if error, if so stop here
+                                          //
+                                          if (error)
+                                          {
+                                              //
+                                              // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
+                                              //
+                                              [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
+                                              [[MASAccessService sharedService].currentAccessObj refresh];
+                                              [blockSelf validateCurrentUserSession:completion];
+                                              
+                                              return;
+                                          }
+                                          
+                                          //
+                                          // Remove PKCE Code Verifier and state
+                                          //
+                                          [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];
+                                          [[MASAccessService sharedService].currentAccessObj deletePKCEState];
+                                          
+                                          //
+                                          // Validate id_token when received from server.
+                                          //
+                                          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                          
+                                          if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
+                                              [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
+                                              [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+                                          {
+                                              NSError *idTokenValidationError = nil;
+                                              BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
+                                                                                        magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier]
+                                                                                                error:&idTokenValidationError];
+                                              
+                                              if (!isIdTokenValid && idTokenValidationError)
+                                              {
+                                                  //
+                                                  // Post the notification
+                                                  //
+                                                  [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToAuthenticateNotification object:blockSelf];
+                                                  
+                                                  if (blockCompletion)
+                                                  {
+                                                      blockCompletion(NO, idTokenValidationError);
+                                                      return;
+                                                  }
+                                              }
+                                          }
+                                          
+                                          //
+                                          // Update the current user
+                                          //
+                                          [_currentUser saveWithUpdatedInfo:responseInfo];
+                                          
+                                          //
+                                          // Post the notification
+                                          //
+                                          [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
+                                          
+                                          [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
+                                              
+                                              //
+                                              // Requesting additional userInfo upon successful authentication
+                                              // and do not depend on the result of userInfo call.
+                                              // This a workaround to fix other frameworks' dependency issue on userInfo.
+                                              // James Go @ April 4, 2016
+                                              //
+                                              
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(YES, nil);
+                                              }
+                                          }];
+                                      }];
 }
 
 
@@ -2126,13 +2217,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // The application must be registered else stop here
     //
-    if(![MASApplication currentApplication].isRegistered)
+    if (![MASApplication currentApplication].isRegistered)
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
-       
+        if (completion)
+        {
+            completion(NO, [NSError errorApplicationNotRegistered]);
+        }
         return;
     }
     
@@ -2144,8 +2237,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
-       
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
         return;
     }
     
@@ -2157,8 +2252,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorUserNotAuthenticated]);
-       
+        if (completion)
+        {
+            completion(NO, [NSError errorUserNotAuthenticated]);
+        }
         return;
     }
     
@@ -2181,7 +2278,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Client Authorization
     //
     NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if(clientAuthorization) headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    if (clientAuthorization)
+    {
+        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    }
     
     //
     // Parameters
@@ -2193,51 +2293,58 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     
     // Access Token
     NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
-    if(accessToken) parameterInfo[MASTokenRequestResponseKey] = accessToken;
+    if (accessToken)
+    {
+        parameterInfo[MASTokenRequestResponseKey] = accessToken;
+    }
     
     //
     // Trigger the request
     //
     __block MASModelService *blockSelf = self;
+    __block MASCompletionErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] deleteFrom:endPoint
-        withParameters:parameterInfo
-        andHeaders:headerInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
-            
-                //
-                // Notify
-                //
-                if(completion) completion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
-        
-            //
-            // Clear currentUser object upon log-out
-            //
-            [blockSelf clearCurrentUserForLogout];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
-        
-            //
-            // Notify
-            //
-            if(completion) completion(YES, nil);
-        }
-    ];
+                                      withParameters:parameterInfo
+                                          andHeaders:headerInfo
+                                          completion:^(NSDictionary *responseInfo, NSError *error) {
+                                              //
+                                              // Detect if error, if so stop here
+                                              //
+                                              if (error)
+                                              {
+                                                  //
+                                                  // Post the notification
+                                                  //
+                                                  [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+                                                  
+                                                  //
+                                                  // Notify
+                                                  //
+                                                  if (blockCompletion)
+                                                  {
+                                                      blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                                  }
+                                                  return;
+                                              }
+                                              
+                                              //
+                                              // Clear currentUser object upon log-out
+                                              //
+                                              [blockSelf clearCurrentUserForLogout];
+                                              
+                                              //
+                                              // Post the notification
+                                              //
+                                              [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+                                              
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(YES, nil);
+                                              }
+                                          }];
 }
 
 
@@ -2253,39 +2360,45 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // The application must be registered else stop here
     //
-    if(![MASApplication currentApplication].isRegistered)
+    if (![MASApplication currentApplication].isRegistered)
     {
         //
         // Notify
         //
-        if(completion) completion(nil, [NSError errorApplicationNotRegistered]);
-       
+        if (completion)
+        {
+            completion(nil, [NSError errorApplicationNotRegistered]);
+        }
         return;
     }
     
     //
     // The device must be registered else stop here
     //
-    if(![MASDevice currentDevice].isRegistered)
+    if (![MASDevice currentDevice].isRegistered)
     {
         //
         // Notify
         //
-        if(completion) completion(nil, [NSError errorDeviceNotRegistered]);
-       
+        if (completion)
+        {
+            completion(nil, [NSError errorDeviceNotRegistered]);
+        }
         return;
     }
     
     //
     // The current user must be authenticated else stop here
     //
-    if(![MASApplication currentApplication].isAuthenticated)
+    if (![MASApplication currentApplication].isAuthenticated)
     {
         //
         // Notify
         //
-        if(completion) completion(nil, [NSError errorUserNotAuthenticated]);
-       
+        if (completion)
+        {
+            completion(nil, [NSError errorUserNotAuthenticated]);
+        }
         return;
     }
     
@@ -2303,48 +2416,49 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Trigger the request
     //
     __block MASModelService *blockSelf = self;
+    __block MASUserResponseErrorBlock blockCompletion = completion;
     [[MASNetworkingService sharedService] getFrom:endPoint
-        withParameters:nil
-        andHeaders:headerInfo
-        completion:^(NSDictionary *responseInfo, NSError *error)
-        {
-            //
-            // Detect if error, if so stop here
-            //
-            if(error)
-            {
-                //
-                // Post the notification
-                //
-                [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToUpdateInformationNotification object:blockSelf];
-            
-                //
-                // Notify
-                //
-                if(completion) completion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-            
-                return;
-            }
-        
-            //
-            // Update the current user
-            //
-            [blockSelf.currentUser saveWithUpdatedInfo:responseInfo];
-        
-            //
-            // Post the notification
-            //
-            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidUpdateInformationNotification object:blockSelf];
-        
-            //
-            // Notify
-            //
-            if (completion) {
-               
-                completion(self.currentUser, nil);
-            }
-        }
-    ];
+                                   withParameters:nil
+                                       andHeaders:headerInfo
+                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+                                           //
+                                           // Detect if error, if so stop here
+                                           //
+                                           if (error)
+                                           {
+                                               //
+                                               // Post the notification
+                                               //
+                                               [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToUpdateInformationNotification object:blockSelf];
+                                               
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   blockCompletion(nil, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                               }
+                                               return;
+                                           }
+                                           
+                                           //
+                                           // Update the current user
+                                           //
+                                           [blockSelf.currentUser saveWithUpdatedInfo:responseInfo];
+                                           
+                                           //
+                                           // Post the notification
+                                           //
+                                           [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidUpdateInformationNotification object:blockSelf];
+                                           
+                                           //
+                                           // Notify
+                                           //
+                                           if (completion)
+                                           {
+                                               completion(self.currentUser, nil);
+                                           }
+                                       }];
 }
 
 
@@ -2353,7 +2467,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // If the current user exists, clear out
     //
-    if(self.currentUser)
+    if (self.currentUser)
     {
         //
         // Set the logged off state
@@ -2384,12 +2498,14 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     // Go through registeration, authentication logic
     //
-    [self registerApplication:^(BOOL completed, NSError *error)
-    {
+    [self registerApplication:^(BOOL completed, NSError *error) {
         
         if (!completed || error != nil)
         {
-            if(originalCompletion) originalCompletion(NO, error);
+            if (originalCompletion)
+            {
+                originalCompletion(NO, error);
+            }
         }
         else {
             
@@ -2398,8 +2514,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 //
                 //  Check device registration status
                 //
-                [blockSelf registerDeviceWithCompletion:^(BOOL completed, NSError *error)
-                 {
+                [blockSelf registerDeviceWithCompletion:^(BOOL completed, NSError *error) {
                      //
                      // If the registration status is correct, and the device is currently locked, generate an error
                      //
@@ -2411,7 +2526,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                      
                      if (!completed || error != nil)
                      {
-                         if(originalCompletion) originalCompletion(NO, error);
+                         if (originalCompletion)
+                         {
+                             originalCompletion(NO, error);
+                         }
                      }
                      else {
                          
@@ -2424,7 +2542,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                              
                              if (error != nil)
                              {
-                                 if(originalCompletion) originalCompletion(NO, error);
+                                 if (originalCompletion)
+                                 {
+                                     originalCompletion(NO, error);
+                                 }
                              }
                              else {
                                  
@@ -2435,14 +2556,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                      
                                      if (!completed || error != nil)
                                      {
-                                         if(originalCompletion)
+                                         if (originalCompletion)
                                          {
                                              originalCompletion(completed, error);
                                          }
                                      }
                                      else {
-                                         
-                                         if(originalCompletion)
+                                         if (originalCompletion)
                                          {
                                              originalCompletion(completed, error);
                                          }
@@ -2463,7 +2583,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                 
                 if (error != nil)
                 {
-                    if(originalCompletion) originalCompletion(NO, error);
+                    if (originalCompletion)
+                    {
+                        originalCompletion(NO, error);
+                    }
                 }
                 else {
                     

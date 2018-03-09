@@ -35,17 +35,45 @@
 }
 
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+# pragma mark - NSNotification
+
+- (void)didReceiveAuthentication:(NSNotification *)notification
+{
+    if (self.isExecuting && !self.cancelled && !self.isFinished)
+    {
+        //
+        //  Based on MASUserDidAuthenticateNotification, as it was successful authentication, complete operation with success.
+        //
+        self.result = YES;
+        self.error = nil;
+        [self completeOperation];
+        [[MASNetworkingService sharedService] releaseOperationQueue];
+    }
+}
+
+
 # pragma mark - NSOperation methods
 
 - (void)start
 {
     if ([self isCancelled])
     {
-        self.finished = YES;
+        [self setFinished:YES];
         return;
     }
     
-    self.executing = YES;
+    //
+    //  Subscribe successful authentication notification.
+    //  This will resolve the issue where the MASUserAuthCredentialsBlock, and/or MASUserLoginBlock being on hold while explicit authentication goes through.
+    //
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveAuthentication:) name:MASUserDidAuthenticateNotification object:nil];
+    
+    [self setExecuting:YES];
     
     [self validateAuthSession];
 }
@@ -53,15 +81,14 @@
 
 - (void)cancel
 {
-
     [super cancel];
 }
 
 
 - (void)completeOperation
 {
-    self.executing = NO;
-    self.finished = YES;
+    [self setExecuting:NO];
+    [self setFinished:YES];
 }
 
 
@@ -95,7 +122,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p, executing: %@, cancelled: %@, finished: %@>", NSStringFromClass([self class]), self, self.executing ? @"YES":@"NO", [self isCancelled] ? @"YES":@"NO", self.isFinished ? @"YES":@"NO"];
+    return [NSString stringWithFormat:@"<%@: %p, executing: %@, cancelled: %@, finished: %@>", NSStringFromClass([self class]), self, self.isExecuting ? @"YES":@"NO", [self isCancelled] ? @"YES":@"NO", self.isFinished ? @"YES":@"NO"];
 }
 
 
@@ -106,12 +133,16 @@
     __block MASAuthValidationOperation *blockSelf = self;
     
     [[MASModelService sharedService] validateCurrentUserSession:^(BOOL completed, NSError * _Nullable error) {
-        [[MASNetworkingService sharedService] releaseOperationQueue];
-        
-        blockSelf.result = completed;
-        blockSelf.error = error;
-        
-        [blockSelf completeOperation];
+        //
+        //  Only if the operation is still being executed; as explicit authentication may have finished the operation
+        //
+        if (blockSelf.isExecuting && !blockSelf.cancelled && !blockSelf.isFinished)
+        {
+            blockSelf.result = completed;
+            blockSelf.error = error;
+            [blockSelf completeOperation];
+            [[MASNetworkingService sharedService] releaseOperationQueue];
+        }
     }];
 }
 
