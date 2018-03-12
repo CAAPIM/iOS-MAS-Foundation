@@ -1,5 +1,5 @@
 //
-//  MASConstants.h
+// MASConstants.h
 // MASFoundation
 //
 //  Copyright (c) 2016 CA. All rights reserved.
@@ -525,56 +525,56 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
  * The NSString constant for the MAS notification indicating that MAS has begun
  * starting all it's processes.
  */
-static NSString *const _Nonnull MASWillStartNotification = @"MASWillStartNotification";
+extern NSString *const _Nonnull MASWillStartNotification;
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has failed 
  * to successfully start it's processes.
  */
-static NSString *const _Nonnull MASDidFailToStartNotification = @"MASDidFailToStartNotification";
+extern NSString *const _Nonnull MASDidFailToStartNotification;
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has
  * successfully started it's processes.
  */
-static NSString *const _Nonnull MASDidStartNotification = @"MASDidStartNotification";
+extern NSString *const _Nonnull MASDidStartNotification;
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has begun
  * stopping all it's processes.
  */
-static NSString *const _Nonnull MASWillStopNotification = @"MASWillStopNotification";
+extern NSString *const _Nonnull MASWillStopNotification;
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has failed 
  * to successfully stop it's processes.
  */
-static NSString *const _Nonnull MASDidFailToStopNotification = @"MASDidFailToStopNotification";
+extern NSString *const _Nonnull MASDidFailToStopNotification;
 
 
 /**
  * The NSString constant for the MAS notification indicating that MAS has
  * successfully stopped it's processes.
  */
-static NSString *const _Nonnull MASDidStopNotification = @"MASDidStopNotification";
+extern NSString *const _Nonnull MASDidStopNotification;
 
 
 /**
  *  The NSString constant for the MAS notification indicating that MAS will
  *  switch the server.
  */
-static NSString *const _Nonnull MASWillSwitchGatewayServerNotification = @"MASWillSwitchGatewayServerNotification";
+extern NSString *const _Nonnull MASWillSwitchGatewayServerNotification;
 
 
 /**
  *  The NSString constant for the MAS notification indicating that MAS did finish to
  *  switch the server.
  */
-static NSString *const _Nonnull MASDidSwitchGatewayServerNotification = @"MASDidSwitchGatewayServerNotification";
+extern NSString *const _Nonnull MASDidSwitchGatewayServerNotification;
 
 
 
@@ -589,28 +589,28 @@ static NSString *const _Nonnull MASDidSwitchGatewayServerNotification = @"MASDid
  * The NSString constant for the device notification indicating that the MASDevice
  * has begun the process of deregistering the device.
  */
-static NSString *const _Nonnull MASDeviceWillDeregisterNotification = @"MASDeviceWillDeregisterNotification";
+extern NSString *const _Nonnull MASDeviceWillDeregisterNotification;
 
 
 /**
  * The NSString constant for the device notification indicating that the MASDevice
  * has failed to successfully deregister.
  */
-static NSString *const _Nonnull MASDeviceDidFailToDeregisterNotification = @"MASDeviceDidFailToDeregisterNotification";
+extern NSString *const _Nonnull MASDeviceDidFailToDeregisterNotification;
 
 
 /**
  * The NSString constant for the device notification indicating that the MASDevice
  * has successfully deregistered.
  */
-static NSString *const _Nonnull MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
+extern NSString *const _Nonnull MASDeviceDidDeregisterNotification;
 
 
 /**
  * The NSString constant for the device notification indicating that the MASDevice
  * has reset locally.
  */
-static NSString *const _Nonnull MASDeviceDidResetLocallyNotification = @"MASDeviceDidResetLocallyNotification";
+extern NSString *const _Nonnull MASDeviceDidResetLocallyNotification;
 
 
 
@@ -624,63 +624,63 @@ static NSString *const _Nonnull MASDeviceDidResetLocallyNotification = @"MASDevi
  * The NSString constant for the user notification indicating that a MASUser
  * will attempt to authenticate.
  */
-static NSString *const _Nonnull MASUserWillAuthenticateNotification = @"MASUserWillAuthenticateNotification";
+extern NSString *const _Nonnull MASUserWillAuthenticateNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has failed to authenticate.
  */
-static NSString *const _Nonnull MASUserDidFailToAuthenticateNotification = @"MASUserDidFailToAuthenticateNotification";
+extern NSString *const _Nonnull MASUserDidFailToAuthenticateNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has successfully authenticated.
  */
-static NSString *const _Nonnull MASUserDidAuthenticateNotification = @"MASUserDidAuthenticateNotification";
+extern NSString *const _Nonnull MASUserDidAuthenticateNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * will attempt to log out.
  */
-static NSString *const _Nonnull MASUserWillLogoutNotification = @"MASUserWillLogoutNotification";
+extern NSString *const _Nonnull MASUserWillLogoutNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has failed to log out.
  */
-static NSString *const _Nonnull MASUserDidFailToLogoutNotification = @"MASUserDidFailToLogoutNotification";
+extern NSString *const _Nonnull MASUserDidFailToLogoutNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has successfully logged out.
  */
-static NSString *const _Nonnull MASUserDidLogoutNotification = @"MASUserDidLogoutNotification";
+extern NSString *const _Nonnull MASUserDidLogoutNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * will attempt to update it's information.
  */
-static NSString *const _Nonnull MASUserWillUpdateInformationNotification = @"MASUserWillUpdateInformationNotification";
+extern NSString *const _Nonnull MASUserWillUpdateInformationNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has failed to update it's user information.
  */
-static NSString *const _Nonnull MASUserDidFailToUpdateInformationNotification = @"MASUserDidFailToUpdateInformationNotification";
+extern NSString *const _Nonnull MASUserDidFailToUpdateInformationNotification;
 
 
 /**
  * The NSString constant for the user notification indicating that a MASUser
  * has successfully updated it's information.
  */
-static NSString *const _Nonnull MASUserDidUpdateInformationNotification = @"MASUserDidUpdateInformationNotification";
+extern NSString *const _Nonnull MASUserDidUpdateInformationNotification;
 
 
 ///--------------------------------------
@@ -693,14 +693,14 @@ static NSString *const _Nonnull MASUserDidUpdateInformationNotification = @"MASU
  *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
  *  has received authorization code from social login
  */
-static NSString *const _Nonnull MASAuthorizationResponseDidReceiveAuthorizationCodeNotification = @"MASAuthorizationResponseDidReceiveAuthorizationCodeNotification";
+extern NSString *const _Nonnull MASAuthorizationResponseDidReceiveAuthorizationCodeNotification;
 
 
 /**
  *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
  *  has received an error from social login
  */
-static NSString *const _Nonnull MASAuthorizationResponseDidReceiveErrorNotification = @"MASAuthorizationResponseDidReceiveErrorNotification";
+extern NSString *const _Nonnull MASAuthorizationResponseDidReceiveErrorNotification;
 
 
 ///--------------------------------------
@@ -713,26 +713,26 @@ static NSString *const _Nonnull MASAuthorizationResponseDidReceiveErrorNotificat
  *  The NSString constant for the device notification indicating that the MASDevice
  *  has received authorization code from proximity login (BLE/QR Code)
  */
-static NSString *const _Nonnull MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification = @"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification";
+extern NSString *const _Nonnull MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification;
 
 
 /**
  *  The NSString constant for the device notification indicating that the MASDevice
  *  has received an error from proximity login (BLE/QR Code)
  */
-static NSString *const _Nonnull MASDeviceDidReceiveErrorFromProximityLoginNotification = @"MASDeviceDidReceiveErrorFromProximityLoginNotification";
+extern NSString *const _Nonnull MASDeviceDidReceiveErrorFromProximityLoginNotification;
 
 
 /**
  *  The NSString constant for the proximity login notification indicating that QR Code image did start displaying.
  */
-static NSString *const _Nonnull MASProximityLoginQRCodeDidStartDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStartDisplayingQRCodeImage";
+extern NSString *const _Nonnull MASProximityLoginQRCodeDidStartDisplayingQRCodeImage;
 
 
 /**
  *  The NSString constant for the proximity login notification indicating that QR Code image did stop displaying.
  */
-static NSString *const _Nonnull MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStopDisplayingQRCodeImage";
+extern NSString *const _Nonnull MASProximityLoginQRCodeDidStopDisplayingQRCodeImage;
 
 
 ///--------------------------------------
@@ -797,7 +797,7 @@ typedef void (^MASGatewayMonitorStatusBlock)(MASGatewayMonitoringStatus status);
  * The NSString constant for the gateway monitor notification indicating that the monitor status
  * has updated to a new value.
  */
-static NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification = @"MASGatewayMonitorStatusUpdateNotification";
+extern NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification;
 
 
 /**
