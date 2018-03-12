@@ -318,20 +318,19 @@ static NSString *const _Nonnull MASResponseInfoBodyInfoKey = @"MASResponseInfoBo
 /**
  * The NSString error domain used by all MAS server related Foundation level NSErrors.
  */
-static NSString *const _Nonnull MASFoundationErrorDomain = @"com.ca.MASFoundation:ErrorDomain";
+extern NSString *const _Nonnull MASFoundationErrorDomain;
 
 
 /**
  *  The NSString error domain used by all MAS local level NSErrors.
  */
-static NSString *const _Nonnull MASFoundationErrorDomainLocal = @"com.ca.MASFoundation.localError:ErrorDomain";
-
+extern NSString *const _Nonnull MASFoundationErrorDomainLocal;
 
 
 /**
  *  The NSString error domain used by all target API level NSErrors.
  */
-static NSString *const _Nonnull MASFoundationErrorDomainTargetAPI = @"com.ca.MASFoundation.targetAPI:ErrorDomain";
+extern NSString *const _Nonnull MASFoundationErrorDomainTargetAPI;
 
 
 /**
