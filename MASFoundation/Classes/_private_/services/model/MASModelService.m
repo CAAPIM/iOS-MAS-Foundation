@@ -748,11 +748,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             [[MASAccessService sharedService] clearShared];
             
             //
-            // MASFiles
-            //
-            [[MASSecurityService sharedService] removeAllFiles];
-            
-            //
             // re-establish URL session
             //
             [[MASNetworkingService sharedService] establishURLSession];
@@ -1301,7 +1296,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                                  //
                                                  [[MASAccessService sharedService] clearLocal];
                                                  [[MASAccessService sharedService] clearShared];
-                                                 [[MASSecurityService sharedService] removeAllFiles];
                                                  
                                                  //
                                                  // Trigger validation process to re-register the device for currently set flow
@@ -1330,12 +1324,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                          [[MASAccessService sharedService] setAccessValueData:nil storageKey:MASKeychainStorageKeyPublicCertificateData];
                                          [[MASAccessService sharedService] setAccessValueCertificate:nil storageKey:MASKeychainStorageKeySignedPublicCertificate];
                                          [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
-                                         
-                                         //
-                                         // Remove device's client MASFile for re-generation
-                                         //
-                                         MASFile *deviceClientCert = [[MASSecurityService sharedService] getDeviceClientCertificate];
-                                         [MASFile removeItemAtFilePath:[deviceClientCert filePath]];
                                          
                                          //
                                          // Updated with latest info

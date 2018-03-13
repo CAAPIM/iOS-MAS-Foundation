@@ -52,49 +52,6 @@
     NSString *header = [NSString stringWithFormat:@"(%@)", [self class]];
     NSMutableString *mutableCopy = [[NSMutableString alloc] initWithString:header];
     
-    BOOL filesFound = NO;
-    
-    //
-    // ServerCertificate
-    //
-    MASFile *file = [[MASSecurityService sharedService] getServerCertificate]; //[self findFileWithName:MASCertificate];
-    if(file)
-    {
-        filesFound = YES;
-        [mutableCopy appendString:@"\n\n    "];
-        [mutableCopy appendString:[file debugDescription]];
-    }
-    
-    //
-    // SignedCertificate
-    //
-    file = [[MASSecurityService sharedService] getDeviceClientCertificate]; //[self findFileWithName:MASSignedCertificate];
-    if(file)
-    {
-        filesFound = YES;
-        [mutableCopy appendString:@"\n\n    "];
-        [mutableCopy appendString:[file debugDescription]];
-    }
-    
-    //
-    // Private Key
-    //
-    file = [[MASSecurityService sharedService] getPrivateKey]; //[self findFileWithName:MASKey];
-    if(file)
-    {
-        filesFound = YES;
-        [mutableCopy appendString:@"\n\n    "];
-        [mutableCopy appendString:[file debugDescription]];
-    }
-    
-    //
-    // If no files were found
-    //
-    if(!filesFound)
-    {
-        [mutableCopy appendString:@"\n\n    No files found"];
-    }
-    
     return mutableCopy;
 }
 
