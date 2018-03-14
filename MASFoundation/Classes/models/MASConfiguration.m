@@ -304,7 +304,7 @@ static float _systemVersionNumber_;
         
         //storage-path
         NSString *storagePathInfo = masInfo[MASStoragePathEndpoint];
-        if (scimPathInfo)
+        if (storagePathInfo)
         {
             [_endpointKeysToPaths addEntriesFromDictionary:@{MASStoragePathEndpoint : storagePathInfo}];
         }
