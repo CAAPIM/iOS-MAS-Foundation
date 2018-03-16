@@ -859,7 +859,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                         return;
                     }
                     
-                    if (blockAuthCredentials.isReuseable)
+                    if (blockAuthCredentials.isReusable)
                     {
                         [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                            
@@ -2547,7 +2547,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                         //
                         //  If auth credentials is reuseable, perform login with same credentials
                         //
-                        if (blockAuthCredentials.isReuseable)
+                        if (blockAuthCredentials.isReusable)
                         {
                             [blockSelf loginWithAuthCredentials:blockAuthCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                                 

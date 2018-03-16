@@ -19,12 +19,6 @@
 
 @implementation MASAuthCredentials (MASPrivate)
 
-- (instancetype)initPrivate
-{
-    return [super init];
-}
-
-
 - (void)registerDeviceWithCredential:(MASCompletionErrorBlock)completion
 {
     
@@ -64,68 +58,12 @@
     // Post the will register notification
     //
     [[NSNotificationCenter defaultCenter] postNotificationName:MASDeviceWillRegisterNotification object:self];
-    
-    
-    NSMutableDictionary *headerInfo = [[self getHeaders] mutableCopy];
-    NSMutableDictionary *parameterInfo = [[self getParameters] mutableCopy];
-    NSString *registerEndpoint = [self getRegisterEndpoint];
-    
-    //
-    //  Prepare common request headers/parameters
-    //
-    
-    // Client Authorization
-    if (![headerInfo.allKeys containsObject:MASClientAuthorizationRequestResponseKey])
-    {
-        NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-       
-        if (clientAuthorization)
-        {
-            headerInfo[MASClientAuthorizationRequestResponseKey] = clientAuthorization;
-        }
-    }
-    
-    // DeviceId
-    if (![headerInfo.allKeys containsObject:MASDeviceIdRequestResponseKey])
-    {
-        NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-        
-        if (deviceId)
-        {
-            headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
-        }
-    }
-    
-    // DeviceName
-    if (![headerInfo.allKeys containsObject:MASDeviceNameRequestResponseKey])
-    {
-        NSString *deviceName = [MASDevice deviceNameBase64Encoded];
-        
-        if (deviceName)
-        {
-            headerInfo[MASDeviceNameRequestResponseKey] = deviceName;
-        }
-    }
-    
-    if (![headerInfo.allKeys containsObject:MASCreateSessionRequestResponseKey])
-    {
-        // Create Session
-        headerInfo[MASCreateSessionRequestResponseKey] = [MASConfiguration currentConfiguration].ssoEnabled ? @"true" : @"false";
-    }
-    
-    if (![headerInfo.allKeys containsObject:MASCertFormatRequestResponseKey])
-    {
-        // Certificate Format
-        headerInfo[MASCertFormatRequestResponseKey] = @"pem";
-    }
-    
-    
+ 
     __block MASAuthCredentials *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    
-    [[MASNetworkingService sharedService] postTo:registerEndpoint
-                                  withParameters:parameterInfo
-                                      andHeaders:headerInfo
+    [[MASNetworkingService sharedService] postTo:self.registerEndpoint
+                                  withParameters:[self getParameters]
+                                      andHeaders:[self getHeaders]
                                      requestType:MASRequestResponseTypeTextPlain
                                     responseType:MASRequestResponseTypeTextPlain
                                       completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
@@ -216,12 +154,15 @@
     //
     // The application must be registered else stop here
     //
-    if(![MASApplication currentApplication].isRegistered)
+    if (![MASApplication currentApplication].isRegistered)
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorApplicationNotRegistered]);
+        if (completion)
+        {
+            completion(NO, [NSError errorApplicationNotRegistered]);
+        }
         
         return;
     }
@@ -229,12 +170,15 @@
     //
     // The device must be registered else stop here
     //
-    if(![MASDevice currentDevice].isRegistered)
+    if (![MASDevice currentDevice].isRegistered)
     {
         //
         // Notify
         //
-        if(completion) completion(NO, [NSError errorDeviceNotRegistered]);
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
         
         return;
     }
@@ -244,53 +188,11 @@
     //
     [[NSNotificationCenter defaultCenter] postNotificationName:MASUserWillAuthenticateNotification object:self];
     
-    NSMutableDictionary *headerInfo = [[self getHeaders] mutableCopy];
-    NSMutableDictionary *parameterInfo = [[self getParameters] mutableCopy];
-    NSString *tokenEndpoint = [self getTokenEndpoint];
-    
-    //
-    //  Prepare common request headers/parameters
-    //
-    
-    // Client Authorization with 'Authorization' header key
-    if (![headerInfo.allKeys containsObject:MASAuthorizationRequestResponseKey])
-    {
-        NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-        if (clientAuthorization)
-        {
-            headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-        }
-    }
-    
-    // Scope
-    if (![parameterInfo.allKeys containsObject:MASScopeRequestResponseKey])
-    {
-        NSString *scope = [[MASApplication currentApplication] scopeAsString];
-        
-        if ([MASAccess currentAccess].requestingScopeAsString)
-        {
-            if (scope)
-            {
-                scope = [scope stringByAppendingString:[NSString stringWithFormat:@" %@",[MASAccess currentAccess].requestingScopeAsString]];
-                [MASAccess currentAccess].requestingScopeAsString = nil;
-            }
-            else {
-                scope = [scope stringByAppendingString:[MASAccess currentAccess].requestingScopeAsString];
-            }
-        }
-        
-        if (scope)
-        {
-            parameterInfo[MASScopeRequestResponseKey] = scope;
-        }
-    }
-    
     __block MASAuthCredentials *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    
-    [[MASNetworkingService sharedService] postTo:tokenEndpoint
-                                  withParameters:parameterInfo
-                                      andHeaders:headerInfo
+    [[MASNetworkingService sharedService] postTo:self.tokenEndpoint
+                                  withParameters:[self getParameters]
+                                      andHeaders:[self getHeaders]
                                      requestType:MASRequestResponseTypeWwwFormUrlEncoded
                                     responseType:MASRequestResponseTypeJson
                                       completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
@@ -437,30 +339,6 @@
                                               }
                                           }
                                       }];
-}
-
-
-- (NSDictionary *)getHeaders
-{
-    return nil;
-}
-
-
-- (NSDictionary *)getParameters
-{
-    return nil;
-}
-
-
-- (NSString *)getRegisterEndpoint
-{
-    return @"";
-}
-
-
-- (NSString *)getTokenEndpoint
-{
-    return @"";
 }
 
 @end
