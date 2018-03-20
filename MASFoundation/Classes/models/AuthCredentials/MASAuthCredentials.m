@@ -21,12 +21,12 @@
 
 @interface MASAuthCredentials ()
 
-@property (nonatomic, assign, readwrite) NSString *credentialsType;
-@property (nonatomic, assign, readwrite) NSString *csrUsername;
+@property (nonatomic, strong, readwrite) NSString *credentialsType;
+@property (nonatomic, strong, readwrite) NSString *csrUsername;
 @property (nonatomic, assign, readwrite) BOOL canRegisterDevice;
 @property (nonatomic, assign, readwrite) BOOL isReusable;
-@property (nonatomic, assign, readwrite) NSString *registerEndpoint;
-@property (nonatomic, assign, readwrite) NSString *tokenEndpoint;
+@property (nonatomic, strong, readwrite) NSString *registerEndpoint;
+@property (nonatomic, strong, readwrite) NSString *tokenEndpoint;
 
 @end
 
@@ -140,7 +140,7 @@
         MASSecurityService *securityService = [MASSecurityService sharedService];
         [securityService deleteAsymmetricKeys];
         [securityService generateKeypair];
-        NSString *certificateSigningRequest = [securityService generateCSRWithUsername:_csrUsername];
+        NSString *certificateSigningRequest = [securityService generateCSRWithUsername:self.csrUsername];
         
         if (certificateSigningRequest)
         {
