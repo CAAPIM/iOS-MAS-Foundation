@@ -149,7 +149,7 @@
     * device registration (default: "/connect/device/register")
     * session authentication (default: "/auth/oauth/v2/token")
  
- Following header values are minimum required for each request (by default)
+ By default, the minimum required header values for each request are:
  
  Device Registration:
     * client-authorization
@@ -161,7 +161,7 @@
  Session Authentication:
     * authorization
  
- Above header values will automatically populated based on the settings of the application by Mobile SDK, by manipulating these values on the inherited class may result in unexpected behaviour in registeration and/or authentication. Any customized header values can be added in either registration and/or authentication based on the needs.
+ The above header values are automatically populated by the Mobile SDK based on the settings of the application. You can override these values in the inherited class but you can cause unexpected behaviour in registration and/or authentication if you fail to coordinate with the server side.  You can also add customize header values in registration and/or authentication as needed.
  
  @return NSDictionary of all required headers
  */
@@ -175,7 +175,7 @@
  * device registration (default: "/connect/device/register")
  * session authentication (default: "/auth/oauth/v2/token")
  
- Following parameter values are minimum required for each request (by default)
+ By default, the minimum required header values for each request are:
  
  Device Registration:
     * certificateSigningRequest
@@ -184,8 +184,8 @@
     * scope
     * grant_type
  
- Above parameter values will automatically populated based on the settings of the application by Mobile SDK, by manipulating these values on the inherited class may result in unexpected behaviour in registeration and/or authentication. Any customized parameter values can be added in either registration and/or authentication based on the needs.
-
+ The above header values are automatically populated by the Mobile SDK based on the settings of the application. You can override these values in the inherited class but you can cause unexpected behaviour in registration and/or authentication if you fail to coordinate with the server side.  You can also add customize header values in registration and/or authentication as needed.
+ 
  @return NSDictionary of all required parameters
  */
 - (NSDictionary * _Nullable)getParameters;
