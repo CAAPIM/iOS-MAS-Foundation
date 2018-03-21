@@ -1,3 +1,9 @@
+# Version 1.6.11
+
+### Bug fixes
+- `MASUserLoginWithUserCredentialsBlock` was notifying any error that could potentially occur during user authentication to the original request. The Mobile SDK now only notifies cancellation of authentication request, and/or result of the original request to the original request. [DE351363]
+- `MASAuthCredentials` class was not able to be inherited in Swift due to some limitation of accessing private properties and methods.  The Mobile SDK now provides proper properties and methods in public, so that `MASAuthCredentials` can be properly inherited. [DE353904]
+
 # Version 1.6.10
 
 ### Bug fixes
