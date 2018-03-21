@@ -13,56 +13,55 @@
 @class CLLocation;
 @class MASAuthCredentials;
 @class MASUser;
-@class MASError;
 
 
 /**
  * The NSString constant indicating the MAS 'start' method has not been called yet.
  */
-static NSString *const _Nonnull MASNotStartedYet = @"MAS not started yet";
+extern NSString *const _Nonnull MASNotStartedYet;
 
 
 /**
  * The NSString constant key for the user info returned in various file related operations or errors.
  */
-static NSString *const _Nonnull MASFileNameKey = @"MASFileNameKey";
+extern NSString *const _Nonnull MASFileNameKey;
 
 
 /**
  * The NSString constant key for the otp retry suspension time returned in various otp related operations or errors.
  */
-static NSString *const _Nonnull MASOTPSuspensionTimeKey = @"MASOTPSuspensionTimeKey";
+extern NSString *const _Nonnull MASOTPSuspensionTimeKey;
 
 
 /**
  * The NSString constant key for the header info in the response dictionary.
  */
-static NSString *const _Nonnull MASResponseInfoHeaderInfoKey = @"MASResponseInfoHeaderInfoKey";
+extern NSString *const _Nonnull MASResponseInfoHeaderInfoKey;
 
 
 /**
  * The NSString constant key for the NSHTTPURLResponse object in the response dictionary.
  */
-static NSString *const _Nonnull MASNSHTTPURLResponseObjectKey = @"MASNSHTTPURLResponseObjectKey";
+extern NSString *const _Nonnull MASNSHTTPURLResponseObjectKey;
 
 
 /**
  * The NSString constant key for the error value in the response header info dictionary.
  */
-static NSString *const _Nonnull MASHeaderInfoErrorKey = @"x-ca-err";
+extern NSString *const _Nonnull MASHeaderInfoErrorKey;
 
 
 /**
  * The NSString constant key for the body info in the response dictionary.
  */
-static NSString *const _Nonnull MASResponseInfoBodyInfoKey = @"MASResponseInfoBodyInfoKey";
+extern NSString *const _Nonnull MASResponseInfoBodyInfoKey;
 
 
 /**
  * The NSString constant key for the gateway monitor notification's NSDictionary userInfo that will
  * retrieve new status value.
  */
-static NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
+extern NSString *const _Nonnull MASGatewayMonitorStatusKey;
 
 
 

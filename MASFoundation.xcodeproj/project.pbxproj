@@ -122,9 +122,10 @@
 		10E027A51F72B10100EAB103 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 10E0279B1F72B10100EAB103 /* RNDecryptor.m */; };
 		10E027A61F72B10100EAB103 /* RNEncryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 10E0279C1F72B10100EAB103 /* RNEncryptor.h */; };
 		10E027A71F72B10100EAB103 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 10E0279D1F72B10100EAB103 /* RNEncryptor.m */; };
-		699570E22060650400017244 /* MASNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 699570E02060650400017244 /* MASNotifications.h */; };
+		5BD3E7E420630FC900A151C7 /* MASConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BD3E7E320630FC900A151C7 /* MASConstants.m */; };
+		699570E22060650400017244 /* MASNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 699570E02060650400017244 /* MASNotifications.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		699570E32060650400017244 /* MASNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 699570E12060650400017244 /* MASNotifications.m */; };
-		699570E62062FF1300017244 /* MASError.h in Headers */ = {isa = PBXBuildFile; fileRef = 699570E42062FF1300017244 /* MASError.h */; };
+		699570E62062FF1300017244 /* MASError.h in Headers */ = {isa = PBXBuildFile; fileRef = 699570E42062FF1300017244 /* MASError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		699570E72062FF1300017244 /* MASError.m in Sources */ = {isa = PBXBuildFile; fileRef = 699570E52062FF1300017244 /* MASError.m */; };
 		69B7DF681F9675600056DD3A /* MASRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17911F9585BC008C1B11 /* MASRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69B7DF691F9675600056DD3A /* MASRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17901F9585BC008C1B11 /* MASRequest.m */; };
@@ -569,6 +570,7 @@
 		10E0279B1F72B10100EAB103 /* RNDecryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDecryptor.m; sourceTree = "<group>"; };
 		10E0279C1F72B10100EAB103 /* RNEncryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNEncryptor.h; sourceTree = "<group>"; };
 		10E0279D1F72B10100EAB103 /* RNEncryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEncryptor.m; sourceTree = "<group>"; };
+		5BD3E7E320630FC900A151C7 /* MASConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASConstants.m; sourceTree = "<group>"; };
 		699570E02060650400017244 /* MASNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASNotifications.h; sourceTree = "<group>"; };
 		699570E12060650400017244 /* MASNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASNotifications.m; sourceTree = "<group>"; };
 		699570E42062FF1300017244 /* MASError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASError.h; sourceTree = "<group>"; };
@@ -1389,6 +1391,7 @@
 				A4E340CE1B9E9F2000883AD3 /* MAS.h */,
 				A4E340CF1B9E9F2000883AD3 /* MAS.m */,
 				A4E340D61B9E9F2000883AD3 /* MASConstants.h */,
+				5BD3E7E320630FC900A151C7 /* MASConstants.m */,
 				A488CE731C0B97FD00B8B961 /* MASService.h */,
 				A488CE741C0B97FD00B8B961 /* MASService.m */,
 				699570E42062FF1300017244 /* MASError.h */,
@@ -2214,6 +2217,7 @@
 				10E027A71F72B10100EAB103 /* RNEncryptor.m in Sources */,
 				699570E72062FF1300017244 /* MASError.m in Sources */,
 				CB9975571EDF5986006CEBB1 /* MASAuthCredentialsClientCredentials.m in Sources */,
+				5BD3E7E420630FC900A151C7 /* MASConstants.m in Sources */,
 				A47332D01BBC61F50002A492 /* NSData+MASPrivate.m in Sources */,
 				CBAFD2511F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.m in Sources */,
 				A46F49C91C2F5FC500A4C370 /* MASIHTTPSessionManager.m in Sources */,

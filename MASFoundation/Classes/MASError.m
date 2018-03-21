@@ -10,7 +10,7 @@
 
 
 
-# pragma mark - MAS Errors
+# pragma mark - MAS Error Domains
 
 NSString *const MASFoundationErrorDomain = @"com.ca.MASFoundation:ErrorDomain";
 
