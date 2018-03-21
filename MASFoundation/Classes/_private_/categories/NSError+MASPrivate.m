@@ -9,7 +9,7 @@
 //
 
 #import "NSError+MASPrivate.h"
-
+#import "MASError.h"
 
 /**
  * The enumerated error codes for API level NSErrors.

@@ -1,5 +1,5 @@
 //
-// MASConstants.m
+// MASNotifications.m
 // MASFoundation
 //
 //  Copyright (c) 2016 CA. All rights reserved.
@@ -8,18 +8,8 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import "MASConstants.h"
+#import "MASNotifications.h"
 
-
-# pragma mark - MAS Errors
-
-NSString *const MASFoundationErrorDomain = @"com.ca.MASFoundation:ErrorDomain";
-
-
-NSString *const MASFoundationErrorDomainLocal = @"com.ca.MASFoundation.localError:ErrorDomain";
-
-
-NSString *const MASFoundationErrorDomainTargetAPI = @"com.ca.MASFoundation.targetAPI:ErrorDomain";
 
 
 # pragma mark - MAS Notifications
@@ -48,6 +38,7 @@ NSString *const MASWillSwitchGatewayServerNotification = @"MASWillSwitchGatewayS
 NSString *const MASDidSwitchGatewayServerNotification = @"MASDidSwitchGatewayServerNotification";
 
 
+
 # pragma mark - Device Notifications
 
 NSString *const MASDeviceWillDeregisterNotification = @"MASDeviceWillDeregisterNotification";
@@ -60,6 +51,7 @@ NSString *const MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNot
 
 
 NSString *const MASDeviceDidResetLocallyNotification = @"MASDeviceDidResetLocallyNotification";
+
 
 
 # pragma mark - User Notifications
@@ -91,12 +83,14 @@ NSString *const MASUserDidFailToUpdateInformationNotification = @"MASUserDidFail
 NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpdateInformationNotification";
 
 
+
 # pragma mark - Authorization Response - Social Login
 
 NSString *const MASAuthorizationResponseDidReceiveAuthorizationCodeNotification = @"MASAuthorizationResponseDidReceiveAuthorizationCodeNotification";
 
 
 NSString *const MASAuthorizationResponseDidReceiveErrorNotification = @"MASAuthorizationResponseDidReceiveErrorNotification";
+
 
 
 # pragma mark - Proximity Login Notification
@@ -113,6 +107,8 @@ NSString *const MASProximityLoginQRCodeDidStartDisplayingQRCodeImage = @"MASProx
 NSString *const MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStopDisplayingQRCodeImage";
 
 
+
 # pragma mark - Gateway Monitor Notifications
 
 NSString *const MASGatewayMonitorStatusUpdateNotification = @"MASGatewayMonitorStatusUpdateNotification";
+
