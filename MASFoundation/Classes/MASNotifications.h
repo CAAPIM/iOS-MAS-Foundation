@@ -10,11 +10,6 @@
 
 @import Foundation;
 
-@class CLLocation;
-@class MASAuthCredentials;
-@class MASUser;
-
-
 
 ///--------------------------------------
 /// @name MAS Notifications
