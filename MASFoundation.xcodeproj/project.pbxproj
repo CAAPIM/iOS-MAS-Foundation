@@ -128,6 +128,7 @@
 		69B7DF6B1F9675600056DD3A /* MASRequestBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17931F9585BD008C1B11 /* MASRequestBuilder.m */; };
 		69B7DF6C1F96756B0056DD3A /* MASRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */; };
 		69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */; };
+		69C4F0E52051BE7B00E6FFF5 /* MASConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C4F0E42051BE7B00E6FFF5 /* MASConstants.m */; };
 		A4150E6F1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */; };
 		A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */; };
 		A4150E711BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */; };
@@ -571,6 +572,7 @@
 		699C17931F9585BD008C1B11 /* MASRequestBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequestBuilder.m; sourceTree = "<group>"; };
 		699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASRequest+MASPrivate.h"; sourceTree = "<group>"; };
 		699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASRequest+MASPrivate.m"; sourceTree = "<group>"; };
+		69C4F0E42051BE7B00E6FFF5 /* MASConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASConstants.m; sourceTree = "<group>"; };
 		A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASIJSONResponseSerializer+MASPrivate.h"; sourceTree = "<group>"; };
 		A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MASIJSONResponseSerializer+MASPrivate.m"; sourceTree = "<group>"; };
 		A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+MASPrivate.h"; sourceTree = "<group>"; };
@@ -1381,6 +1383,7 @@
 				A4E340CE1B9E9F2000883AD3 /* MAS.h */,
 				A4E340CF1B9E9F2000883AD3 /* MAS.m */,
 				A4E340D61B9E9F2000883AD3 /* MASConstants.h */,
+				69C4F0E42051BE7B00E6FFF5 /* MASConstants.m */,
 				A488CE731C0B97FD00B8B961 /* MASService.h */,
 				A488CE741C0B97FD00B8B961 /* MASService.m */,
 				CB14D21B1D0228DB004F772E /* MASProximityLoginDelegate.h */,
@@ -2273,6 +2276,7 @@
 				CB6491F61FE9DAF300281288 /* MQTTSessionLegacy.m in Sources */,
 				A4831AF71BD1A8CA007B4AE6 /* MASDevice+MASPrivate.m in Sources */,
 				CB6491EF1FE9DAF300281288 /* MQTTMessage.m in Sources */,
+				69C4F0E52051BE7B00E6FFF5 /* MASConstants.m in Sources */,
 				CB9975431EDF5761006CEBB1 /* MASAuthCredentials.m in Sources */,
 				A46F49E61C2F5FC500A4C370 /* UIProgressView+MASINetworking.m in Sources */,
 				CB2357931F0EF53600D4C420 /* MASURLSessionManager.m in Sources */,
