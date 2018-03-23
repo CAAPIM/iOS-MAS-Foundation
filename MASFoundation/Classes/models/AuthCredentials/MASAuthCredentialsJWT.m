@@ -19,11 +19,6 @@
 
 @implementation MASAuthCredentialsJWT
 
-@synthesize credentialsType = _credentialsType;
-@synthesize canRegisterDevice = _canRegisterDevice;
-@synthesize isReuseable = _isReuseable;
-
-
 # pragma mark - LifeCycle
 
 + (MASAuthCredentialsJWT *)initWithJWT:(NSString *)jwt tokenType:(NSString *)tokenType
@@ -36,20 +31,17 @@
 
 - (instancetype)initPrivateWithJWT:(NSString *)jwt tokenType:(NSString *)tokenType
 {
-    self = [super initPrivate];
+    self = [super initWithCredentialsType:tokenType ? tokenType : @"urn:ietf:params:oauth:grant-type:jwt-bearer" csrUsername:@"socialLogin" canRegisterDevice:YES isReusable:NO];
     
-    if(self) {
+    if (self)
+    {
         _jwt = jwt;
         _tokenType = tokenType;
-        _credentialsType = _tokenType;
         
         if (!_tokenType || [_tokenType length] == 0)
         {
             _tokenType = @"urn:ietf:params:oauth:grant-type:jwt-bearer";
         }
-        
-        _canRegisterDevice = YES;
-        _isReuseable = NO;
     }
     
     return self;
@@ -92,21 +84,9 @@
 }
 
 
-- (NSString *)getRegisterEndpoint
-{
-    return [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
-}
-
-
-- (NSString *)getTokenEndpoint
-{
-    return [MASConfiguration currentConfiguration].tokenEndpointPath;
-}
-
-
 - (NSDictionary *)getHeaders
 {
-    NSMutableDictionary *headerInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *headerInfo = [[super getHeaders] mutableCopy];
     
     //
     //  For device registration headers
@@ -137,23 +117,14 @@
 
 - (NSDictionary *)getParameters
 {
-    NSMutableDictionary *parameterInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *parameterInfo = [[super getParameters] mutableCopy];
     
     //
     //  For device registration parameters
     //
     if (![MASDevice currentDevice].isRegistered)
     {
-        // Certificate Signing Request
-        MASSecurityService *securityService = [MASSecurityService sharedService];
-        [securityService deleteAsymmetricKeys];
-        [securityService generateKeypair];
-        NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"socialLogin"];
-        
-        if (certificateSigningRequest)
-        {
-            parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-        }
+
     }
     //
     //  For user authentication parameters
@@ -164,12 +135,6 @@
         if (_jwt)
         {
             parameterInfo[MASAssertionRequestResponseKey] = _jwt;
-        }
-        
-        // token type of JWT
-        if (_tokenType)
-        {
-            parameterInfo[MASGrantTypeRequestResponseKey] = _tokenType;
         }
     }
     

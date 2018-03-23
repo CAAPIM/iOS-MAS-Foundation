@@ -19,11 +19,6 @@
 
 @implementation MASAuthCredentialsPassword
 
-@synthesize credentialsType = _credentialsType;
-@synthesize canRegisterDevice = _canRegisterDevice;
-@synthesize isReuseable = _isReuseable;
-
-
 # pragma mark - LifeCycle
 
 + (MASAuthCredentialsPassword *)initWithUsername:(NSString *)username password:(NSString *)password
@@ -36,14 +31,12 @@
 
 - (instancetype)initPrivateWithUsername:(NSString *)username password:(NSString *)password
 {
-    self = [super initPrivate];
+    self = [super initWithCredentialsType:MASGrantTypePassword csrUsername:username canRegisterDevice:YES isReusable:YES];
     
-    if(self) {
+    if (self)
+    {
         _username = username;
         _password = password;
-        _credentialsType = MASGrantTypePassword;
-        _canRegisterDevice = YES;
-        _isReuseable = YES;
     }
     
     return self;
@@ -61,21 +54,9 @@
 
 # pragma mark - Private
 
-- (NSString *)getRegisterEndpoint
-{
-    return [MASConfiguration currentConfiguration].deviceRegisterEndpointPath;
-}
-
-
-- (NSString *)getTokenEndpoint
-{
-    return [MASConfiguration currentConfiguration].tokenEndpointPath;
-}
-
-
 - (NSDictionary *)getHeaders
 {
-    NSMutableDictionary *headerInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *headerInfo = [[super getHeaders] mutableCopy];
 
     //
     //  For device registration header
@@ -102,64 +83,19 @@
 
 - (NSDictionary *)getParameters
 {
-    NSMutableDictionary *parameterInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *parameterInfo = [[super getParameters] mutableCopy];
     
     //
     //  For device registration parameters
     //
     if (![MASDevice currentDevice].isRegistered)
     {
-        // Certificate Signing Request
-        MASSecurityService *securityService = [MASSecurityService sharedService];
-        [securityService deleteAsymmetricKeys];
-        [securityService generateKeypair];
-        NSString *certificateSigningRequest = [securityService generateCSRWithUsername:_username];
-        
-        if (certificateSigningRequest)
-        {
-            parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-        }
+
     }
     //
     //  For user authentication parameters
     //
     else {
-        
-        // Scope
-        NSString *scope = [[MASApplication currentApplication] scopeAsString];
-        
-        //
-        //  Check if MASAccess has additional requesting scope to be added as part of the authentication call
-        //
-        if ([MASAccess currentAccess].requestingScopeAsString)
-        {
-            if (scope)
-            {
-                //  Making sure that the new scope has an leading space
-                scope = [scope stringByAppendingString:[NSString stringWithFormat:@" %@",[MASAccess currentAccess].requestingScopeAsString]];
-            }
-            else {
-                scope = [MASAccess currentAccess].requestingScopeAsString;
-            }
-            
-            //
-            //  Nullify the requestingScope
-            //
-            [MASAccess currentAccess].requestingScopeAsString = nil;
-        }
-        
-        //
-        //  If sso is disabled, manually remove msso scope, as it will create id_token with msso scope
-        //
-        if (scope && ![MASConfiguration currentConfiguration].ssoEnabled)
-        {
-            scope = [scope replaceStringWithRegexPattern:@"\\bmsso\\b" withString:@""];
-        }
-        
-        if (scope)
-        {
-            parameterInfo[MASScopeRequestResponseKey] = scope;
-        }
         
         // UserName
         if (_username)
@@ -172,9 +108,6 @@
         {
             parameterInfo[MASPasswordRequestResponseKey] = _password;
         }
-        
-        // Grant Type
-        parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypePassword;
     }
     
     return parameterInfo;
