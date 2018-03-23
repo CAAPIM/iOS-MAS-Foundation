@@ -21,11 +21,6 @@
 
 @implementation MASAuthCredentialsClientCredentials
 
-@synthesize credentialsType = _credentialsType;
-@synthesize canRegisterDevice = _canRegisterDevice;
-@synthesize isReuseable = _isReuseable;
-
-
 # pragma mark - LifeCycle
 
 + (MASAuthCredentialsClientCredentials *)initClientCredentials
@@ -38,12 +33,11 @@
 
 - (instancetype)initPrivate
 {
-    self = [super initPrivate];
+    self = [super initWithCredentialsType:MASGrantTypeClientCredentials csrUsername:@"clientName" canRegisterDevice:YES isReusable:YES registerEndpoint:[MASConfiguration currentConfiguration].deviceRegisterClientEndpointPath tokenEndpoint:[MASConfiguration currentConfiguration].tokenEndpointPath];
     
-    if(self) {
-        _credentialsType = MASGrantTypeClientCredentials;
-        _canRegisterDevice = YES;
-        _isReuseable = YES;
+    if (self)
+    {
+        
     }
     
     return self;
@@ -62,7 +56,7 @@
 
 - (NSDictionary *)getHeaders
 {
-    NSMutableDictionary *headerInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *headerInfo = [[super getHeaders] mutableCopy];
     
     //
     //  For device registration header
@@ -85,23 +79,14 @@
 
 - (NSDictionary *)getParameters
 {
-    NSMutableDictionary *parameterInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *parameterInfo = [[super getParameters] mutableCopy];
     
     //
     //  For device registration parameter
     //
     if (![MASDevice currentDevice].isRegistered)
     {
-        // Certificate Signing Request
-        MASSecurityService *securityService = [MASSecurityService sharedService];
-        [securityService deleteAsymmetricKeys];
-        [securityService generateKeypair];
-        
-        NSString *certificateSigningRequest = [securityService generateCSRWithUsername:@"clientName"];
-        if (certificateSigningRequest)
-        {
-            parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
-        }
+
     }
     //
     //  For user authentication parameter
@@ -121,24 +106,9 @@
         {
             parameterInfo[MASClientSecretRequestResponseKey] = clientSecret;
         }
-        
-        // Grant Type
-        parameterInfo[MASGrantTypeRequestResponseKey] = MASGrantTypeClientCredentials;
     }
     
     return parameterInfo;
-}
-
-
-- (NSString *)getRegisterEndpoint
-{
-    return [MASConfiguration currentConfiguration].deviceRegisterClientEndpointPath;
-}
-
-
-- (NSString *)getTokenEndpoint
-{
-    return [MASConfiguration currentConfiguration].tokenEndpointPath;
 }
 
 @end

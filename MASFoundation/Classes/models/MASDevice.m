@@ -122,11 +122,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     [[MASAccessService sharedService].currentAccessObj refresh];
     
     //
-    // MASFiles
-    //
-    [[MASSecurityService sharedService] removeAllFiles];
-    
-    //
     // re-establish URL session
     //
     [[MASNetworkingService sharedService] establishURLSession];
