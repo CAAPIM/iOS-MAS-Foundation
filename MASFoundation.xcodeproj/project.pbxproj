@@ -311,8 +311,6 @@
 		CB5E4C711C1D250D001B3B8A /* MASPutURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C6F1C1D250D001B3B8A /* MASPutURLRequest.m */; };
 		CB5E4C741C1D26BA001B3B8A /* MASPatchURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C721C1D26BA001B3B8A /* MASPatchURLRequest.h */; };
 		CB5E4C751C1D26BA001B3B8A /* MASPatchURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */; };
-		CB63A8911CF64E21005DDBEB /* MASSocialLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */; };
 		CB6491DC1FE9DAF300281288 /* ForegroundReconnection.h in Headers */ = {isa = PBXBuildFile; fileRef = CB6491AA1FE9DAF300281288 /* ForegroundReconnection.h */; };
 		CB6491DD1FE9DAF300281288 /* ForegroundReconnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6491AB1FE9DAF300281288 /* ForegroundReconnection.m */; };
 		CB6491DE1FE9DAF300281288 /* MQTTCFSocketDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = CB6491AC1FE9DAF300281288 /* MQTTCFSocketDecoder.h */; };
@@ -762,8 +760,6 @@
 		CB5E4C6F1C1D250D001B3B8A /* MASPutURLRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPutURLRequest.m; sourceTree = "<group>"; };
 		CB5E4C721C1D26BA001B3B8A /* MASPatchURLRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASPatchURLRequest.h; sourceTree = "<group>"; };
 		CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPatchURLRequest.m; sourceTree = "<group>"; };
-		CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSocialLogin.h; sourceTree = "<group>"; };
-		CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSocialLogin.m; sourceTree = "<group>"; };
 		CB6491AA1FE9DAF300281288 /* ForegroundReconnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForegroundReconnection.h; sourceTree = "<group>"; };
 		CB6491AB1FE9DAF300281288 /* ForegroundReconnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForegroundReconnection.m; sourceTree = "<group>"; };
 		CB6491AC1FE9DAF300281288 /* MQTTCFSocketDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MQTTCFSocketDecoder.h; sourceTree = "<group>"; };
@@ -1343,8 +1339,6 @@
 				1046618D1C0ABDDE00A2A03C /* MASGroup.m */,
 				CBAFD24A1F2BD46C0034DF02 /* MASSecurityConfiguration.h */,
 				CBAFD24B1F2BD46C0034DF02 /* MASSecurityConfiguration.m */,
-				CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */,
-				CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */,
 				CB0A8ADD1D01F64F00B1DCCC /* MASProximityLogin.h */,
 				CB0A8ADE1D01F64F00B1DCCC /* MASProximityLogin.m */,
 				CB14D2171D02266D004F772E /* MASProximityLoginQRCode.h */,
@@ -1784,7 +1778,6 @@
 				CBD25AF21E78C47C00DFB47F /* JWTRSAlgorithm.h in Headers */,
 				CB0A8ADF1D01F64F00B1DCCC /* MASProximityLogin.h in Headers */,
 				CB6491F01FE9DAF300281288 /* MQTTPersistence.h in Headers */,
-				CB63A8911CF64E21005DDBEB /* MASSocialLogin.h in Headers */,
 				10E027A11F72B10100EAB103 /* RNCryptor+Private.h in Headers */,
 				CBD25B0C1E78C47C00DFB47F /* JWTBase64Coder.h in Headers */,
 				105B2F501CA6B3EA0005A2D0 /* srp.h in Headers */,
@@ -2159,7 +2152,6 @@
 				CBD25AE71E78C47C00DFB47F /* JWTAlgorithmNone.m in Sources */,
 				CB1C151F1E450109002B31A5 /* NSURL+MASPrivate.m in Sources */,
 				CB14D2241D02328C004F772E /* MASProximityLoginQRCode+MASPrivate.m in Sources */,
-				CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */,
 				A4150EE11BF16E0F00037E27 /* MASBluetoothService.m in Sources */,
 				10D2D49F1C1686ED00DF8AC4 /* MASGroup+MASPrivate.m in Sources */,
 				CB99754F1EDF5837006CEBB1 /* MASAuthCredentialsAuthorizationCode.m in Sources */,

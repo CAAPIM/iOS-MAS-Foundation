@@ -4,6 +4,9 @@
 - `MASUserLoginWithUserCredentialsBlock` was sending all errors that occurred during user authentication to the original request. The Mobile SDK now sends only cancellation of authentication request, and/or results of the original request, to the original request. [DE351363]
 - `MASAuthCredentials` class could not be inherited in Swift because of limitations in accessing private properties and methods. The Mobile SDK now provides proper properties and methods in public, so that MASAuthCredentials can be properly inherited. [DE353904]
 
+### Deprecated methods
+- `MASSocialLogin` class is completely deprecated and removed. Please use `SFSafariViewController` to display social login web URL from `MASAuthenticationProvider` and use `MASAuthorizationResponse` class to handle incoming response from `SFSafariViewController`. [US461955]
+
 # Version 1.6.10
 
 ### Bug fixes
