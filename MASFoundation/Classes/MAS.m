@@ -74,12 +74,6 @@
 }
 
 
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login
-{
-    [MASModelService setUserLoginBlock:login];
-}
-
-
 + (void)setOTPChannelSelectionBlock:(MASOTPChannelSelectionBlock)OTPChannelSelector
 {
     [MASOTPService setOTPChannelSelectionBlock:OTPChannelSelector];

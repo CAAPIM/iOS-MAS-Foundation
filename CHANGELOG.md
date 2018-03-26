@@ -5,6 +5,10 @@
 - `MASAuthCredentials` class could not be inherited in Swift because of limitations in accessing private properties and methods. The Mobile SDK now provides proper properties and methods in public, so that MASAuthCredentials can be properly inherited. [DE353904]
 - Improved organization of static string constants by separating files. The new classes are MASNotifications and MASError. Also, changed how the SDK exposes the string constants to follow best practices. [US469003]
 
+### Deprecated methods
+- `MASSocialLogin` class is completely deprecated and removed. Please use `SFSafariViewController` to display social login web URL from `MASAuthenticationProvider` and use `MASAuthorizationResponse` class to handle incoming response from `SFSafariViewController`. [US461955]
+- `MASUserLoginWithUserCredentialsBlock` callback is completely deprecated and removed. Please use `MASUserAuthCredentialsBlock` to perform implicit authentication. [US461955]
+
 # Version 1.6.10
 
 ### Bug fixes

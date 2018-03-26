@@ -260,16 +260,4 @@
  */
 - (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion;
 
-
-# pragma mark - Deprecated as of MAS 1.5
-
-/**
- *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
- *
- *  @param registration The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
- */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock)login DEPRECATED_MSG_ATTRIBUTE("[MASModelService setUserLoginBlock:] is deprecated as of MAS 1.5. Use [MASModelService setAuthCredentials:] instead.");
-
 @end
