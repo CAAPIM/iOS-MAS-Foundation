@@ -15,6 +15,56 @@
 @class MASUser;
 
 
+/**
+ * The NSString constant indicating the MAS 'start' method has not been called yet.
+ */
+extern NSString *const _Nonnull MASNotStartedYet;
+
+
+/**
+ * The NSString constant key for the user info returned in various file related operations or errors.
+ */
+extern NSString *const _Nonnull MASFileNameKey;
+
+
+/**
+ * The NSString constant key for the otp retry suspension time returned in various otp related operations or errors.
+ */
+extern NSString *const _Nonnull MASOTPSuspensionTimeKey;
+
+
+/**
+ * The NSString constant key for the header info in the response dictionary.
+ */
+extern NSString *const _Nonnull MASResponseInfoHeaderInfoKey;
+
+
+/**
+ * The NSString constant key for the NSHTTPURLResponse object in the response dictionary.
+ */
+extern NSString *const _Nonnull MASNSHTTPURLResponseObjectKey;
+
+
+/**
+ * The NSString constant key for the error value in the response header info dictionary.
+ */
+extern NSString *const _Nonnull MASHeaderInfoErrorKey;
+
+
+/**
+ * The NSString constant key for the body info in the response dictionary.
+ */
+extern NSString *const _Nonnull MASResponseInfoBodyInfoKey;
+
+
+/**
+ * The NSString constant key for the gateway monitor notification's NSDictionary userInfo that will
+ * retrieve new status value.
+ */
+extern NSString *const _Nonnull MASGatewayMonitorStatusKey;
+
+
+
 ///--------------------------------------
 /// @name MAS Blocks
 ///--------------------------------------
@@ -266,475 +316,6 @@ typedef NS_ENUM(NSInteger, MASFileDirectoryType) {
 };
 
 
-/**
- * The NSString constant indicating the MAS 'start' method has not been called yet.
- */
-static NSString *const _Nonnull MASNotStartedYet = @"MAS not started yet";
-
-
-/**
- * The NSString constant key for the user info returned in various file related operations or errors.
- */
-static NSString *const _Nonnull MASFileNameKey = @"MASFileNameKey";
-
-
-/**
- * The NSString constant key for the otp retry suspension time returned in various otp related operations or errors.
- */
-static NSString *const _Nonnull MASOTPSuspensionTimeKey = @"MASOTPSuspensionTimeKey";
-
-
-/**
- * The NSString constant key for the header info in the response dictionary.
- */
-static NSString *const _Nonnull MASResponseInfoHeaderInfoKey = @"MASResponseInfoHeaderInfoKey";
-
-
-/**
- * The NSString constant key for the NSHTTPURLResponse object in the response dictionary.
- */
-static NSString *const _Nonnull MASNSHTTPURLResponseObjectKey = @"MASNSHTTPURLResponseObjectKey";
-
-
-/**
- * The NSString constant key for the error value in the response header info dictionary.
- */
-static NSString *const _Nonnull MASHeaderInfoErrorKey = @"x-ca-err";
-
-
-/**
- * The NSString constant key for the body info in the response dictionary.
- */
-static NSString *const _Nonnull MASResponseInfoBodyInfoKey = @"MASResponseInfoBodyInfoKey";
-
-
-
-///--------------------------------------
-/// @name MAS Errors
-///--------------------------------------
-
-# pragma mark - MAS Errors
-
-/**
- * The NSString error domain used by all MAS server related Foundation level NSErrors.
- */
-extern NSString *const _Nonnull MASFoundationErrorDomain;
-
-
-/**
- *  The NSString error domain used by all MAS local level NSErrors.
- */
-extern NSString *const _Nonnull MASFoundationErrorDomainLocal;
-
-
-/**
- *  The NSString error domain used by all target API level NSErrors.
- */
-extern NSString *const _Nonnull MASFoundationErrorDomainTargetAPI;
-
-
-/**
- * The enumerated error codes for Foundation level NSErrors.
- */
-typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
-{
-    MASFoundationErrorCodeUnknown = -1,
-    
-    //
-    // SDK start
-    //
-    MASFoundationErrorCodeInvalidNSURL = 100001,
-    MASFoundationErrorCodeInvalidNSDictionary = 100002,
-    MASFoundationErrorCodeInvalidUserLoginBlock = 100003,
-    MASFoundationErrorCodeMASIsNotStarted = 100004,
-    MASFoundationErrorCodeInvalidEnrollmentURL = 100005,
-    
-    //
-    // Flow
-    //
-    MASFoundationErrorCodeFlowIsNotActive = 100101,
-    MASFoundationErrorCodeFlowIsNotImplemented = 100102,
-    MASFoundationErrorCodeFlowTypeUnsupported = 100103,
-    
-    //
-    // Configuration
-    //
-    MASFoundationErrorCodeConfigurationLoadingFailedFileNotFound = 100201,
-    MASFoundationErrorCodeConfigurationLoadingFailedJsonSerialization = 100202,
-    MASFoundationErrorCodeConfigurationLoadingFailedJsonValidation = 100203,
-    MASFoundationErrorCodeConfigurationInvalidEndpoint = 100204,
-    
-    //
-    //  Security Configuration
-    //
-    MASFoundationErrorCodeConfigurationInvalidHostForSecurityConfiguration = 100211,
-    MASFoundationErrorCodeConfigurationInvalidPinningInfoForSecurityConfiguration = 100212,
-    
-    //
-    // Geolocation
-    //
-    MASFoundationErrorCodeGeolocationIsInvalid = 100301,
-    MASFoundationErrorCodeGeolocationIsMissing = 100302,
-    MASFoundationErrorCodeGeolocationServicesAreUnauthorized = 100303,
-    MASFoundationErrorCodeGeolocationIsNotConfigured = 100304,
-    
-    //
-    // Network
-    //
-    MASFoundationErrorCodeNetworkUnacceptableContentType = 100401,
-    MASFoundationErrorCodeNetworkIsOffline = 100402,
-    MASFoundationErrorCodeNetworkNotReachable = 100403,
-    MASFoundationErrorCodeNetworkNotStarted = 100404,
-    MASFoundationErrorCodeNetworkRequestTimedOut = 100405,
-    MASFoundationErrorCodeNetworkSSLConnectionCannotBeMade = 100406,
-    MASFoundationErrorCodeResponseSerializationFailedToParseResponse = 100407,
-    MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure = 100408,
-    
-    //
-    // Application
-    //
-    MASFoundationErrorCodeApplicationAlreadyRegistered = 110001,
-    MASFoundationErrorCodeApplicationInvalid = 110002,
-    MASFoundationErrorCodeApplicationNotRegistered = 110003,
-    MASFoundationErrorCodeApplicationInvalidMagIdentifer = 110004,
-    MASFoundationErrorCodeApplicationRedirectUriInvalid = 110005,
-    
-    //
-    // Device
-    //
-    MASFoundationErrorCodeDeviceAlreadyRegistered = 120001,
-    MASFoundationErrorCodeDeviceAlreadyRegisteredWithDifferentFlow = 120002,
-    MASFoundationErrorCodeDeviceCouldNotBeDeregistered = 120003,
-    MASFoundationErrorCodeDeviceNotRegistered = 120004,
-    MASFoundationErrorCodeDeviceNotLoggedIn = 120005,
-    MASFoundationErrorCodeDeviceRecordIsNotValid = 120006,
-    MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope = 120007,
-    MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters = 120008,
-    MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication = 120009,
-    MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration = 120010,
-    
-    //
-    // Authorization
-    //
-    MASFoundationErrorCodeInvalidAuthorization = 131001,
-    
-    //
-    // User
-    //
-    MASFoundationErrorCodeUserAlreadyAuthenticated = 130001,
-    MASFoundationErrorCodeUserBasicCredentialsNotValid = 130002,
-    MASFoundationErrorCodeUserDoesNotExist = 130003,
-    MASFoundationErrorCodeUserNotAuthenticated = 130004,
-    MASFoundationErrorCodeLoginProcessCancel = 130005,
-    MASFoundationErrorCodeUserSessionIsAlreadyLocked = 130006,
-    MASFoundationErrorCodeUserSessionIsAlreadyUnlocked = 130007,
-    MASFoundationErrorCodeUserSessionIsCurrentlyLocked = 130008,
-    
-    //
-    // Token
-    //
-    MASFoundationErrorCodeTokenInvalidIdToken = 130101,
-    MASFoundationErrorCodeTokenIdTokenExpired = 130102,
-    MASFoundationErrorCodeTokenIdTokenInvalidAud = 130103,
-    MASFoundationErrorCodeTokenIdTokenInvalidAzp = 130104,
-    MASFoundationErrorCodeTokenIdTokenInvalidSignature = 130105,
-    MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession = 130106,
-    
-    MASFoundationErrorCodeAccessTokenInvalid = 130201,
-    MASFoundationErrorCodeAccessTokenDisabled = 130202,
-    MASFoundationErrorCodeAccessTokenNotGrantedScope = 130203,
-    
-    //
-    // Enterprise Browser
-    //
-    MASFoundationErrorCodeEnterpriseBrowserWebAppInvalidURL = 140001,
-    MASFoundationErrorCodeEnterpriseBrowserNativeAppDoesNotExist = 140002,
-    MASFoundationErrorCodeEnterpriseBrowserNativeAppCannotOpen = 140003,
-    MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist = 140004,
-    
-    //
-    // BLE
-    //
-    MASFoundationErrorCodeBLEUnknownState = 150001,
-    MASFoundationErrorCodeBLEAuthorizationFailed = 150002,
-    MASFoundationErrorCodeBLEAuthorizationPollingFailed = 150003,
-    MASFoundationErrorCodeBLECentralDeviceNotFound = 150004,
-    MASFoundationErrorCodeBLEDelegateNotDefined = 150005,
-    MASFoundationErrorCodeBLEInvalidAuthenticationProvider = 150006,
-    MASFoundationErrorCodeBLEPoweredOff = 150007,
-    MASFoundationErrorCodeBLERestting = 150008,
-    MASFoundationErrorCodeBLERSSINotInRange = 150009,
-    MASFoundationErrorCodeBLEUnSupported = 150010,
-    MASFoundationErrorCodeBLEUnauthorized = 150011,
-    MASFoundationErrorCodeBLEUserDeclined = 150012,
-    MASFoundationErrorCodeBLECentral = 150013,
-    MASFoundationErrorCodeBLEPeripheral = 150014,
-    MASFoundationErrorCodeBLEPeripheralServices = 150015,
-    MASFoundationErrorCodeBLEPeripheralCharacteristics = 150016,
-    
-    //
-    // Proximity Login
-    //
-    MASFoundationErrorCodeProximityLoginAuthorizationInProgress = 150101,
-    MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL = 150102,
-    MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed = 150103,
-    MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL = 150104,
-    
-    //
-    // OTP
-    //
-    MASFoundationErrorCodeInvalidOTPChannelSelectionBlock = 160101,
-    MASFoundationErrorCodeInvalidOTPCredentialsBlock = 160102,
-    MASFoundationErrorCodeInvalidOTPProvided = 160103,
-    MASFoundationErrorCodeOTPNotProvided = 160104,
-    MASFoundationErrorCodeOTPExpired = 160105,
-    MASFoundationErrorCodeOTPRetryLimitExceeded = 160106,
-    MASFoundationErrorCodeOTPRetryBarred = 160107,
-    MASFoundationErrorCodeOTPChannelSelectionCancelled = 160201,
-    MASFoundationErrorCodeOTPAuthenticationCancelled = 160202,
-    
-    //
-    //  JWT
-    //
-    MASFoundationErrorCodeJWTInvalidClaims = 170001,
-    MASFoundationErrorCodeJWTUnexpectedClassType = 170002,
-    MASFoundationErrorCodeJWTSerializationError = 170003,
-    
-    //
-    // Browser Based Login
-    //
-    MASFoundationErrorCodeBBANotEnabled = 180000,
-    //
-    //  SharedStorage
-    //
-    MASFoundationErrorCodeSharedStorageNotNilKey = 180001,
-    
-    MASFoundationErrorCodeCount = -999999
-};
-
-
-
-///--------------------------------------
-/// @name MAS Notifications
-///--------------------------------------
-
-
-# pragma mark - MAS Notifications
-
-/**
- * The NSString constant for the MAS notification indicating that MAS has begun
- * starting all it's processes.
- */
-extern NSString *const _Nonnull MASWillStartNotification;
-
-
-/**
- * The NSString constant for the MAS notification indicating that MAS has failed 
- * to successfully start it's processes.
- */
-extern NSString *const _Nonnull MASDidFailToStartNotification;
-
-
-/**
- * The NSString constant for the MAS notification indicating that MAS has
- * successfully started it's processes.
- */
-extern NSString *const _Nonnull MASDidStartNotification;
-
-
-/**
- * The NSString constant for the MAS notification indicating that MAS has begun
- * stopping all it's processes.
- */
-extern NSString *const _Nonnull MASWillStopNotification;
-
-
-/**
- * The NSString constant for the MAS notification indicating that MAS has failed 
- * to successfully stop it's processes.
- */
-extern NSString *const _Nonnull MASDidFailToStopNotification;
-
-
-/**
- * The NSString constant for the MAS notification indicating that MAS has
- * successfully stopped it's processes.
- */
-extern NSString *const _Nonnull MASDidStopNotification;
-
-
-/**
- *  The NSString constant for the MAS notification indicating that MAS will
- *  switch the server.
- */
-extern NSString *const _Nonnull MASWillSwitchGatewayServerNotification;
-
-
-/**
- *  The NSString constant for the MAS notification indicating that MAS did finish to
- *  switch the server.
- */
-extern NSString *const _Nonnull MASDidSwitchGatewayServerNotification;
-
-
-
-
-///--------------------------------------
-/// @name Device Notifications
-///--------------------------------------
-
-# pragma mark - Device Notifications
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has begun the process of deregistering the device.
- */
-extern NSString *const _Nonnull MASDeviceWillDeregisterNotification;
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has failed to successfully deregister.
- */
-extern NSString *const _Nonnull MASDeviceDidFailToDeregisterNotification;
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has successfully deregistered.
- */
-extern NSString *const _Nonnull MASDeviceDidDeregisterNotification;
-
-
-/**
- * The NSString constant for the device notification indicating that the MASDevice
- * has reset locally.
- */
-extern NSString *const _Nonnull MASDeviceDidResetLocallyNotification;
-
-
-
-///--------------------------------------
-/// @name User Notifications
-///--------------------------------------
-
-# pragma mark - User Notifications
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * will attempt to authenticate.
- */
-extern NSString *const _Nonnull MASUserWillAuthenticateNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * has failed to authenticate.
- */
-extern NSString *const _Nonnull MASUserDidFailToAuthenticateNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * has successfully authenticated.
- */
-extern NSString *const _Nonnull MASUserDidAuthenticateNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * will attempt to log out.
- */
-extern NSString *const _Nonnull MASUserWillLogoutNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * has failed to log out.
- */
-extern NSString *const _Nonnull MASUserDidFailToLogoutNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * has successfully logged out.
- */
-extern NSString *const _Nonnull MASUserDidLogoutNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * will attempt to update it's information.
- */
-extern NSString *const _Nonnull MASUserWillUpdateInformationNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * has failed to update it's user information.
- */
-extern NSString *const _Nonnull MASUserDidFailToUpdateInformationNotification;
-
-
-/**
- * The NSString constant for the user notification indicating that a MASUser
- * has successfully updated it's information.
- */
-extern NSString *const _Nonnull MASUserDidUpdateInformationNotification;
-
-
-///--------------------------------------
-/// @name Authorization Response - Social Login
-///--------------------------------------
-
-# pragma mark - Authorization Response - Social Login
-
-/**
- *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
- *  has received authorization code from social login
- */
-extern NSString *const _Nonnull MASAuthorizationResponseDidReceiveAuthorizationCodeNotification;
-
-
-/**
- *  The NSString constant for the device notification indicating that the MASAuthorizationResponse
- *  has received an error from social login
- */
-extern NSString *const _Nonnull MASAuthorizationResponseDidReceiveErrorNotification;
-
-
-///--------------------------------------
-/// @name Proximity Login Notification
-///--------------------------------------
-
-# pragma mark - Proximity Login Notification
-
-/**
- *  The NSString constant for the device notification indicating that the MASDevice
- *  has received authorization code from proximity login (BLE/QR Code)
- */
-extern NSString *const _Nonnull MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification;
-
-
-/**
- *  The NSString constant for the device notification indicating that the MASDevice
- *  has received an error from proximity login (BLE/QR Code)
- */
-extern NSString *const _Nonnull MASDeviceDidReceiveErrorFromProximityLoginNotification;
-
-
-/**
- *  The NSString constant for the proximity login notification indicating that QR Code image did start displaying.
- */
-extern NSString *const _Nonnull MASProximityLoginQRCodeDidStartDisplayingQRCodeImage;
-
-
-/**
- *  The NSString constant for the proximity login notification indicating that QR Code image did stop displaying.
- */
-extern NSString *const _Nonnull MASProximityLoginQRCodeDidStopDisplayingQRCodeImage;
-
-
 ///--------------------------------------
 /// @name Gateway Monitoring Constants
 ///--------------------------------------
@@ -784,27 +365,6 @@ typedef NS_ENUM(NSInteger, MASGatewayMonitoringStatus)
  *     MASGatewayMonitoringStatusReachableViaWiFi
  */
 typedef void (^MASGatewayMonitorStatusBlock)(MASGatewayMonitoringStatus status);
-
-
-
-///--------------------------------------
-/// @name Gateway Monitor Notifications
-///--------------------------------------
-
-# pragma mark - Gateway Monitor Notifications
-
-/**
- * The NSString constant for the gateway monitor notification indicating that the monitor status
- * has updated to a new value.
- */
-extern NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification;
-
-
-/**
- * The NSString constant key for the gateway monitor notification's NSDictionary userInfo that will 
- * retrieve new status value.
- */
-static NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
 
 
 

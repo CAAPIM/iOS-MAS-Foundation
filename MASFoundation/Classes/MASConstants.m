@@ -1,6 +1,6 @@
 //
-// MASConstants.m
-// MASFoundation
+//  MASConstants.m
+//  MASFoundation
 //
 //  Copyright (c) 2016 CA. All rights reserved.
 //
@@ -8,111 +8,28 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
-#import "MASConstants.h"
+#import <Foundation/Foundation.h>
 
 
-# pragma mark - MAS Errors
+NSString *const _Nonnull MASNotStartedYet = @"MAS not started yet";
 
-NSString *const MASFoundationErrorDomain = @"com.ca.MASFoundation:ErrorDomain";
 
+NSString *const _Nonnull MASFileNameKey = @"MASFileNameKey";
 
-NSString *const MASFoundationErrorDomainLocal = @"com.ca.MASFoundation.localError:ErrorDomain";
 
+NSString *const _Nonnull MASOTPSuspensionTimeKey = @"MASOTPSuspensionTimeKey";
 
-NSString *const MASFoundationErrorDomainTargetAPI = @"com.ca.MASFoundation.targetAPI:ErrorDomain";
 
+NSString *const _Nonnull MASResponseInfoHeaderInfoKey = @"MASResponseInfoHeaderInfoKey";
 
-# pragma mark - MAS Notifications
 
-NSString *const MASWillStartNotification = @"MASWillStartNotification";
+NSString *const _Nonnull MASNSHTTPURLResponseObjectKey = @"MASNSHTTPURLResponseObjectKey";
 
 
-NSString *const MASDidFailToStartNotification = @"MASDidFailToStartNotification";
+NSString *const _Nonnull MASHeaderInfoErrorKey = @"x-ca-err";
 
 
-NSString *const MASDidStartNotification = @"MASDidStartNotification";
+NSString *const _Nonnull MASResponseInfoBodyInfoKey = @"MASResponseInfoBodyInfoKey";
 
 
-NSString *const MASWillStopNotification = @"MASWillStopNotification";
-
-
-NSString *const MASDidFailToStopNotification = @"MASDidFailToStopNotification";
-
-
-NSString *const MASDidStopNotification = @"MASDidStopNotification";
-
-
-NSString *const MASWillSwitchGatewayServerNotification = @"MASWillSwitchGatewayServerNotification";
-
-
-NSString *const MASDidSwitchGatewayServerNotification = @"MASDidSwitchGatewayServerNotification";
-
-
-# pragma mark - Device Notifications
-
-NSString *const MASDeviceWillDeregisterNotification = @"MASDeviceWillDeregisterNotification";
-
-
-NSString *const MASDeviceDidFailToDeregisterNotification = @"MASDeviceDidFailToDeregisterNotification";
-
-
-NSString *const MASDeviceDidDeregisterNotification = @"MASDeviceDidDeregisterNotification";
-
-
-NSString *const MASDeviceDidResetLocallyNotification = @"MASDeviceDidResetLocallyNotification";
-
-
-# pragma mark - User Notifications
-
-NSString *const MASUserWillAuthenticateNotification = @"MASUserWillAuthenticateNotification";
-
-
-NSString *const MASUserDidFailToAuthenticateNotification = @"MASUserDidFailToAuthenticateNotification";
-
-
-NSString *const MASUserDidAuthenticateNotification = @"MASUserDidAuthenticateNotification";
-
-
-NSString *const MASUserWillLogoutNotification = @"MASUserWillLogoutNotification";
-
-
-NSString *const MASUserDidFailToLogoutNotification = @"MASUserDidFailToLogoutNotification";
-
-
-NSString *const MASUserDidLogoutNotification = @"MASUserDidLogoutNotification";
-
-
-NSString *const MASUserWillUpdateInformationNotification = @"MASUserWillUpdateInformationNotification";
-
-
-NSString *const MASUserDidFailToUpdateInformationNotification = @"MASUserDidFailToUpdateInformationNotification";
-
-
-NSString *const MASUserDidUpdateInformationNotification = @"MASUserDidUpdateInformationNotification";
-
-
-# pragma mark - Authorization Response - Social Login
-
-NSString *const MASAuthorizationResponseDidReceiveAuthorizationCodeNotification = @"MASAuthorizationResponseDidReceiveAuthorizationCodeNotification";
-
-
-NSString *const MASAuthorizationResponseDidReceiveErrorNotification = @"MASAuthorizationResponseDidReceiveErrorNotification";
-
-
-# pragma mark - Proximity Login Notification
-
-NSString *const MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification = @"MASDeviceDidReceiveAuthorizationCodeFromProximityLoginNotification";
-
-
-NSString *const MASDeviceDidReceiveErrorFromProximityLoginNotification = @"MASDeviceDidReceiveErrorFromProximityLoginNotification";
-
-
-NSString *const MASProximityLoginQRCodeDidStartDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStartDisplayingQRCodeImage";
-
-
-NSString *const MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProximityLoginQRCodeDidStopDisplayingQRCodeImage";
-
-
-# pragma mark - Gateway Monitor Notifications
-
-NSString *const MASGatewayMonitorStatusUpdateNotification = @"MASGatewayMonitorStatusUpdateNotification";
+NSString *const _Nonnull MASGatewayMonitorStatusKey = @"MASGatewayMonitorStatusKey";
