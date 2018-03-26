@@ -10,7 +10,6 @@
 
 #import "NSError+MASPrivate.h"
 
-
 /**
  * The enumerated error codes for API level NSErrors.
  */
