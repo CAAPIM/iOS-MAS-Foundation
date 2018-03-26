@@ -1033,17 +1033,4 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 #endif
 
-
-
-# pragma mark - Deprecated
-
-/**
- *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
- *
- *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
- */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login DEPRECATED_MSG_ATTRIBUTE("[MAS setUserLoginBlock:] is deprecated as of MAS 1.5. Use [MAS setAuthCredentials:] instead.");
-
 @end
