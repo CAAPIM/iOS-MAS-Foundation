@@ -3,7 +3,7 @@
 ### Bug fixes
 - `MASUserLoginWithUserCredentialsBlock` was sending all errors that occurred during user authentication to the original request. The Mobile SDK now sends only cancellation of authentication request, and/or results of the original request, to the original request. [DE351363]
 - `MASAuthCredentials` class could not be inherited in Swift because of limitations in accessing private properties and methods. The Mobile SDK now provides proper properties and methods in public, so that MASAuthCredentials can be properly inherited. [DE353904]
-- IImproved organization of static string constants by separating files. The new classes are MASNotifications and MASError. Also, changed how the SDK exposes the string constants to follow best practices. [US469003]
+- Improved organization of static string constants by separating files. The new classes are MASNotifications and MASError. Also, changed how the SDK exposes the string constants to follow best practices. [US469003]
 
 # Version 1.6.10
 
