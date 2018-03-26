@@ -7,6 +7,7 @@
 
 ### Deprecated methods
 - `MASSocialLogin` class is completely deprecated and removed. Please use `SFSafariViewController` to display social login web URL from `MASAuthenticationProvider` and use `MASAuthorizationResponse` class to handle incoming response from `SFSafariViewController`. [US461955]
+- `MASUserLoginWithUserCredentialsBlock` callback is completely deprecated and removed. Please use `MASUserAuthCredentialsBlock` to perform implicit authentication. [US461955]
 
 # Version 1.6.10
 
