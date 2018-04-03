@@ -1,7 +1,7 @@
 # Version 1.6.11
 
 ### Enhancement
-Swift code is added to the iOS Guide. The iOS API Reference documentation is based on OBJ-C, but the Obj-C code can be used seamlessly with your Swift code. See the usage section for details.
+Swift code is added to the [iOS Guide](http://mas.ca.com/docs/ios/latest/guides/). The iOS API Reference documentation is based on Objective-c, but the Objective-c code can be used seamlessly with your Swift code. See the usage section for details.
 
 ### Bug fixes
 - `MASUserLoginWithUserCredentialsBlock` was sending all errors that occurred during user authentication to the original request. The Mobile SDK now sends only cancellation of authentication request, and/or results of the original request, to the original request. [DE351363]
