@@ -322,6 +322,19 @@ typedef NS_ENUM(NSInteger, MASFileDirectoryType) {
 
 # pragma mark - Gateway Monitoring Constants
 
+typedef NS_ENUM(NSInteger, MASNetworkReachabilityStatus)
+{
+    MASNetworkReachabilityStatusUnknown = -1,
+    
+    MASNetworkReachabilityStatusNotReachable = 1,
+    
+    MASNetworkReachabilityStatusReachableViaWWAN = 2,
+    
+    MASNetworkReachabilityStatusReachableViaWiFi = 3,
+    
+    MASNetworkReachabilityStatusInitializing = 4
+};
+
 /**
  * The enumerated MASGatewayMonitoringStatus types.
  */
