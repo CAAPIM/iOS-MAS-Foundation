@@ -53,7 +53,6 @@
         
         _session = [NSURLSession sessionWithConfiguration:_configuration delegate:self delegateQueue:nil];
         _operations = [NSMutableArray array];
-        _reachabilityManager = [MASINetworkReachabilityManager sharedManager];
         
         __block MASURLSessionManager *blockSelf = self;
         

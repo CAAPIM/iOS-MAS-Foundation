@@ -59,6 +59,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 # pragma mark - Properties
 
 @property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
+@property (nonatomic, strong, readwrite) MASNetworkReachability *gatewayReachabilityManager;
 @property (readwrite, nonatomic, strong) MASAuthValidationOperation *authValidationOperation;
 
 @end
@@ -68,7 +69,7 @@ static NSString *kMASNetworkQueueOperationsChanged = @"kMASNetworkQueueOperation
 
 @implementation MASNetworkingService
 
-static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
+static MASNetworkReachabilityStatusBlock _gatewayReachabilityBlock_;
 static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 
@@ -76,7 +77,43 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
-    _gatewayStatusMonitor_ = monitor;
+    __block MASGatewayMonitorStatusBlock blockMonitor = monitor;
+    _gatewayReachabilityBlock_ = ^(MASNetworkReachabilityStatus status){
+        
+        MASGatewayMonitoringStatus convertedStatus;
+        //
+        //  Convert MASNetworkReachabilityStatus to MASGatewayMonitoringStatus
+        //
+        switch (status) {
+            case MASNetworkReachabilityStatusNotReachable:
+                convertedStatus = MASGatewayMonitoringStatusNotReachable;
+                break;
+            case MASNetworkReachabilityStatusReachableViaWWAN:
+                convertedStatus = MASGatewayMonitoringStatusReachableViaWWAN;
+                break;
+            case MASNetworkReachabilityStatusReachableViaWiFi:
+                convertedStatus = MASGatewayMonitoringStatusReachableViaWiFi;
+                break;
+            case MASNetworkReachabilityStatusUnknown:
+            case MASNetworkReachabilityStatusInitializing:
+            default:
+                convertedStatus = MASGatewayMonitoringStatusUnknown;
+                break;
+        }
+        
+        //
+        // Notify the block, if any
+        //
+        if (blockMonitor)
+        {
+            blockMonitor(convertedStatus);
+        }
+        
+        //
+        //  Notify with notification
+        //
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASGatewayMonitorStatusUpdateNotification object:[NSNumber numberWithInt:convertedStatus]];
+    };
 }
 
 
@@ -219,8 +256,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     if (_sessionManager)
     {
         [_sessionManager.operationQueue cancelAllOperations];
-        [_sessionManager.reachabilityManager stopMonitoring];
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+        [_gatewayReachabilityManager stopMonitoring];
         _sessionManager = nil;
     }
     
@@ -237,15 +273,9 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     if (_sessionManager)
     {
         [_sessionManager.operationQueue cancelAllOperations];
-        [_sessionManager.reachabilityManager stopMonitoring];
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+        [_gatewayReachabilityManager stopMonitoring];
         _sessionManager = nil;
     }
-    
-    //
-    // Reset the value
-    //
-    _monitoringStatus = MASGatewayMonitoringStatusUnknown;
     
     [super serviceDidReset];
 }
@@ -336,28 +366,19 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
         //
         // Reachability
         //
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(MASINetworkReachabilityStatus status) {
-            //
-            // Set the new value, this should be a direct mapping of MASI and MAS types
-            //
-            _monitoringStatus = (long)status;
-            
-            //
-            // Make sure it is on the main thread
-            //
-            dispatch_async(dispatch_get_main_queue(), ^
-                           {
-                               //
-                               // Notify the block, if any
-                               //
-                               if(_gatewayStatusMonitor_) _gatewayStatusMonitor_((long)status);
-                           });
-        }];
+        if (_gatewayReachabilityManager != nil)
+        {
+            [_gatewayReachabilityManager stopMonitoring];
+            _gatewayReachabilityManager = nil;
+        }
+        
+        _gatewayReachabilityManager = [[MASNetworkReachability alloc] initWithDomain:[MASConfiguration currentConfiguration].gatewayHostName];
+        [_gatewayReachabilityManager setReachabilityMonitoringBlock:_gatewayReachabilityBlock_];
         
         //
         // Begin monitoring
         //
-        [_sessionManager.reachabilityManager startMonitoring];
+        [_gatewayReachabilityManager startMonitoring];
     }
     else {
         [_sessionManager updateSession];
@@ -822,8 +843,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 - (BOOL)networkIsReachable
 {
-    return (self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWWAN ||
-            self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWiFi);
+    return _gatewayReachabilityManager ? _gatewayReachabilityManager.isReachable : NO;
 }
 
 
@@ -832,12 +852,12 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     //
     // Detect status and respond appropriately
     //
-    switch(self.monitoringStatus)
+    switch(_gatewayReachabilityManager.reachabilityStatus)
     {
             //
             // Not Reachable
             //
-        case MASGatewayMonitoringStatusNotReachable:
+        case MASNetworkReachabilityStatusNotReachable:
         {
             return MASGatewayMonitoringStatusNotReachableValue;
         }
@@ -845,7 +865,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
             //
             // Reachable Via WWAN
             //
-        case MASGatewayMonitoringStatusReachableViaWWAN:
+        case MASNetworkReachabilityStatusReachableViaWWAN:
         {
             return MASGatewayMonitoringStatusReachableViaWWANValue;
         }
@@ -853,7 +873,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
             //
             // Reachable Via WiFi
             //
-        case MASGatewayMonitoringStatusReachableViaWiFi:
+        case MASNetworkReachabilityStatusReachableViaWiFi:
         {
             return MASGatewayMonitoringStatusReachableViaWiFiValue;
         }

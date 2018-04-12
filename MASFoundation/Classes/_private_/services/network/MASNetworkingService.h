@@ -25,8 +25,6 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
 
 # pragma mark - Properties
 
-@property (nonatomic, assign, readonly) MASGatewayMonitoringStatus monitoringStatus;
-
 /**
  Http redirection block. Set this block only if you want to handle the redirection coming from the original NSURLRequest.
  */

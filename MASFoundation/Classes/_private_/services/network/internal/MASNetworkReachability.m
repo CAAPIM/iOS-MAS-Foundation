@@ -188,6 +188,7 @@ NSString *const MASNetworkReachabilityStatusInitializingValue = @"Initializing n
 
 - (void)stopMonitoring
 {
+    self.reachabilityStatus = MASNetworkReachabilityStatusUnknown;
     if (self.reachabilityRef != NULL)
     {
         SCNetworkReachabilityUnscheduleFromRunLoop(self.reachabilityRef, CFRunLoopGetMain(), kCFRunLoopCommonModes);
