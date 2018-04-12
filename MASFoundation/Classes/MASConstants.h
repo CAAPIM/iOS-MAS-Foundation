@@ -322,6 +322,16 @@ typedef NS_ENUM(NSInteger, MASFileDirectoryType) {
 
 # pragma mark - Gateway Monitoring Constants
 
+
+/**
+ Enumerated values for MASNetworkReachabilityStatus
+
+ - MASNetworkReachabilityStatusUnknown: network reachability status unknown
+ - MASNetworkReachabilityStatusNotReachable: network is not reachable
+ - MASNetworkReachabilityStatusReachableViaWWAN: network is reachable via cellular network
+ - MASNetworkReachabilityStatusReachableViaWiFi: network is reachable via WiFi
+ - MASNetworkReachabilityStatusInitializing: network manager is being initialized and monitoring process is starting up
+ */
 typedef NS_ENUM(NSInteger, MASNetworkReachabilityStatus)
 {
     MASNetworkReachabilityStatusUnknown = -1,
@@ -334,6 +344,15 @@ typedef NS_ENUM(NSInteger, MASNetworkReachabilityStatus)
     
     MASNetworkReachabilityStatusInitializing = 4
 };
+
+
+/**
+ Network reachability status monitoring block definition which will receive MASNetworkRechabilityStatus enum value as in argument.
+
+ @param status MASNetworkReachabilityStatus enum value indicating current status of the network reachability.
+ */
+typedef void (^MASNetworkReachabilityStatusBlock)(MASNetworkReachabilityStatus status);
+
 
 /**
  * The enumerated MASGatewayMonitoringStatus types.

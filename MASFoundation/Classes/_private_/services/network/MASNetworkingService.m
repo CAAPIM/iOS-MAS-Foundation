@@ -27,6 +27,7 @@
 #import "MASPostURLRequest.h"
 #import "MASPutURLRequest.h"
 #import "MASSecurityPolicy.h"
+#import "MASNetworkReachability.h"
 
 
 # pragma mark - Configuration Constants
@@ -68,9 +69,10 @@ static NSString *kMASNetworkQueueOperationsChanged = @"kMASNetworkQueueOperation
 @implementation MASNetworkingService
 
 static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
+static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 
-# pragma mark - Properties
+# pragma mark - Network Reachability
 
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
@@ -78,7 +80,71 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 }
 
 
++ (void)setNetworkReachabilityMonitorForHost:(NSString *)host monitor:(MASNetworkReachabilityStatusBlock)monitor
+{
+    MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
+    
+    [reachability setReachabilityMonitoringBlock:monitor];
+    [reachability startMonitoring];
+}
+
+
++ (BOOL)isNetworkReachableForHost:(NSString *)host
+{
+    MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
+    return reachability.isReachable;
+}
+
+
++ (MASNetworkReachability *)retrieveOrConstructReachabilityForHost:(NSString *)host
+{
+    if (!_reachabilityMonitoringBlockForHosts_)
+    {
+        _reachabilityMonitoringBlockForHosts_ = [NSMutableDictionary dictionary];
+    }
+    
+    NSString *targetHost = host;
+    if (targetHost == nil || [targetHost length] == 0)
+    {
+        targetHost = @"generic";
+    }
+    
+    if ([_reachabilityMonitoringBlockForHosts_.allKeys containsObject:targetHost])
+    {
+        return [_reachabilityMonitoringBlockForHosts_ objectForKey:targetHost];
+    }
+    else {
+        
+        MASNetworkReachability *reachability = nil;
+        if ([targetHost isEqualToString:@"generic"])
+        {
+            //
+            //  Construct sockaddr for generic network
+            //
+            struct sockaddr_in genericAddress;
+            bzero(&genericAddress, sizeof(genericAddress));
+            genericAddress.sin_len = sizeof(genericAddress);
+            genericAddress.sin_family = AF_INET;
+            
+            reachability = [[MASNetworkReachability alloc] initWithAddress:(const struct sockaddr *)&genericAddress];
+        }
+        else {
+            reachability = [[MASNetworkReachability alloc] initWithDomain:targetHost];
+        }
+        
+        if (reachability)
+        {
+            [_reachabilityMonitoringBlockForHosts_ setObject:reachability forKey:targetHost];
+        }
+        
+        return reachability;
+    }
+}
+
+
 #ifdef DEBUG
+
+# pragma mark - DEBUG
 
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled
 {
