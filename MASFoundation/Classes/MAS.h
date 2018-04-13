@@ -331,6 +331,8 @@
  *
  *  This is optional and it can be set to nil at any time to stop receiving the notifications.
  *
+ *  Reachability status update can also be received as NSNotification.  Subscribe notification key, MASGatewayMonitorStatusUpdateNotification, and notifications will be broadcasted whenever there is a change in network reachability status for the primary gateway on the plaload of NSNotification as NSDictionary format @{ (NSString)"host" : (NSNumber)enumValue}:
+ *
  *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
  */
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
@@ -375,6 +377,8 @@
     MASNetworkReachabilityStatusInitializing
  
  This is optional and it can be set to nil at any time to stop receiving the notifications.
+ 
+ Reachability status update can also be received as NSNotification.  Subscribe notification key, MASNetworkReachabilityStatusUpdateNotification, and notifications will be broadcasted whenever there is a change in network reachability status for the specified host on the plaload of NSNotification as NSDictionary format @{ (NSString)"host" : (NSNumber)enumValue}:
  
  @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
  @param monitoringBlock MASNetworkReachabilityStatusBlock that will update the reachability status.
