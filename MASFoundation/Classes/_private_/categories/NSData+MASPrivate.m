@@ -312,7 +312,12 @@ bool _encrypted = NO;
     NSData *PEMData = [NSData dataFromPEMBase64String:PEMCertificate];
     SecCertificateRef certificateRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)PEMData);
     CFDataRef DEREncodedData = SecCertificateCopyData(certificateRef);
-    return (__bridge NSData*)DEREncodedData;
+
+    NSData *DERData = (__bridge NSData*)DEREncodedData;
+    CFRelease(certificateRef);
+    CFRelease(DEREncodedData);
+    
+    return DERData;
 }
 
 
