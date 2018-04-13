@@ -82,7 +82,7 @@ NSString *const MASNetworkReachabilityStatusInitializingValue = @"Initializing n
     if (self)
     {
         self.reachabilityRef = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, address);
-        self.domain = nil;
+        self.domain = @"default";
         self.reachabilityStatus = MASNetworkReachabilityStatusInitializing;
     }
     
@@ -171,7 +171,7 @@ NSString *const MASNetworkReachabilityStatusInitializingValue = @"Initializing n
         //  Asynchronous reachability check with IP address does not invoke the callback for initial status.
         //  synchronous reachability has to be invoked for the first time to trigger the asynchronous callback
         //
-        if ([self.domain isIPAddress])
+        if ([self.domain isEqualToString:@"default"] || [self.domain isIPAddress])
         {
             __block __typeof(self) blockSelf = self;
             dispatch_async(dispatch_queue_create("com.ca.mas.networking.reachability.synchronous.flags", NULL), ^{

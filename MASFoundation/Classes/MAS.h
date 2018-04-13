@@ -379,7 +379,7 @@
  @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
  @param monitoringBlock MASNetworkReachabilityStatusBlock that will update the reachability status.
  */
-+ (void)setNetworkMonitorBlockForHost:(NSString * _Nonnull)host monitoringBlock:(MASNetworkReachabilityStatusBlock _Nullable)monitoringBlock;
++ (void)setNetworkMonitorBlockForHost:(NSString * _Nullable)host monitoringBlock:(MASNetworkReachabilityStatusBlock _Nullable)monitoringBlock;
 
 
 
@@ -389,7 +389,7 @@
  @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
  @return Returns YES if it is reachable, NO if not.
  */
-+ (BOOL)isNetworkReachableForHost:(NSString * _Nonnull)host;
++ (BOOL)isNetworkReachableForHost:(NSString * _Nullable)host;
 
 
 

@@ -143,7 +143,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     NSString *targetHost = host;
     if (targetHost == nil || [targetHost length] == 0)
     {
-        targetHost = @"generic";
+        targetHost = @"default";
     }
     
     if ([_reachabilityMonitoringBlockForHosts_.allKeys containsObject:targetHost])
@@ -153,7 +153,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     else {
         
         MASNetworkReachability *reachability = nil;
-        if ([targetHost isEqualToString:@"generic"])
+        if ([targetHost isEqualToString:@"default"])
         {
             //
             //  Construct sockaddr for generic network
