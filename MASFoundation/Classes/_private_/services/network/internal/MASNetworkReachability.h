@@ -80,7 +80,7 @@
 
 
 /**
- This initializer is not available.  Please use [[MASNetowkrReachability alloc] initWithDomain:(NSString *)] or [[MASNetowkrReachability alloc] initWithAddress:(sockaddr *)].
+ This initializer is not available.  Please use [[MASNetworkReachability alloc] initWithDomain:(NSString *)] or [[MASNetworkReachability alloc] initWithAddress:(sockaddr *)].
 
  @return nil will always be returned with this initialization method.
  */
@@ -89,7 +89,7 @@
 
 
 /**
- This initializer is not available.  Please use [[MASNetowkrReachability alloc] initWithDomain:(NSString *)] or [[MASNetowkrReachability alloc] initWithAddress:(sockaddr *)].
+ This initializer is not available.  Please use [[MASNetworkReachability alloc] initWithDomain:(NSString *)] or [[MASNetworkReachability alloc] initWithAddress:(sockaddr *)].
  
  @return nil will always be returned with this initialization method.
  */

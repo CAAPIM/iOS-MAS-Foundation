@@ -24,9 +24,7 @@ NSString *const MASNetworkReachabilityStatusReachableViaWiFiValue = @"Reachable 
 NSString *const MASNetworkReachabilityStatusInitializingValue = @"Initializing network manager";
 
 
-#
 # pragma mark - MASNetworkReachability
-#
 
 @interface MASNetworkReachability ()
 
@@ -270,9 +268,7 @@ NSString *const MASNetworkReachabilityStatusInitializingValue = @"Initializing n
 }
 
 
-#
 # pragma mark - SCNetworkReachability callbacks
-#
 
 static void MASNetworkReachabilityCallback(SCNetworkReachabilityRef reachabilityRef, SCNetworkReachabilityFlags flags, void* info)
 {
