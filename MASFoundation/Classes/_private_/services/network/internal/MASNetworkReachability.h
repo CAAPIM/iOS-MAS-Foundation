@@ -60,7 +60,7 @@
 
 
 /**
- Initializer to perform defualt object initialization with specified domain value as in string.
+ Initializer to perform default object initialization with specified domain value as in string.
 
  @param domain NSString value of the domain to be monitored. Domain value should be either DNS format of hostname, or IP address without URL scheme and port.
  @return MASNetworkReachability object created.
@@ -70,7 +70,7 @@
 
 
 /**
- Initializer to perform defualt object initialization with specified domain value as in socket address.
+ Initializer to perform default object initialization with specified domain value as in socket address.
 
  @param address sockaddr object specifying domain to be monitored.
  @return MASNetworkReachability object created.
@@ -111,7 +111,7 @@
 
 
 /**
- Stops monitoring network reachability status for given domain.  If the object is already monitoring the reachability, it will stop monitoring first, then re-start.
+ Stops monitoring network reachability status for given domain.  If the object is already monitoring the reachability, it will stop monitoring first, then restart.
  */
 - (void)stopMonitoring;
 
