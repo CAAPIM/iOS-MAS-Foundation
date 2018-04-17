@@ -382,6 +382,8 @@
 		CBAFD24D1F2BD46C0034DF02 /* MASSecurityConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CBAFD24B1F2BD46C0034DF02 /* MASSecurityConfiguration.m */; };
 		CBAFD2501F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = CBAFD24E1F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.h */; };
 		CBAFD2511F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = CBAFD24F1F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.m */; };
+		CBBA9A8020742BA800BB307F /* MASNetworkReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = CBBA9A7E20742BA800BB307F /* MASNetworkReachability.h */; };
+		CBBA9A8120742BA800BB307F /* MASNetworkReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = CBBA9A7F20742BA800BB307F /* MASNetworkReachability.m */; };
 		CBD25AE31E78C47C00DFB47F /* JWTAlgorithm.h in Headers */ = {isa = PBXBuildFile; fileRef = CBD25AAD1E78C47C00DFB47F /* JWTAlgorithm.h */; };
 		CBD25AE41E78C47C00DFB47F /* JWTAlgorithmFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CBD25AAE1E78C47C00DFB47F /* JWTAlgorithmFactory.h */; };
 		CBD25AE51E78C47C00DFB47F /* JWTAlgorithmFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CBD25AAF1E78C47C00DFB47F /* JWTAlgorithmFactory.m */; };
@@ -837,6 +839,8 @@
 		CBAFD24B1F2BD46C0034DF02 /* MASSecurityConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSecurityConfiguration.m; sourceTree = "<group>"; };
 		CBAFD24E1F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASSecurityConfiguration+MASPrivate.h"; sourceTree = "<group>"; };
 		CBAFD24F1F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MASSecurityConfiguration+MASPrivate.m"; sourceTree = "<group>"; };
+		CBBA9A7E20742BA800BB307F /* MASNetworkReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASNetworkReachability.h; sourceTree = "<group>"; };
+		CBBA9A7F20742BA800BB307F /* MASNetworkReachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASNetworkReachability.m; sourceTree = "<group>"; };
 		CBD25AAD1E78C47C00DFB47F /* JWTAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JWTAlgorithm.h; sourceTree = "<group>"; };
 		CBD25AAE1E78C47C00DFB47F /* JWTAlgorithmFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JWTAlgorithmFactory.h; sourceTree = "<group>"; };
 		CBD25AAF1E78C47C00DFB47F /* JWTAlgorithmFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JWTAlgorithmFactory.m; sourceTree = "<group>"; };
@@ -1531,6 +1535,8 @@
 				CB2357991F100EC400D4C420 /* MASSessionDataTaskOperation.m */,
 				CB3173DE1F1FFF2C00C85E47 /* MASNetworkMonitor.h */,
 				CB3173DF1F1FFF2C00C85E47 /* MASNetworkMonitor.m */,
+				CBBA9A7E20742BA800BB307F /* MASNetworkReachability.h */,
+				CBBA9A7F20742BA800BB307F /* MASNetworkReachability.m */,
 			);
 			path = internal;
 			sourceTree = "<group>";
@@ -1805,6 +1811,7 @@
 				A42D02E01C0E223600AA1F11 /* MASAuthenticationProviders.h in Headers */,
 				CBD25AEA1E78C47C00DFB47F /* JWTAlgorithmDataHolder.h in Headers */,
 				105B2F4D1CA6B3EA0005A2D0 /* safestack.h in Headers */,
+				CBBA9A8020742BA800BB307F /* MASNetworkReachability.h in Headers */,
 				10E027A21F72B10100EAB103 /* RNCryptorEngine.h in Headers */,
 				105B2F311CA6B3EA0005A2D0 /* engine.h in Headers */,
 				A858C6651D0978A6001FB9AD /* MASOTPService.h in Headers */,
@@ -2301,6 +2308,7 @@
 				A46F49BB1C2F5FC500A4C370 /* fmemopen.c in Sources */,
 				CB6491FC1FE9DAF300281288 /* MQTTSSLSecurityPolicy.m in Sources */,
 				69B7DF6B1F9675600056DD3A /* MASRequestBuilder.m in Sources */,
+				CBBA9A8120742BA800BB307F /* MASNetworkReachability.m in Sources */,
 				A4150EFE1BF16EE200037E27 /* MASSecurityService.m in Sources */,
 				A46F49C21C2F5FC500A4C370 /* MASIKeyChainStore.m in Sources */,
 				A46F49D61C2F5FC500A4C370 /* MASIURLResponseSerialization.m in Sources */,

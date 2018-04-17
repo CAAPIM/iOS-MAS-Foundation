@@ -110,5 +110,7 @@ NSString *const MASProximityLoginQRCodeDidStopDisplayingQRCodeImage = @"MASProxi
 
 # pragma mark - Gateway Monitor Notifications
 
+NSString *const MASNetworkReachabilityStatusUpdateNotification = @"com.ca.mas.networking.reachability.status";
+
 NSString *const MASGatewayMonitorStatusUpdateNotification = @"MASGatewayMonitorStatusUpdateNotification";
 

@@ -25,8 +25,6 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
 
 # pragma mark - Properties
 
-@property (nonatomic, assign, readonly) MASGatewayMonitoringStatus monitoringStatus;
-
 /**
  Http redirection block. Set this block only if you want to handle the redirection coming from the original NSURLRequest.
  */
@@ -41,6 +39,13 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
  */
 - (MASAuthValidationOperation *)sharedOperation;
 
+
+
+///--------------------------------------
+/// @name Network Reachability
+///--------------------------------------
+
+# pragma mark - Network Reachability
 
 /**
  *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
@@ -58,6 +63,40 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
  *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
  */
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor;
+
+
+
+/**
+ Sets the network reachability monitoring block for the specified hostname.
+ The host can be either in DNS format, or IP address format.  If the host is defined as DNS format, the host should be defined without URL scheme, and port number.
+ 
+ This block will be triggered when any change to the current monitoring status of the host.
+ 
+ Available monitoring status enumerated values are:
+ 
+ MASNetworkReachabilityStatusUnknown
+ MASNetworkReachabilityStatusNotReachable
+ MASNetworkReachabilityStatusReachableViaWWAN
+ MASNetworkReachabilityStatusReachableViaWiFi
+ MASNetworkReachabilityStatusInitializing
+ 
+ This is optional and it can be set to nil at any time to stop receiving the notifications.
+
+ @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
+ @param monitor MASNetworkReachabilityStatusBlock that will update the reachability status.
+ */
++ (void)setNetworkReachabilityMonitorForHost:(NSString *)host monitor:(MASNetworkReachabilityStatusBlock)monitor;
+
+
+
+/**
+ Returns a simple boolean indicator if the specified host is reachable or not.
+
+ @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
+ @return Returns YES if it is reachable, NO if not.
+ */
++ (BOOL)isNetworkReachableForHost:(NSString *)host;
+
 
 
 #ifdef DEBUG

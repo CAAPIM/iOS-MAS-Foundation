@@ -240,8 +240,14 @@ extern NSString *const _Nonnull MASProximityLoginQRCodeDidStopDisplayingQRCodeIm
 # pragma mark - Gateway Monitor Notifications
 
 /**
+ * The NSString constant for the network reachability monitor notification indicating that the monitor status
+ * has updated to a new value.
+ */
+extern NSString *const _Nonnull MASNetworkReachabilityStatusUpdateNotification;
+
+
+/**
  * The NSString constant for the gateway monitor notification indicating that the monitor status
  * has updated to a new value.
  */
 extern NSString *const _Nonnull MASGatewayMonitorStatusUpdateNotification;
-

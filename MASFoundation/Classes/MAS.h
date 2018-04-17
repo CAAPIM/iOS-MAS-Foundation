@@ -122,25 +122,6 @@
 
 
 /**
- *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
- *  This block will be triggered when any change to the current monitoring status
- *  takes place with a MASGatewayMonitoringStatus.
- *
- *  The gateway monitoring status enumerated values are:
- *
- *      MASGatewayMonitoringStatusNotReachable
- *      MASGatewayMonitoringStatusReachableViaWWAN
- *      MASGatewayMonitoringStatusReachableViaWiFi
- *
- *  This is optional and it can be set to nil at any time to stop receiving the notifications.
- *
- *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
- */
-+ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
-
-
-
-/**
  *  Returns current MASState enumeration value.  The value can be used to determine which state SDK is currently at.
  *
  *  @return return MASState of current state.
@@ -338,6 +319,27 @@
 # pragma mark - Gateway Monitoring
 
 /**
+ *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
+ *  This block will be triggered when any change to the current monitoring status
+ *  takes place with a MASGatewayMonitoringStatus.
+ *
+ *  The gateway monitoring status enumerated values are:
+ *
+ *      MASGatewayMonitoringStatusNotReachable
+ *      MASGatewayMonitoringStatusReachableViaWWAN
+ *      MASGatewayMonitoringStatusReachableViaWiFi
+ *
+ *  This is optional and it can be set to nil at any time to stop receiving the notifications.
+ *
+ *  Reachability status update can also be received as NSNotification. Subscribe notification key, MASGatewayMonitorStatusUpdateNotification, and notifications will be broadcasted whenever there is a change in network reachability status for the primary gateway on the payload of NSNotification as NSDictionary format @{ (NSString)"host" : (NSNumber)enumValue};
+ *
+ *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
+ */
++ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
+
+
+
+/**
  *  Retrieves a simple boolean indicator if the gateway is currently reachable or not.
  *
  *  @return Returns YES if it is reachable, NO if not.
@@ -358,6 +360,40 @@
  *  @return Returns the gateway monitoring status as a human readable NSString.
  */
 + (NSString *_Nonnull)gatewayMonitoringStatusAsString;
+
+
+
+/**
+ Retrieves the network reachability status of the specified host.
+ 
+ The host should be in string format without URL scheme, and port number. (i.e. 'www.ca.com', NOT https://www.ca.com:8080)
+ 
+ Available monitoring status enumerated values are:
+ 
+    MASNetworkReachabilityStatusUnknown
+    MASNetworkReachabilityStatusNotReachable
+    MASNetworkReachabilityStatusReachableViaWWAN
+    MASNetworkReachabilityStatusReachableViaWiFi
+    MASNetworkReachabilityStatusInitializing
+ 
+ This is optional and it can be set to nil at any time to stop receiving the notifications.
+ 
+ Reachability status update can also be received as NSNotification. Subscribe notification key, MASGatewayMonitorStatusUpdateNotification, and notifications will be broadcasted whenever there is a change in network reachability status for the primary gateway on the payload of NSNotification as NSDictionary format @{ (NSString)"host" : (NSNumber)enumValue};
+ 
+ @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
+ @param monitoringBlock MASNetworkReachabilityStatusBlock that will update the reachability status.
+ */
++ (void)setNetworkMonitorBlockForHost:(NSString * _Nullable)host monitoringBlock:(MASNetworkReachabilityStatusBlock _Nullable)monitoringBlock;
+
+
+
+/**
+ Returns a simple boolean indicator if the specified host is reachable or not.
+
+ @param host NSString value of the host to be monitored. Host value should be either DNS format of hostname, or IP address without URL scheme and port.
+ @return Returns YES if it is reachable, NO if not.
+ */
++ (BOOL)isNetworkReachableForHost:(NSString * _Nullable)host;
 
 
 

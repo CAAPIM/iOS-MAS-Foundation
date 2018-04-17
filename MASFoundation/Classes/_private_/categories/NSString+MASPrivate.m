@@ -129,4 +129,24 @@ static NSString *const kMASAlphaNumerics = @"abcdefghijklmnopqrstuvwxyzABCDEFGHI
     return mutableCopy;
 }
 
+
+- (BOOL)isIPAddress
+{
+    BOOL isIPAddress = NO;
+    
+    if (self != nil && [self length] > 0)
+    {
+        NSError *error = nil;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" options:0 error:&error];
+        NSRange range = [regex rangeOfFirstMatchInString:self options:0 range:NSMakeRange(0, [self length])];
+        
+        if (range.location != NSNotFound)
+        {
+            isIPAddress = YES;
+        }
+    }
+    
+    return isIPAddress;
+}
+
 @end

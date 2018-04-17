@@ -92,12 +92,6 @@
 }
 
 
-+ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
-{
-    [MASNetworkingService setGatewayMonitor:monitor];
-}
-
-
 + (void)setKeychainSynchronizable:(BOOL)enabled
 {
     [MASAccessService setKeychainSynchronizable:enabled];
@@ -828,6 +822,12 @@
 
 # pragma mark - Gateway Monitoring
 
++ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
+{
+    [MASNetworkingService setGatewayMonitor:monitor];
+}
+
+
 + (BOOL)gatewayIsReachable
 {
     return [[MASNetworkingService sharedService] networkIsReachable];
@@ -839,6 +839,18 @@
     MASNetworkingService *networkManager = [MASNetworkingService sharedService];
    
     return (networkManager ? [networkManager networkStatusAsString] : MASNotStartedYet);
+}
+
+
++ (void)setNetworkMonitorBlockForHost:(NSString *)host monitoringBlock:(MASNetworkReachabilityStatusBlock)monitoringBlock
+{
+    [MASNetworkingService setNetworkReachabilityMonitorForHost:host monitor:monitoringBlock];
+}
+
+
++ (BOOL)isNetworkReachableForHost:(NSString *)host
+{
+    return [MASNetworkingService isNetworkReachableForHost:host];
 }
 
 
