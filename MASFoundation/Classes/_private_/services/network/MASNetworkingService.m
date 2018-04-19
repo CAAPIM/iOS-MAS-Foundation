@@ -179,8 +179,6 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 }
 
 
-#ifdef DEBUG
-
 # pragma mark - DEBUG
 
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled
@@ -203,8 +201,6 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
         [[MASNetworkMonitor sharedMonitor] stopMonitoring];
     }
 }
-
-#endif
 
 
 # pragma mark - Shared Service

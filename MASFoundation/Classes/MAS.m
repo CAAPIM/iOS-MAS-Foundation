@@ -152,14 +152,10 @@
 }
 
 
-#ifdef DEBUG
-
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled
 {
     [MASNetworkingService setGatewayNetworkActivityLogging:enabled];
 }
-
-#endif
 
 
 # pragma mark - Start & Stop
