@@ -101,6 +101,12 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 
 # pragma mark - Lifecycle
 
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASModelServiceUUID];
+}
+
+
 + (NSString *)serviceUUID
 {
     return MASModelServiceUUID;

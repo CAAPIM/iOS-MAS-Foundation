@@ -121,6 +121,12 @@ static NSMutableDictionary *_securityConfigurations_;
 
 # pragma mark - Lifecycle
 
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASConfigurationServiceUUID];
+}
+
+
 + (NSString *)serviceUUID
 {
     return MASConfigurationServiceUUID;

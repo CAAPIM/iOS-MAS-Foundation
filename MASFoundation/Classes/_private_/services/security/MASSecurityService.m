@@ -61,6 +61,12 @@ static MASSecurityService *_sharedService_ = nil;
 
 # pragma mark - Service Lifecycle
 
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASSecurityServiceUUID];
+}
+
+
 + (NSString *)serviceUUID
 {
     return MASSecurityServiceUUID;

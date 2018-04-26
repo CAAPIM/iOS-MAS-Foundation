@@ -354,127 +354,94 @@ static NSArray const *_serviceUUIDs_;
         return;
     }
     
-    //
-    // Find total number of classes in the bundle
-    //
-    int numClasses;
-    Class *classes = NULL;
-    classes = NULL;
-    numClasses = objc_getClassList(NULL, 0);
-    
-    //
-    // If we successfully find the classes, not sure why we wouldn't but check anyway
-    //
-    if (numClasses > 0)
+    MASService *service;
+    for (Class serviceClass in [MASService getSubclasses])
     {
-        //
-        // Find all those that are specfically of type Class
-        //
-        classes = (__unsafe_unretained Class *)malloc(sizeof(Class) * numClasses);
-        numClasses = objc_getClassList(classes, numClasses);
-        
-        //
-        // Iterate all class to find on those with the super class MASSercie
-        //
-        MASService *service;
-        for (int i = 0; i < numClasses; i++)
+        service = nil;
+        if (serviceClass != nil && serviceClass != [MASService class])
         {
             //
-            // Detect MASService classes
+            // Invoke the shared service the first time
             //
-            if(class_getSuperclass(classes[i]) == [MASService class])
+            service = [serviceClass performSelector:@selector(sharedService)];
+            
+            //DLog(@"\n\nfound service: %@\\n\n    has a known service uuid: %@\n\n",
+            //    [service debugDescription],
+            //    ([_serviceUUIDs_ containsObject:[service.class serviceUUID]] ? @"Yes" : @"No"));
+            
+            //
+            // For now lets check if this is a 'known' MAS service by it's UUID.  We are not
+            // allowing thirdparty services at this time.  If one detected, ignore it but
+            // continue on with other services.
+            //
+            if(![service.class serviceUUID])
             {
-                //
-                // Invoke the shared service the first time
-                //
-                service = [classes[i] performSelector:@selector(sharedService)];
-                
-                //DLog(@"\n\nfound service: %@\\n\n    has a known service uuid: %@\n\n",
-                //    [service debugDescription],
-                //    ([_serviceUUIDs_ containsObject:[service.class serviceUUID]] ? @"Yes" : @"No"));
-                
-                //
-                // For now lets check if this is a 'known' MAS service by it's UUID.  We are not
-                // allowing thirdparty services at this time.  If one detected, ignore it but
-                // continue on with other services.
-                //
-                if(![service.class serviceUUID])
+                DLog(@"\n\nWarning detected MASService class: %@ with unknown UUID: %@\n\n",
+                     service.class, [service.class serviceUUID]);
+
+                continue;
+            }
+            
+            //
+            // Detect the set registry method and invoke it
+            //
+            [service performSelector:@selector(setRegistry:) withObject:self];
+            
+            //
+            // Guarantee that the configuration service is first in the list so
+            // it will always hit every lifecycle step first
+            //
+            if([service isKindOfClass:[MASConfigurationService class]])
+            {
+                [self.services insertObject:service atIndex:0];
+            }
+            
+            //
+            // Guarantee that the acces service is the first or second in the list so
+            // it will always available to other services using keychain storage
+            //
+            
+            // MASAccessService does not have any dependency with MASConfigurationService,
+            // but other services have dependencies on these two, so ensuring these two services get initialized (regardless of the order of these two) before the other services
+            
+            else if ([service isKindOfClass:[MASAccessService class]])
+            {
+                if ([self.services count] > 0)
                 {
-                    DLog(@"\n\nWarning detected MASService class: %@ with unknown UUID: %@\n\n",
-                        service.class, [service.class serviceUUID]);
-                    
-                    continue;
+                    [self.services insertObject:service atIndex:1];
                 }
-    
-                //
-                // Detect the set registry method and invoke it
-                //
-                [service performSelector:@selector(setRegistry:) withObject:self];
-                
-                //
-                // Guarantee that the configuration service is first in the list so
-                // it will always hit every lifecycle step first
-                //
-                if([service isKindOfClass:[MASConfigurationService class]])
-                {
+                else {
                     [self.services insertObject:service atIndex:0];
                 }
+            }
+            
+            //
+            // Else this is any other framework
+            //
+            else
+            {
+                //
+                // Add newly created services as they are found
+                //
+                [self.services addObject:service];
                 
                 //
-                // Guarantee that the acces service is the first or second in the list so
-                // it will always available to other services using keychain storage
+                // If the MASUI framework is present check for it's service
                 //
-                
-                // MASAccessService does not have any dependency with MASConfigurationService,
-                // but other services have dependencies on these two, so ensuring these two services get initialized (regardless of the order of these two) before the other services
-                
-                else if ([service isKindOfClass:[MASAccessService class]])
-                {
-                    if ([self.services count] > 0)
-                    {
-                        [self.services insertObject:service atIndex:1];
-                    }
-                    else {
-                        [self.services insertObject:service atIndex:0];
-                    }
-                }
-                
-                //
-                // Else this is any other framework
-                //
-                else
+                if(_uiHandlingIsPresent)
                 {
                     //
-                    // Add newly created services as they are found
+                    // If this is the MASUI's service it will be detected
                     //
-                    [self.services addObject:service];
-                    
-                    //
-                    // If the MASUI framework is present check for it's service
-                    //
-                    if(_uiHandlingIsPresent)
+                    if ([service class] == [NSClassFromString(@"MASUIService") class])
                     {
-                        //
-                        // If this is the MASUI's service it will be detected
-                        //
-                        if ([service class] == [NSClassFromString(@"MASUIService") class])
-                        {
-                            _uiService = service;
-                        }
+                        _uiService = service;
                     }
                 }
             }
         }
-        
-        //
-        // Free the memory
-        //
-        free(classes);
     }
     
-    //DLog(@"called and found %ld MASServices:\n\n%@\n\n",
-    //    (unsigned long)self.services.count, self.services);
-
     //
     // Proceed with the next step in the lifecycle
     //
