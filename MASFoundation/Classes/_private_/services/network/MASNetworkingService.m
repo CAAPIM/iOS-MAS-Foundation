@@ -220,6 +220,12 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 # pragma mark - Lifecycle
 
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASNetworkServiceUUID];
+}
+
+
 + (NSString *)serviceUUID
 {
     return MASNetworkServiceUUID;
