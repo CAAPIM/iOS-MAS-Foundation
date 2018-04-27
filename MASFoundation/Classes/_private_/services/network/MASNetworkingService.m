@@ -522,8 +522,8 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
                 //
                 // Retrieve the geo-location coordinates
                 //
-                [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
-                    
+                [blockSelf retrieveLocation:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
+                
                     //
                     // If an invalid geolocation result is detected
                     //
@@ -1436,7 +1436,7 @@ withParameters:(NSDictionary *)parameterInfo
     // Determine if we need to add the geo-location header value
     //
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
+    if(configuration.locationIsRequired && [MASLocationService isLocationMonitoringAuthorized])
     {
         //
         // Request the one time, currently available location before proceeding
