@@ -99,8 +99,6 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
 
 
 
-#ifdef DEBUG
-
 /**
  *  Debug property to view the network REST calls requests/responses on the console.
  *  Default is NO.
@@ -108,8 +106,6 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
  *  @param enabled YES to log network activity, NO to not.
  */
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled;
-
-#endif
 
 
 
