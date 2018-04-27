@@ -294,7 +294,7 @@
     MASINTULocationManager *locMgr = [MASINTULocationManager sharedInstance];
     
     return [locMgr requestLocationWithDesiredAccuracy:MASINTULocationAccuracyNeighborhood
-        timeout:5
+        timeout:0.1
         delayUntilAuthorized:NO
         block:^(CLLocation *currentLocation, MASINTULocationAccuracy achievedAccuracy, MASINTULocationStatus status)
         {
