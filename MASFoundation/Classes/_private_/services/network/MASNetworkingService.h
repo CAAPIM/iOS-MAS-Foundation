@@ -102,6 +102,15 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
 #ifdef DEBUG
 
 /**
+ Sets or updates gateway reachability monitoring block
+ 
+ @param monitoringBlock MASNetworkReachabilityStatusBlock callback
+ */
+- (void)setGatewayReachabilityMonitoringBlock:(MASNetworkReachabilityStatusBlock)monitoringBlock;
+
+
+
+/**
  *  Debug property to view the network REST calls requests/responses on the console.
  *  Default is NO.
  *
