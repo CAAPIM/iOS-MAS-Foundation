@@ -171,7 +171,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeBLEDelegateNotDefined = 150005,
     MASFoundationErrorCodeBLEInvalidAuthenticationProvider = 150006,
     MASFoundationErrorCodeBLEPoweredOff = 150007,
-    MASFoundationErrorCodeBLERestting = 150008,
+    MASFoundationErrorCodeBLEResetting = 150008,
     MASFoundationErrorCodeBLERSSINotInRange = 150009,
     MASFoundationErrorCodeBLEUnSupported = 150010,
     MASFoundationErrorCodeBLEUnauthorized = 150011,

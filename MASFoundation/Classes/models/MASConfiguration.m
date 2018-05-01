@@ -565,7 +565,7 @@ static float _systemVersionNumber_;
 }
 
 
-- (NSArray *)trustedCertPinnedPublickKeyHashes
+- (NSArray *)trustedCertPinnedPublicKeyHashes
 {
     NSDictionary *magInfo = _configurationInfo_[MASMAGConfigurationKey];
     NSDictionary *mobileSDKs = magInfo[MASMobileConfigurationKey];

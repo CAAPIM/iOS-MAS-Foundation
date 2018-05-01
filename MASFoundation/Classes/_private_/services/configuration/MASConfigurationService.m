@@ -275,10 +275,10 @@ static NSMutableDictionary *_securityConfigurations_;
     NSURL *currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayHostName, _currentConfiguration.gatewayPort]];
     MASSecurityConfiguration *defaultSecurityConfiguration = [[MASSecurityConfiguration alloc] initWithURL:currentURL];
     defaultSecurityConfiguration.trustPublicPKI = _currentConfiguration.enabledTrustedPublicPKI;
-    defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublickKeyHashes;
+    defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublicKeyHashes;
     defaultSecurityConfiguration.certificates = _currentConfiguration.gatewayCertificates;
     
-    [MASConfiguration setSecurityConfiguration:defaultSecurityConfiguration];
+    [MASConfiguration setSecurityConfiguration:defaultSecurityConfiguration error:nil];
     
     //DLog(@"\n\ndone and current configuration is:\n\n%@\n\n", [_currentConfiguration debugDescription]);
     
