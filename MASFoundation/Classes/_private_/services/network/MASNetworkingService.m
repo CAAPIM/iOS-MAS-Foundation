@@ -108,12 +108,12 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
         {
             blockMonitor(convertedStatus);
         }
-        
-        //
-        //  Notify with notification
-        //
-        [[NSNotificationCenter defaultCenter] postNotificationName:MASGatewayMonitorStatusUpdateNotification object:[NSNumber numberWithInt:convertedStatus]];
     };
+    
+    if ([MAS MASState] == MASStateDidStart)
+    {
+        [[MASNetworkingService sharedService] setGatewayReachabilityMonitoringBlock:_gatewayReachabilityBlock_];
+    }
 }
 
 
@@ -130,6 +130,15 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 {
     MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
     return reachability.isReachable;
+}
+
+
+- (void)setGatewayReachabilityMonitoringBlock:(MASNetworkReachabilityStatusBlock)monitoringBlock
+{
+    if (_gatewayReachabilityManager)
+    {
+        [_gatewayReachabilityManager setReachabilityMonitoringBlock:monitoringBlock];
+    }
 }
 
 

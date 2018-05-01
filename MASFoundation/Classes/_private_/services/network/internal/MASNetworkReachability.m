@@ -9,6 +9,8 @@
 //
 
 #import "MASNetworkReachability.h"
+
+#import "MASConfiguration.h"
 #import "MASNotifications.h"
 #import "NSString+MASPrivate.h"
 #import <SystemConfiguration/SystemConfiguration.h>
@@ -264,6 +266,15 @@ NSString *const MASNetworkReachabilityStatusInitializingValue = @"Initializing n
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:MASNetworkReachabilityStatusUpdateNotification object:@{blockSelf.domain : [NSNumber numberWithInt:blockSelf.reachabilityStatus]}];
+        
+        
+        if ([blockSelf.domain isEqualToString:[MASConfiguration currentConfiguration].gatewayHostName])
+        {
+            //
+            //  Notify with notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASGatewayMonitorStatusUpdateNotification object:[NSNumber numberWithInt:blockSelf.reachabilityStatus]];
+        }
     });
 }
 
