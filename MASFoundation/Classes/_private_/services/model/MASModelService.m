@@ -779,6 +779,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             [blockSelf clearCurrentUserForLogout];
             
             //
+            // Clear all currently registered device's information upon de-registration
+            //
+            [[MASDevice currentDevice] clearCurrentDeviceForDeregistration];
+                                              
+            //
             // Remove PKCE Code Verifier and state
             //
             [[MASAccessService sharedService].currentAccessObj deleteCodeVerifier];

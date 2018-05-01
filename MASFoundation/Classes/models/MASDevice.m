@@ -117,6 +117,11 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     [[MASAccessService sharedService] clearShared];
     
     //
+    // Clear all currently registered device's information upon de-registration
+    //
+    [[MASDevice currentDevice] clearCurrentDeviceForDeregistration];
+    
+    //
     // Refresh current access object to reflect correct status
     //
     [[MASAccessService sharedService].currentAccessObj refresh];
