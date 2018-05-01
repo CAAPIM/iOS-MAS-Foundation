@@ -70,7 +70,7 @@
 /**
  *  A list of trusted public key hasehs for certificate pinning.
  */
-@property (nonatomic, copy, readonly, nullable) NSArray *trustedCertPinnedPublickKeyHashes;
+@property (nonatomic, copy, readonly, nullable) NSArray *trustedCertPinnedPublicKeyHashes;
 
 
 /**

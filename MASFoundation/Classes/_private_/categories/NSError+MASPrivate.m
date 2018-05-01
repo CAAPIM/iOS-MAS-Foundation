@@ -1084,7 +1084,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         case MASFoundationErrorCodeBLEUnknownState: return @"Unknown error occured while enabling BLE Central";
         case MASFoundationErrorCodeBLEPoweredOff: return @"Bluetooth is currently off";
-        case MASFoundationErrorCodeBLERestting: return @"Bluetooth connection is momentarily lost; restting the connection";
+        case MASFoundationErrorCodeBLEResetting: return @"Bluetooth connection is momentarily lost; restting the connection";
         case MASFoundationErrorCodeBLEUnauthorized: return @"Bluetooth feature is not authorized for this application";
         case MASFoundationErrorCodeBLEUnSupported: return @"Bluetooth feature is not supported";
         case MASFoundationErrorCodeBLEDelegateNotDefined: return @"MASDevice's BLE delegate is not defined. Delegate is mandatory to acquire permission from the user.";
