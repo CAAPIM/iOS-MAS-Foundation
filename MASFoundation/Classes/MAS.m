@@ -18,6 +18,7 @@
 #import "MASFileService.h"
 #import "MASLocationService.h"
 #import "MASModelService.h"
+#import "MASOTPMultiFactorAuthenticator.h"
 #import "MASOTPService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
@@ -199,6 +200,13 @@
         else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
             //
+            //  Register internal MFA
+            //
+            MASOTPMultiFactorAuthenticator *otpAuthenticator = [[MASOTPMultiFactorAuthenticator alloc] init];
+            [MAS registerMultiFactorAuthenticator:otpAuthenticator];
+            [MAS registerMultiFactorAuthenticator:[MASUser currentUser]];
+            
+            //
             //  Make sure to register the client (application)
             //
             [[MASModelService sharedService] registerApplication:^(BOOL completed, NSError *error) {
@@ -250,6 +258,13 @@
             }];
         }
         else {
+            
+            //
+            //  Register internal MFA
+            //
+            MASOTPMultiFactorAuthenticator *otpAuthenticator = [[MASOTPMultiFactorAuthenticator alloc] init];
+            [MAS registerMultiFactorAuthenticator:otpAuthenticator];
+            
             //
             // Post the notification
             //
@@ -1348,6 +1363,27 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (BOOL)isPublicForEndpoint:(NSString *)endPoint
+{
+    BOOL isPublic = NO;
+    
+    NSURL *endpointURL = [NSURL URLWithString:endPoint];
+    if (endpointURL.scheme && endpointURL.host)
+    {
+        MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", endpointURL.scheme, endpointURL.host, endpointURL.port]]];
+        isPublic = securityConfiguration.isPublic;
+    }
+    else if ([MASConfiguration currentConfiguration])
+    {
+        NSURL *gatewayURL = [MASConfiguration currentConfiguration].gatewayUrl;
+        MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", gatewayURL.scheme, gatewayURL.host, gatewayURL.port]]];
+        isPublic = securityConfiguration.isPublic;
+    }
+    
+    return isPublic;
+}
+
+
 # pragma mark - JWT Signing
 
 + (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error
@@ -1446,24 +1482,11 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
-+ (BOOL)isPublicForEndpoint:(NSString *)endPoint
+# pragma mark - Multi Factor Authenticator
+
++ (void)registerMultiFactorAuthenticator:(MASObject<MASMultiFactorAuthenticator> *)multiFactorAuthenticator
 {
-    BOOL isPublic = NO;
-    
-    NSURL *endpointURL = [NSURL URLWithString:endPoint];
-    if (endpointURL.scheme && endpointURL.host)
-    {
-        MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", endpointURL.scheme, endpointURL.host, endpointURL.port]]];
-        isPublic = securityConfiguration.isPublic;
-    }
-    else if ([MASConfiguration currentConfiguration])
-    {
-        NSURL *gatewayURL = [MASConfiguration currentConfiguration].gatewayUrl;
-        MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", gatewayURL.scheme, gatewayURL.host, gatewayURL.port]]];
-        isPublic = securityConfiguration.isPublic;
-    }
-    
-    return isPublic;
+    [MASNetworkingService registerMultiFactorAuthenticator:multiFactorAuthenticator];
 }
 
 

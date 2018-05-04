@@ -631,7 +631,6 @@
 + (NSError *)errorInvalidEndpoint;
 
 
-
 /**
  *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
  *
@@ -657,4 +656,5 @@
  * error MASFoundationErrorCodeBBANotEnabled
  */
 + (NSError *)errorBrowserBasedAuthenticaionNotEnabled;
+
 @end

@@ -3,6 +3,9 @@
 ### Enhancement
 Swift code is added to the [iOS Guide](http://mas.ca.com/docs/ios/latest/guides/). The iOS API Reference documentation is based on Objective-c, but the Objective-c code can be used seamlessly with your Swift code. See the usage section for details.
 
+### New features
+- The Mobile SDK provides Multi Factor Authentication flow for application or other framework to handle a failure response of requests to validate and proceed on the original request with additional information.  Multi Factor Authentication can be implemented by `MASMultiFactorAuthenticator`, and `MASMultiFactorHandler`. [US494033]
+
 ### Bug fixes
 - The Mobile SDK returned incorrect device status after de-registration. `[MASDevice currentDevice].status` now returns correct status after the device de-registration. [DE361039]
 - The Mobile SDK caused a crash on using `[MAS setGatewayNetworkActivityLogging:]` on actual devices. The Mobile SDK no longer causes crash using `[MAS setGatewayNetworkActivityLogging:]` on the devices. [DE359604]

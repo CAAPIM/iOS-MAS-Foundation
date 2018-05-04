@@ -65,6 +65,12 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASAuthCredentialsJWT.h>
 
 //
+//  Multi Factor Authentication
+//
+#import <MASFoundation/MASMultiFactorHandler.h>
+#import <MASFoundation/MASMultiFactorAuthenticator.h>
+
+//
 // Categories
 //
 #import <MASFoundation/NSData+MAS.h>

@@ -10,7 +10,8 @@
 
 #import "MASService.h"
 #import "MASConstantsPrivate.h"
-
+#import "MASMultiFactorAuthenticator.h"
+#import "MASObject.h"
 #import "MASAuthValidationOperation.h"
 
 typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *session, NSURLSessionTask *task, NSURLResponse *response, NSURLRequest *request);
@@ -115,6 +116,16 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
  *  @param enabled YES to log network activity, NO to not.
  */
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled;
+
+
+
+///--------------------------------------
+/// @name Multi Factor Authenticator
+///--------------------------------------
+
+# pragma mark - Multi Factor Authenticator
+
++ (void)registerMultiFactorAuthenticator:(MASObject<MASMultiFactorAuthenticator> *)multiFactorAuthenticator;
 
 
 

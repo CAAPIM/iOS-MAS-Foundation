@@ -28,6 +28,7 @@
 #import "MASPutURLRequest.h"
 #import "MASSecurityPolicy.h"
 #import "MASNetworkReachability.h"
+#import "MASMultiFactorHandler+MASPrivate.h"
 
 
 # pragma mark - Configuration Constants
@@ -71,6 +72,7 @@ static NSString *kMASNetworkQueueOperationsChanged = @"kMASNetworkQueueOperation
 
 static MASNetworkReachabilityStatusBlock _gatewayReachabilityBlock_;
 static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
+static NSMutableArray *_multiFactorAuthenticators_;
 
 
 # pragma mark - Network Reachability
@@ -208,6 +210,22 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     else
     {
         [[MASNetworkMonitor sharedMonitor] stopMonitoring];
+    }
+}
+
+
+# pragma mark - Multi Factor Authenticator
+
++ (void)registerMultiFactorAuthenticator:(MASObject<MASMultiFactorAuthenticator> *)multiFactorAuthenticator
+{
+    if (_multiFactorAuthenticators_ == nil)
+    {
+        _multiFactorAuthenticators_ = [NSMutableArray array];
+    }
+    
+    if ([multiFactorAuthenticator respondsToSelector:@selector(getMultiFactorHandler:response:)] || [multiFactorAuthenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:handler:)])
+    {
+        [_multiFactorAuthenticators_ addObject:multiFactorAuthenticator];
     }
 }
 
@@ -614,55 +632,6 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
             }
         }
         //
-        // If MAG error code exists, and it ends with 140/142/143/144/145,
-        // it means that the OTP is required to proceed with the request.
-        // Then, try validate OTP session and retry the request.
-        //
-        else if (magErrorCode &&
-                 ([magErrorCode hasSuffix:@"140"] ||
-                  [magErrorCode hasSuffix:@"142"] || [magErrorCode hasSuffix:@"143"] ||
-                  [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
-                     
-                     [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
-                                                                          completionBlock:^(NSDictionary *responseInfo, NSError *error)
-                      {
-                          
-                          NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
-                          NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
-                          
-                          //
-                          // If it fails to fetch OTP, notify user
-                          //
-                          if (!oneTimePassword || error)
-                          {
-                              if(blockCompletion)
-                              {
-                                  blockCompletion(responseInfo, error);
-                              }
-                          }
-                          else {
-                              
-                              NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
-                              
-                              [blockOriginalHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
-                              [blockOriginalHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
-                              
-                              //
-                              //  Proceed with original request
-                              //
-                              [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                             originalHeader:blockOriginalHeader
-                                                          originalParameter:blockOriginalParameter
-                                                                requestType:blockRequestType
-                                                               responseType:blockResponseType
-                                                                   isPublic:isPublic
-                                                                 httpMethod:blockHTTPMethod
-                                                                 completion:blockCompletion];
-                          }
-                      }
-                      ];
-                 }
-        //
         // If the MAG error code exists, and it ends with 206
         // it means that the signed client certificate used to establish mutual SSL has been expired.
         // Client SDK is responsible to renew the client certificate with given mag-identifier within grace period (defined by the server).
@@ -752,8 +721,62 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
                                                        completion:blockCompletion];
                 }
             }
-            else if (blockCompletion)
+            //
+            //  Going into MFA flow if the target API's endpoint is not one of MAG/OTK's system endpoints, and the original request failed.
+            //
+            else if (![blockSelf isMAGEndpoint:blockEndPoint] && error != nil)
             {
+                MASMultiFactorHandler *handler = nil;
+                MASRequest *originalRequest = nil;
+                MASObject<MASMultiFactorAuthenticator> *authenticator = nil;
+                
+                //
+                //  Loop through multi factor authenticators to identify any authenticator is responding to the error
+                //
+                for (MASObject<MASMultiFactorAuthenticator> *thisMultiFactorAuthenticator in _multiFactorAuthenticators_)
+                {
+                    if ([thisMultiFactorAuthenticator respondsToSelector:@selector(getMultiFactorHandler:response:)])
+                    {
+                        MASRequestBuilder *originalRequestBuilder = [[MASRequestBuilder alloc] initWithHTTPMethod:blockHTTPMethod];
+                        originalRequestBuilder.endPoint = blockEndPoint;
+                        originalRequestBuilder.header = blockOriginalHeader;
+                        originalRequestBuilder.body = blockOriginalParameter;
+                        originalRequestBuilder.requestType = blockRequestType;
+                        originalRequestBuilder.responseType = blockResponseType;
+                        originalRequestBuilder.isPublic = isPublic;
+                        originalRequest = [originalRequestBuilder build];
+                        handler = [thisMultiFactorAuthenticator getMultiFactorHandler:originalRequest response:response];
+                        
+                        if (handler != nil)
+                        {
+                            authenticator = thisMultiFactorAuthenticator;
+                            break;
+                        }
+                    }
+                }
+                
+                //
+                //  If the MASMultiFactorHandler was returned (meaning one of MASMultiFactorAuthenticator declares that the class would be responsible for handling MFA),
+                //  and implement MFA handling method, proceeds with MFA flow with found MFA class
+                //
+                if (handler != nil && authenticator != nil && [authenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:handler:)])
+                {
+                    [handler setOriginalRequestCompletionBlock:blockCompletion];
+                    [authenticator onMultiFactorAuthenticationRequest:originalRequest handler:handler];
+                }
+                //
+                //  Otherwise, proceeds as normal
+                //
+                else if (blockCompletion)
+                {
+                    //
+                    // notify
+                    //
+                    blockCompletion(responseInfo, error);
+                }
+            }
+            else if (blockCompletion) {
+                
                 //
                 // notify
                 //

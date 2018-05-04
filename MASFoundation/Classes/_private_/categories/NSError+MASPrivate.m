@@ -839,6 +839,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeBBANotEnabled errorDomain:MASFoundationErrorDomainLocal];
 }
 
+
 # pragma mark - Foundation Errors Private
 
 + (MASFoundationErrorCode)foundationErrorCodeForApiCode:(MASApiErrorCode)apiCode
@@ -1122,6 +1123,13 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // Browser Based Authentication
         //
         case MASFoundationErrorCodeBBANotEnabled : return @"MAS Browser Based Authentication is Not Enabled";
+            
+        //
+        //  Multi Factor Authentication
+        //
+        case MASFoundationErrorCodeMultiFactorAuthenticationCancelled : return @"Multi factor authentication process has been cancelled.";
+        case MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest : return @"Invalid request for multi factor authentication.";
+            
         //
         // Default
         //
