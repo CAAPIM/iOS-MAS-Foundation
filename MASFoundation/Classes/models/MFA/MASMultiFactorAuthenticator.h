@@ -27,7 +27,7 @@
  If the custom MFA class can or will handle the MFA flow based on the error codes, or response of the request, the method should return MASMultiFactorHandler class.
  If nil is returned from the method, the original request will deliver the result as it was.
 
- @warning If the custom class is intended to handle MFA flow based on the response, MASMultiFactorHandler MUST be returned from this method; otherwise, the custom MFA flow will be ignored.  Also, [MASMultiFactorAuthenticator onMultiFactorAuthenticationRequest:handler:] MUST be implemented as well to properly handle MFA flow.
+ @warning If the custom class is intended to handle MFA flow based on the response, MASMultiFactorHandler MUST be returned from this method; otherwise, the custom MFA flow will be ignored.  Also, [MASMultiFactorAuthenticator onMultiFactorAuthenticationRequest:response:handler:] MUST be implemented as well to properly handle MFA flow.
  @param request MASRequest object of the original request that must be initialized with for MASMultiFactorHandler
  @param response NSURLResponse of the original request which contains the header, HTTP status code and other information
  @return MASMultiFactorHandler object if the custom class will handle MFA flow
@@ -43,8 +43,9 @@
  @warning Custom multi factor authentication logic should be implemented within this method, and MASMultiFactorHandler's [MASMultiFactorHandler's proceedWithHeaders:],
  [MASMultiFactorHandler cancelWithError:] or [MASMultiFactorHandler cancel].
  @param request MASRequest object of the original request.
+ @param response NSURLResponse object of the original request.
  @param handler MASMultiFactorHandler that must be handled after validation of custom MFA logic.
  */
-- (void)onMultiFactorAuthenticationRequest:(MASRequest * _Nonnull)request handler:(MASMultiFactorHandler * _Nonnull)handler;
+- (void)onMultiFactorAuthenticationRequest:(MASRequest * _Nonnull)request response:(NSURLResponse * _Nonnull)response handler:(MASMultiFactorHandler * _Nonnull)handler;
 
 @end

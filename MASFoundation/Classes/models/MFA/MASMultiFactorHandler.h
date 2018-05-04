@@ -13,7 +13,7 @@
 /**
  MASMultiFactorHandler class is responsible to handle, and proceed original request which triggered by MASMultiFactorAuthenticator.
  */
-@interface MASMultiFactorHandler : MASObject
+@interface MASMultiFactorHandler : NSObject
 
 ///--------------------------------------
 /// @name Properties

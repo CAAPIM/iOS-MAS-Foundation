@@ -39,7 +39,7 @@
 - (instancetype)init
 {
     @throw [NSException exceptionWithName:NSGenericException
-                                   reason:@"`-init` is not available. Use `-initWithDomain:` instead"
+                                   reason:@"`-init` is not available. Use `-initWithRequest:` instead"
                                  userInfo:nil];
     return nil;
 }
@@ -48,7 +48,7 @@
 + (instancetype)new
 {
     @throw [NSException exceptionWithName:NSGenericException
-                                   reason:@"`+new` is not available. Use `-initWithDomain:` instead"
+                                   reason:@"`+new` is not available. Use `-initWithRequest:` instead"
                                  userInfo:nil];
     return nil;
 }

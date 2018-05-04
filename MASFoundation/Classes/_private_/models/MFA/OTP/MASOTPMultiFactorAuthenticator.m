@@ -14,22 +14,20 @@
 
 @interface MASOTPMultiFactorAuthenticator ()
 
-@property (nonatomic, strong) NSDictionary *responseHeader;
-
 @end
 
 @implementation MASOTPMultiFactorAuthenticator
 
 - (MASMultiFactorHandler *)getMultiFactorHandler:(MASRequest *)request response:(NSHTTPURLResponse *)response
 {
-    _responseHeader = [response allHeaderFields];
+    NSDictionary *responseHeader = [response allHeaderFields];
     
     //
     //  Extract the error code from the response headers
     //
-    if ([[_responseHeader allKeys] containsObject:@"x-ca-err"])
+    if ([[responseHeader allKeys] containsObject:@"x-ca-err"])
     {
-        NSString *magErrorCode = [_responseHeader objectForKey:@"x-ca-err"];
+        NSString *magErrorCode = [responseHeader objectForKey:@"x-ca-err"];
         
         //
         //  140, 142, 143, 144, and 145 are x-car-err codes from MAG OTP
@@ -45,13 +43,13 @@
 }
 
 
-- (void)onMultiFactorAuthenticationRequest:(MASRequest *)request handler:(MASMultiFactorHandler *)handler
+- (void)onMultiFactorAuthenticationRequest:(MASRequest *)request response:(NSHTTPURLResponse *)response handler:(MASMultiFactorHandler *)handler
 {
     //
     //  Validate OTP with OTP service
     //
     __block MASMultiFactorHandler *blockHandler = handler;
-    [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:_responseHeader completionBlock:^(NSDictionary *responseInfo, NSError *error) {
+    [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:[response allHeaderFields] completionBlock:^(NSDictionary *responseInfo, NSError *error) {
          
         NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
         NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];

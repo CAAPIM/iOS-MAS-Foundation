@@ -37,8 +37,9 @@
  One of MASMultiFactorAuthenticator protocol method that needs to be implemented.  The method is responsible to perform OTP process as required, and to decide whether to proceed or cancel the original request based on OTP flow.
 
  @param request MASRequest object of the original request
+ @param response NSHTTPURLResponse object of the original request
  @param handler MASMultiFactorHandler to proceed or cancel the original request.
  */
-- (void)onMultiFactorAuthenticationRequest:(MASRequest * _Nonnull)request handler:(MASMultiFactorHandler * _Nonnull)handler;
+- (void)onMultiFactorAuthenticationRequest:(MASRequest * _Nonnull)request response:(NSHTTPURLResponse * _Nonnull)response handler:(MASMultiFactorHandler * _Nonnull)handler;
 
 @end

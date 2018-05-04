@@ -223,7 +223,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         _multiFactorAuthenticators_ = [NSMutableArray array];
     }
     
-    if ([multiFactorAuthenticator respondsToSelector:@selector(getMultiFactorHandler:response:)] || [multiFactorAuthenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:handler:)])
+    if ([multiFactorAuthenticator respondsToSelector:@selector(getMultiFactorHandler:response:)] && [multiFactorAuthenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:response:handler:)])
     {
         [_multiFactorAuthenticators_ addObject:multiFactorAuthenticator];
     }
@@ -759,10 +759,10 @@ static NSMutableArray *_multiFactorAuthenticators_;
                 //  If the MASMultiFactorHandler was returned (meaning one of MASMultiFactorAuthenticator declares that the class would be responsible for handling MFA),
                 //  and implement MFA handling method, proceeds with MFA flow with found MFA class
                 //
-                if (handler != nil && authenticator != nil && [authenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:handler:)])
+                if (handler != nil && authenticator != nil && [authenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:response:handler:)])
                 {
                     [handler setOriginalRequestCompletionBlock:blockCompletion];
-                    [authenticator onMultiFactorAuthenticationRequest:originalRequest handler:handler];
+                    [authenticator onMultiFactorAuthenticationRequest:originalRequest response:response handler:handler];
                 }
                 //
                 //  Otherwise, proceeds as normal
