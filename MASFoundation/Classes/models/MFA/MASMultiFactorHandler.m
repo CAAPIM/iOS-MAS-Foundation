@@ -122,7 +122,7 @@
         //
         if (_originalCompletionBlock)
         {
-            _originalCompletionBlock(nil, [NSError errorWithDomain:MASFoundationErrorDomainLocal code:MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest userInfo:nil]);
+            _originalCompletionBlock(nil, [NSError errorForFoundationCode:MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest errorDomain:MASFoundationErrorDomainLocal]);
         }
     }
 }
@@ -141,7 +141,7 @@
 {
     if (_originalCompletionBlock)
     {
-        _originalCompletionBlock(nil, [NSError errorWithDomain:MASFoundationErrorDomainLocal code:MASFoundationErrorCodeMultiFactorAuthenticationCancelled userInfo:nil]);
+        _originalCompletionBlock(nil, [NSError errorForFoundationCode:MASFoundationErrorCodeMultiFactorAuthenticationCancelled errorDomain:MASFoundationErrorDomainLocal]);
     }
 }
 
