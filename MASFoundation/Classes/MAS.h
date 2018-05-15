@@ -13,6 +13,7 @@
 #import "MASConstants.h"
 #import "MASClaims.h"
 #import "MASRequest.h"
+#import "MASMultiFactorAuthenticator.h"
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -1014,6 +1015,20 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  */
 + (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims privateKey:(NSData *_Nonnull)privateKey error:(NSError *__nullable __autoreleasing *__nullable)error;
 
+
+
+///--------------------------------------
+/// @name Multi Factor Authenticator
+///--------------------------------------
+
+# pragma mark - Multi Factor Authenticator
+
+/**
+ Static method to register custom MASMultiFactorAuthenticator object to handle multi factor authentication.
+
+ @param multiFactorAuthenticator MASObject that implements MASMultiFactorAuthenticator protocols.  The object must implement MASMultiFactorAuthenticator protocols.
+ */
++ (void)registerMultiFactorAuthenticator:(MASObject<MASMultiFactorAuthenticator> * _Nonnull)multiFactorAuthenticator;
 
 
 #ifdef DEBUG
