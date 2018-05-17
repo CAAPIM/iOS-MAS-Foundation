@@ -171,47 +171,57 @@
     
     if([content isKindOfClass:[NSMutableArray class]])
     {
-        [((NSMutableArray *)content) writeToFile:fullPath atomically:YES];
+        wasSuccessful = [((NSMutableArray *)content) writeToFile:fullPath atomically:YES];
     }
     else if([content isKindOfClass:[NSArray class]])
     {
-        [((NSArray *)content) writeToFile:fullPath atomically:YES];
+        wasSuccessful = [((NSArray *)content) writeToFile:fullPath atomically:YES];
     }
     else if([content isKindOfClass:[NSMutableData class]])
     {
-        [((NSMutableData *)content) writeToFile:fullPath options:dataWritingOption error:error];
+        wasSuccessful = [((NSMutableData *)content) writeToFile:fullPath options:dataWritingOption error:error];
     }
     else if([content isKindOfClass:[NSData class]])
     {
-        [((NSData *)content) writeToFile:fullPath options:dataWritingOption error:error];
+        wasSuccessful = [((NSData *)content) writeToFile:fullPath options:dataWritingOption error:error];
     }
     else if([content isKindOfClass:[NSMutableDictionary class]])
     {
-        [((NSMutableDictionary *)content) writeToFile:fullPath atomically:YES];
+        wasSuccessful = [((NSMutableDictionary *)content) writeToFile:fullPath atomically:YES];
     }
     else if([content isKindOfClass:[NSDictionary class]])
     {
-        [((NSDictionary *)content) writeToFile:fullPath atomically:YES];
+        wasSuccessful = [((NSDictionary *)content) writeToFile:fullPath atomically:YES];
     }
     else if([content isKindOfClass:[NSJSONSerialization class]])
     {
-        [((NSDictionary *)content) writeToFile:fullPath atomically:YES];
+        wasSuccessful = [((NSDictionary *)content) writeToFile:fullPath atomically:YES];
     }
     else if([content isKindOfClass:[NSMutableString class]])
     {
         [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fullPath options:dataWritingOption error:error];
+        
+        if(!error)
+        {
+            wasSuccessful = YES;
+        }
     }
     else if([content isKindOfClass:[NSString class]])
     {
         [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fullPath options:dataWritingOption error:error];
+        
+        if(!error)
+        {
+            wasSuccessful = YES;
+        }
     }
     else if([content isKindOfClass:[UIImage class]])
     {
-        [UIImagePNGRepresentation((UIImage *)content) writeToFile:fullPath options:dataWritingOption error:error];
+         wasSuccessful = [UIImagePNGRepresentation((UIImage *)content) writeToFile:fullPath options:dataWritingOption error:error];
     }
     else if([content conformsToProtocol:@protocol(NSCoding)])
     {
-        [NSKeyedArchiver archiveRootObject:content toFile:fullPath];
+         wasSuccessful = [NSKeyedArchiver archiveRootObject:content toFile:fullPath];
     }
     else {
         
