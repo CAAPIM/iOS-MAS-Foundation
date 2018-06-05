@@ -75,6 +75,16 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     NSAssert(info, @"info cannot be nil");
    
     //
+    //  Extracting NSHTTPURLResponse object from the response info
+    //
+    if ([info.allKeys containsObject:MASNSHTTPURLResponseObjectKey])
+    {
+        NSMutableDictionary *mutableInfo = [info mutableCopy];
+        [mutableInfo removeObjectForKey:MASNSHTTPURLResponseObjectKey];
+        info = mutableInfo;
+    }
+    
+    //
     // Keychain
     //
     MASAccessService *accessService = [MASAccessService sharedService];
