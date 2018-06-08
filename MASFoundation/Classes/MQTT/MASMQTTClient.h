@@ -17,6 +17,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - MQTT Connection Return Codes & Messages
 
+
+/**
+ The enumerated MASMQTTSSLPinningMode which will determine SSL pinning option over MQTT protocol.
+
+ - MASMQTTSSLPinningModeNone: No pinning performed
+ - MASMQTTSSLPinningModePublicKey: Public Key pinning performed; public key will be converted from pinnedCertificates array
+ - MASMQTTSSLPinningModeCertificate: Certificate pinning performed; an array of certificates can be set with pinnedCertificates property
+ */
+typedef NS_ENUM(NSUInteger, MASMQTTSSLPinningMode)
+{
+    MASMQTTSSLPinningModeNone,
+    MASMQTTSSLPinningModePublicKey,
+    MASMQTTSSLPinningModeCertificate
+};
+
+
 /**
  *  The enumerated MQTTConnectionReturnCode.
  */
@@ -148,6 +164,52 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
 
 // MQTT specification restricts client ids to a maximum of 23 characters
 @property (readwrite,copy) NSString *clientID;
+
+
+/**
+ Boolean indicator whether to allow or not an invalid certificate presented from the server (self-signed)
+ Default value is true, and SSL/TLS will only be validated when the connection option, TLS, is set to true.
+ */
+@property (nonatomic, assign) BOOL allowInvalidCertificates;
+
+
+/**
+ Boolean indicator wheter to validate or not entire chain of certificates presented from the host
+ Default value is false, and SSL/TLS will only be validated when the connection option, TLS, is set to true.
+ */
+@property (nonatomic, assign) BOOL validateCertificateChain;
+
+
+/**
+ Boolean indicator whether to validate or not domain of the certificate presented from the host
+ Default value is false, and SSL/TLS will only be validated when the connection option, TLS, is set to true.
+ */
+@property (nonatomic, assign) BOOL validateDomainName;
+
+
+/**
+ MASMQTTSSLPinningMode enumeration value to indicate which SSL pinning option to be performed
+ Default value is MASMQTTSSLPinningModeNone, and SSL/TLS will only be validated when the connection option, TLS, is set to true.
+ */
+@property (nonatomic, assign) MASMQTTSSLPinningMode pinningMode;
+
+
+/**
+ An array of certificates to be validated against presented certificates from the host
+ SSL pinning will only be validated when the connection option, TLS, is set to true.
+ */
+@property (nonatomic, strong) NSArray *pinnedCertificates;
+
+
+/**
+ An array of certificate and identity which will be presented as client certificate to the host.
+ .p12 needs to be properly converted into certificate and identity.
+ 
+ Client certificate will only be validated when the connection option, TLS, is set to true, and the host is properly configured to validate the client certificate.
+ */
+@property (nonatomic, strong) NSArray *clientCertificates;
+
+
 
 #pragma mark - Lifecycle
 
@@ -304,7 +366,7 @@ static NSString * const MASConnectaOperationDidReceiveMessageNotification = @"co
  *
  *  @param topic             The Topic to be subscribed to
  *  @param qos               The Quality of Service to be used
- *  @param completionHandler The completionHandler code block
+ *  @param completion The completionHandler code block
  */
 - (void)subscribeToTopic:(NSString *)topic
                  withQos:(MQTTQualityOfService)qos

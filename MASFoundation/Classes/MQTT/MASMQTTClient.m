@@ -125,6 +125,27 @@ static MASMQTTClient *_sharedClient = nil;
                 // Init MQTT client for current gateway
                 //
                 _sharedClient = [[MASMQTTClient alloc] initWithClientId:[MASMQTTHelper mqttClientId] cleanSession:NO];
+                
+                //
+                //  Configure default security configuration for internal broker's TLS/SSL
+                //
+                _sharedClient.allowInvalidCertificates = YES;
+                _sharedClient.validateCertificateChain = NO;
+                _sharedClient.validateDomainName = YES;
+                _sharedClient.pinningMode = MASMQTTSSLPinningModeCertificate;
+                _sharedClient.pinnedCertificates = [MASConfiguration currentConfiguration].gatewayCertificatesAsDERData;
+                
+                NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
+                NSMutableArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
+                
+                //
+                //  If identities and certificates are found, add it as client certificate
+                //  Identities and certificates will always be present as [MASMQTTClient sharedClient] will only be constructed after device registration and user authentication
+                //
+                if (identities && certificates)
+                {
+                    _sharedClient.clientCertificates = @[[identities objectAtIndex:0], [certificates objectAtIndex:0]];
+                }
             }
             else {
                 
@@ -175,6 +196,8 @@ static MASMQTTClient *_sharedClient = nil;
         self.reconnectDelay = 1;
         self.reconnectDelayMax = 1;
         self.reconnectExponentialBackoff = NO;
+
+        self.debugMode = NO;
         
         const char *cstrClientId = [self.clientID cStringUsingEncoding:NSUTF8StringEncoding];
         self.queue = dispatch_queue_create(cstrClientId, NULL);
@@ -184,6 +207,14 @@ static MASMQTTClient *_sharedClient = nil;
         _currentSession.cleanSessionFlag = self.cleanSession;
         _currentSession.delegate = self;
         _currentSession.queue = self.queue;
+        
+        //
+        //  SSL/TLS
+        //
+        self.allowInvalidCertificates = YES;
+        self.validateDomainName = NO;
+        self.validateCertificateChain = NO;
+        self.pinningMode = MASMQTTSSLPinningModeNone;
         
 #if TARGET_OS_IPHONE == 1
         self.foregroundReconnection = [[MASMQTTForegroundReconnection alloc] initWithMQTTClient:self];
@@ -202,8 +233,6 @@ static MASMQTTClient *_sharedClient = nil;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearConnection) name:MASDeviceDidResetLocallyNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearConnection) name:MASWillSwitchGatewayServerNotification object:nil];
     }
-    
-    _sharedClient = self;
 
     return self;
 }
@@ -343,15 +372,6 @@ static MASMQTTClient *_sharedClient = nil;
     //  Logging level based on the debug mode
     //
     [MQTTLog setLogLevel:self.debugMode ? DDLogLevelAll : DDLogLevelOff];
-    
-    //
-    //  Security policy for MQTT
-    //
-    MQTTSSLSecurityPolicy *securityPolicy = [MQTTSSLSecurityPolicy policyWithPinningMode:MQTTSSLPinningModeCertificate];
-    securityPolicy.allowInvalidCertificates = YES;
-    securityPolicy.validatesCertificateChain = NO;
-    securityPolicy.validatesDomainName = YES;
-    securityPolicy.pinnedCertificates = [MASConfiguration currentConfiguration].gatewayCertificatesAsDERData;
 
     //
     //  Construct SSL security transport
@@ -360,15 +380,38 @@ static MASMQTTClient *_sharedClient = nil;
     transport.host = self.host;
     transport.port = self.port;
     transport.tls = self.enableTLS;
-    transport.securityPolicy = securityPolicy;
     
-    //
-    //  Retrieve client certificate and private key to construct NSURLCredentials equivalent for establishing mutual SSL over mqtt protocol
-    //
-    NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
-    NSMutableArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
-    NSArray *clientCertificates = @[[identities objectAtIndex:0], [certificates objectAtIndex:0]];
-    transport.certificates = clientCertificates;
+    if (self.enableTLS)
+    {
+        //
+        //  Convert SSL pinning mode
+        //
+        MQTTSSLPinningMode mqttPinningMode;
+        switch (self.pinningMode) {
+            case MASMQTTSSLPinningModeCertificate:
+                mqttPinningMode = MQTTSSLPinningModeCertificate;
+                break;
+            case MASMQTTSSLPinningModePublicKey:
+                mqttPinningMode = MQTTSSLPinningModePublicKey;
+                break;
+            case MASMQTTSSLPinningModeNone:
+            default:
+                mqttPinningMode = MQTTSSLPinningModeNone;
+                break;
+        }
+        
+        //
+        //  Security policy for MQTT
+        //
+        MQTTSSLSecurityPolicy *securityPolicy = [MQTTSSLSecurityPolicy policyWithPinningMode:mqttPinningMode];
+        securityPolicy.allowInvalidCertificates = self.allowInvalidCertificates;
+        securityPolicy.validatesCertificateChain = self.validateCertificateChain;
+        securityPolicy.validatesDomainName = self.validateDomainName;
+        securityPolicy.pinnedCertificates = self.pinnedCertificates;
+        transport.certificates = self.clientCertificates;
+        transport.securityPolicy = securityPolicy;
+    }
+    
     _currentSession.transport = transport;
     
     //
