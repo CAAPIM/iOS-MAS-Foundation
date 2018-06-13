@@ -89,4 +89,13 @@
 - (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string;
 
 
+
+/**
+ Determines whether string is in IP address format or not
+
+ @return BOOL value indicating whether the string is in IP address format.
+ */
+- (BOOL)isIPAddress;
+
+
 @end

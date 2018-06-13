@@ -133,6 +133,12 @@ static BOOL _isKeychainSynchronizable_ = NO;
 
 # pragma mark - Service Lifecycle
 
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASAccessServiceUUID];
+}
+
+
 + (NSString *)serviceUUID
 {
     return MASAccessServiceUUID;

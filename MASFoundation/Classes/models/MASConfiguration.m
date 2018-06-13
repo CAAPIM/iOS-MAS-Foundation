@@ -304,7 +304,7 @@ static float _systemVersionNumber_;
         
         //storage-path
         NSString *storagePathInfo = masInfo[MASStoragePathEndpoint];
-        if (scimPathInfo)
+        if (storagePathInfo)
         {
             [_endpointKeysToPaths addEntriesFromDictionary:@{MASStoragePathEndpoint : storagePathInfo}];
         }
@@ -565,7 +565,7 @@ static float _systemVersionNumber_;
 }
 
 
-- (NSArray *)trustedCertPinnedPublickKeyHashes
+- (NSArray *)trustedCertPinnedPublicKeyHashes
 {
     NSDictionary *magInfo = _configurationInfo_[MASMAGConfigurationKey];
     NSDictionary *mobileSDKs = magInfo[MASMobileConfigurationKey];

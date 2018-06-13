@@ -61,6 +61,12 @@ static MASSecurityService *_sharedService_ = nil;
 
 # pragma mark - Service Lifecycle
 
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASSecurityServiceUUID];
+}
+
+
 + (NSString *)serviceUUID
 {
     return MASSecurityServiceUUID;
@@ -406,114 +412,6 @@ static MASSecurityService *_sharedService_ = nil;
 	}
     
 	return publicKeyBits;
-}
-
-
-///--------------------------------------
-/// @name MASFile Security
-///--------------------------------------
-
-# pragma mark - MASFile Security
-
-- (MASFile *)getDeviceClientCertificate
-{
-    NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
-    MASFile *signedCert = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASSignedCertificate]];
-    
-    if (!signedCert)
-    {
-        NSData *signedCertificateData = [[MASAccessService sharedService] getAccessValueDataWithStorageKey:MASKeychainStorageKeyPublicCertificateData];
-
-        if (signedCertificateData)
-        {
-            signedCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASSignedCertificate] contents:signedCertificateData];
-            [signedCert save];
-        }
-    }
-    
-    return signedCert;
-}
-
-
-- (MASFile *)getServerCertificate
-{
-    NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
-    MASFile *clientCert = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate]];
-    
-    if (!clientCert)
-    {
-        //
-        // Create the public server certificate file
-        //
-        NSArray *certs = [[MASConfiguration currentConfiguration] gatewayCertificatesAsPEMData];
-        NSMutableData *certificateData = [NSMutableData data];
-        
-        for (NSData *cert in certs)
-        {
-            [certificateData appendData:cert];
-            [certificateData appendData:[@"\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        }
-        
-        if (certificateData)
-        {
-            clientCert = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASCertificate] contents:certificateData];
-            [clientCert save];
-        }
-    }
-    
-    return clientCert;
-}
-
-
-- (MASFile *)getPrivateKey
-{
-    NSString *gatewayIdentifier = [[[MASConfiguration currentConfiguration].gatewayUrl.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"https://" withString:@""];
-    MASFile *privateKey = [MASFile findFileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASKey]];
-
-    //
-    // If the private key file does not exsist, create one.
-    //
-    if (!privateKey)
-    {
-        //
-        // Retrieve privateKeyBits from keychain.
-        //
-        NSString *privateKeyBits = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyPrivateKeyBits];
-        
-        if (privateKeyBits)
-        {
-            //
-            // Create MASFile and save. Note: saveWithPassword method will simply ignore the password at the moment.
-            //
-            privateKey = [MASFile fileWithName:[NSString stringWithFormat:@"%@.%@", gatewayIdentifier, MASKey] contents:[privateKeyBits dataUsingEncoding:NSUTF8StringEncoding]];
-            [privateKey save];
-        }
-    }
-    
-    return privateKey;
-}
-
-
-- (void)removeAllFiles
-{
-    MASFile *privateKey = [self getPrivateKey];
-    MASFile *serverCert = [self getServerCertificate];
-    MASFile *deviceClientCert = [self getDeviceClientCertificate];
-    
-    if ([privateKey filePath])
-    {
-        [MASFile removeItemAtFilePath:[privateKey filePath]];
-    }
-    
-    if ([serverCert filePath])
-    {
-        [MASFile removeItemAtFilePath:[serverCert filePath]];
-    }
-    
-    if ([deviceClientCert filePath])
-    {
-        [MASFile removeItemAtFilePath:[deviceClientCert filePath]];
-    }
 }
 
 @end

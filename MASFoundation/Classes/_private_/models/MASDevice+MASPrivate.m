@@ -167,6 +167,17 @@
 }
 
 
+- (void)clearCurrentDeviceForDeregistration
+{
+    [self setValue:nil forKey:@"status"];
+    
+    //
+    // Save to the keychain
+    //
+    [self saveToStorage];
+}
+
+
 - (void)reset
 {
     [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASDevice.class description]];

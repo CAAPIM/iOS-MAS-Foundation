@@ -10,7 +10,6 @@
 
 #import "NSError+MASPrivate.h"
 
-
 /**
  * The enumerated error codes for API level NSErrors.
  */
@@ -840,6 +839,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeBBANotEnabled errorDomain:MASFoundationErrorDomainLocal];
 }
 
+
 # pragma mark - Foundation Errors Private
 
 + (MASFoundationErrorCode)foundationErrorCodeForApiCode:(MASApiErrorCode)apiCode
@@ -1085,7 +1085,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         case MASFoundationErrorCodeBLEUnknownState: return @"Unknown error occured while enabling BLE Central";
         case MASFoundationErrorCodeBLEPoweredOff: return @"Bluetooth is currently off";
-        case MASFoundationErrorCodeBLERestting: return @"Bluetooth connection is momentarily lost; restting the connection";
+        case MASFoundationErrorCodeBLEResetting: return @"Bluetooth connection is momentarily lost; restting the connection";
         case MASFoundationErrorCodeBLEUnauthorized: return @"Bluetooth feature is not authorized for this application";
         case MASFoundationErrorCodeBLEUnSupported: return @"Bluetooth feature is not supported";
         case MASFoundationErrorCodeBLEDelegateNotDefined: return @"MASDevice's BLE delegate is not defined. Delegate is mandatory to acquire permission from the user.";
@@ -1123,6 +1123,13 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // Browser Based Authentication
         //
         case MASFoundationErrorCodeBBANotEnabled : return @"MAS Browser Based Authentication is Not Enabled";
+            
+        //
+        //  Multi Factor Authentication
+        //
+        case MASFoundationErrorCodeMultiFactorAuthenticationCancelled : return @"Multi factor authentication process has been cancelled.";
+        case MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest : return @"Invalid request for multi factor authentication.";
+            
         //
         // Default
         //

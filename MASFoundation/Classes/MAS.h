@@ -13,6 +13,7 @@
 #import "MASConstants.h"
 #import "MASClaims.h"
 #import "MASRequest.h"
+#import "MASMultiFactorAuthenticator.h"
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -118,25 +119,6 @@
  @param enable BOOL value indicating whether Browser Based Authentication is enabled or not.
  */
 + (void)enableBrowserBasedAuthentication:(BOOL)enable;
-
-
-
-/**
- *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
- *  This block will be triggered when any change to the current monitoring status
- *  takes place with a MASGatewayMonitoringStatus.
- *
- *  The gateway monitoring status enumerated values are:
- *
- *      MASGatewayMonitoringStatusNotReachable
- *      MASGatewayMonitoringStatusReachableViaWWAN
- *      MASGatewayMonitoringStatusReachableViaWiFi
- *
- *  This is optional and it can be set to nil at any time to stop receiving the notifications.
- *
- *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
- */
-+ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
 
 
 
@@ -336,6 +318,27 @@
 ///--------------------------------------
 
 # pragma mark - Gateway Monitoring
+
+/**
+ *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
+ *  This block will be triggered when any change to the current monitoring status
+ *  takes place with a MASGatewayMonitoringStatus.
+ *
+ *  The gateway monitoring status enumerated values are:
+ *
+ *      MASGatewayMonitoringStatusNotReachable
+ *      MASGatewayMonitoringStatusReachableViaWWAN
+ *      MASGatewayMonitoringStatusReachableViaWiFi
+ *
+ *  This is optional and it can be set to nil at any time to stop receiving the notifications.
+ *
+ *  Reachability status update can also be received as NSNotification. Subscribe notification key, MASGatewayMonitorStatusUpdateNotification, and notifications will be broadcasted whenever there is a change in network reachability status for the primary gateway on the payload of NSNotification as NSDictionary format @{ (NSString)"host" : (NSNumber)enumValue};
+ *
+ *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
+ */
++ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
+
+
 
 /**
  *  Retrieves a simple boolean indicator if the gateway is currently reachable or not.
@@ -1014,6 +1017,20 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 
 
+///--------------------------------------
+/// @name Multi Factor Authenticator
+///--------------------------------------
+
+# pragma mark - Multi Factor Authenticator
+
+/**
+ Static method to register custom MASMultiFactorAuthenticator object to handle multi factor authentication.
+
+ @param multiFactorAuthenticator MASObject that implements MASMultiFactorAuthenticator protocols.  The object must implement MASMultiFactorAuthenticator protocols.
+ */
++ (void)registerMultiFactorAuthenticator:(MASObject<MASMultiFactorAuthenticator> * _Nonnull)multiFactorAuthenticator;
+
+
 #ifdef DEBUG
 
 ///--------------------------------------
@@ -1032,18 +1049,5 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 + (void)currentStatusToConsole;
 
 #endif
-
-
-
-# pragma mark - Deprecated
-
-/**
- *  Set a user login block to handle the case where the type set in 'setDeviceRegistrationType:(MASDeviceRegistrationType)'
- *  is 'MASDeviceRegistrationTypeUserCredentials'.  If it set to 'MASDeviceRegistrationTypeClientCredentials' this
- *  is not called.
- *
- *  @param login The MASUserLoginWithUserCredentialsBlock to receive the request for user credentials.
- */
-+ (void)setUserLoginBlock:(MASUserLoginWithUserCredentialsBlock _Nullable)login DEPRECATED_MSG_ATTRIBUTE("[MAS setUserLoginBlock:] is deprecated as of MAS 1.5. Use [MAS setAuthCredentials:] instead.");
 
 @end

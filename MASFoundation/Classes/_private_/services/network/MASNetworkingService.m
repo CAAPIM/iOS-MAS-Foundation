@@ -27,6 +27,8 @@
 #import "MASPostURLRequest.h"
 #import "MASPutURLRequest.h"
 #import "MASSecurityPolicy.h"
+#import "MASNetworkReachability.h"
+#import "MASMultiFactorHandler+MASPrivate.h"
 
 
 # pragma mark - Configuration Constants
@@ -58,6 +60,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 # pragma mark - Properties
 
 @property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
+@property (nonatomic, strong, readwrite) MASNetworkReachability *gatewayReachabilityManager;
 @property (readwrite, nonatomic, strong) MASAuthValidationOperation *authValidationOperation;
 
 @end
@@ -67,18 +70,127 @@ static NSString *kMASNetworkQueueOperationsChanged = @"kMASNetworkQueueOperation
 
 @implementation MASNetworkingService
 
-static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
+static MASNetworkReachabilityStatusBlock _gatewayReachabilityBlock_;
+static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
+static NSMutableArray *_multiFactorAuthenticators_;
 
 
-# pragma mark - Properties
+# pragma mark - Network Reachability
 
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
-    _gatewayStatusMonitor_ = monitor;
+    __block MASGatewayMonitorStatusBlock blockMonitor = monitor;
+    _gatewayReachabilityBlock_ = ^(MASNetworkReachabilityStatus status){
+        
+        MASGatewayMonitoringStatus convertedStatus;
+        //
+        //  Convert MASNetworkReachabilityStatus to MASGatewayMonitoringStatus
+        //
+        switch (status) {
+            case MASNetworkReachabilityStatusNotReachable:
+                convertedStatus = MASGatewayMonitoringStatusNotReachable;
+                break;
+            case MASNetworkReachabilityStatusReachableViaWWAN:
+                convertedStatus = MASGatewayMonitoringStatusReachableViaWWAN;
+                break;
+            case MASNetworkReachabilityStatusReachableViaWiFi:
+                convertedStatus = MASGatewayMonitoringStatusReachableViaWiFi;
+                break;
+            case MASNetworkReachabilityStatusUnknown:
+            case MASNetworkReachabilityStatusInitializing:
+            default:
+                convertedStatus = MASGatewayMonitoringStatusUnknown;
+                break;
+        }
+        
+        //
+        // Notify the block, if any
+        //
+        if (blockMonitor)
+        {
+            blockMonitor(convertedStatus);
+        }
+    };
+    
+    if ([MAS MASState] == MASStateDidStart)
+    {
+        [[MASNetworkingService sharedService] setGatewayReachabilityMonitoringBlock:_gatewayReachabilityBlock_];
+    }
 }
 
 
-#ifdef DEBUG
++ (void)setNetworkReachabilityMonitorForHost:(NSString *)host monitor:(MASNetworkReachabilityStatusBlock)monitor
+{
+    MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
+    
+    [reachability setReachabilityMonitoringBlock:monitor];
+    [reachability startMonitoring];
+}
+
+
++ (BOOL)isNetworkReachableForHost:(NSString *)host
+{
+    MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
+    return reachability.isReachable;
+}
+
+
+- (void)setGatewayReachabilityMonitoringBlock:(MASNetworkReachabilityStatusBlock)monitoringBlock
+{
+    if (_gatewayReachabilityManager)
+    {
+        [_gatewayReachabilityManager setReachabilityMonitoringBlock:monitoringBlock];
+    }
+}
+
+
++ (MASNetworkReachability *)retrieveOrConstructReachabilityForHost:(NSString *)host
+{
+    if (!_reachabilityMonitoringBlockForHosts_)
+    {
+        _reachabilityMonitoringBlockForHosts_ = [NSMutableDictionary dictionary];
+    }
+    
+    NSString *targetHost = host;
+    if (targetHost == nil || [targetHost length] == 0)
+    {
+        targetHost = @"default";
+    }
+    
+    if ([_reachabilityMonitoringBlockForHosts_.allKeys containsObject:targetHost])
+    {
+        return [_reachabilityMonitoringBlockForHosts_ objectForKey:targetHost];
+    }
+    else {
+        
+        MASNetworkReachability *reachability = nil;
+        if ([targetHost isEqualToString:@"default"])
+        {
+            //
+            //  Construct sockaddr for generic network
+            //
+            struct sockaddr_in genericAddress;
+            bzero(&genericAddress, sizeof(genericAddress));
+            genericAddress.sin_len = sizeof(genericAddress);
+            genericAddress.sin_family = AF_INET;
+            
+            reachability = [[MASNetworkReachability alloc] initWithAddress:(const struct sockaddr *)&genericAddress];
+        }
+        else {
+            reachability = [[MASNetworkReachability alloc] initWithDomain:targetHost];
+        }
+        
+        if (reachability)
+        {
+            [_reachabilityMonitoringBlockForHosts_ setObject:reachability forKey:targetHost];
+        }
+        
+        return reachability;
+    }
+}
+
+
+# pragma mark - DEBUG
 
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled
 {
@@ -101,7 +213,21 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     }
 }
 
-#endif
+
+# pragma mark - Multi Factor Authenticator
+
++ (void)registerMultiFactorAuthenticator:(MASObject<MASMultiFactorAuthenticator> *)multiFactorAuthenticator
+{
+    if (_multiFactorAuthenticators_ == nil)
+    {
+        _multiFactorAuthenticators_ = [NSMutableArray array];
+    }
+    
+    if ([multiFactorAuthenticator respondsToSelector:@selector(getMultiFactorHandler:response:)] && [multiFactorAuthenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:response:handler:)])
+    {
+        [_multiFactorAuthenticators_ addObject:multiFactorAuthenticator];
+    }
+}
 
 
 # pragma mark - Shared Service
@@ -120,6 +246,12 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 
 # pragma mark - Lifecycle
+
++ (void)load
+{
+    [MASService registerSubclass:[self class] serviceUUID:MASNetworkServiceUUID];
+}
+
 
 + (NSString *)serviceUUID
 {
@@ -153,8 +285,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     if (_sessionManager)
     {
         [_sessionManager.operationQueue cancelAllOperations];
-        [_sessionManager.reachabilityManager stopMonitoring];
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+        [_gatewayReachabilityManager stopMonitoring];
         _sessionManager = nil;
     }
     
@@ -171,15 +302,9 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     if (_sessionManager)
     {
         [_sessionManager.operationQueue cancelAllOperations];
-        [_sessionManager.reachabilityManager stopMonitoring];
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+        [_gatewayReachabilityManager stopMonitoring];
         _sessionManager = nil;
     }
-    
-    //
-    // Reset the value
-    //
-    _monitoringStatus = MASGatewayMonitoringStatusUnknown;
     
     [super serviceDidReset];
 }
@@ -270,28 +395,19 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // Reachability
         //
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(MASINetworkReachabilityStatus status) {
-            //
-            // Set the new value, this should be a direct mapping of MASI and MAS types
-            //
-            _monitoringStatus = (long)status;
-            
-            //
-            // Make sure it is on the main thread
-            //
-            dispatch_async(dispatch_get_main_queue(), ^
-                           {
-                               //
-                               // Notify the block, if any
-                               //
-                               if(_gatewayStatusMonitor_) _gatewayStatusMonitor_((long)status);
-                           });
-        }];
+        if (_gatewayReachabilityManager != nil)
+        {
+            [_gatewayReachabilityManager stopMonitoring];
+            _gatewayReachabilityManager = nil;
+        }
+        
+        _gatewayReachabilityManager = [[MASNetworkReachability alloc] initWithDomain:[MASConfiguration currentConfiguration].gatewayHostName];
+        [_gatewayReachabilityManager setReachabilityMonitoringBlock:_gatewayReachabilityBlock_];
         
         //
         // Begin monitoring
         //
-        [_sessionManager.reachabilityManager startMonitoring];
+        [_gatewayReachabilityManager startMonitoring];
     }
     else {
         [_sessionManager updateSession];
@@ -433,8 +549,8 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                 //
                 // Retrieve the geo-location coordinates
                 //
-                [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
-                    
+                [blockSelf retrieveLocation:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
+                
                     //
                     // If an invalid geolocation result is detected
                     //
@@ -515,55 +631,6 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                                                    completion:blockCompletion];
             }
         }
-        //
-        // If MAG error code exists, and it ends with 140/142/143/144/145,
-        // it means that the OTP is required to proceed with the request.
-        // Then, try validate OTP session and retry the request.
-        //
-        else if (magErrorCode &&
-                 ([magErrorCode hasSuffix:@"140"] ||
-                  [magErrorCode hasSuffix:@"142"] || [magErrorCode hasSuffix:@"143"] ||
-                  [magErrorCode hasSuffix:@"144"] || [magErrorCode hasSuffix:@"145"])) {
-                     
-                     [[MASOTPService sharedService] validateOTPSessionWithResponseHeaders:headerInfo
-                                                                          completionBlock:^(NSDictionary *responseInfo, NSError *error)
-                      {
-                          
-                          NSString *oneTimePassword = [responseInfo objectForKey:MASHeaderOTPKey];
-                          NSArray *otpChannels = [responseInfo objectForKey:MASHeaderOTPChannelKey];
-                          
-                          //
-                          // If it fails to fetch OTP, notify user
-                          //
-                          if (!oneTimePassword || error)
-                          {
-                              if(blockCompletion)
-                              {
-                                  blockCompletion(responseInfo, error);
-                              }
-                          }
-                          else {
-                              
-                              NSString *otpSelectedChannelsStr = [otpChannels componentsJoinedByString:@","];
-                              
-                              [blockOriginalHeader setObject:oneTimePassword forKey:MASHeaderOTPKey];
-                              [blockOriginalHeader setObject:otpSelectedChannelsStr forKey:MASHeaderOTPChannelKey];
-                              
-                              //
-                              //  Proceed with original request
-                              //
-                              [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                             originalHeader:blockOriginalHeader
-                                                          originalParameter:blockOriginalParameter
-                                                                requestType:blockRequestType
-                                                               responseType:blockResponseType
-                                                                   isPublic:isPublic
-                                                                 httpMethod:blockHTTPMethod
-                                                                 completion:blockCompletion];
-                          }
-                      }
-                      ];
-                 }
         //
         // If the MAG error code exists, and it ends with 206
         // it means that the signed client certificate used to establish mutual SSL has been expired.
@@ -654,8 +721,62 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
                                                        completion:blockCompletion];
                 }
             }
-            else if (blockCompletion)
+            //
+            //  Going into MFA flow if the target API's endpoint is not one of MAG/OTK's system endpoints, and the original request failed.
+            //
+            else if (![blockSelf isMAGEndpoint:blockEndPoint] && error != nil)
             {
+                MASMultiFactorHandler *handler = nil;
+                MASRequest *originalRequest = nil;
+                MASObject<MASMultiFactorAuthenticator> *authenticator = nil;
+                
+                //
+                //  Loop through multi factor authenticators to identify any authenticator is responding to the error
+                //
+                for (MASObject<MASMultiFactorAuthenticator> *thisMultiFactorAuthenticator in _multiFactorAuthenticators_)
+                {
+                    if ([thisMultiFactorAuthenticator respondsToSelector:@selector(getMultiFactorHandler:response:)])
+                    {
+                        MASRequestBuilder *originalRequestBuilder = [[MASRequestBuilder alloc] initWithHTTPMethod:blockHTTPMethod];
+                        originalRequestBuilder.endPoint = blockEndPoint;
+                        originalRequestBuilder.header = blockOriginalHeader;
+                        originalRequestBuilder.body = blockOriginalParameter;
+                        originalRequestBuilder.requestType = blockRequestType;
+                        originalRequestBuilder.responseType = blockResponseType;
+                        originalRequestBuilder.isPublic = isPublic;
+                        originalRequest = [originalRequestBuilder build];
+                        handler = [thisMultiFactorAuthenticator getMultiFactorHandler:originalRequest response:response];
+                        
+                        if (handler != nil)
+                        {
+                            authenticator = thisMultiFactorAuthenticator;
+                            break;
+                        }
+                    }
+                }
+                
+                //
+                //  If the MASMultiFactorHandler was returned (meaning one of MASMultiFactorAuthenticator declares that the class would be responsible for handling MFA),
+                //  and implement MFA handling method, proceeds with MFA flow with found MFA class
+                //
+                if (handler != nil && authenticator != nil && [authenticator respondsToSelector:@selector(onMultiFactorAuthenticationRequest:response:handler:)])
+                {
+                    [handler setOriginalRequestCompletionBlock:blockCompletion];
+                    [authenticator onMultiFactorAuthenticationRequest:originalRequest response:response handler:handler];
+                }
+                //
+                //  Otherwise, proceeds as normal
+                //
+                else if (blockCompletion)
+                {
+                    //
+                    // notify
+                    //
+                    blockCompletion(responseInfo, error);
+                }
+            }
+            else if (blockCompletion) {
+                
                 //
                 // notify
                 //
@@ -756,8 +877,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 - (BOOL)networkIsReachable
 {
-    return (self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWWAN ||
-            self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWiFi);
+    return _gatewayReachabilityManager ? _gatewayReachabilityManager.isReachable : NO;
 }
 
 
@@ -766,12 +886,12 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     // Detect status and respond appropriately
     //
-    switch(self.monitoringStatus)
+    switch(_gatewayReachabilityManager.reachabilityStatus)
     {
             //
             // Not Reachable
             //
-        case MASGatewayMonitoringStatusNotReachable:
+        case MASNetworkReachabilityStatusNotReachable:
         {
             return MASGatewayMonitoringStatusNotReachableValue;
         }
@@ -779,7 +899,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             // Reachable Via WWAN
             //
-        case MASGatewayMonitoringStatusReachableViaWWAN:
+        case MASNetworkReachabilityStatusReachableViaWWAN:
         {
             return MASGatewayMonitoringStatusReachableViaWWANValue;
         }
@@ -787,7 +907,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             //
             // Reachable Via WiFi
             //
-        case MASGatewayMonitoringStatusReachableViaWiFi:
+        case MASNetworkReachabilityStatusReachableViaWiFi:
         {
             return MASGatewayMonitoringStatusReachableViaWiFiValue;
         }
@@ -1348,7 +1468,7 @@ withParameters:(NSDictionary *)parameterInfo
     // Determine if we need to add the geo-location header value
     //
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired)
+    if(configuration.locationIsRequired && [MASLocationService isLocationMonitoringAuthorized])
     {
         //
         // Request the one time, currently available location before proceeding

@@ -171,6 +171,34 @@ typedef NS_ENUM(NSInteger, MASServiceLifecycleStatus)
  */
 + (NSString *_Nonnull)lifecycleStatusToString:(MASServiceLifecycleStatus)status;
 
+
+
+///--------------------------------------
+/// @name Subclass Registry Methods
+///-------------------------------------
+
+# pragma mark - Subclass Registry Methods
+
+
+/**
+ An array of subclass information that is inherited and registered to MASService class
+
+ @return An array of subclasses of MASService
+ */
++ (NSArray * _Nullable)getSubclasses;
+
+
+
+/**
+ A method to register any inherited MASService class to MASServiceRegistry.
+ 
+ @warning Any class that is subclassing `MASService` class MUST register through this method with its own service UUID.  `serviceUUID` MUST be unique to its service, and MUST be registered inside `MASFoundation` to be recognized at the moment.
+
+ @param subclass Class object of subclass
+ @param serviceUUID NSString value of its own unique serviceUUID that was registered on MASFoundation
+ */
++ (void)registerSubclass:(Class _Nonnull)subclass serviceUUID:(NSString * _Nonnull)serviceUUID;
+
 @end
 
 
