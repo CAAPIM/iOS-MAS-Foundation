@@ -73,21 +73,18 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
 
 - (void)serviceDidLoad
 {
-    
     [super serviceDidLoad];
 }
 
 
 - (void)serviceWillStart
 {
-    
     [super serviceWillStart];
 }
 
 
 - (void)serviceDidReset
 {
-    
     [super serviceDidReset];
 }
 
@@ -102,6 +99,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
     // application it needs to handle this itself
     //
     __block MASOTPService *blockSelf = self;
+    __block MASResponseInfoErrorBlock blockCompletion = completion;
     __block MASOTPGenerationBlock otpGenerationBlock;
     __block MASOTPFetchCredentialsBlock otpCredentialsBlock;
     
@@ -116,7 +114,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Cancelled stop here
         //
-        if(cancel)
+        if (cancel)
         {
             //
             // Notify UI
@@ -129,9 +127,9 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             // Notify
             //
-            if(completion)
+            if (blockCompletion)
             {
-                completion(nil, [NSError errorOTPAuthenticationCancelled]);
+                blockCompletion(nil, [NSError errorOTPAuthenticationCancelled]);
             }
             
             blockSelf.currentChannels = nil;
@@ -150,12 +148,12 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Notify
         //
-        if(completion)
+        if (blockCompletion)
         {
             NSDictionary *responseInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                           blockSelf.currentChannels, MASHeaderOTPChannelKey,
                                           oneTimePassword, MASHeaderOTPKey, nil];
-            completion(responseInfo, nil);
+            blockCompletion(responseInfo, nil);
         }
     };
     
@@ -175,7 +173,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Cancelled stop here
         //
-        if(cancel)
+        if (cancel)
         {
             //
             // Notify UI
@@ -188,22 +186,14 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
             //
             // Notify
             //
-            if(completion)
+            if (blockCompletion)
             {
-                completion(nil, [NSError errorOTPChannelSelectionCancelled]);
+                blockCompletion(nil, [NSError errorOTPChannelSelectionCancelled]);
             }
             
             blockSelf.currentChannels = nil;
             
             return;
-        }
-        
-        //
-        // Notify UI
-        //
-        if (otpGenerationcompletion)
-        {
-            otpGenerationcompletion(YES, nil);
         }
         
         //
@@ -223,6 +213,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         // Parameters
         //
         MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+        __block MASCompletionErrorBlock blockOTPGenerationcompletion = otpGenerationcompletion;
         
         //
         // Trigger the OTP generate request
@@ -237,21 +228,28 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                 //
                 // Detect if error, if so stop here
                 //
-                if(error)
+                if (error)
                 {
                     //
-                    // Notify
+                    // Notify UI to return an error
                     //
-                    if(completion)
+                    if (blockOTPGenerationcompletion)
                     {
-                        completion(responseInfo, error);
+                        blockOTPGenerationcompletion(NO, error);
                     }
                     
                     return;
                 }
                 
-                MASIMutableOrderedDictionary *responseHeaderInfo =
-                [responseInfo objectForKey:MASResponseInfoHeaderInfoKey];
+                //
+                //  Notify UI for completion of channel selection
+                //
+                if (blockOTPGenerationcompletion)
+                {
+                    blockOTPGenerationcompletion(YES, nil);
+                }
+                
+                MASIMutableOrderedDictionary *responseHeaderInfo = [responseInfo objectForKey:MASResponseInfoHeaderInfoKey];
              
                 //
                 // Check if OTP got generated.
@@ -280,7 +278,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                     // If the UI handling framework is present and will handle this stop here
                     //
                     MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-                    if([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
+                    if ([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
                     {
                         return;
                     }
@@ -288,7 +286,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                     //
                     // Else notify block if available
                     //
-                    if(_OTPCredentialsBlock_)
+                    if (_OTPCredentialsBlock_)
                     {
                         //
                         // Do this is the main queue since the reciever is almost certainly a UI component.
@@ -304,9 +302,9 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
                         //
                         // If the device registration block is not defined, return an error
                         //
-                        if (completion)
+                        if (blockCompletion)
                         {
-                            completion(nil, [NSError errorInvalidOTPCredentialsBlock]);
+                            blockCompletion(nil, [NSError errorInvalidOTPCredentialsBlock]);
                         }
                     }
                 }
@@ -342,7 +340,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         // If the UI handling framework is present and will handle this stop here
         //
         MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-        if([serviceRegistry uiServiceWillHandleOTPChannelSelection:supportedChannels otpGenerationBlock:otpGenerationBlock])
+        if ([serviceRegistry uiServiceWillHandleOTPChannelSelection:supportedChannels otpGenerationBlock:otpGenerationBlock])
         {
             return;
         }
@@ -350,7 +348,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Else notify block if available
         //
-        if(_OTPChannelSelectionBlock_)
+        if (_OTPChannelSelectionBlock_)
         {
             //
             // Do this is the main queue since the reciever is almost certainly a UI component.
@@ -391,7 +389,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         // If the UI handling framework is present and will handle this stop here
         //
         MASServiceRegistry *serviceRegistry = [MASServiceRegistry sharedRegistry];
-        if([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
+        if ([serviceRegistry uiServiceWillHandleOTPAuthentication:otpCredentialsBlock error:otpError])
         {
             return;
         }
@@ -399,7 +397,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Else notify block if available
         //
-        if(_OTPCredentialsBlock_)
+        if (_OTPCredentialsBlock_)
         {
             //
             // Do this is the main queue since the reciever is almost certainly a UI component.
@@ -429,7 +427,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Notify
         //
-        if(completion)
+        if (completion)
         {
             completion(nil, [NSError errorOTPCredentialsExpired]);
         }
@@ -455,7 +453,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Notify
         //
-        if(completion)
+        if (completion)
         {
             completion(nil, error);
         }
@@ -467,7 +465,7 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
         //
         // Notify
         //
-        if(completion)
+        if (completion)
         {
             completion(nil, nil);
         }
