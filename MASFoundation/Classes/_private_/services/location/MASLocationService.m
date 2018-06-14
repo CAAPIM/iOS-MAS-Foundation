@@ -12,18 +12,22 @@
 
 #import "MASConstantsPrivate.h"
 #import "MASConfigurationService.h"
-#import "MASINTULocationManager.h"
 
 
-@interface MASLocationService ()
-    <MASINTULocationManagerDelegate>
+@interface MASLocationService () <CLLocationManagerDelegate>
 
+@property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, copy) MASCompletionErrorBlock locationAuthorizationBlock;
+@property (nonatomic, strong) NSDate *lastKnownLocationTime;
+@property (assign) BOOL didFailToAuthorize;
 
 @end
 
 
 @implementation MASLocationService
+
+@synthesize locationAccuracy = _locationAccuracy;
+@synthesize lastKnownLocation = _lastKnownLocation;
 
 
 # pragma mark - Shared Service
@@ -57,27 +61,30 @@
 
 - (void)serviceDidLoad
 {
-
     [super serviceDidLoad];
 }
 
 
 - (void)serviceWillStart
 {
-    
-    //
-    // Retrieve the configuration
-    //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    
     //
     // If the configuration specifies that we need location services force the request for
     // authorization.  It will skip it if already granted.
     //
-    if(configuration.locationIsRequired)
+    if([MASConfiguration currentConfiguration].locationIsRequired)
     {
-        [MASINTULocationManager sharedInstance].delegate = self;
-        [self serviceDidLoadCompletion:nil];
+        if (_locationManager != nil)
+        {
+            [_locationManager stopUpdatingLocation];
+            _locationManager = nil;
+        }
+        
+        _locationManager = [[CLLocationManager alloc] init];
+        [_locationManager setDelegate:self];
+        [_locationManager setDesiredAccuracy:kCLLocationAccuracyKilometer];
+        [_locationManager setDistanceFilter:kCLLocationAccuracyKilometer];
+        
+        [self requestAuthorizationToUseLocation];
     }
     
     //
@@ -88,6 +95,23 @@
     [super serviceWillStart];
 }
 
+
+- (void)serviceWillStop
+{
+    [super serviceWillStop];
+    
+    //
+    //  Stop monitoring the location service
+    //
+    if (_locationManager != nil)
+    {
+        [_locationManager stopUpdatingLocation];
+        _locationManager = nil;
+    }
+    
+    _lastKnownLocation = nil;
+    _lastKnownLocationTime = nil;
+}
 
 - (void)serviceDidReset
 {
@@ -100,43 +124,105 @@
 }
 
 
-# pragma mark - Private
+# pragma mark - CLLocationManagerDelegate methods
 
-- (void)serviceDidLoadCompletion:(MASCompletionErrorBlock)completion
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    _lastKnownLocation = [locations firstObject];
+    self.lastKnownLocationTime = [NSDate date];
+}
+
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     //
-    // Set the callback block
+    //  If the error was returned specifying location unknown, unllify the last known location information
     //
-    self.locationAuthorizationBlock = completion;
-    
-    
-    //
-    // If the location service is already available
-    //
-    if ([MASLocationService isLocationMonitoringAuthorized])
+    if (error.domain == kCLErrorDomain && error.code == kCLErrorLocationUnknown)
     {
-        if (completion)
+        _lastKnownLocation = nil;
+        self.lastKnownLocationTime = nil;
+    }
+}
+
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    switch (status)
+    {
+        case kCLAuthorizationStatusAuthorizedAlways:
+        case kCLAuthorizationStatusAuthorizedWhenInUse:
+            [self.locationManager startUpdatingLocation];
+            break;
+        case kCLAuthorizationStatusDenied:
+        case kCLAuthorizationStatusRestricted:
+        case kCLAuthorizationStatusNotDetermined:
+        default:
+            break;
+    }
+}
+
+
+# pragma mark - Private
+
+- (void)requestAuthorizationToUseLocation
+{
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    //
+    //  Only when the location authorization is not determined, ask for authorization
+    //
+    if (status == kCLAuthorizationStatusNotDetermined && [CLLocationManager locationServicesEnabled])
+    {
+        //
+        //  Make sure that the application has proper privacy description for using location
+        //
+        BOOL alwaysInUseKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] != nil;
+        BOOL whenInUseKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] != nil;
+        if (alwaysInUseKey)
         {
-            completion(YES, nil);
+            [self.locationManager requestAlwaysAuthorization];
+        }
+        else if (whenInUseKey)
+        {
+            [self.locationManager requestWhenInUseAuthorization];
+        }
+        else {
+            self.didFailToAuthorize = YES;
         }
     }
-    //
-    // If the location service is determined, but not available (Unauthorized)
-    //
-    else if (![MASLocationService isLocationMonitoringNotDetermined])
-    {
-        if (completion)
-        {
-            completion(NO, [NSError errorGeolocationServicesAreUnauthorized]);
-        }
+}
+
+
+- (NSString *)locationServiceStatusAsString
+{
+    NSString *statusAsString = @"";
+    
+    switch ([[MASLocationService sharedService] locationServiceStatus]) {
+        case MASLocationServiceStatusAvailable:
+            statusAsString = @"Location service is available and collecting the information.";
+            break;
+        case MASLocationServiceStatusRestricted:
+            statusAsString = @"Location service authorization is restricted.";
+            break;
+        case MASLocationServiceStatusDenied:
+            statusAsString = @"Location service authorization has been denied to the application.";
+            break;
+        case MASLocationServiceStatusNotDetermined:
+            statusAsString = @"Location service authorization choice has not been made yet.";
+            break;
+        case MASLocationServiceStatusDisabled:
+            statusAsString = @"Location service authorization has been disabled on the device.";
+            break;
+        case MASLocationServiceStatusFailToAuthorize:
+            statusAsString = @"Location service failed to request authorization due to missing Privacy information in .plist file of the application.";
+            break;
+        default:
+            statusAsString = @"Unknown location service status.";
+            break;
     }
-    //
-    // Otherwise, request authorization from the user
-    //
-    else {
-        
-        [[MASINTULocationManager sharedInstance] requestAuthorizationIfNeeded];
-    }
+
+    return statusAsString;
 }
 
 
@@ -146,211 +232,72 @@
 {
     return [NSString stringWithFormat:@"%@\n\n    location services authorization status: %@",
         [super debugDescription],
-        [MASLocationService locationMonitoringAuthorizationStatusToString:(int)MASINTULocationManager.locationServicesState]];
+        [[MASLocationService sharedService] locationServiceStatusAsString]];
 }
 
 
-# pragma mark - Location Monitoring
-
-+ (BOOL)isLocationMonitoringNotDetermined
+- (CLLocation *)getLastKnownLocation
 {
-    return ([MASINTULocationManager locationServicesState] == MASINTULocationServicesStateNotDetermined);
-}
-
-+ (BOOL)isLocationMonitoringAuthorized
-{
-    return ([MASINTULocationManager locationServicesState] == MASINTULocationServicesStateAvailable);
-}
-
-
-+ (BOOL)isLocationMonitoringDenied
-{
-    return ([MASINTULocationManager locationServicesState] != MASINTULocationServicesStateAvailable && [MASINTULocationManager locationServicesState] != MASINTULocationServicesStateNotDetermined);
-}
-
-
-+ (NSString *)locationMonitoringAccuracyToString:(MASLocationMonitoringAccuracy)accuracy
-{
+    CLLocation *mostRecentLocation = nil;
+    
     //
-    // Detect accuracy and respond appropriately
+    //  Only return the last know location information when the location service is allowed
     //
-    switch(accuracy)
+    if ([[MASLocationService sharedService] locationServiceStatus] == MASLocationServiceStatusAvailable && [MASConfiguration currentConfiguration].locationIsRequired)
     {
-        //
-        // No Accuracy
-        //
-        case MASLocationMonitoringAccuracyNone: return @"Location inaccurate (greater than 5000 meters and/or received more than 10 minutes ago";
-        
-        //
-        // City
-        //
-        case MASLocationMonitoringAccuracyCity: return @"5000 meters or better and received within the last 10 minutes (Lowest accuracy)";
-        
-        //
-        // Neighborhood
-        //
-        case MASLocationMonitoringAccuracyNeighborhood: return @"1000 meters or better and received within the last 5 minutes";
-        
-        //
-        // Block
-        //
-        case MASLocationMonitoringAccuracyBlock: return @"100 meters or better and received within the last 1 minute";
-        
-        //
-        // House
-        //
-        case MASLocationMonitoringAccuracyHouse: return @"15 meters or better and received within the last 15 seconds";
-        
-        //
-        // Room
-        //
-        case MASLocationMonitoringAccuracyRoom: return @"5 meters or better and received within the last 5 seconds (Highest accuracy)";
- 
-        //
-        // Default
-        //
-        default: return @"Unknown";
+        mostRecentLocation = _lastKnownLocation;
+    }
+    
+    return mostRecentLocation;
+}
+
+
+- (void)setLocationAccuracy:(CLLocationAccuracy)locationAccuracy
+{
+    _locationAccuracy = locationAccuracy;
+    
+    if (self.locationManager != nil && self.locationManager.desiredAccuracy != _locationAccuracy)
+    {
+        [self.locationManager stopUpdatingLocation];
+        [self.locationManager setDistanceFilter:_locationAccuracy];
+        [self.locationManager setDesiredAccuracy:_locationAccuracy];
+        [self.locationManager startUpdatingLocation];
     }
 }
 
 
-+ (NSString *)locationMonitoringStatusToString:(MASLocationMonitoringStatus)status
+- (CLLocationAccuracy)getLocationAccuracy
 {
-    //
-    // Detect status and respond appropriately
-    //
-    switch(status)
+    return _locationAccuracy;
+}
+
+
+- (MASLocationServiceStatus)locationServiceStatus
+{
+    MASLocationServiceStatus status = MASLocationServiceStatusAvailable;
+    
+    if (![CLLocationManager locationServicesEnabled])
     {
-        //
-        // Success
-        //
-        case MASLocationMonitoringStatusSuccess: return @"Location retrieved successfully";
-        
-        //
-        // Timed Out
-        //
-        case MASLocationMonitoringStatusTimedOut: return @"Location retrieved but not with the requested accurracy before timeout occurred";
-        
-        //
-        // Not Determined
-        //
-        case MASLocationMonitoringStatusServicesNotDetermined: return @"Location service authorization choice has not been made yet";
-        
-        //
-        // Denied
-        //
-        case MASLocationMonitoringStatusServicesDenied: return @"Location service authorization has been denied to the application";
-        
-        //
-        // Restricted
-        //
-        case MASLocationMonitoringStatusServicesRestricted: return @"Location service authorization is restricted";
-        
-        //
-        // Disabled
-        //
-        case MASLocationMonitoringStatusServicesDisabled: return @"Location service authorization has been disabled on the device";
-        
-        //
-        // Error
-        //
-        case MASLocationMonitoringStatusError: return @"Error on attempt to retrieve a location";
- 
-        //
-        // Default
-        //
-        default: return @"Unknown";
+        status = MASLocationServiceStatusDisabled;
     }
-}
-
-
-+ (NSString *)locationMonitoringAuthorizationStatusToString:(MASLocationMonitoringStatus)status
-{
-    //
-    // Detect status and respond appropriately
-    //
-    switch(status)
+    else if (self.didFailToAuthorize)
     {
-        //
-        // Success
-        //
-        case MASLocationMonitoringStatusSuccess:
-        case MASLocationMonitoringStatusTimedOut: return @"Location service authorized";
-        
-        //
-        // Default
-        //
-        default: return [self locationMonitoringStatusToString:status];
+        status = MASLocationServiceStatusFailToAuthorize;
     }
-}
-
-
-# pragma mark - Location Updates
-
-- (MASLocationUpdateId)startSingleLocationUpdate:(MASLocationMonitorBlock)monitor;
-{
-    //DLog(@"\n\ncalled\n\n");
-    
-    MASINTULocationManager *locMgr = [MASINTULocationManager sharedInstance];
-    
-    return [locMgr requestLocationWithDesiredAccuracy:MASINTULocationAccuracyNeighborhood
-        timeout:0.1
-        delayUntilAuthorized:NO
-        block:^(CLLocation *currentLocation, MASINTULocationAccuracy achievedAccuracy, MASINTULocationStatus status)
-        {
-            //DLog(@"\n\n (internal) called with new location: %@\n  at accuracy: %@\n  with status: %@\n\n",
-            //    [currentLocation debugDescription], [MASLocationService locationMonitoringAccuracyToString:(int)achievedAccuracy],
-            //    [MASLocationService locationMonitoringStatusToString:(int)status]);
-            
-            //
-            // Notify
-            //
-            if(monitor) monitor(currentLocation, (int)achievedAccuracy, (int)status);
-        }];
-}
-
-
-- (void)cancelLocationUpdate:(MASLocationUpdateId)updateId
-{
-    [[MASINTULocationManager sharedInstance] cancelLocationRequest:updateId];
-}
-
-
-# pragma mark - MASINTULocationManagerDelegate
-
-- (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status
-{
-    //DLog(@"called with new status: %@ and block is: %@",
-    //   [CLLocationManager authorizationStatusToString:status],
-    //   self.locationAuthorizationBlock);
-    
-    //
-    // Ignore an not determined state
-    //
-    if(status == kCLAuthorizationStatusNotDetermined) return;
-    
-    //
-    // Else a choice has been made and there is a block waiting for the response
-    //
-    if(self.locationAuthorizationBlock)
+    else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined)
     {
-        //
-        // Authorized
-        //
-        if(status == kCLAuthorizationStatusAuthorizedAlways ||
-           status == kCLAuthorizationStatusAuthorizedWhenInUse)
-        {
-            self.locationAuthorizationBlock(YES, nil);
-        }
-        
-        //
-        // Else no
-        //
-        else
-        {
-            self.locationAuthorizationBlock(NO, [NSError errorGeolocationServicesAreUnauthorized]);
-        }
+        status = MASLocationServiceStatusNotDetermined;
     }
+    else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
+    {
+        status = MASLocationServiceStatusDenied;
+    }
+    else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusRestricted)
+    {
+        status = MASLocationServiceStatusRestricted;
+    }
+    
+    return status;
 }
 
 @end

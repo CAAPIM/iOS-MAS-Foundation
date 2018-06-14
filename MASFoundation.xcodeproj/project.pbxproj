@@ -212,12 +212,6 @@
 		A46F49E81C2F5FC500A4C370 /* UIRefreshControl+MASINetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F494E1C2F5FC500A4C370 /* UIRefreshControl+MASINetworking.m */; };
 		A46F49E91C2F5FC500A4C370 /* UIWebView+MASINetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F494F1C2F5FC500A4C370 /* UIWebView+MASINetworking.h */; };
 		A46F49EA1C2F5FC500A4C370 /* UIWebView+MASINetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49501C2F5FC500A4C370 /* UIWebView+MASINetworking.m */; };
-		A46F49EC1C2F5FC500A4C370 /* MASINTULocationManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49531C2F5FC500A4C370 /* MASINTULocationManager+Internal.h */; };
-		A46F49ED1C2F5FC500A4C370 /* MASINTULocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49541C2F5FC500A4C370 /* MASINTULocationManager.h */; };
-		A46F49EE1C2F5FC500A4C370 /* MASINTULocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49551C2F5FC500A4C370 /* MASINTULocationManager.m */; };
-		A46F49EF1C2F5FC500A4C370 /* MASINTULocationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49561C2F5FC500A4C370 /* MASINTULocationRequest.h */; };
-		A46F49F01C2F5FC500A4C370 /* MASINTULocationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F49571C2F5FC500A4C370 /* MASINTULocationRequest.m */; };
-		A46F49F11C2F5FC500A4C370 /* MASINTULocationRequestDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F49581C2F5FC500A4C370 /* MASINTULocationRequestDefines.h */; };
 		A46F49F31C2F5FC500A4C370 /* MASIOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = A46F495B1C2F5FC500A4C370 /* MASIOrderedDictionary.h */; };
 		A46F49F41C2F5FC500A4C370 /* MASIOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = A46F495C1C2F5FC500A4C370 /* MASIOrderedDictionary.m */; };
 		A47332CF1BBC61F50002A492 /* NSData+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A47332CD1BBC61F50002A492 /* NSData+MASPrivate.h */; };
@@ -670,13 +664,6 @@
 		A46F494E1C2F5FC500A4C370 /* UIRefreshControl+MASINetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIRefreshControl+MASINetworking.m"; sourceTree = "<group>"; };
 		A46F494F1C2F5FC500A4C370 /* UIWebView+MASINetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+MASINetworking.h"; sourceTree = "<group>"; };
 		A46F49501C2F5FC500A4C370 /* UIWebView+MASINetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+MASINetworking.m"; sourceTree = "<group>"; };
-		A46F49521C2F5FC500A4C370 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		A46F49531C2F5FC500A4C370 /* MASINTULocationManager+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASINTULocationManager+Internal.h"; sourceTree = "<group>"; };
-		A46F49541C2F5FC500A4C370 /* MASINTULocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASINTULocationManager.h; sourceTree = "<group>"; };
-		A46F49551C2F5FC500A4C370 /* MASINTULocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASINTULocationManager.m; sourceTree = "<group>"; };
-		A46F49561C2F5FC500A4C370 /* MASINTULocationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASINTULocationRequest.h; sourceTree = "<group>"; };
-		A46F49571C2F5FC500A4C370 /* MASINTULocationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASINTULocationRequest.m; sourceTree = "<group>"; };
-		A46F49581C2F5FC500A4C370 /* MASINTULocationRequestDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASINTULocationRequestDefines.h; sourceTree = "<group>"; };
 		A46F495A1C2F5FC500A4C370 /* LICENCE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENCE.md; sourceTree = "<group>"; };
 		A46F495B1C2F5FC500A4C370 /* MASIOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASIOrderedDictionary.h; sourceTree = "<group>"; };
 		A46F495C1C2F5FC500A4C370 /* MASIOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASIOrderedDictionary.m; sourceTree = "<group>"; };
@@ -1206,7 +1193,6 @@
 				A46F491E1C2F5FC500A4C370 /* fmemopen.h */,
 				A46F49231C2F5FC500A4C370 /* MASIKeyChainStore */,
 				A46F49271C2F5FC500A4C370 /* MASINetworking */,
-				A46F49511C2F5FC500A4C370 /* MASINTULocationManager */,
 				A46F49591C2F5FC500A4C370 /* MASIOrderedDictionary */,
 				A46F495D1C2F5FC500A4C370 /* OpenSSL */,
 				A46F49B01C2F5FC500A4C370 /* RNCryptor */,
@@ -1278,20 +1264,6 @@
 				A46F49501C2F5FC500A4C370 /* UIWebView+MASINetworking.m */,
 			);
 			path = "UIKit+MASINetworking";
-			sourceTree = "<group>";
-		};
-		A46F49511C2F5FC500A4C370 /* MASINTULocationManager */ = {
-			isa = PBXGroup;
-			children = (
-				A46F49521C2F5FC500A4C370 /* LICENSE */,
-				A46F49531C2F5FC500A4C370 /* MASINTULocationManager+Internal.h */,
-				A46F49541C2F5FC500A4C370 /* MASINTULocationManager.h */,
-				A46F49551C2F5FC500A4C370 /* MASINTULocationManager.m */,
-				A46F49561C2F5FC500A4C370 /* MASINTULocationRequest.h */,
-				A46F49571C2F5FC500A4C370 /* MASINTULocationRequest.m */,
-				A46F49581C2F5FC500A4C370 /* MASINTULocationRequestDefines.h */,
-			);
-			path = MASINTULocationManager;
 			sourceTree = "<group>";
 		};
 		A46F49591C2F5FC500A4C370 /* MASIOrderedDictionary */ = {
@@ -1867,7 +1839,6 @@
 				CB6492091FE9DAF300281288 /* ReconnectTimer.h in Headers */,
 				105B2F531CA6B3EA0005A2D0 /* ssl2.h in Headers */,
 				105B2F4B1CA6B3EA0005A2D0 /* ripemd.h in Headers */,
-				A46F49F11C2F5FC500A4C370 /* MASINTULocationRequestDefines.h in Headers */,
 				CB5E4C641C1D1B56001B3B8A /* MASGetURLRequest.h in Headers */,
 				C81CC3CC1FC2EA190058718E /* MASBrowserBasedAuthentication.h in Headers */,
 				105B2F471CA6B3EA0005A2D0 /* pqueue.h in Headers */,
@@ -1920,7 +1891,6 @@
 				A4831AAD1BD1A551007B4AE6 /* MASConfiguration.h in Headers */,
 				CB6491E81FE9DAF300281288 /* MQTTDecoder.h in Headers */,
 				A4E341011B9E9F2000883AD3 /* MASConstants.h in Headers */,
-				A46F49EF1C2F5FC500A4C370 /* MASINTULocationRequest.h in Headers */,
 				10E0279E1F72B10100EAB103 /* RNCryptor-Prefix.pch in Headers */,
 				CB6492051FE9DAF300281288 /* MQTTTransport.h in Headers */,
 				105B2F3D1CA6B3EA0005A2D0 /* obj_mac.h in Headers */,
@@ -1983,7 +1953,6 @@
 				CB2A4055209B9DA600F988AA /* MASMultiFactorHandler+MASPrivate.h in Headers */,
 				105B2F451CA6B3EA0005A2D0 /* pkcs12.h in Headers */,
 				CB6491F51FE9DAF300281288 /* MQTTSessionLegacy.h in Headers */,
-				A46F49EC1C2F5FC500A4C370 /* MASINTULocationManager+Internal.h in Headers */,
 				105B2F2E1CA6B3EA0005A2D0 /* ec.h in Headers */,
 				1046618E1C0ABDDE00A2A03C /* MASGroup.h in Headers */,
 				105B2F291CA6B3EA0005A2D0 /* dsa.h in Headers */,
@@ -2076,7 +2045,6 @@
 				699570E62062FF1300017244 /* MASError.h in Headers */,
 				A47332CF1BBC61F50002A492 /* NSData+MASPrivate.h in Headers */,
 				105B2F2D1CA6B3EA0005A2D0 /* ebcdic.h in Headers */,
-				A46F49ED1C2F5FC500A4C370 /* MASINTULocationManager.h in Headers */,
 				A43BEBB21BE34D7700842522 /* CLLocationManager+MASPrivate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2300,7 +2268,6 @@
 				A4831AED1BD1A87C007B4AE6 /* MASApplication+MASPrivate.m in Sources */,
 				CB6491E71FE9DAF300281288 /* MQTTCoreDataPersistence.m in Sources */,
 				CBD25AE51E78C47C00DFB47F /* JWTAlgorithmFactory.m in Sources */,
-				A46F49EE1C2F5FC500A4C370 /* MASINTULocationManager.m in Sources */,
 				CB1907F41C1794FC00A5EF16 /* MASAccess.m in Sources */,
 				A4831AFB1BD1A8E8007B4AE6 /* MASFile+MASPrivate.m in Sources */,
 				A4831AAC1BD1A551007B4AE6 /* MASAuthenticationProvider.m in Sources */,
@@ -2313,7 +2280,6 @@
 				A42D02E11C0E223600AA1F11 /* MASAuthenticationProviders.m in Sources */,
 				CB5E4C691C1D21FB001B3B8A /* MASPostURLRequest.m in Sources */,
 				A47F126D1C1D6B4B0008E3F2 /* MASURLRequest.m in Sources */,
-				A46F49F01C2F5FC500A4C370 /* MASINTULocationRequest.m in Sources */,
 				A46F49D01C2F5FC500A4C370 /* MASISecurityPolicy.m in Sources */,
 				A4831AF31BD1A8AA007B4AE6 /* MASConfiguration+MASPrivate.m in Sources */,
 				CB58986C1F183E0A005C1E82 /* MASAuthValidationOperation.m in Sources */,

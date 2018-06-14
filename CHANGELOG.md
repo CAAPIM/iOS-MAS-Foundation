@@ -1,3 +1,8 @@
+# Version 1.8.00
+
+### Bug fixes
+- The Mobile SDK was causing delay on requests when the location information of the device is not available. The delay has been completely removed, and when the `location_enabled` is set to `true` in `msso_config.json`, the Mobile SDK will constantly monitor the updates for the location information depending on Privacy setting defined in the application `.plist` file. [US509356] 
+
 # Version 1.7.00
 
 ### Enhancement

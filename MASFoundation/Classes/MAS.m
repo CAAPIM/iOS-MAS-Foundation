@@ -204,7 +204,6 @@
             //
             MASOTPMultiFactorAuthenticator *otpAuthenticator = [[MASOTPMultiFactorAuthenticator alloc] init];
             [MAS registerMultiFactorAuthenticator:otpAuthenticator];
-            [MAS registerMultiFactorAuthenticator:[MASUser currentUser]];
             
             //
             //  Make sure to register the client (application)
