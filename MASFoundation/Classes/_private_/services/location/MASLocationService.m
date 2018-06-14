@@ -81,8 +81,13 @@
         
         _locationManager = [[CLLocationManager alloc] init];
         [_locationManager setDelegate:self];
-        [_locationManager setDesiredAccuracy:kCLLocationAccuracyKilometer];
-        [_locationManager setDistanceFilter:kCLLocationAccuracyKilometer];
+        
+        //
+        //  Default to nearest 100 meters
+        //
+        _locationAccuracy = kCLLocationAccuracyHundredMeters;
+        [_locationManager setDesiredAccuracy:_locationAccuracy];
+        [_locationManager setDistanceFilter:_locationAccuracy];
         
         [self requestAuthorizationToUseLocation];
     }
