@@ -14,6 +14,7 @@
 #import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASIKeyChainStore.h"
+#import "MASDERCertificate.h"
 
 @implementation MASDevice (MASPrivate)
 
@@ -124,7 +125,6 @@
     //
     // Certificate Data (in the body)
     //
-    
     NSString *certificateString = info[MASResponseInfoBodyInfoKey];
     NSData *certificateData = [certificateString dataUsingEncoding:NSUTF8StringEncoding];
     
@@ -134,16 +134,29 @@
         [accessService setAccessValueData:certificateData storageKey:MASKeychainStorageKeyPublicCertificateData];
         
         //
-        // Extracting signed client certificate expiration date
+        //  Convert certificate to DER from PEM
         //
-        NSArray * cert = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
-        SecCertificateRef certificate = (__bridge SecCertificateRef)([cert objectAtIndex:0]);
-
+        NSString *derCertificate = certificateString;
+        derCertificate = [derCertificate stringByReplacingOccurrencesOfString:MASDefaultNewline withString:@""];
+        derCertificate = [derCertificate stringByReplacingOccurrencesOfString:MASCertificateBeginPrefix withString:@""];
+        derCertificate = [derCertificate stringByReplacingOccurrencesOfString:MASCertificateEndSuffix withString:@""];
+        
         //
-        // Store client certificate expiration date into shared keychain storage
+        //  Convert string certificate to NSData
         //
-        NSDate *expirationDate = [accessService extractExpirationDateFromCertificate:certificate];
-        [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
+        NSData *certDataAsDER = [[NSData alloc] initWithBase64EncodedString:derCertificate options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        
+        //
+        //  Parse certificate Data with ASN.1 parser
+        //
+        MASDERCertificate *certificateObject = [[MASDERCertificate alloc] initWithDERCertificateData:certDataAsDER];
+        [certificateObject parseCertificateData];
+        
+        if (certificateObject.notAfter != nil)
+        {
+            NSDate *expirationDate = certificateObject.notAfter;
+            [accessService setAccessValueNumber:[NSNumber numberWithDouble:[expirationDate timeIntervalSince1970]] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
+        }
     }
     
     //
