@@ -12,13 +12,9 @@
 
 #import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
-#import "MASFile.h"
+#import "NSMutableData+MASASN1Helper.h"
 
-#include <openssl/evp.h>
-#include <openssl/pem.h>
-#include <openssl/x509.h>
-#import "fmemopen.h"
-
+#include <CommonCrypto/CommonDigest.h>
 
 # pragma mark - Constants
 
@@ -26,7 +22,6 @@ static NSString *const kMASSecurityPrivateKeyBits = @"kMASSecurityPrivateKeyBits
 static NSString *const kMASSecurityPublicKeyBits = @"kMASSecurityPublicKeyBits";
 
 #define kAsymmetricSecKeyPairModulusSize 2048
-
 
 @interface MASSecurityService ()
 
@@ -122,6 +117,7 @@ static MASSecurityService *_sharedService_ = nil;
 {
     //DLog(@"called");
     
+    NSLog(@"[MASFoundation::DEBUG] deleting asymmetric keys started");
     NSAssert(_isConfigured, @"The utility is not configured, call the MASSecurity.configure method first");
    
 	OSStatus sanityCheck = noErr;
@@ -159,139 +155,29 @@ static MASSecurityService *_sharedService_ = nil;
     {
         DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
     }
+    NSLog(@"[MASFoundation::DEBUG] deleting asymmetric keys ended");
 }
 
 
 - (NSString *)generateCSRWithUsername:(NSString *)userName
 {
-    //DLog(@"called with userName: %@", userName);
-    
+    NSLog(@"[MASFoundation::DEBUG] generating csr started");
     NSAssert(_isConfigured, @"The utility is not configured, call the MASSecurity.configure method first");
     
     NSData *publicKeyBits = [self publicKeyBits];
-    NSData *privateKeyBits = [self privateKeyBits];
-    
-    NSAssert(userName, @"Username cannot be nil");
-    NSAssert(publicKeyBits, @"Public key bits not found");
-    NSAssert(privateKeyBits, @"Private key bits not found");
-   
-    X509_REQ *req = NULL;
-    X509_NAME *name= NULL;
-    EVP_PKEY *key;
-    EVP_PKEY *privatekey=EVP_PKEY_new();
-    
-    const unsigned char * bits = (unsigned char *) [publicKeyBits bytes];
-    unsigned long length = [publicKeyBits length];
-    
-    if ((req=X509_REQ_new()) == NULL)
-    {
-        DLog(@"Error generating the certificate signing request");
-        return NULL;
-    }
-    
-    RSA * rsa = NULL;
-    key=EVP_PKEY_new();
-    d2i_RSAPublicKey(&rsa, &bits, length);
-    EVP_PKEY_assign_RSA(key,rsa);
-    name = X509_REQ_get_subject_name(req);
-    X509_REQ_set_pubkey(req, key);
-    
-    /* This function creates and adds the entry, working out the
-     * correct string type and performing checks on its length.
-     * Normally we'd check the return value for errors...
-     */
-    
-    NSString *organization = [MASApplication currentApplication].organization;
-    NSAssert(organization, @"Organazation in msso_config.json cannot be nil - Assertion while generating CSR");
-    
-    X509_NAME_add_entry_by_txt(name,"CN",
-                               MBSTRING_ASC, (const unsigned char*)[userName UTF8String], -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name,"O",
-                               MBSTRING_ASC, (const unsigned char*)[organization UTF8String], -1, -1, 0);
-    
-    //device id
-    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    X509_NAME_add_entry_by_txt(name,"OU",
-                               MBSTRING_ASC, (const unsigned char*)[deviceId UTF8String], -1, -1, 0);
-    
-    //device name
-    
-    //
-    //  For the time being, as DC attribute in DN needs to be clarified with MAG, sending DC as device model to align with Android SDK.
-    //  JG @ January 2, 2017 - DE331046
-    //
-    NSString *deviceName = [UIDevice currentDevice].model;//[MASDevice currentDevice].name;
-    X509_NAME_add_entry_by_txt(name,"DC",
-                               MBSTRING_ASC, (const unsigned char*)[deviceName UTF8String], -1, -1, 0);
-    
-    const unsigned char * privateBits = (unsigned char *) [privateKeyBits bytes];
-    unsigned long privateKeyLength = [privateKeyBits length];
-    d2i_RSAPrivateKey(&rsa, &privateBits, privateKeyLength);
-    EVP_PKEY_assign_RSA(privatekey,rsa);
-    
-    //
-    // Store new value in keychain
-    //
-    if (privateKeyBits)
-    {
-        NSString *keyContents = [self evpKeyToString:privatekey];
-    
-        //DLog(@"\n\nEVP key as string: %@\n\n", [self evpKeyToString:privatekey]);
-    
-        //
-        // Store private key bits into keychain
-        //
-        [[MASAccessService sharedService] setAccessValueString:keyContents storageKey:MASKeychainStorageKeyPrivateKeyBits];
-    }
-    
-    if (!X509_REQ_sign(req, privatekey, EVP_sha1()))
-    {
-        DLog(@"Error cannot sign request");
-        return NULL;
-    }
-    
-    BIO * csr = BIO_new(BIO_s_mem());
-    // Tell the context to encode base64
-    BIO *command = BIO_new(BIO_f_base64());
-    csr = BIO_push(command, csr);
-    i2d_X509_REQ_bio(csr, req);
-    //X509_REQ_print(csr, req);
-    __unused int i = BIO_flush(csr);
-    
-    char *outputBuffer;
-    long outputLength = BIO_get_mem_data(csr, &outputBuffer);
-    NSString *encodedString = [[NSString alloc] initWithBytes:outputBuffer length:outputLength encoding:NSNEXTSTEPStringEncoding];
-    
-    BIO_free_all(csr);
-    
-    //X509_REQ_print_fp(stdout, req);
-    
-    return encodedString;
-}
+    SecKeyRef privateKeyRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithStorageKey:MASKeychainStorageKeyPrivateKey];
 
-
-- (NSString *)evpKeyToString:(EVP_PKEY *)key
-{
-    char *buf[256];
-    FILE *pFile;
-    NSString *pkey_string;
+    NSString *generatedCSR = [self generateCSRWithUsername:userName publicKeyBits:publicKeyBits privateKey:privateKeyRef];
+    NSLog(@"[MASFoundation::DEBUG] generating csr ended");
     
-    pFile = fmemopen(buf, sizeof(buf), "w");
-    
-    PEM_write_PrivateKey(pFile, key, NULL, NULL, 0, 0, NULL);
-    fputc('\0', pFile);
-    
-    fclose(pFile);
-    
-    pkey_string = [NSString stringWithUTF8String:(char *)buf];
-    
-    return pkey_string;
+    return generatedCSR;
 }
 
 
 - (void)generateKeypair
 {
     //DLog(@"called");
+    NSLog(@"[MASFoundation::DEBUG] generating key pair started");
     
     NSAssert(_isConfigured, @"The utility is not configured, call the MASSecurity.configure method first");
     
@@ -332,7 +218,9 @@ static MASSecurityService *_sharedService_ = nil;
     [keyPairAttr setObject:privateKeyAttr forKey:(__bridge id)kSecPrivateKeyAttrs];
 	[keyPairAttr setObject:publicKeyAttr forKey:(__bridge id)kSecPublicKeyAttrs];
     
+    NSLog(@"[MASFoundation::DEBUG] generating pair with iOS keychain started");
 	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
+    NSLog(@"[MASFoundation::DEBUG] generating pair with iOS keychain ended");
     if (!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
     {
         DLog(@"Error with something really bad went wrong with generating the key pair");
@@ -343,16 +231,22 @@ static MASSecurityService *_sharedService_ = nil;
     //
     if (privateKeyRef)
     {
+        NSLog(@"[MASFoundation::DEBUG] storing private key into keychain started");
         [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
+        NSLog(@"[MASFoundation::DEBUG] storing private key into keychain started");
     }
     
     if (publicKeyRef)
     {
+        NSLog(@"[MASFoundation::DEBUG] storing public key into keychain started");
         [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
+        NSLog(@"[MASFoundation::DEBUG] storing public key into keychain ended");
     }
     
     privateKeyRef = NULL;
     publicKeyRef = NULL;
+    
+    NSLog(@"[MASFoundation::DEBUG] generating key pair ended");
 }
 
 
@@ -412,6 +306,81 @@ static MASSecurityService *_sharedService_ = nil;
 	}
     
 	return publicKeyBits;
+}
+
+
+# pragma mark - CSR Generation
+
+- (NSString *)generateCSRWithUsername:(NSString *)userName publicKeyBits:(NSData *)publicKeyBits privateKey:(SecKeyRef)privateKey
+{
+    NSMutableData *csrInfo = [[NSMutableData alloc] initWithCapacity:512];
+    
+    //  Add version
+    uint8_t version[3] = {0x02, 0x01, 0x00}; // ASN.1 Representation of integer with value 1
+    [csrInfo appendBytes:version length:sizeof(version)];
+    
+    //  Adding DN attributes
+    NSMutableData *attributes = [[NSMutableData alloc] initWithCapacity:256];
+    
+    NSString *organization = [MASApplication currentApplication].organization;
+    NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    NSString *deviceName = [UIDevice currentDevice].model;//[MASDevice currentDevice].name;
+    
+    //
+    //  For more details on ASN.1's object identifier hex code, check out https://lapo.it/asn1js
+    //
+    uint8_t oiCommonName[5] = {0x06, 0x03, 0x55, 0x04, 0x03};
+    uint8_t oiOrganizationName[5] = {0x06, 0x03, 0x55, 0x04, 0x0A};
+    uint8_t oiOrganizationUnitName[5] = {0x06, 0x03, 0x55, 0x04, 0x0B};
+    uint8_t oiDomainComponent[12] = {0x06, 0x0A, 0x09, 0x92, 0x26, 0x89, 0x93, 0xF2, 0x2C, 0x64, 0x01, 0x19};
+    
+    [attributes appendSubjectItem:oiCommonName size:sizeof(oiCommonName) value:userName];
+    [attributes appendSubjectItem:oiOrganizationName size:sizeof(oiOrganizationName) value:organization];
+    [attributes appendSubjectItem:oiOrganizationUnitName size:sizeof(oiOrganizationUnitName) value:deviceId];
+    [attributes appendSubjectItem:oiDomainComponent size:sizeof(oiDomainComponent) value:deviceName];
+    [attributes encloseWithSequenceTag];
+    
+    [csrInfo appendData:attributes];
+    
+    //  Add public key info
+    NSData *publicKeyInfoData = [NSMutableData buildPublicKeyForASN1:publicKeyBits];
+    [csrInfo appendData:publicKeyInfoData];
+    
+    //  Add attributes
+    uint8_t attrs[2] = {0xA0, 0x00};
+    [csrInfo appendBytes:attrs length:sizeof(attrs)];
+    
+    //  enclose with sequence tag
+    [csrInfo encloseWithSequenceTag];
+    
+    //  Build signature - SHA1 hash
+    CC_SHA1_CTX SHA1;
+    CC_SHA1_Init(&SHA1);
+    CC_SHA1_Update(&SHA1, [csrInfo mutableBytes], (unsigned int)[csrInfo length]);
+    unsigned char digest[CC_SHA1_DIGEST_LENGTH];
+    CC_SHA1_Final(digest, &SHA1);
+    
+    // Build signature - step 2: Sign hash
+    uint8_t signature[256];
+    size_t signature_len = sizeof(signature);
+    OSStatus osrc = SecKeyRawSign(privateKey, kSecPaddingPKCS1SHA1, digest, sizeof(digest), signature, &signature_len);
+    assert(osrc == noErr);
+    
+    NSMutableData *certificateSigningRequest = [[NSMutableData alloc] initWithCapacity:1024];
+    [certificateSigningRequest appendData:csrInfo];
+    // See: http://oid-info.com/get/1.2.840.113549.1.1.5
+    uint8_t sha1WithRSAEncryption[] = {0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 1, 1, 5, 0x05, 0x00};
+    [certificateSigningRequest appendBytes:sha1WithRSAEncryption length:sizeof(sha1WithRSAEncryption)];
+    
+    NSMutableData * signdata = [NSMutableData dataWithCapacity:257];
+    uint8_t zero = 0;
+    [signdata appendBytes:&zero length:1]; // Prepend zero
+    [signdata appendBytes:signature length:signature_len];
+    [certificateSigningRequest appendBITString:signdata];
+    
+    [certificateSigningRequest encloseWithSequenceTag];
+    
+    return [certificateSigningRequest base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
 @end

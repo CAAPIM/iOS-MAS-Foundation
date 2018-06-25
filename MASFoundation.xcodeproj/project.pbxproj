@@ -310,6 +310,8 @@
 		CB2A4056209B9DA600F988AA /* MASMultiFactorHandler+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = CB2A4054209B9DA600F988AA /* MASMultiFactorHandler+MASPrivate.m */; };
 		CB3173E01F1FFF2C00C85E47 /* MASNetworkMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = CB3173DE1F1FFF2C00C85E47 /* MASNetworkMonitor.h */; };
 		CB3173E11F1FFF2C00C85E47 /* MASNetworkMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CB3173DF1F1FFF2C00C85E47 /* MASNetworkMonitor.m */; };
+		CB4557EA20E0833500FA880C /* NSMutableData+MASASN1Helper.h in Headers */ = {isa = PBXBuildFile; fileRef = CB4557E820E0833400FA880C /* NSMutableData+MASASN1Helper.h */; };
+		CB4557EB20E0833500FA880C /* NSMutableData+MASASN1Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = CB4557E920E0833500FA880C /* NSMutableData+MASASN1Helper.m */; };
 		CB58986B1F183E0A005C1E82 /* MASAuthValidationOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5898691F183E0A005C1E82 /* MASAuthValidationOperation.h */; };
 		CB58986C1F183E0A005C1E82 /* MASAuthValidationOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = CB58986A1F183E0A005C1E82 /* MASAuthValidationOperation.m */; };
 		CB5E4C641C1D1B56001B3B8A /* MASGetURLRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = CB5E4C621C1D1B56001B3B8A /* MASGetURLRequest.h */; };
@@ -772,6 +774,8 @@
 		CB2A4054209B9DA600F988AA /* MASMultiFactorHandler+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASMultiFactorHandler+MASPrivate.m"; sourceTree = "<group>"; };
 		CB3173DE1F1FFF2C00C85E47 /* MASNetworkMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASNetworkMonitor.h; sourceTree = "<group>"; };
 		CB3173DF1F1FFF2C00C85E47 /* MASNetworkMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASNetworkMonitor.m; sourceTree = "<group>"; };
+		CB4557E820E0833400FA880C /* NSMutableData+MASASN1Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableData+MASASN1Helper.h"; sourceTree = "<group>"; };
+		CB4557E920E0833500FA880C /* NSMutableData+MASASN1Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableData+MASASN1Helper.m"; sourceTree = "<group>"; };
 		CB5898691F183E0A005C1E82 /* MASAuthValidationOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASAuthValidationOperation.h; sourceTree = "<group>"; };
 		CB58986A1F183E0A005C1E82 /* MASAuthValidationOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASAuthValidationOperation.m; sourceTree = "<group>"; };
 		CB5E4C621C1D1B56001B3B8A /* MASGetURLRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASGetURLRequest.h; sourceTree = "<group>"; };
@@ -1436,6 +1440,8 @@
 		A4F6712F1BAFC321000E2223 /* categories */ = {
 			isa = PBXGroup;
 			children = (
+				CB4557E820E0833400FA880C /* NSMutableData+MASASN1Helper.h */,
+				CB4557E920E0833500FA880C /* NSMutableData+MASASN1Helper.m */,
 				C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */,
 				C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */,
 				CB1907ED1C1794F400A5EF16 /* MASIKeyChainStore+MASPrivate.h */,
@@ -2032,6 +2038,7 @@
 				105B2F1C1CA6B3EA0005A2D0 /* bn.h in Headers */,
 				A4F671321BAFC345000E2223 /* NSString+MASPrivate.h in Headers */,
 				CBD25AE31E78C47C00DFB47F /* JWTAlgorithm.h in Headers */,
+				CB4557EA20E0833500FA880C /* NSMutableData+MASASN1Helper.h in Headers */,
 				105B2F321CA6B3EA0005A2D0 /* err.h in Headers */,
 				CB64920B1FE9DAF300281288 /* Timer.h in Headers */,
 				105B2F601CA6B3EA0005A2D0 /* x509v3.h in Headers */,
@@ -2368,6 +2375,7 @@
 				CBD25B0A1E78C47C00DFB47F /* JWTCoding.m in Sources */,
 				CBD25B101E78C47C00DFB47F /* JWTErrorDescription.m in Sources */,
 				CB5E4C6D1C1D2467001B3B8A /* MASDeleteURLRequest.m in Sources */,
+				CB4557EB20E0833500FA880C /* NSMutableData+MASASN1Helper.m in Sources */,
 				A46F49CE1C2F5FC500A4C370 /* MASINetworkReachabilityManager.m in Sources */,
 				A4831AEF1BD1A87C007B4AE6 /* MASAuthenticationProvider+MASPrivate.m in Sources */,
 				A46F49E81C2F5FC500A4C370 /* UIRefreshControl+MASINetworking.m in Sources */,
