@@ -15,7 +15,6 @@
 #import "MASIKeyChainStore+MASPrivate.h"
 #import "MASSecurityService.h"
 
-#import <openssl/x509.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
 # pragma mark - Property Constants
