@@ -27,8 +27,6 @@ static NSString *const kMASSecurityPublicKeyBits = @"kMASSecurityPublicKeyBits";
 
 # pragma mark - Properties
 
-@property (nonatomic, assign, readonly) BOOL isConfigured;
-
 @property (nonatomic, strong, readonly) NSData *privateKeyData;
 @property (nonatomic, strong, readonly) NSData *publicKeyData;
 
@@ -73,14 +71,18 @@ static MASSecurityService *_sharedService_ = nil;
     NSString *privateKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"privateKey"];
     NSString *publicKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"publicKey"];
     
+    _privateKeyData = [[NSData alloc] initWithBytes:[privateKeyIdentifierStr UTF8String] length:[privateKeyIdentifierStr length]];
+    _publicKeyData = [[NSData alloc] initWithBytes:[publicKeyIdentifierStr UTF8String] length:[publicKeyIdentifierStr length]];
     
-    _privateKeyData = [[NSData alloc] initWithBytes:[privateKeyIdentifierStr UTF8String]
-                                             length:[privateKeyIdentifierStr length]];
-    
-    _publicKeyData = [[NSData alloc] initWithBytes:[publicKeyIdentifierStr UTF8String]
-                                            length:[publicKeyIdentifierStr length]];
-    
-    _isConfigured = YES;
+    //
+    //  Generate keypair during the initialization process of SDK to avoid delay on keypair generation.
+    //  Keypair are not being used along with any authentication data, so that it can be generated in advance, and it will be stored in secured keychain storage.
+    //
+    __block MASSecurityService *blockSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        [blockSelf checkKeypair];
+    });
     
     [super serviceWillStart];
 }
@@ -89,227 +91,32 @@ static MASSecurityService *_sharedService_ = nil;
 - (void)serviceDidReset
 {
     _privateKeyData = nil;
-    
     _publicKeyData = nil;
-    
-    _isConfigured = NO;
 
     [super serviceDidReset];
 }
 
 
-# pragma mark - Keys
-
-- (NSURLCredential *)createUrlCredential
-{
-    NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
-    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
-
-    //DLog(@"\n\ncalled and identities is: %@ and certificates is: %@", identities, certificates);
-    
-    return [NSURLCredential credentialWithIdentity:(__bridge SecIdentityRef)(identities[0])
-        certificates:certificates
-        persistence:NSURLCredentialPersistenceNone];
-}
-
-
-- (void)deleteAsymmetricKeys
-{
-    //DLog(@"called");
-    
-    NSLog(@"[MASFoundation::DEBUG] deleting asymmetric keys started");
-    NSAssert(_isConfigured, @"The utility is not configured, call the MASSecurity.configure method first");
-   
-	OSStatus sanityCheck = noErr;
-	NSMutableDictionary *queryPublicKey = [[NSMutableDictionary alloc] init];
-	NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
-	
-    //
-	// Set the public key query dictionary
-	//
-    [queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPublicKey setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-	[queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	
-	//
-    // Set the private key query dictionary
-	//
-    [queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPrivateKey setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-	[queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	
-	//
-    // Delete the private key
-	//
-    sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPrivateKey);
-    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
-    {
-        DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck );
-    }
-	
-	//
-    // Delete the public key
-	//
-    sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPublicKey);
-    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
-    {
-        DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck );
-    }
-    NSLog(@"[MASFoundation::DEBUG] deleting asymmetric keys ended");
-}
+# pragma mark - CSR Generation
 
 
 - (NSString *)generateCSRWithUsername:(NSString *)userName
 {
-    NSLog(@"[MASFoundation::DEBUG] generating csr started");
-    NSAssert(_isConfigured, @"The utility is not configured, call the MASSecurity.configure method first");
+    //
+    //  Check if the keypair was generated and was made available
+    //
+    [self checkKeypair];
     
+    //
+    //  Retrieve public/private keys
+    //
     NSData *publicKeyBits = [self publicKeyBits];
     SecKeyRef privateKeyRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithStorageKey:MASKeychainStorageKeyPrivateKey];
-
     NSString *generatedCSR = [self generateCSRWithUsername:userName publicKeyBits:publicKeyBits privateKey:privateKeyRef];
-    NSLog(@"[MASFoundation::DEBUG] generating csr ended");
     
     return generatedCSR;
 }
 
-
-- (void)generateKeypair
-{
-    //DLog(@"called");
-    NSLog(@"[MASFoundation::DEBUG] generating key pair started");
-    
-    NSAssert(_isConfigured, @"The utility is not configured, call the MASSecurity.configure method first");
-    
-    //
-    // Generate asymetric keys and save the private key into the keychain and return the public key
-    //
-    OSStatus sanityCheck = noErr;
-    SecKeyRef publicKeyRef = NULL;
-    SecKeyRef privateKeyRef = NULL;
-    
-    // Container dictionaries
-	NSMutableDictionary * privateKeyAttr = [[NSMutableDictionary alloc] init];
-	NSMutableDictionary * publicKeyAttr = [[NSMutableDictionary alloc] init];
-	NSMutableDictionary * keyPairAttr = [[NSMutableDictionary alloc] init];
-	
-	//
-    // Set top level dictionary for the keypair
-	//
-    [keyPairAttr setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	[keyPairAttr setObject:[NSNumber numberWithUnsignedInteger:kAsymmetricSecKeyPairModulusSize]
-        forKey:(__bridge id)kSecAttrKeySizeInBits];
-	
-	//
-    // Set the private key dictionary
-	//
-    [privateKeyAttr setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecAttrIsPermanent];
-	[privateKeyAttr setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-    
-	//
-    // Set the public key dictionary
-	//
-    [publicKeyAttr setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecAttrIsPermanent];
-	[publicKeyAttr setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-    
-	//
-    // Set attributes to top level dictionary
-	//
-    [keyPairAttr setObject:privateKeyAttr forKey:(__bridge id)kSecPrivateKeyAttrs];
-	[keyPairAttr setObject:publicKeyAttr forKey:(__bridge id)kSecPublicKeyAttrs];
-    
-    NSLog(@"[MASFoundation::DEBUG] generating pair with iOS keychain started");
-	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
-    NSLog(@"[MASFoundation::DEBUG] generating pair with iOS keychain ended");
-    if (!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
-    {
-        DLog(@"Error with something really bad went wrong with generating the key pair");
-    }
-    
-    //
-    // Storing privateKey and publicKey into keychain
-    //
-    if (privateKeyRef)
-    {
-        NSLog(@"[MASFoundation::DEBUG] storing private key into keychain started");
-        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
-        NSLog(@"[MASFoundation::DEBUG] storing private key into keychain started");
-    }
-    
-    if (publicKeyRef)
-    {
-        NSLog(@"[MASFoundation::DEBUG] storing public key into keychain started");
-        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
-        NSLog(@"[MASFoundation::DEBUG] storing public key into keychain ended");
-    }
-    
-    privateKeyRef = NULL;
-    publicKeyRef = NULL;
-    
-    NSLog(@"[MASFoundation::DEBUG] generating key pair ended");
-}
-
-
-- (NSData *)privateKeyBits
-{
-    
-	OSStatus sanityCheck = noErr;
-	NSData *privateKeyBits = nil;
-	
-	NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
-    
-	// Set the public key query dictionary
-	[queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPrivateKey setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-	[queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	[queryPrivateKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
-    CFTypeRef cfresult = NULL;
-	
-    // Get the key bits
-	sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPrivateKey, (CFTypeRef *)&cfresult);
-    
-    privateKeyBits = (__bridge_transfer NSData *)cfresult;
-    
-	if (sanityCheck != noErr)
-	{
-		privateKeyBits = nil;
-	}
-    
-	return privateKeyBits;
-}
-
-
-- (NSData *)publicKeyBits
-{
- 
-    OSStatus sanityCheck = noErr;
-	NSData * publicKeyBits = nil;
-	
-	NSMutableDictionary * queryPublicKey = [[NSMutableDictionary alloc] init];
-    
-	// Set the public key query dictionary.
-	[queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPublicKey setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-	[queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	[queryPublicKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
-    
-    CFTypeRef cfresult = NULL;
-	
-    // Get the key bits
-	sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPublicKey, (CFTypeRef *)&cfresult);
-    
-    publicKeyBits = (__bridge_transfer NSData *)cfresult;
-    
-	if (sanityCheck != noErr)
-	{
-		publicKeyBits = nil;
-	}
-    
-	return publicKeyBits;
-}
-
-
-# pragma mark - CSR Generation
 
 - (NSString *)generateCSRWithUsername:(NSString *)userName publicKeyBits:(NSData *)publicKeyBits privateKey:(SecKeyRef)privateKey
 {
@@ -381,6 +188,202 @@ static MASSecurityService *_sharedService_ = nil;
     [certificateSigningRequest encloseWithSequenceTag];
     
     return [certificateSigningRequest base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+}
+
+
+# pragma mark - Keys
+
+- (NSURLCredential *)createUrlCredential
+{
+    NSArray *identities = [[MASAccessService sharedService] getAccessValueIdentities];
+    NSArray *certificates = [[MASAccessService sharedService] getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
+
+    //DLog(@"\n\ncalled and identities is: %@ and certificates is: %@", identities, certificates);
+    
+    return [NSURLCredential credentialWithIdentity:(__bridge SecIdentityRef)(identities[0]) certificates:certificates persistence:NSURLCredentialPersistenceNone];
+}
+
+
+- (void)deleteAsymmetricKeys
+{
+	OSStatus sanityCheck = noErr;
+	NSMutableDictionary *queryPublicKey = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
+	
+    //
+	// Set the public key query dictionary
+	//
+    [queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+	[queryPublicKey setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+	
+	//
+    // Set the private key query dictionary
+	//
+    [queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+	[queryPrivateKey setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+	
+	//
+    // Delete the private key
+	//
+    sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPrivateKey);
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    {
+        DLog(@"Error removing private key, OSStatus == %d.", (int)sanityCheck);
+    }
+	
+	//
+    // Delete the public key
+	//
+    sanityCheck = SecItemDelete((__bridge CFDictionaryRef)queryPublicKey);
+    if (!(sanityCheck == noErr || sanityCheck == errSecItemNotFound))
+    {
+        DLog(@"Error removing public key, OSStatus == %d.", (int)sanityCheck);
+    }
+}
+
+
+- (void)generateKeypair
+{
+    
+    NSData *privatKeyBits = [self privateKeyBits];
+    NSData *publicKeyBits = [self publicKeyBits];
+    
+    if (privatKeyBits != nil && publicKeyBits != nil)
+    {
+        return;
+    }
+    
+    //
+    // Generate asymetric keys and save the private key into the keychain and return the public key
+    //
+    OSStatus sanityCheck = noErr;
+    SecKeyRef publicKeyRef = NULL;
+    SecKeyRef privateKeyRef = NULL;
+    
+    // Container dictionaries
+	NSMutableDictionary * privateKeyAttr = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary * publicKeyAttr = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary * keyPairAttr = [[NSMutableDictionary alloc] init];
+	
+	//
+    // Set top level dictionary for the keypair
+	//
+    [keyPairAttr setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+	[keyPairAttr setObject:[NSNumber numberWithUnsignedInteger:kAsymmetricSecKeyPairModulusSize] forKey:(__bridge id)kSecAttrKeySizeInBits];
+	
+	//
+    // Set the private key dictionary
+	//
+    [privateKeyAttr setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecAttrIsPermanent];
+	[privateKeyAttr setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+    
+	//
+    // Set the public key dictionary
+	//
+    [publicKeyAttr setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecAttrIsPermanent];
+	[publicKeyAttr setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+    
+	//
+    // Set attributes to top level dictionary
+	//
+    [keyPairAttr setObject:privateKeyAttr forKey:(__bridge id)kSecPrivateKeyAttrs];
+	[keyPairAttr setObject:publicKeyAttr forKey:(__bridge id)kSecPublicKeyAttrs];
+    
+	sanityCheck = SecKeyGeneratePair((__bridge CFDictionaryRef)keyPairAttr, &publicKeyRef, &privateKeyRef);
+    
+    if (!( sanityCheck == noErr && publicKeyRef != NULL && privateKeyRef != NULL))
+    {
+        DLog(@"Error with something really bad went wrong with generating the key pair");
+    }
+    
+    //
+    // Storing privateKey and publicKey into keychain
+    //
+    if (privateKeyRef)
+    {
+        [[MASAccessService sharedService] setAccessValueCryptoKey:privateKeyRef storageKey:MASKeychainStorageKeyPrivateKey];
+    }
+    
+    if (publicKeyRef)
+    {
+        [[MASAccessService sharedService] setAccessValueCryptoKey:publicKeyRef storageKey:MASKeychainStorageKeyPublicKey];
+    }
+    
+    privateKeyRef = NULL;
+    publicKeyRef = NULL;
+}
+
+
+- (NSData *)privateKeyBits
+{
+    
+	OSStatus sanityCheck = noErr;
+	NSData *privateKeyBits = nil;
+	
+	NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
+    
+	// Set the public key query dictionary
+	[queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+	[queryPrivateKey setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+	[queryPrivateKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
+    CFTypeRef cfresult = NULL;
+	
+    // Get the key bits
+	sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPrivateKey, (CFTypeRef *)&cfresult);
+    
+    privateKeyBits = (__bridge_transfer NSData *)cfresult;
+    
+	if (sanityCheck != noErr)
+	{
+		privateKeyBits = nil;
+	}
+    
+	return privateKeyBits;
+}
+
+
+- (NSData *)publicKeyBits
+{
+ 
+    OSStatus sanityCheck = noErr;
+	NSData * publicKeyBits = nil;
+	
+	NSMutableDictionary * queryPublicKey = [[NSMutableDictionary alloc] init];
+    
+	// Set the public key query dictionary.
+	[queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+	[queryPublicKey setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+	[queryPublicKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
+    
+    CFTypeRef cfresult = NULL;
+	
+    // Get the key bits
+	sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPublicKey, (CFTypeRef *)&cfresult);
+    
+    publicKeyBits = (__bridge_transfer NSData *)cfresult;
+    
+	if (sanityCheck != noErr)
+	{
+		publicKeyBits = nil;
+	}
+    
+	return publicKeyBits;
+}
+
+
+- (void)checkKeypair
+{
+    NSData *privatKeyBits = [self privateKeyBits];
+    NSData *publicKeyBits = [self publicKeyBits];
+    
+    if (privatKeyBits == nil || publicKeyBits == nil)
+    {
+        [self generateKeypair];
+    }
 }
 
 @end

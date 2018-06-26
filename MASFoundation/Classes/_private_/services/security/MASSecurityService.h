@@ -20,8 +20,6 @@
 
 @interface MASSecurityService : MASService
 
-
-
 ///--------------------------------------
 /// @name Shared Service
 ///--------------------------------------
@@ -34,6 +32,22 @@
  * @return Returns the MASSecurityService singleton.
  */
 + (instancetype)sharedService;
+
+
+
+///--------------------------------------
+/// @name CSR Generation
+///--------------------------------------
+
+# pragma mark - CSR Generation
+
+/**
+ * Generate a certificate signing request with a given user name.
+ *
+ * @param userName The username to add to the request.
+ * @return Returns the CSR as an encocded NSString.  The encoding used is NSNEXTSTEPStringEncoding.
+ */
+- (NSString *)generateCSRWithUsername:(NSString *)userName;
 
 
 
@@ -56,16 +70,6 @@
  * Delete any existing asymmetic keys.
  */
 - (void)deleteAsymmetricKeys;
-
-
-
-/**
- * Generate a certificate signing request with a given user name.
- * 
- * @param userName The username to add to the request.
- * @return Returns the CSR as an encocded NSString.  The encoding used is NSNEXTSTEPStringEncoding.
- */
-- (NSString *)generateCSRWithUsername:(NSString *)userName;
 
 
 

@@ -138,7 +138,6 @@
     {
         // Certificate Signing Request
         MASSecurityService *securityService = [MASSecurityService sharedService];
-        [securityService deleteAsymmetricKeys];
         [securityService generateKeypair];
         NSString *certificateSigningRequest = [securityService generateCSRWithUsername:self.csrUsername];
         
