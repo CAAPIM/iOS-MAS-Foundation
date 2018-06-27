@@ -1,3 +1,8 @@
+# Version 1.8.00
+
+### Bug fixes
+- MASFoundation's OTP channel selection was returning an internal error to the original request. The Mobile SDK now sends only cancellation of OTP process, and/or results of the original request. [DE366491]
+
 # Version 1.7.00
 
 ### Enhancement
