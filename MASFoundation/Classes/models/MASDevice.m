@@ -201,6 +201,58 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 }
 
 
+# pragma mark - Device Metadata
+
+- (void)addAttribute:(NSString *_Nonnull)name value:(NSString *)value completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Prepare the payload
+    //
+    NSDictionary *attribute = @{@"name":name, @"value":value};
+    
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] addAttribute:attribute completion:completion];
+}
+
+
+- (void)removeAttribute:(NSString *)name completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] removeAttribute:name completion:completion];
+}
+
+
+- (void)removeAllAttributes:(MASCompletionErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] removeAllAttributes:completion];
+}
+
+
+- (void)getAttribute:(NSString *)name completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] getAttribute:name completion:completion];
+}
+
+
+- (void)getAttributes:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] getAttributes:completion];
+}
+
+
 # pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder

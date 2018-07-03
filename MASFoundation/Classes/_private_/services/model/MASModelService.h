@@ -195,6 +195,58 @@
 - (void)logOutDeviceAndClearLocalAccessToken:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion;
 
 
+
+/**
+ * Create or update an attribute for the current device, return an error when exceed ${mag-device-max-tag} configuration in the server side
+ *
+ * @param attribute Key and value of the attribute to be associated with the device
+ * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
+ * based on the object type, and NSError object when error occurs.
+ */
+- (void)addAttribute:(NSDictionary *_Nonnull)attribute completion:(MASObjectResponseErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Remove attribute by name, succeed even device attribute does not exists
+ *
+ * @param name Key of the attribute to be removed for the current device
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)removeAttribute:(NSString *_Nonnull)name completion:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Remove all attributes for the current device
+ *
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)removeAllAttributes:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Get attribute by name, return empty NSDictionary if no attribute is found
+ *
+ * @param name Key of the attribute to be retrieved for the current device
+ * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
+ * based on the object type, and NSError object when error occurs.
+ */
+- (void)getAttribute:(NSString *_Nonnull)name completion:(MASObjectResponseErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Get all attributes for the current device, return empty NSDictionary if no attributes found
+ *
+ * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
+ * based on the object type, and NSError object when error occurs.
+ */
+- (void)getAttributes:(MASObjectResponseErrorBlock _Nullable)completion;
+
+
+
 ///--------------------------------------
 /// @name Login & Logout
 ///--------------------------------------

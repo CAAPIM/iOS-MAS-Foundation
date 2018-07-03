@@ -243,6 +243,7 @@
 @property (nonatomic, copy, readonly, nullable) NSString *deviceRegisterClientEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *deviceRenewEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *deviceRemoveEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceMetadataEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *enterpriseBrowserEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *tokenEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *tokenRevokeEndpointPath;

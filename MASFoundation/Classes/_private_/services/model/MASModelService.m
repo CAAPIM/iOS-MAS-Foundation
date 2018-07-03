@@ -1369,6 +1369,239 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 }
 
 
+- (void)addAttribute:(NSDictionary *)attribute completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Detect if there is a device registered, if not stop here
+    //
+    if (![self.currentDevice isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(nil, [NSError errorDeviceNotRegistered]);
+        }
+        
+        return;
+    }
+    
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+
+    //
+    // Retrieve a mutable version of the header info, create a new one if nil
+    //
+    // We must guarantee standard security headers are added here
+    //
+    MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
+
+    //
+    // Trigger the request
+    //
+    __block MASObjectResponseErrorBlock blockCompletion = completion;
+    [[MASNetworkingService sharedService] putTo:endPoint
+                                withParameters:attribute
+                                    andHeaders:mutableHeaderInfo
+                                    completion:^(NSDictionary *responseInfo, NSError *error) {
+                                          //
+                                          // Detect if error, if so stop here
+                                          //
+                                          if (error)
+                                          {
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                              }
+                                              return;
+                                          }
+                                        
+                                          //
+                                          // Notify
+                                          //
+                                          if (blockCompletion)
+                                          {
+                                              blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], nil);
+                                          }
+                                      }
+     ];
+}
+
+
+- (void)removeAttribute:(NSString *)name completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
+    
+    [self removeAttributeUsing:resourcePath completion:completion];
+}
+
+
+- (void)removeAllAttributes:(MASCompletionErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    
+    [self removeAttributeUsing:endPoint completion:completion];
+}
+
+
+- (void)removeAttributeUsing:(NSString *)endPoint completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Detect if there is a device registered, if not stop here
+    //
+    if (![self.currentDevice isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(NO, [NSError errorDeviceNotRegistered]);
+        }
+        
+        return;
+    }
+
+    //
+    // Retrieve a mutable version of the header info, create a new one if nil
+    //
+    // We must guarantee standard security headers are added here
+    //
+    MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
+    
+    //
+    // Trigger the request
+    //
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                      withParameters:nil
+                                          andHeaders:mutableHeaderInfo
+                                         requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                        responseType:MASRequestResponseTypeTextPlain
+                                          completion:^(NSDictionary *responseInfo, NSError *error) {
+                                              //
+                                              // Detect if error, if so stop here
+                                              //
+                                              if (error)
+                                              {
+                                                  //
+                                                  // Notify
+                                                  //
+                                                  if (blockCompletion)
+                                                  {
+                                                      blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                                  }
+                                                  return;
+                                              }
+                                              
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(YES, nil);
+                                              }
+                                          }
+     ];
+}
+
+
+- (void)getAttribute:(NSString *)name completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
+    
+    [self getAttributeUsing:resourcePath completion:completion];
+}
+
+
+- (void)getAttributes:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    
+    [self getAttributeUsing:endPoint completion:completion];
+}
+
+
+- (void)getAttributeUsing:(NSString *)endPoint completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Detect if there is a device registered, if not stop here
+    //
+    if (![self.currentDevice isRegistered])
+    {
+        //
+        // Notify
+        //
+        if (completion)
+        {
+            completion(nil, [NSError errorDeviceNotRegistered]);
+        }
+        
+        return;
+    }
+ 
+    //
+    // Retrieve a mutable version of the header info, create a new one if nil
+    //
+    // We must guarantee standard security headers are added here
+    //
+    MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
+    
+    //
+    // Trigger the request
+    //
+    __block MASObjectResponseErrorBlock blockCompletion = completion;
+    [[MASNetworkingService sharedService] getFrom:endPoint
+                                   withParameters:nil
+                                       andHeaders:mutableHeaderInfo
+                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+                                         //
+                                         // Detect if error, if so stop here
+                                         //
+                                         if (error)
+                                         {
+                                             //
+                                             // Notify
+                                             //
+                                             if (blockCompletion)
+                                             {
+                                                 blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                             }
+                                             return;
+                                         }
+                                         
+                                         //
+                                         // Notify
+                                         //
+                                         if (blockCompletion)
+                                         {
+                                             blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], nil);
+                                         }
+                                     }
+     ];
+}
+
+
 # pragma mark - Login & Logout
 
 - (void)loginUsingUserCredentials:(MASCompletionErrorBlock)completion
