@@ -147,15 +147,6 @@
     }
     
     //
-    // Device Vendor Id
-    //
-    NSString *deviceVendorId = [MASDevice deviceVendorId];    
-    if (deviceVendorId)
-    {
-        [accessService setAccessValueString:deviceVendorId storageKey:MASKeychainStorageKeyDeviceVendorId];
-    }
-    
-    //
     // Reload MASAccess object after storing id-token and type
     //
     [[MASAccessService sharedService].currentAccessObj refresh];
@@ -243,7 +234,15 @@
 
 + (NSString *)deviceVendorId
 {
-    return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString *deviceIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
+    
+    if (deviceIdentifier == nil || [deviceIdentifier length] == 0)
+    {
+        deviceIdentifier = [[NSUUID UUID] UUIDString];
+        [[MASAccessService sharedService] setAccessValueString:deviceIdentifier storageKey:MASKeychainStorageKeyDeviceVendorId];
+    }
+    
+    return deviceIdentifier;
 }
 
 
