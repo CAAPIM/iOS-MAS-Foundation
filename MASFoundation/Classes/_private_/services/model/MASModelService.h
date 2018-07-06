@@ -215,9 +215,10 @@
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
  *
+ *  @param force BOOL Clear local tokens no matter the logout call to the server success or not.
  *  @param completion The completion block that receives the results.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)logoutWithCompletion:(BOOL)force completion:(MASCompletionErrorBlock)completion;
 
 
 /**
@@ -259,5 +260,22 @@
  *  @param completion       MASCompletionErrorBlock block that notifies original caller for the result of validation.
  */
 - (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion;
+
+
+///--------------------------------------
+/// @name Deprecated
+///--------------------------------------
+
+# pragma mark - Deprecated
+
+/**
+ *  Logout the current access credentials via asynchronous request.
+ *
+ *  This will remove the user available from 'currentUser' upon a successful result if one exists.
+ *
+ *  @param completion The completion block that receives the results.
+ */
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion DEPRECATED_MSG_ATTRIBUTE("[[MASModelService sharedService] logoutWithCompletion:] is deprecated.  Use [[MASModelService sharedService] logoutWithCompletion:completion:] instead.");
+
 
 @end

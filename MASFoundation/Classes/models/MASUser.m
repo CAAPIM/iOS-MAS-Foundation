@@ -266,7 +266,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+- (void)logoutWithCompletion:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     
     MASAccessService *accessService = [MASAccessService sharedService];
@@ -305,7 +305,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         // If the sso is disabled or id_token does not exist, revoke the access_token only
         //
         else {
-            [[MASModelService sharedService] logoutWithCompletion:completion];
+            [[MASModelService sharedService] logoutWithCompletion:force completion:completion];
         }
     }
 }
@@ -371,5 +371,14 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
     return self;
 }
+
+
+# pragma mark - Deprecated
+
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+{
+    [self logoutWithCompletion:NO completion:completion];
+}
+
 
 @end

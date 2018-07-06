@@ -1807,9 +1807,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
  *
+ *  @param force BOOL Clear local tokens no matter the logout call to the server success or not.
  *  @param completion The completion block that receives the results.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+- (void)logoutWithCompletion:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     //
     // The application must be registered else stop here
@@ -1913,6 +1914,14 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                                   // Post the notification
                                                   //
                                                   [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+                                                  
+                                                  //
+                                                  // Clear currentUser object if forced
+                                                  //
+                                                  if(force)
+                                                  {
+                                                      [blockSelf clearCurrentUserForLogout];
+                                                  }
                                                   
                                                   //
                                                   // Notify
@@ -2429,5 +2438,14 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         }
     }];
 }
+
+
+# pragma mark - Deprecated
+
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+{
+    [self logoutWithCompletion:NO completion:completion];
+}
+
 
 @end

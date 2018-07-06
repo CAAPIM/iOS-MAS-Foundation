@@ -276,10 +276,32 @@
  *
  *  This will return YES upon a successful result.
  *
- *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user 
+ *  @param force BOOL Clear local tokens no matter the logout call to the server success or not.
+ *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
  *  available via [MASUser currentUser] has been updated with the new information.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock _Nullable)completion;
+- (void)logoutWithCompletion:(BOOL)force completion:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+///--------------------------------------
+/// @name Deprecated
+///--------------------------------------
+
+# pragma mark - Deprecated
+
+/**
+ *  Logout an already authenticated user via asynchronous request.
+ *
+ *  This will return YES upon a successful result.
+ *
+ *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
+ *  available via [MASUser currentUser] has been updated with the new information.
+ *
+ *  @warning This method has been deprecated in favor of `-logoutWithCompletion:completion:`.
+ */
+- (void)logoutWithCompletion:(MASCompletionErrorBlock _Nullable)completion DEPRECATED_MSG_ATTRIBUTE("[[MASUser currentUser] logoutWithCompletion:] is deprecated.  Use [[MASUser currentUser] logoutWithCompletion:completion:] instead.");
+
 
 
 @end
