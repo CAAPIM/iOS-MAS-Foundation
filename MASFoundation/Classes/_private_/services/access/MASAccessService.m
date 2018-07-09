@@ -825,7 +825,7 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
-#pragma mark - accessGroup
+# pragma mark - accessGroup
 
 - (BOOL)isAccessGroupAccessible
 {

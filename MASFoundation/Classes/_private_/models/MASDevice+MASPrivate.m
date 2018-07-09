@@ -17,6 +17,7 @@
 
 @implementation MASDevice (MASPrivate)
 
+static NSString *_internalIdentifier_ = nil;
 
 # pragma mark - Lifecycle
 
@@ -147,6 +148,15 @@
     }
     
     //
+    // Device Vendor Id
+    //
+    NSString *deviceVendorId = [MASDevice deviceVendorId];
+    if (deviceVendorId)
+    {
+        [accessService setAccessValueString:deviceVendorId storageKey:MASKeychainStorageKeyDeviceVendorId];
+    }
+    
+    //
     // Reload MASAccess object after storing id-token and type
     //
     [[MASAccessService sharedService].currentAccessObj refresh];
@@ -234,15 +244,32 @@
 
 + (NSString *)deviceVendorId
 {
-    NSString *deviceIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
-    
-    if (deviceIdentifier == nil || [deviceIdentifier length] == 0)
+    if (_internalIdentifier_ == nil || [_internalIdentifier_ length] == 0)
     {
-        deviceIdentifier = [[NSUUID UUID] UUIDString];
-        [[MASAccessService sharedService] setAccessValueString:deviceIdentifier storageKey:MASKeychainStorageKeyDeviceVendorId];
+        NSString *deviceIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
+        NSString *deviceVendorId;
+        
+        if ([[MASAccessService sharedService] isAccessGroupAccessible])
+        {
+            deviceVendorId = [[NSString stringWithFormat:@"%@-%@", [[[UIDevice currentDevice] identifierForVendor] UUIDString], [MASAccessService sharedService].accessGroup] md5String];
+        }
+        else {
+            deviceVendorId = [[NSString stringWithFormat:@"%@-%@", [[NSUUID UUID] UUIDString], [MASAccessService sharedService].accessGroup] md5String];
+        }
+        
+        if (deviceIdentifier == nil || [deviceIdentifier length] == 0)
+        {
+            deviceIdentifier = deviceVendorId;
+        }
+        else if (![deviceIdentifier isEqualToString:deviceVendorId] && ![deviceIdentifier isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]])
+        {
+            deviceIdentifier = deviceVendorId;
+        }
+        
+        _internalIdentifier_ = deviceIdentifier;
     }
     
-    return deviceIdentifier;
+    return _internalIdentifier_;
 }
 
 
