@@ -10,8 +10,6 @@
 
 #import "MASConfigurationService.h"
 
-
-
 @implementation MASConfigurationService
 
 static NSString *_configurationFileName_ = @"msso_config";
@@ -28,13 +26,11 @@ static NSMutableDictionary *_securityConfigurations_;
     _configurationFileName_ = fileName;
 }
 
-
 + (void)setNewConfigurationObject:(NSDictionary *)configuration
 {
     _newConfigurationObject_ = configuration;
     _newConfigurationDetected_ = YES;
 }
-
 
 + (NSDictionary *)getDefaultConfigurationAsDictionary
 {
@@ -43,6 +39,11 @@ static NSMutableDictionary *_securityConfigurations_;
     //
     NSString *jsonPath = [[NSBundle mainBundle] pathForResource:_configurationFileName_
                                                          ofType:_configurationFileType_];
+    // adicionado aqui para ambiente de testes
+    if (!jsonPath) {
+        jsonPath = [CustomHelpers filePathWithName:_configurationFileName_ andType:_configurationFileType_];
+    }
+    // fim da adição para testes
     
     if(!jsonPath)
     {
@@ -121,12 +122,6 @@ static NSMutableDictionary *_securityConfigurations_;
 
 # pragma mark - Lifecycle
 
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASConfigurationServiceUUID];
-}
-
-
 + (NSString *)serviceUUID
 {
     return MASConfigurationServiceUUID;
@@ -195,6 +190,12 @@ static NSMutableDictionary *_securityConfigurations_;
             //
             NSString *jsonPath = [[NSBundle mainBundle] pathForResource:_configurationFileName_
                                                                  ofType:_configurationFileType_];
+            
+            // Adicionado aqui para ambiente de teste
+            if(!jsonPath) {
+                jsonPath = [CustomHelpers filePathWithName:_configurationFileName_ andType:_configurationFileType_];
+            }
+            // fim da adicao para ambiente de teste
             
             //
             // Detect json configuration file missing and stop here
@@ -275,10 +276,10 @@ static NSMutableDictionary *_securityConfigurations_;
     NSURL *currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayHostName, _currentConfiguration.gatewayPort]];
     MASSecurityConfiguration *defaultSecurityConfiguration = [[MASSecurityConfiguration alloc] initWithURL:currentURL];
     defaultSecurityConfiguration.trustPublicPKI = _currentConfiguration.enabledTrustedPublicPKI;
-    defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublicKeyHashes;
+    defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublickKeyHashes;
     defaultSecurityConfiguration.certificates = _currentConfiguration.gatewayCertificates;
     
-    [MASConfiguration setSecurityConfiguration:defaultSecurityConfiguration error:nil];
+    [MASConfiguration setSecurityConfiguration:defaultSecurityConfiguration];
     
     //DLog(@"\n\ndone and current configuration is:\n\n%@\n\n", [_currentConfiguration debugDescription]);
     

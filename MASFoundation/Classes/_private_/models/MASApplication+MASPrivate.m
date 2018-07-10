@@ -16,6 +16,8 @@
 #import "MASIKeyChainStore.h"
 #import "MASModelService.h"
 
+#import "ChilkatCipher.h"
+
 @implementation MASApplication (MASPrivate)
 
 
@@ -191,7 +193,9 @@
     //
     // Body Info
     //
-    NSDictionary *bodyInfo = info[MASResponseInfoBodyInfoKey];
+    // NSDictionary *bodyInfo = info[MASResponseInfoBodyInfoKey];
+    // NSDictionary *bodyInfo = [ChilkatCipher decryptCipher:encryptedBodyInfo withPassphrase:@""];
+    NSDictionary *bodyInfo = info[@"form"][0];
     
     //
     // Client Expiration
@@ -215,6 +219,7 @@
     // Client Secret
     //
     NSString *clientSecret = bodyInfo[MASClientSecretRequestResponseKey];
+    NSLog(@"\n\nDecripted client secret: %@", clientSecret);
     if (clientSecret)
     {
         [accessService setAccessValueString:clientSecret storageKey:MASKeychainStorageKeyClientSecret];

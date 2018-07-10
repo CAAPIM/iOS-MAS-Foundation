@@ -60,7 +60,7 @@
  * @return NSData that is formatted correctly to be place into the HTTP request body.
  */
 + (NSData *)dataForBodyFromParameterInfo:(NSDictionary *)parameterInfo forRequestType:(MASRequestResponseType)type;
-
++ (NSData *)dataForBodyFromParameterInfo:(NSDictionary *)parameterInfo;
 
 /**
  * Format the incoming parameter info dictionary of type/value parameters to put into the query formatted string.  

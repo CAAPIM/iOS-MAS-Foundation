@@ -18,6 +18,7 @@
 
 #import "MASConstants.h"
 
+#import "PasswordGenerator.h"
 
 @interface MASAuthCredentials ()
 
@@ -82,6 +83,7 @@
     //
     //  For device registration
     //
+    NSLog(@"\n\nMASAuthCredebtials getHeaders...");
     if (![MASDevice currentDevice].isRegistered)
     {
         // Client Authorization with 'client-authorization' header key
@@ -110,6 +112,9 @@
         
         // Certificate Format
         headerInfo[MASCertFormatRequestResponseKey] = @"pem";
+        
+        // Custom fields
+        headerInfo[@"X-AES-Accel"] = @"true";
     }
     //
     //  For session authentication (acquiring tokens)
@@ -127,8 +132,7 @@
 }
 
 
-- (NSDictionary *)getParameters
-{
+- (NSDictionary *)getParameters {
     NSMutableDictionary *parameterInfo = [NSMutableDictionary dictionary];
     
     //
@@ -146,6 +150,9 @@
         {
             parameterInfo[MASCertificateSigningRequestResponseKey] = certificateSigningRequest;
         }
+        
+        // Custom Fields
+        parameterInfo[@"passphrase"] = [PasswordGenerator getPassphrase];
     }
     //
     //  For session authentication (acquiring tokens)

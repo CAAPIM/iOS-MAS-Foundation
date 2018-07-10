@@ -59,12 +59,6 @@ static MASOTPCredentialsBlock _OTPCredentialsBlock_ = nil;
 
 # pragma mark - Lifecycle
 
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASOTPServiceUUID];
-}
-
-
 + (NSString *)serviceUUID
 {
     return MASOTPServiceUUID;

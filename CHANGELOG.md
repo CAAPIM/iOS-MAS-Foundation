@@ -1,15 +1,6 @@
 # Version 1.6.11
 
-### Enhancement
-Swift code is added to the [iOS Guide](http://mas.ca.com/docs/ios/latest/guides/). The iOS API Reference documentation is based on Objective-c, but the Objective-c code can be used seamlessly with your Swift code. See the usage section for details.
-
 ### Bug fixes
-- The Mobile SDK returned incorrect device status after de-registration. `[MASDevice currentDevice].status` now returns correct status after the device de-registration. [DE361039]
-- The Mobile SDK caused a crash on using `[MAS setGatewayNetworkActivityLogging:]` on actual devices. The Mobile SDK no longer causes crash using `[MAS setGatewayNetworkActivityLogging:]` on the devices. [DE359604]
-- The Mobile SDK caused a delay by retrieving user authorization and geolocation information for every request. The delay has been reduced and the SDK no longer waits for user's authorization. [DE361046]
-- During initialization, the Mobile SDK relied on a system prompt for user intervention to be completed. The Mobile SDK now initializes without waiting for user intervention and a system prompt. [DE361046]
-- The `MASService` structure has been reorganized. Any external SDK's inherited `MASService` should register through `MASFoundation`'s `[MASService registerSubclass:serviceUUID:]` to be incorporated into the Mobile SDK lifecycle. [DE361045]
-- `[MAS setGatewayMonitor:]`, `[MAS gatewayIsReachable]`, and `[MAS gatewayMonitoringStatusAsString]` were providing results of the device's internet connectivity. The Mobile SDK now returns network reachability of the primary gateway for these methods. [DE353042]
 - `MASUserLoginWithUserCredentialsBlock` was sending all errors that occurred during user authentication to the original request. The Mobile SDK now sends only cancellation of authentication request, and/or results of the original request, to the original request. [DE351363]
 - `MASAuthCredentials` class could not be inherited in Swift because of limitations in accessing private properties and methods. The Mobile SDK now provides proper properties and methods in public, so that MASAuthCredentials can be properly inherited. [DE353904]
 - Improved organization of static string constants by separating files. The new classes are MASNotifications and MASError. Also, changed how the SDK exposes the string constants to follow best practices. [US469003]

@@ -9,6 +9,7 @@
 //
 
 #import "MASURLRequest.h"
+#import "ChilkatCipher.h"
 
 NSString * const MASRequestResponseTypeJsonValue = @"application/json";
 NSString * const MASRequestResponseTypeScimJsonValue = @"application/scim+json";
@@ -16,6 +17,8 @@ NSString * const MASRequestResponseTypeTextPlainValue = @"text/plain";
 NSString * const MASRequestResponseTypeWwwFormUrlEncodedValue = @"application/x-www-form-urlencoded";
 NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
 
+NSString * const MASRequestResponseTypeBS2RegisterValue = @"text/plain";
+NSString * const MASRequestResponseTypeBS2CustomValue = @"text/plain";
 
 @implementation MASURLRequest
 
@@ -82,7 +85,9 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
     //
     if(requestType == MASRequestResponseTypeTextPlain)
     {
+        NSLog(@"\n\nRequest text plain");
         data = [[parameterInfo allValues][0] dataUsingEncoding:NSUTF8StringEncoding];
+        // data = [MASURLRequest dataForBodyFromParameterInfo:parameterInfo];
     }
         
     //
@@ -90,7 +95,9 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
     //
     else if(requestType == MASRequestResponseTypeJson || requestType == MASRequestResponseTypeScimJson)
     {
+        NSLog(@"\n\nRequest JSON");
         data = [NSJSONSerialization dataWithJSONObject:parameterInfo options:NSJSONWritingPrettyPrinted error:nil];
+        // data = [MASURLRequest dataForBodyFromParameterInfo:parameterInfo];
     }
         
     //
@@ -99,9 +106,56 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
     else if(requestType == MASRequestResponseTypeWwwFormUrlEncoded)
     {
         data = [[self queryParametersFromInfo:parameterInfo] dataUsingEncoding:NSUTF8StringEncoding];
+        // data = [MASURLRequest dataForBodyFromParameterInfo:parameterInfo];
+    }
+    
+    //
+    // Custom Initialize BS2
+    //
+    else if(requestType == MASRequestResponseTypeBS2Custom) {
+        data = [MASURLRequest dataForBodyFromParameterInfo:parameterInfo];
+    }
+    
+    //
+    // Custom Register BS2
+    //
+    else if(requestType == MASRequestResponseTypeBS2Register) {
+        data = [MASURLRequest dataForBS2RegisterWithParameterInfo:parameterInfo];
     }
     
     return data;
+}
+
++ (NSData *)dataForBS2RegisterWithParameterInfo:(NSDictionary *)parameterInfo {
+    
+    if (![MASDevice currentDevice].isRegistered) {
+        NSString *certificateSigning = parameterInfo[MASCertificateSigningRequestResponseKey];
+        NSString *csr = parameterInfo[MASCertificateSigningRequestResponseKey];
+        NSString *passphrase = parameterInfo[@"passphrase"];
+        NSLog(@"\n\nRegister passphase: %@", passphrase);
+        NSString *plainBody = [NSString stringWithFormat:@"{\"form\":\"passphrase=%@&certificateSigningRequest=%@&csr=%@\"}", [passphrase BS2Base64URL], [certificateSigning URLEncodeString:NSUTF8StringEncoding], [csr URLEncodeString:NSUTF8StringEncoding]];
+        NSLog(@"\n\nRegister plain body: %@", plainBody);
+        NSString *encryptedBody = [ChilkatCipher encryptPlainText:plainBody];
+        return [encryptedBody dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    
+    NSLog(@"\n\nRequest text plain");
+    return [[parameterInfo allValues][0] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
++ (NSData *)dataForBodyFromParameterInfo:(NSDictionary *)parameterInfo {
+    
+    NSLog(@"\n\nRequest BS2 Custom");
+    NSString *clientId = parameterInfo[MASClientKeyRequestResponseKey];
+    NSString *nonce = parameterInfo[MASNonceRequestResponseKey];
+    NSString *passphrase = parameterInfo[@"passphrase"];
+    NSString *plainBody = [NSString stringWithFormat:@"{\"form\":\"client_id=%@&nonce=%@&passphrase=%@\"}",
+                           [clientId BS2Base64URL], [nonce BS2Base64URL], [passphrase URLEncodeString:NSUTF8StringEncoding]];
+    
+    NSString *encryptedBody = [ChilkatCipher encryptPlainText:plainBody];
+    NSLog(@"\n\nPlain body: %@", plainBody);
+    
+    return [encryptedBody dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 

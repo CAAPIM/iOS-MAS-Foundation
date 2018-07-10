@@ -167,17 +167,6 @@
 }
 
 
-- (void)clearCurrentDeviceForDeregistration
-{
-    [self setValue:nil forKey:@"status"];
-    
-    //
-    // Save to the keychain
-    //
-    [self saveToStorage];
-}
-
-
 - (void)reset
 {
     [[MASIKeyChainStore keyChainStoreWithService:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString] removeItemForKey:[MASDevice.class description]];
@@ -206,14 +195,23 @@
 {
     NSString *deviceId = [MASDevice deviceVendorId];
     
+    // Incluindo teste
+    if (!deviceId) {
+        return @"";
+    }
+    
     //
     //  If the sso is disabled, generate unique device id to differentiate the application's registration record from others.
     //  This is NOT the original design of MSSO; however, we are putting this in to support old MAG SDK's functionality and will revert after the release.
     //
     if (![MASConfiguration currentConfiguration].ssoEnabled)
     {
+        NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+        if (bundleId) {
+            deviceId = [deviceId stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]];
+        }
         //  Append bundle identifier onto device id.
-        deviceId = [deviceId stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]];
+        // deviceId = [deviceId stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]];
         
         //  If the device id is longer than 45, csr will not be generated properly, so truncate the string from the END.
         if ([deviceId length] > 45)

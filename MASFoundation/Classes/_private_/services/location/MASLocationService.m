@@ -43,12 +43,6 @@
 
 # pragma mark - Lifecycle
 
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASLocationServiceUUID];
-}
-
-
 + (NSString *)serviceUUID
 {
     return MASLocationServiceUUID;
@@ -77,15 +71,19 @@
     if(configuration.locationIsRequired)
     {
         [MASINTULocationManager sharedInstance].delegate = self;
-        [self serviceDidLoadCompletion:nil];
+        [self serviceDidLoadCompletion:^(BOOL completed, NSError *error)
+         {
+             //
+             // Regardless of the location status, SDK should successfully initialize SDK.
+             // In case of unavailable location from the device, it would simply not send location information in the request,
+             // and return a proper error from the endpoint (if needed).
+             //
+             [super serviceWillStart];
+         }];
     }
-    
-    //
-    // Regardless of the location status, SDK should successfully initialize SDK.
-    // In case of unavailable location from the device, it would simply not send location information in the request,
-    // and return a proper error from the endpoint (if needed).
-    //
-    [super serviceWillStart];
+    else {
+        [super serviceWillStart];
+    }
 }
 
 
@@ -115,20 +113,14 @@
     //
     if ([MASLocationService isLocationMonitoringAuthorized])
     {
-        if (completion)
-        {
-            completion(YES, nil);
-        }
+        completion(YES, nil);
     }
     //
     // If the location service is determined, but not available (Unauthorized)
     //
     else if (![MASLocationService isLocationMonitoringNotDetermined])
     {
-        if (completion)
-        {
-            completion(NO, [NSError errorGeolocationServicesAreUnauthorized]);
-        }
+        completion(NO, [NSError errorGeolocationServicesAreUnauthorized]);
     }
     //
     // Otherwise, request authorization from the user
@@ -294,8 +286,8 @@
     MASINTULocationManager *locMgr = [MASINTULocationManager sharedInstance];
     
     return [locMgr requestLocationWithDesiredAccuracy:MASINTULocationAccuracyNeighborhood
-        timeout:0.1
-        delayUntilAuthorized:NO
+        timeout:5
+        delayUntilAuthorized:YES
         block:^(CLLocation *currentLocation, MASINTULocationAccuracy achievedAccuracy, MASINTULocationStatus status)
         {
             //DLog(@"\n\n (internal) called with new location: %@\n  at accuracy: %@\n  with status: %@\n\n",

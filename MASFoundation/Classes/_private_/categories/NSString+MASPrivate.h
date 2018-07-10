@@ -66,8 +66,13 @@
  */
 - (NSString *)base64URL;
 
-
-
+/**
+ *  Encode string with Base64 URL encoded
+ *
+ *  @return Returns base64 URL encoded NSString conform to BS2 standard
+ */
+- (NSString *)BS2Base64URL;
+- (NSString *)URLEncodeString:(NSStringEncoding)encoding;
 /**
  *  Decode string with URL decoded
  *
@@ -87,15 +92,6 @@
 
 
 - (NSString *)replaceStringWithRegexPattern:(NSString *)pattern withString:(NSString *)string;
-
-
-
-/**
- Determines whether string is in IP address format or not
-
- @return BOOL value indicating whether the string is in IP address format.
- */
-- (BOOL)isIPAddress;
 
 
 @end

@@ -21,6 +21,10 @@
 #import "MASAuthCredentials+MASPrivate.h"
 #import "MASAuthCredentialsClientCredentials.h"
 
+#import "PasswordGenerator.h"
+#import "CustomHelpers.h"
+#import "ChilkatCipher.h"
+
 static NSString *const MASEnterpriseAppsKey = @"enterprise-apps";
 static NSString *const MASEnterpriseAppKey = @"app";
 
@@ -100,12 +104,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 
 
 # pragma mark - Lifecycle
-
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASModelServiceUUID];
-}
-
 
 + (NSString *)serviceUUID
 {
@@ -263,6 +261,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // ClientId
     NSString *clientId = [[MASConfiguration currentConfiguration] defaultApplicationClientIdentifier];
     
+    NSData *clientIdData = [clientId dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *clientIdBase64 = [clientIdData base64EncodedStringWithOptions:0];
+    NSLog(@"\n\nClient_id %@", clientId);
+    
     // ClientSecret
     NSString *clientSecret = [[MASConfiguration currentConfiguration] defaultApplicationClientSecret];
     
@@ -274,7 +276,8 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     {
         NSMutableDictionary *applicationInfo = [NSMutableDictionary dictionary];
         
-        [applicationInfo setObject:clientId forKey:MASClientIdentifierRequestResponseKey];
+        // [applicationInfo setObject:clientId forKey:MASClientIdentifierRequestResponseKey];
+        [applicationInfo setObject:clientIdBase64 forKey:MASClientIdentifierRequestResponseKey];
         [applicationInfo setObject:clientSecret forKey:MASClientSecretRequestResponseKey];
         [applicationInfo setObject:[NSNumber numberWithInt:0] forKey:MASClientExpirationRequestResponseKey];
         
@@ -327,6 +330,9 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         headerInfo[MASDeviceIdRequestResponseKey] = deviceId;
     }
     
+    // Hardware Aceleration
+    headerInfo[@"X-AES-Accel"] = @"true";
+    
     //
     // Parameters
     //
@@ -344,17 +350,26 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         parameterInfo[MASNonceRequestResponseKey] = nonce;
     }
     
+    // Passphrase
+    NSString *passphrase = [PasswordGenerator getPassphrase];
+    NSData *passphaseData = [passphrase dataUsingEncoding:NSUTF8StringEncoding];
+    parameterInfo[@"passphrase"] = [passphaseData base64Encoding];
+    
     //
     // Trigger the request
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
+    
     [[MASNetworkingService sharedService] postTo:endPoint
                                   withParameters:parameterInfo
                                       andHeaders:headerInfo
-                                     requestType:MASRequestResponseTypeWwwFormUrlEncoded
-                                    responseType:MASRequestResponseTypeJson
+                                     requestType:MASRequestResponseTypeBS2Custom
+                                    responseType:MASRequestResponseTypeTextPlain
                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+                                          
+                                          NSLog(@"\n\nMASNetworkingService responseInfo XML ou JSON: %@", responseInfo);
+                                          
                                           //
                                           // If error stop here
                                           //
@@ -379,7 +394,20 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           //
                                           // Updated with latest application info
                                           //
-                                          [blockSelf.currentApplication saveWithUpdatedInfo:responseInfo];
+                                          // Encrypted body
+                                          NSString *encryptedBodyInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                          NSLog(@"\n\nEncrypted body: %@", encryptedBodyInfo);
+                                          
+                                          NSDictionary *decryptedResponseInfo = [ChilkatCipher decryptCipher:encryptedBodyInfo withPassphrase:[passphaseData base64Encoding]];
+                                          NSLog(@"\n\nDecrypted body info: %@", decryptedResponseInfo);
+                                          
+                                          if (decryptedResponseInfo == nil) {
+                                              NSLog(@"\n\nErro tentando descriptografar resposta");
+                                              return;
+                                          }
+                                          
+                                          // [blockSelf.currentApplication saveWithUpdatedInfo:responseInfo];
+                                          [blockSelf.currentApplication saveWithUpdatedInfo:decryptedResponseInfo];
                                           
                                           //
                                           // Post the notification
@@ -778,11 +806,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
             //
             [blockSelf clearCurrentUserForLogout];
             
-            //
-            // Clear all currently registered device's information upon de-registration
-            //
-            [[MASDevice currentDevice] clearCurrentDeviceForDeregistration];
-                                              
             //
             // Remove PKCE Code Verifier and state
             //

@@ -122,6 +122,25 @@
 
 
 /**
+ *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
+ *  This block will be triggered when any change to the current monitoring status
+ *  takes place with a MASGatewayMonitoringStatus.
+ *
+ *  The gateway monitoring status enumerated values are:
+ *
+ *      MASGatewayMonitoringStatusNotReachable
+ *      MASGatewayMonitoringStatusReachableViaWWAN
+ *      MASGatewayMonitoringStatusReachableViaWiFi
+ *
+ *  This is optional and it can be set to nil at any time to stop receiving the notifications.
+ *
+ *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
+ */
++ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
+
+
+
+/**
  *  Returns current MASState enumeration value.  The value can be used to determine which state SDK is currently at.
  *
  *  @return return MASState of current state.
@@ -317,27 +336,6 @@
 ///--------------------------------------
 
 # pragma mark - Gateway Monitoring
-
-/**
- *  Sets the gateway monitoring block defined by the GatewayMonitorStatusBlock type.
- *  This block will be triggered when any change to the current monitoring status
- *  takes place with a MASGatewayMonitoringStatus.
- *
- *  The gateway monitoring status enumerated values are:
- *
- *      MASGatewayMonitoringStatusNotReachable
- *      MASGatewayMonitoringStatusReachableViaWWAN
- *      MASGatewayMonitoringStatusReachableViaWiFi
- *
- *  This is optional and it can be set to nil at any time to stop receiving the notifications.
- *
- *  Reachability status update can also be received as NSNotification. Subscribe notification key, MASGatewayMonitorStatusUpdateNotification, and notifications will be broadcasted whenever there is a change in network reachability status for the primary gateway on the payload of NSNotification as NSDictionary format @{ (NSString)"host" : (NSNumber)enumValue};
- *
- *  @param monitor The MASGatewayMonitorStatusBlock that will receive the status updates.
- */
-+ (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock _Nullable)monitor;
-
-
 
 /**
  *  Retrieves a simple boolean indicator if the gateway is currently reachable or not.

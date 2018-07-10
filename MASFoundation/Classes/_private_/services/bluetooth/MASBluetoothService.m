@@ -35,12 +35,6 @@
 
 # pragma mark - Lifecycle
 
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASBluetoothServiceUUID];
-}
-
-
 + (NSString *)serviceUUID
 {
     return MASBluetoothServiceUUID;

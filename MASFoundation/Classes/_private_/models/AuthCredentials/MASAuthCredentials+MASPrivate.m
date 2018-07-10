@@ -17,6 +17,8 @@
 
 #import "MASConstants.h"
 
+#import "ChilkatCipher.h"
+
 @implementation MASAuthCredentials (MASPrivate)
 
 - (void)registerDeviceWithCredential:(MASCompletionErrorBlock)completion
@@ -64,17 +66,19 @@
     [[MASNetworkingService sharedService] postTo:self.registerEndpoint
                                   withParameters:[self getParameters]
                                       andHeaders:[self getHeaders]
-                                     requestType:MASRequestResponseTypeTextPlain
+                                     // requestType:MASRequestResponseTypeTextPlain
+                                     requestType:MASRequestResponseTypeBS2Register
                                     responseType:MASRequestResponseTypeTextPlain
                                       completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
                                           
+                                          NSLog(@"\n\nRegister response: %@", responseInfo);
                                           //
                                           // Detect if error, if so stop here
                                           //
                                           if(error)
                                           {
-                                              //DLog(@"Error detected attempting to request registration of the device: %@",
-                                              //    [error localizedDescription]);
+                                              NSLog(@"\n\nError detected attempting to request registration of the device: %@",
+                                                    [error localizedDescription]);
                                               
                                               //
                                               // Notify
@@ -102,6 +106,17 @@
                                           // Validate id_token when received from server.
                                           //
                                           NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+                                          
+                                          //
+                                          // Custom
+                                          //
+                                          NSDictionary *params = [self getParameters];
+                                          NSString *passphrase = params[@"passphrase"];
+                                          NSLog(@"\n\nRegister passphrase: %@", passphrase);
+                                          NSString *encryptedResponse = responseInfo[MASResponseInfoBodyInfoKey];
+                                          NSData *passphraseData = [passphrase dataUsingEncoding:NSUTF8StringEncoding];
+                                          NSDictionary *decryptedResponse = [ChilkatCipher decryptCipher:encryptedResponse withPassphrase:[passphraseData base64Encoding]];
+                                          NSLog(@"\n\nRegister decrypted response: %@", decryptedResponse);
                                           
                                           if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
                                               [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&

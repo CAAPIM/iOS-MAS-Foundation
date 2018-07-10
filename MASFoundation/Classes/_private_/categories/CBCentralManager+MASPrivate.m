@@ -97,7 +97,7 @@
         // Resetting
         //
         case CBCentralManagerStateResetting:
-        return [NSError errorForFoundationCode:MASFoundationErrorCodeBLEResetting errorDomain:MASFoundationErrorDomainLocal];
+        return [NSError errorForFoundationCode:MASFoundationErrorCodeBLERestting errorDomain:MASFoundationErrorDomainLocal];
         break;
         
         //

@@ -11,7 +11,6 @@
 #import "MASService.h"
 
 #import "MASServiceRegistry.h"
-#import "NSString+MASPrivate.h"
 
 
 @interface MASService ()
@@ -23,7 +22,6 @@
 
 @implementation MASService
 
-static NSMutableDictionary *_subClasses_;
 
 #
 # pragma mark - Shared Service
@@ -284,28 +282,6 @@ static NSMutableDictionary *_subClasses_;
         // Default
         //
         default: return @"Unknown";
-    }
-}
-
-
-# pragma mark - Subclass Registry Methods
-
-+ (NSArray *)getSubclasses
-{
-    return _subClasses_.allValues;
-}
-
-
-+ (void)registerSubclass:(Class)subclass serviceUUID:(NSString *)serviceUUID
-{
-    if (_subClasses_ == nil)
-    {
-        _subClasses_ = [NSMutableDictionary dictionary];
-    }
-    
-    if (![serviceUUID isEmpty] && subclass != nil)
-    {
-        [_subClasses_ setObject:subclass forKey:serviceUUID];
     }
 }
 

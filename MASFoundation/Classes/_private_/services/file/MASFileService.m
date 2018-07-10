@@ -39,12 +39,6 @@
 
 # pragma mark - Lifecycle
 
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASFileServiceUUID];
-}
-
-
 + (NSString *)serviceUUID
 {
     return MASFileServiceUUID;

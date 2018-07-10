@@ -40,6 +40,14 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
++ (NSString *_Nullable)authCredentialsType
+{
+    NSString *authCredentialsType = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyCurrentAuthCredentialsGrantType];
+    
+    return authCredentialsType;
+}
+
+
 # pragma mark - Current User - Lock/Unlock Session
 
 - (void)lockSessionWithCompletion:(MASCompletionErrorBlock)completion

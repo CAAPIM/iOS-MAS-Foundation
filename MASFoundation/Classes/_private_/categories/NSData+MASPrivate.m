@@ -306,18 +306,27 @@ bool _encrypted = NO;
     return [[NSString alloc] initWithBytesNoCopy:characters length:length encoding:NSUTF8StringEncoding freeWhenDone:YES];
 }
 
-
 + (NSData *)convertPEMCertificateToDERCertificate:(NSString *)PEMCertificate
 {
-    NSData *PEMData = [NSData dataFromPEMBase64String:PEMCertificate];
-    SecCertificateRef certificateRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)PEMData);
-    CFDataRef DEREncodedData = SecCertificateCopyData(certificateRef);
-
-    NSData *DERData = (__bridge NSData*)DEREncodedData;
-    CFRelease(certificateRef);
-    CFRelease(DEREncodedData);
+    BIO *pemCertificateBio = BIO_new(BIO_s_mem());
+    BIO_write(pemCertificateBio, [PEMCertificate UTF8String], (int)strlen([PEMCertificate UTF8String]));
     
-    return DERData;
+    X509 *x = PEM_read_bio_X509(pemCertificateBio,NULL,0,NULL);
+    BIO *outDerBio = BIO_new(BIO_s_mem());
+    i2d_X509_bio(outDerBio, x);
+    
+    int len = BIO_pending(outDerBio);
+    
+    if (len > 0)
+    {
+        char *out = calloc(len + 1, 1);
+        int i = BIO_read(outDerBio, out, len);
+        
+        return [NSData dataWithBytes:out length:i];
+    }
+    else {
+        return nil;
+    }
 }
 
 

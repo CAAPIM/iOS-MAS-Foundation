@@ -360,8 +360,7 @@
         return nil;
     
     NSString *accessGroup = [(__bridge NSDictionary *)result objectForKey:(__bridge NSString *)kSecAttrAccessGroup];
-    CFRelease(result);
-    
+
     return accessGroup;
 }
 

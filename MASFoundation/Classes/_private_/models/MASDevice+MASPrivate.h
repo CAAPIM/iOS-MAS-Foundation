@@ -11,7 +11,9 @@
 #import <MASFoundation/MASFoundation.h>
 
 
-@interface MASDevice (MASPrivate) <NSCoding>
+@interface MASDevice (MASPrivate)
+    <NSCoding>
+
 
 ///--------------------------------------
 /// @name Lifecycle
@@ -27,7 +29,6 @@
 - (id)initWithConfiguration;
 
 
-
 /**
  * Retrieves the instance of MASDevice from local storage, it it exists.
  *
@@ -36,21 +37,12 @@
 + (MASDevice *)instanceFromStorage;
 
 
-
 /**
  * Save the current MASDevice instance with newly provided information.
  *
  * @param info An NSDictionary containing newly provided information.
  */
 - (void)saveWithUpdatedInfo:(NSDictionary *)info;
-
-
-
-/**
- Deletes all current device's related data upon de-registration.
- */
-- (void)clearCurrentDeviceForDeregistration;
-
 
 
 /**
@@ -73,7 +65,6 @@
 - (BOOL)isClientCertificateExpired;
 
 
-
 /**
  * Retrieves the device identifier that is uniquely generated for the 
  * specific device the framework is running upon.  It is Base64 encoded.
@@ -83,14 +74,12 @@
 + (NSString *)deviceIdBase64Encoded;
 
 
-
 /**
  * Retrieves the device's name.  It is Base64 encoded.
  *
  * @return Returns the unique NSString device name in Base64 encoding.
  */
 + (NSString *)deviceNameBase64Encoded;
-
 
 
 /**

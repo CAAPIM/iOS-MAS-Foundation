@@ -11,7 +11,7 @@
 #import "MASService.h"
 
 #import "MASConstantsPrivate.h"
-
+#import "CustomHelpers.h"
 
 
 @interface MASConfigurationService : MASService

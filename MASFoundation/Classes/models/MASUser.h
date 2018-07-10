@@ -125,6 +125,18 @@
 
 
 
+
+/**
+ Previously, or currently used authCredentialsType for the session.
+ If the SDK is not properly initialized, nil will be returned regardless of the authentication status of the SDK.
+ If the SDK was never authenticated before, SDK will also return nil as a result.
+
+ @return NSString of previously, or currently used authCredentialsType as in String.
+ */
++ (NSString *_Nullable)authCredentialsType;
+
+
+
 ///--------------------------------------
 /// @name Current User - Lock/Unlock Session
 ///--------------------------------------

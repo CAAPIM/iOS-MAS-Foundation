@@ -14,6 +14,8 @@
 #import "MASSecurityPolicy.h"
 #import "MASSessionDataTaskOperation.h"
 #import "MASURLRequest.h"
+//  AFNetworking
+#import "MASINetworkReachabilityManager.h"
 
 //
 //  NSURLSessionDelegate
@@ -44,6 +46,12 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
  MASSecurityPolicy object; responsible for handling SSL pinning mechanism.
  */
 @property (readwrite, nonatomic, strong) MASSecurityPolicy *securityPolicy;
+
+
+/**
+ MASINetworkReachabilityManager object; responsible for monitorning network connectivity.
+ */
+@property (readwrite, nonatomic, strong) MASINetworkReachabilityManager *reachabilityManager;
 
 
 

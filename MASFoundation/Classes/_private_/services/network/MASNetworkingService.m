@@ -27,7 +27,6 @@
 #import "MASPostURLRequest.h"
 #import "MASPutURLRequest.h"
 #import "MASSecurityPolicy.h"
-#import "MASNetworkReachability.h"
 
 
 # pragma mark - Configuration Constants
@@ -59,7 +58,6 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 # pragma mark - Properties
 
 @property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
-@property (nonatomic, strong, readwrite) MASNetworkReachability *gatewayReachabilityManager;
 @property (readwrite, nonatomic, strong) MASAuthValidationOperation *authValidationOperation;
 
 @end
@@ -69,126 +67,18 @@ static NSString *kMASNetworkQueueOperationsChanged = @"kMASNetworkQueueOperation
 
 @implementation MASNetworkingService
 
-static MASNetworkReachabilityStatusBlock _gatewayReachabilityBlock_;
-static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
+static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 
-# pragma mark - Network Reachability
+# pragma mark - Properties
 
 + (void)setGatewayMonitor:(MASGatewayMonitorStatusBlock)monitor
 {
-    __block MASGatewayMonitorStatusBlock blockMonitor = monitor;
-    _gatewayReachabilityBlock_ = ^(MASNetworkReachabilityStatus status){
-        
-        MASGatewayMonitoringStatus convertedStatus;
-        //
-        //  Convert MASNetworkReachabilityStatus to MASGatewayMonitoringStatus
-        //
-        switch (status) {
-            case MASNetworkReachabilityStatusNotReachable:
-                convertedStatus = MASGatewayMonitoringStatusNotReachable;
-                break;
-            case MASNetworkReachabilityStatusReachableViaWWAN:
-                convertedStatus = MASGatewayMonitoringStatusReachableViaWWAN;
-                break;
-            case MASNetworkReachabilityStatusReachableViaWiFi:
-                convertedStatus = MASGatewayMonitoringStatusReachableViaWiFi;
-                break;
-            case MASNetworkReachabilityStatusUnknown:
-            case MASNetworkReachabilityStatusInitializing:
-            default:
-                convertedStatus = MASGatewayMonitoringStatusUnknown;
-                break;
-        }
-        
-        //
-        // Notify the block, if any
-        //
-        if (blockMonitor)
-        {
-            blockMonitor(convertedStatus);
-        }
-    };
-    
-    if ([MAS MASState] == MASStateDidStart)
-    {
-        [[MASNetworkingService sharedService] setGatewayReachabilityMonitoringBlock:_gatewayReachabilityBlock_];
-    }
+    _gatewayStatusMonitor_ = monitor;
 }
 
 
-+ (void)setNetworkReachabilityMonitorForHost:(NSString *)host monitor:(MASNetworkReachabilityStatusBlock)monitor
-{
-    MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
-    
-    [reachability setReachabilityMonitoringBlock:monitor];
-    [reachability startMonitoring];
-}
-
-
-+ (BOOL)isNetworkReachableForHost:(NSString *)host
-{
-    MASNetworkReachability *reachability = [MASNetworkingService retrieveOrConstructReachabilityForHost:host];
-    return reachability.isReachable;
-}
-
-
-- (void)setGatewayReachabilityMonitoringBlock:(MASNetworkReachabilityStatusBlock)monitoringBlock
-{
-    if (_gatewayReachabilityManager)
-    {
-        [_gatewayReachabilityManager setReachabilityMonitoringBlock:monitoringBlock];
-    }
-}
-
-
-+ (MASNetworkReachability *)retrieveOrConstructReachabilityForHost:(NSString *)host
-{
-    if (!_reachabilityMonitoringBlockForHosts_)
-    {
-        _reachabilityMonitoringBlockForHosts_ = [NSMutableDictionary dictionary];
-    }
-    
-    NSString *targetHost = host;
-    if (targetHost == nil || [targetHost length] == 0)
-    {
-        targetHost = @"default";
-    }
-    
-    if ([_reachabilityMonitoringBlockForHosts_.allKeys containsObject:targetHost])
-    {
-        return [_reachabilityMonitoringBlockForHosts_ objectForKey:targetHost];
-    }
-    else {
-        
-        MASNetworkReachability *reachability = nil;
-        if ([targetHost isEqualToString:@"default"])
-        {
-            //
-            //  Construct sockaddr for generic network
-            //
-            struct sockaddr_in genericAddress;
-            bzero(&genericAddress, sizeof(genericAddress));
-            genericAddress.sin_len = sizeof(genericAddress);
-            genericAddress.sin_family = AF_INET;
-            
-            reachability = [[MASNetworkReachability alloc] initWithAddress:(const struct sockaddr *)&genericAddress];
-        }
-        else {
-            reachability = [[MASNetworkReachability alloc] initWithDomain:targetHost];
-        }
-        
-        if (reachability)
-        {
-            [_reachabilityMonitoringBlockForHosts_ setObject:reachability forKey:targetHost];
-        }
-        
-        return reachability;
-    }
-}
-
-
-# pragma mark - DEBUG
+#ifdef DEBUG
 
 + (void)setGatewayNetworkActivityLogging:(BOOL)enabled
 {
@@ -211,6 +101,8 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     }
 }
 
+#endif
+
 
 # pragma mark - Shared Service
 
@@ -228,12 +120,6 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 
 # pragma mark - Lifecycle
-
-+ (void)load
-{
-    [MASService registerSubclass:[self class] serviceUUID:MASNetworkServiceUUID];
-}
-
 
 + (NSString *)serviceUUID
 {
@@ -267,7 +153,8 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     if (_sessionManager)
     {
         [_sessionManager.operationQueue cancelAllOperations];
-        [_gatewayReachabilityManager stopMonitoring];
+        [_sessionManager.reachabilityManager stopMonitoring];
+        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
         _sessionManager = nil;
     }
     
@@ -284,9 +171,15 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     if (_sessionManager)
     {
         [_sessionManager.operationQueue cancelAllOperations];
-        [_gatewayReachabilityManager stopMonitoring];
+        [_sessionManager.reachabilityManager stopMonitoring];
+        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
         _sessionManager = nil;
     }
+    
+    //
+    // Reset the value
+    //
+    _monitoringStatus = MASGatewayMonitoringStatusUnknown;
     
     [super serviceDidReset];
 }
@@ -377,19 +270,28 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
         //
         // Reachability
         //
-        if (_gatewayReachabilityManager != nil)
-        {
-            [_gatewayReachabilityManager stopMonitoring];
-            _gatewayReachabilityManager = nil;
-        }
-        
-        _gatewayReachabilityManager = [[MASNetworkReachability alloc] initWithDomain:[MASConfiguration currentConfiguration].gatewayHostName];
-        [_gatewayReachabilityManager setReachabilityMonitoringBlock:_gatewayReachabilityBlock_];
+        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(MASINetworkReachabilityStatus status) {
+            //
+            // Set the new value, this should be a direct mapping of MASI and MAS types
+            //
+            _monitoringStatus = (long)status;
+            
+            //
+            // Make sure it is on the main thread
+            //
+            dispatch_async(dispatch_get_main_queue(), ^
+                           {
+                               //
+                               // Notify the block, if any
+                               //
+                               if(_gatewayStatusMonitor_) _gatewayStatusMonitor_((long)status);
+                           });
+        }];
         
         //
         // Begin monitoring
         //
-        [_gatewayReachabilityManager startMonitoring];
+        [_sessionManager.reachabilityManager startMonitoring];
     }
     else {
         [_sessionManager updateSession];
@@ -531,8 +433,8 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
                 //
                 // Retrieve the geo-location coordinates
                 //
-                [blockSelf retrieveLocation:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
-                
+                [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
+                    
                     //
                     // If an invalid geolocation result is detected
                     //
@@ -854,7 +756,8 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
 
 - (BOOL)networkIsReachable
 {
-    return _gatewayReachabilityManager ? _gatewayReachabilityManager.isReachable : NO;
+    return (self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWWAN ||
+            self.monitoringStatus == MASGatewayMonitoringStatusReachableViaWiFi);
 }
 
 
@@ -863,12 +766,12 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
     //
     // Detect status and respond appropriately
     //
-    switch(_gatewayReachabilityManager.reachabilityStatus)
+    switch(self.monitoringStatus)
     {
             //
             // Not Reachable
             //
-        case MASNetworkReachabilityStatusNotReachable:
+        case MASGatewayMonitoringStatusNotReachable:
         {
             return MASGatewayMonitoringStatusNotReachableValue;
         }
@@ -876,7 +779,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
             //
             // Reachable Via WWAN
             //
-        case MASNetworkReachabilityStatusReachableViaWWAN:
+        case MASGatewayMonitoringStatusReachableViaWWAN:
         {
             return MASGatewayMonitoringStatusReachableViaWWANValue;
         }
@@ -884,7 +787,7 @@ static NSMutableDictionary *_reachabilityMonitoringBlockForHosts_;
             //
             // Reachable Via WiFi
             //
-        case MASNetworkReachabilityStatusReachableViaWiFi:
+        case MASGatewayMonitoringStatusReachableViaWiFi:
         {
             return MASGatewayMonitoringStatusReachableViaWiFiValue;
         }
@@ -1445,7 +1348,7 @@ withParameters:(NSDictionary *)parameterInfo
     // Determine if we need to add the geo-location header value
     //
     MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired && [MASLocationService isLocationMonitoringAuthorized])
+    if(configuration.locationIsRequired)
     {
         //
         // Request the one time, currently available location before proceeding
