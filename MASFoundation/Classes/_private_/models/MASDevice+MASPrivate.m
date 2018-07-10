@@ -17,6 +17,7 @@
 
 @implementation MASDevice (MASPrivate)
 
+static NSString *_internalIdentifier_ = nil;
 
 # pragma mark - Lifecycle
 
@@ -149,7 +150,7 @@
     //
     // Device Vendor Id
     //
-    NSString *deviceVendorId = [MASDevice deviceVendorId];    
+    NSString *deviceVendorId = [MASDevice deviceVendorId];
     if (deviceVendorId)
     {
         [accessService setAccessValueString:deviceVendorId storageKey:MASKeychainStorageKeyDeviceVendorId];
@@ -243,7 +244,51 @@
 
 + (NSString *)deviceVendorId
 {
-    return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    //
+    //  Keep the identifier as static value as random UUID will be generated unique identifier each time,
+    //  And to minimize I/O of keychain storage
+    //
+    if (_internalIdentifier_ == nil || [_internalIdentifier_ length] == 0)
+    {
+        //
+        //  Get device identifier from the keychain storage
+        //
+        NSString *deviceIdentifier = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
+        NSString *deviceVendorId;
+        
+        //
+        //  If the SSO/Shared Keychain Group are defined properly, use the Apple's device vendor identifier + keychain access group identifier
+        //
+        if ([[MASAccessService sharedService] isAccessGroupAccessible])
+        {
+            deviceVendorId = [[NSString stringWithFormat:@"%@-%@", [[[UIDevice currentDevice] identifierForVendor] UUIDString], [MASAccessService sharedService].accessGroup] md5String];
+        }
+        //
+        //  If the SSO/Shared Keychain Group are not defined properly, it means that shared keychain storage is not accessible, in this case, use the random UUID + access group identifier
+        //
+        else {
+            deviceVendorId = [[NSString stringWithFormat:@"%@-%@", [[NSUUID UUID] UUIDString], [MASAccessService sharedService].accessGroup] md5String];
+        }
+        
+        //
+        //  If the device identifier is empty, use the one that was created
+        //
+        if (deviceIdentifier == nil || [deviceIdentifier length] == 0)
+        {
+            deviceIdentifier = deviceVendorId;
+        }
+        //
+        //  If the device identifier is not euqal to the one in the keychain storage, AND is not the same as current Apple's vendor device identifier (upgrade SDK from the previous version), use the one created
+        //
+        else if (![deviceIdentifier isEqualToString:deviceVendorId] && ![deviceIdentifier isEqualToString:[[[UIDevice currentDevice] identifierForVendor] UUIDString]])
+        {
+            deviceIdentifier = deviceVendorId;
+        }
+        
+        _internalIdentifier_ = deviceIdentifier;
+    }
+    
+    return _internalIdentifier_;
 }
 
 
