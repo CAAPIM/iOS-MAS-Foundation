@@ -910,6 +910,11 @@ static BOOL _isKeychainSynchronizable_ = NO;
 
 - (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error
 {
+    //
+    // Refresh the currentAccessObj to reflect the current status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
     NSError *localError = nil;
     BOOL success = NO;
     
@@ -1009,6 +1014,11 @@ static BOOL _isKeychainSynchronizable_ = NO;
 
 - (BOOL)unlockSessionWithUserOperationPromptMessage:(NSString *)userOperationPrompt error:(NSError * __nullable __autoreleasing * __nullable)error
 {
+    //
+    // Refresh the currentAccessObj to reflect the current status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
     NSError *localError = nil;
     NSString *idToken = nil;
     
