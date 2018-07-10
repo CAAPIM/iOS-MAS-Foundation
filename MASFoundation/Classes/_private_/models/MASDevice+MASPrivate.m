@@ -264,7 +264,7 @@ static NSString *_internalIdentifier_ = nil;
             deviceVendorId = [[NSString stringWithFormat:@"%@-%@", [[[UIDevice currentDevice] identifierForVendor] UUIDString], [MASAccessService sharedService].accessGroup] md5String];
         }
         //
-        //  If the SSO/Shared KEychain Group are not defined properly, it means that shared keychain storage is not accessible, in this case, use the random UUID + access group identifier
+        //  If the SSO/Shared Keychain Group are not defined properly, it means that shared keychain storage is not accessible, in this case, use the random UUID + access group identifier
         //
         else {
             deviceVendorId = [[NSString stringWithFormat:@"%@-%@", [[NSUUID UUID] UUIDString], [MASAccessService sharedService].accessGroup] md5String];
