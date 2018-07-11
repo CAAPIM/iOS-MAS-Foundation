@@ -2,9 +2,9 @@
 
 ### Bug fixes
 - MASFoundation's OTP channel selection was returning an internal error to the original request. The Mobile SDK now sends only cancellation of OTP process, and/or results of the original request. [DE366491]
-- The Mobile SDK was causing an error during device registration, "The device has already been registered." which prevents users to re-register the device using different credentials when share keychain was incorrectly configured. The Mobile SDK improves the device registration process to minimize this type of error. [DE369778]
-- The Mobile SDK reserved "Content-Type" and "Accept" header for requests and did not provide an option for developers to override these values. The Mobile SDK now allows developers to override the values as needed. [DE369138]
-- The Mobile SDK caused an incorrect error for session lock using multiple applications using SSO. The Mobile SDK now handles session lock's status properly, and no longer causes the issue. [DE374443]
+- During device registration, the Mobile SDK was causing an error: "The device has already been registered". This happened when the share keychain was incorrectly configured, preventing users from re-registering the device using different credentials. The Mobile SDK improved the device registration process to minimize this kind of error. [DE369778]
+- The Mobile SDK reserved "Content-Type" and "Accept" header for requests, but did not provide an option for developers to override these values. The Mobile SDK now allows developers to override the values as needed. [DE369138]
+- The Mobile SDK displayed an incorrect error for session lock when multiple applications are using SSO. The Mobile SDK now provides accurate session lock status. [DE374443]
 
 # Version 1.7.00
 
