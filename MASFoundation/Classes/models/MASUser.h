@@ -280,7 +280,7 @@
  *  @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
  *  available via [MASUser currentUser] has been updated with the new information.
  */
-- (void)logoutWithCompletion:(BOOL)force completion:(MASCompletionErrorBlock _Nullable)completion;
+- (void)logout:(BOOL)force completion:(MASCompletionErrorBlock _Nullable)completion;
 
 
 
@@ -300,7 +300,7 @@
  *
  *  @warning This method has been deprecated in favor of `-logoutWithCompletion:completion:`.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock _Nullable)completion DEPRECATED_MSG_ATTRIBUTE("[[MASUser currentUser] logoutWithCompletion:] is deprecated.  Use [[MASUser currentUser] logoutWithCompletion:completion:] instead.");
+- (void)logoutWithCompletion:(MASCompletionErrorBlock _Nullable)completion DEPRECATED_MSG_ATTRIBUTE("[[MASUser currentUser] logoutWithCompletion:] is deprecated.  Use [[MASUser currentUser] logout:completion:] instead.");
 
 
 
