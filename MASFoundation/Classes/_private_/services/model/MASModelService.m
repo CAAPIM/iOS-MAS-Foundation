@@ -1236,7 +1236,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 }
 
 
-- (void)logOutDeviceAndClearLocalAccessToken:(BOOL)clearLocal force:(BOOL)force completion:(MASCompletionErrorBlock)completion
+- (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     
     MASAccessService *accessService = [MASAccessService sharedService];
@@ -1355,15 +1355,9 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           }
                                     
                                           //
-                                          // If clearLocal was YES, clear access_token, and refresh_token
+                                          // Clear currentUser object upon log-out
                                           //
-                                          if (clearLocal)
-                                          {
-                                              //
-                                              // Clear currentUser object upon log-out
-                                              //
-                                              [blockSelf clearCurrentUserForLogout];
-                                          }
+                                          [blockSelf clearCurrentUserForLogout];
                                           
                                           //
                                           // Set id_token and id_token_type to nil

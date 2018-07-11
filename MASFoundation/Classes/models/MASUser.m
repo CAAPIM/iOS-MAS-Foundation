@@ -299,7 +299,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         //
         if ([accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
-            [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES force:force completion:completion];
+            [[MASModelService sharedService] logoutDevice:force completion:completion];
         }
         //
         // If the sso is disabled or id_token does not exist, revoke the access_token only
