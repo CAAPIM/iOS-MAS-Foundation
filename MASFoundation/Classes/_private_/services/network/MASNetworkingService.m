@@ -475,6 +475,15 @@ static NSMutableArray *_multiFactorAuthenticators_;
             //  Create new error
             NSError *newError = [[NSError alloc] initWithDomain:error.domain code:error.code userInfo:errorUserInfo];
             error = newError;
+            
+            //  Parsing JSON error returned from the server
+            if (blockResponseType == MASRequestResponseTypeTextPlain)
+            {
+                NSError *parseError;
+                NSData *objectData = [responseObject dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&parseError];
+                responseObject = json;
+            }
         }
 
         __block NSMutableDictionary *responseInfo = [NSMutableDictionary new];
