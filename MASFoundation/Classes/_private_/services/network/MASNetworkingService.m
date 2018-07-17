@@ -482,7 +482,11 @@ static NSMutableArray *_multiFactorAuthenticators_;
                 NSError *parseError;
                 NSData *objectData = [responseObject dataUsingEncoding:NSUTF8StringEncoding];
                 NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&parseError];
-                responseObject = json;
+                
+                if(!parseError)
+                {
+                    responseObject = json;
+                }                
             }
         }
 
