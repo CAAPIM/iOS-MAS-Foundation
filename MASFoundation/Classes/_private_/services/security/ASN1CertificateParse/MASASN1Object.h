@@ -1,6 +1,6 @@
 //
 //  MASASN1Object.h
-//  MASFoundationTests
+//  MASFoundation
 //
 //  Copyright (c) 2018 CA. All rights reserved.
 //

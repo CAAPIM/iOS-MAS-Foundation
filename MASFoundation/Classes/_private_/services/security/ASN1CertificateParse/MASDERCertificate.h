@@ -1,6 +1,6 @@
 //
 //  MASDERCertificate.h
-//  MASFoundationTests
+//  MASFoundation
 //
 //  Copyright (c) 2018 CA. All rights reserved.
 //
@@ -43,6 +43,24 @@
 # pragma mark - Lifecycle
 
 - (instancetype)initWithDERCertificateData:(NSData *)certData NS_DESIGNATED_INITIALIZER;
+
+
+
+/**
+ This initializer is not available.  Please use [[MASDERCertificate alloc] initWithDERCertificateData:(NSData *)].
+ 
+ @return nil will always be returned with this initialization method.
+ */
+- (instancetype)init NS_UNAVAILABLE;
+
+
+
+/**
+ This initializer is not available.  Please use [[MASDERCertificate alloc] initWithDERCertificateData:(NSData *)].
+ 
+ @return nil will always be returned with this initialization method.
+ */
++ (instancetype)new NS_UNAVAILABLE;
 
 
 

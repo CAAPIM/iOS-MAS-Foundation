@@ -16,19 +16,9 @@
 
 #include <CommonCrypto/CommonDigest.h>
 
-# pragma mark - Constants
-
-static NSString *const kMASSecurityPrivateKeyBits = @"kMASSecurityPrivateKeyBits";
-static NSString *const kMASSecurityPublicKeyBits = @"kMASSecurityPublicKeyBits";
-
 #define kAsymmetricSecKeyPairModulusSize 2048
 
 @interface MASSecurityService ()
-
-# pragma mark - Properties
-
-@property (nonatomic, strong, readonly) NSData *privateKeyData;
-@property (nonatomic, strong, readonly) NSData *publicKeyData;
 
 @end
 
@@ -68,12 +58,6 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (void)serviceWillStart
 {
-    NSString *privateKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"privateKey"];
-    NSString *publicKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"publicKey"];
-    
-    _privateKeyData = [[NSData alloc] initWithBytes:[privateKeyIdentifierStr UTF8String] length:[privateKeyIdentifierStr length]];
-    _publicKeyData = [[NSData alloc] initWithBytes:[publicKeyIdentifierStr UTF8String] length:[publicKeyIdentifierStr length]];
-    
     //
     //  Generate keypair during the initialization process of SDK to avoid delay on keypair generation.
     //  Keypair are not being used along with any authentication data, so that it can be generated in advance, and it will be stored in secured keychain storage.
@@ -90,9 +74,6 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (void)serviceDidReset
 {
-    _privateKeyData = nil;
-    _publicKeyData = nil;
-
     [super serviceDidReset];
 }
 
@@ -131,7 +112,7 @@ static MASSecurityService *_sharedService_ = nil;
     
     NSString *organization = [MASApplication currentApplication].organization;
     NSString *deviceId = [MASDevice deviceIdBase64Encoded];
-    NSString *deviceName = [UIDevice currentDevice].model;//[MASDevice currentDevice].name;
+    NSString *deviceName = [UIDevice currentDevice].model;
     
     //
     //  For more details on ASN.1's object identifier hex code, check out https://lapo.it/asn1js
@@ -206,6 +187,12 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (void)deleteAsymmetricKeys
 {
+    NSString *privateKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"privateKey"];
+    NSString *publicKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"publicKey"];
+    
+    NSData *privateKeyData = [[NSData alloc] initWithBytes:[privateKeyIdentifierStr UTF8String] length:[privateKeyIdentifierStr length]];
+    NSData *publicKeyData = [[NSData alloc] initWithBytes:[publicKeyIdentifierStr UTF8String] length:[publicKeyIdentifierStr length]];
+    
 	OSStatus sanityCheck = noErr;
 	NSMutableDictionary *queryPublicKey = [[NSMutableDictionary alloc] init];
 	NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
@@ -214,14 +201,14 @@ static MASSecurityService *_sharedService_ = nil;
 	// Set the public key query dictionary
 	//
     [queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPublicKey setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[queryPublicKey setObject:publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
 	[queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
 	
 	//
     // Set the private key query dictionary
 	//
     [queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPrivateKey setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[queryPrivateKey setObject:privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
 	[queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
 	
 	//
@@ -246,9 +233,14 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (void)generateKeypair
 {
-    
     NSData *privatKeyBits = [self privateKeyBits];
     NSData *publicKeyBits = [self publicKeyBits];
+    
+    NSString *privateKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"privateKey"];
+    NSString *publicKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"publicKey"];
+    
+    NSData *privateKeyData = [[NSData alloc] initWithBytes:[privateKeyIdentifierStr UTF8String] length:[privateKeyIdentifierStr length]];
+    NSData *publicKeyData = [[NSData alloc] initWithBytes:[publicKeyIdentifierStr UTF8String] length:[publicKeyIdentifierStr length]];
     
     if (privatKeyBits != nil && publicKeyBits != nil)
     {
@@ -277,13 +269,13 @@ static MASSecurityService *_sharedService_ = nil;
     // Set the private key dictionary
 	//
     [privateKeyAttr setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecAttrIsPermanent];
-	[privateKeyAttr setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[privateKeyAttr setObject:privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
     
 	//
     // Set the public key dictionary
 	//
     [publicKeyAttr setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecAttrIsPermanent];
-	[publicKeyAttr setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+	[publicKeyAttr setObject:publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
     
 	//
     // Set attributes to top level dictionary
@@ -318,28 +310,30 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (NSData *)privateKeyBits
 {
+    NSString *privateKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"privateKey"];
+    NSData *privateKeyData = [[NSData alloc] initWithBytes:[privateKeyIdentifierStr UTF8String] length:[privateKeyIdentifierStr length]];
     
-	OSStatus sanityCheck = noErr;
-	NSData *privateKeyBits = nil;
-	
-	NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
+    OSStatus sanityCheck = noErr;
+    NSData *privateKeyBits = nil;
     
-	// Set the public key query dictionary
-	[queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPrivateKey setObject:_privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-	[queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	[queryPrivateKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
+    NSMutableDictionary *queryPrivateKey = [[NSMutableDictionary alloc] init];
+    
+    // Set the public key query dictionary
+    [queryPrivateKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+    [queryPrivateKey setObject:privateKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+    [queryPrivateKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+    [queryPrivateKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
     CFTypeRef cfresult = NULL;
-	
+    
     // Get the key bits
-	sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPrivateKey, (CFTypeRef *)&cfresult);
+    sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPrivateKey, (CFTypeRef *)&cfresult);
     
     privateKeyBits = (__bridge_transfer NSData *)cfresult;
     
-	if (sanityCheck != noErr)
-	{
-		privateKeyBits = nil;
-	}
+    if (sanityCheck != noErr)
+    {
+        privateKeyBits = nil;
+    }
     
 	return privateKeyBits;
 }
@@ -347,29 +341,31 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (NSData *)publicKeyBits
 {
+    NSString *publicKeyIdentifierStr = [NSString stringWithFormat:@"%@.%@", [MASConfiguration currentConfiguration].gatewayUrl.absoluteString, @"publicKey"];
+    NSData *publicKeyData = [[NSData alloc] initWithBytes:[publicKeyIdentifierStr UTF8String] length:[publicKeyIdentifierStr length]];
  
     OSStatus sanityCheck = noErr;
-	NSData * publicKeyBits = nil;
-	
-	NSMutableDictionary * queryPublicKey = [[NSMutableDictionary alloc] init];
+    NSData * publicKeyBits = nil;
     
-	// Set the public key query dictionary.
-	[queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
-	[queryPublicKey setObject:_publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
-	[queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
-	[queryPublicKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
+    NSMutableDictionary * queryPublicKey = [[NSMutableDictionary alloc] init];
+    
+    // Set the public key query dictionary.
+    [queryPublicKey setObject:(__bridge id)kSecClassKey forKey:(__bridge id)kSecClass];
+    [queryPublicKey setObject:publicKeyData forKey:(__bridge id)kSecAttrApplicationTag];
+    [queryPublicKey setObject:(__bridge id)kSecAttrKeyTypeRSA forKey:(__bridge id)kSecAttrKeyType];
+    [queryPublicKey setObject:[NSNumber numberWithBool:YES] forKey:(__bridge id)kSecReturnData];
     
     CFTypeRef cfresult = NULL;
-	
+    
     // Get the key bits
-	sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPublicKey, (CFTypeRef *)&cfresult);
+    sanityCheck = SecItemCopyMatching((__bridge CFDictionaryRef)queryPublicKey, (CFTypeRef *)&cfresult);
     
     publicKeyBits = (__bridge_transfer NSData *)cfresult;
     
-	if (sanityCheck != noErr)
-	{
-		publicKeyBits = nil;
-	}
+    if (sanityCheck != noErr)
+    {
+        publicKeyBits = nil;
+    }
     
 	return publicKeyBits;
 }
@@ -377,10 +373,8 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (void)checkKeypair
 {
-    NSData *privatKeyBits = [self privateKeyBits];
-    NSData *publicKeyBits = [self publicKeyBits];
-    
-    if (privatKeyBits == nil || publicKeyBits == nil)
+    SecKeyRef privateKeyRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithStorageKey:MASKeychainStorageKeyPrivateKey];
+    if (privateKeyRef == NULL)
     {
         [self generateKeypair];
     }

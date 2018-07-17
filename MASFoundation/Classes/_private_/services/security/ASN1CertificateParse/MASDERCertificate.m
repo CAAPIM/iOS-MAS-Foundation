@@ -1,6 +1,6 @@
 //
 //  MASDERCertificate.m
-//  MASFoundationTests
+//  MASFoundation
 //
 //  Copyright (c) 2018 CA. All rights reserved.
 //
@@ -64,8 +64,6 @@
     {
         MASASN1Decoder *decoder = [[MASASN1Decoder alloc] initWithDERData:self.certData];
         self.certElements = [decoder decodeASN1];
-        
-        ;
         
         if (self.certElements != nil && [self.certElements count] > 0)
         {

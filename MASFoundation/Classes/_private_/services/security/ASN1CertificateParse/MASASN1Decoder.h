@@ -1,6 +1,6 @@
 //
 //  MASASN1Decoder.h
-//  MASFoundationTests
+//  MASFoundation
 //
 //  Copyright (c) 2018 CA. All rights reserved.
 //
