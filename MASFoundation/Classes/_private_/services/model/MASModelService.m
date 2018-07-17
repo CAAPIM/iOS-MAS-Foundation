@@ -1901,13 +1901,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
     
     // Token Type Hint
-    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"access_token";
+    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
     
-    // Access Token
-    NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
-    if (accessToken)
+    // Refresh Token
+    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
+    if (refreshToken)
     {
-        parameterInfo[MASTokenRequestResponseKey] = accessToken;
+        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
     }
     
     //
