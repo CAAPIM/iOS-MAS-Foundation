@@ -266,7 +266,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+- (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     
     MASAccessService *accessService = [MASAccessService sharedService];
@@ -299,13 +299,13 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         //
         if ([accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
         {
-            [[MASModelService sharedService] logOutDeviceAndClearLocalAccessToken:YES completion:completion];
+            [[MASModelService sharedService] logoutDevice:force completion:completion];
         }
         //
         // If the sso is disabled or id_token does not exist, revoke the access_token only
         //
         else {
-            [[MASModelService sharedService] logoutWithCompletion:completion];
+            [[MASModelService sharedService] logout:force completion:completion];
         }
     }
 }
@@ -371,5 +371,14 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     
     return self;
 }
+
+
+# pragma mark - Deprecated
+
+- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+{
+    [self logout:NO completion:completion];
+}
+
 
 @end

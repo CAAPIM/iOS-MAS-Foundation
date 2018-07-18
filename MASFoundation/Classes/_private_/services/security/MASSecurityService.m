@@ -112,6 +112,9 @@ static MASSecurityService *_sharedService_ = nil;
     
     NSString *organization = [MASApplication currentApplication].organization;
     NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    NSString *escape = @"|!*'();:@&=+$,/?%#[] \"";
+    NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:escape] invertedSet];
+    deviceId = [deviceId stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
     NSString *deviceName = [UIDevice currentDevice].model;
     
     //
