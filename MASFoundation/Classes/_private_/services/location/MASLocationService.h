@@ -59,6 +59,13 @@ typedef NS_ENUM(NSInteger, MASLocationServiceStatus)
 @property (assign, setter=setLocationAccuracy:, getter=getLocationAccuracy) CLLocationAccuracy locationAccuracy;
 
 
+/**
+ NSTimeInterval that represents the time interval of the location information that is constantly being collected.
+ Default time interval set by SDK is 5 minutes (300 seconds).
+ */
+@property (assign, setter=setLocationUpdateInterval:, getter=getLocationUpdateInterval) NSTimeInterval locationUpdateInterval;
+
+
 
 ///--------------------------------------
 /// @name Public

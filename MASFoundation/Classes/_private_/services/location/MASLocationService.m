@@ -13,12 +13,13 @@
 #import "MASConstantsPrivate.h"
 #import "MASConfigurationService.h"
 
+static NSTimeInterval const kMASLocationServiceTimerInterval = 300;
 
 @interface MASLocationService () <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, copy) MASCompletionErrorBlock locationAuthorizationBlock;
 @property (nonatomic, strong) NSDate *lastKnownLocationTime;
+@property (nonatomic, strong) NSTimer *locationTimer;
 @property (assign) BOOL didFailToAuthorize;
 
 @end
@@ -27,6 +28,7 @@
 @implementation MASLocationService
 
 @synthesize locationAccuracy = _locationAccuracy;
+@synthesize locationUpdateInterval = _locationUpdateInterval;
 @synthesize lastKnownLocation = _lastKnownLocation;
 
 
@@ -71,7 +73,7 @@
     // If the configuration specifies that we need location services force the request for
     // authorization.  It will skip it if already granted.
     //
-    if([MASConfiguration currentConfiguration].locationIsRequired)
+    if ([MASConfiguration currentConfiguration].locationIsRequired)
     {
         if (_locationManager != nil)
         {
@@ -82,10 +84,20 @@
         _locationManager = [[CLLocationManager alloc] init];
         [_locationManager setDelegate:self];
         
+        NSString *locationAccuracy = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"kMASLocationServiceAccuracy"];
+        NSInteger locationUpdateTimerInterval = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"kMASLocationServiceUpdateTimerInterval"] integerValue];
+        
         //
-        //  Default to nearest 100 meters
+        //  Default to nearest 3000 meters and update time interval of 5 minutes (300 seconds)
         //
-        _locationAccuracy = kCLLocationAccuracyHundredMeters;
+        _locationAccuracy = [self locationAccuracyFromString:locationAccuracy];
+        _locationUpdateInterval = kMASLocationServiceTimerInterval;
+        
+        if (locationUpdateTimerInterval > 1)
+        {
+            _locationUpdateInterval = locationUpdateTimerInterval;
+        }
+        
         [_locationManager setDesiredAccuracy:_locationAccuracy];
         [_locationManager setDistanceFilter:_locationAccuracy];
         
@@ -114,9 +126,15 @@
         _locationManager = nil;
     }
     
+    //
+    //  Stop timer location update
+    //
+    [self stopSchedulingLocationUpdate];
+    
     _lastKnownLocation = nil;
     _lastKnownLocationTime = nil;
 }
+
 
 - (void)serviceDidReset
 {
@@ -148,6 +166,14 @@
         _lastKnownLocation = nil;
         self.lastKnownLocationTime = nil;
     }
+    
+    if (error.domain == kCLErrorDomain && error.code == kCLErrorDenied)
+    {
+        //
+        //  If the permission denied during runtime, stop the scheduler
+        //
+        [self stopSchedulingLocationUpdate];
+    }
 }
 
 
@@ -157,7 +183,7 @@
     {
         case kCLAuthorizationStatusAuthorizedAlways:
         case kCLAuthorizationStatusAuthorizedWhenInUse:
-            [self.locationManager startUpdatingLocation];
+            [self initializeSchedulingLocationupdate];
             break;
         case kCLAuthorizationStatusDenied:
         case kCLAuthorizationStatusRestricted:
@@ -169,6 +195,39 @@
 
 
 # pragma mark - Private
+
+- (void)initializeSchedulingLocationupdate
+{
+    if (_locationTimer != nil)
+    {
+        [_locationTimer invalidate];
+        _locationTimer = nil;
+    }
+    
+    _locationTimer = [NSTimer timerWithTimeInterval:_locationUpdateInterval target:self selector:@selector(requestLocationSingleUpdate) userInfo:nil repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:_locationTimer forMode:NSRunLoopCommonModes];
+    [_locationTimer fire];
+}
+
+
+- (void)stopSchedulingLocationUpdate
+{
+    if (_locationTimer != nil)
+    {
+        [_locationTimer invalidate];
+        _locationTimer = nil;
+    }
+}
+
+
+- (void)requestLocationSingleUpdate
+{
+    if ([MASConfiguration currentConfiguration].locationIsRequired && _locationManager != nil && !self.didFailToAuthorize)
+    {
+        [_locationManager requestLocation];
+    }
+}
+
 
 - (void)requestAuthorizationToUseLocation
 {
@@ -231,6 +290,38 @@
 }
 
 
+- (CLLocationAccuracy)locationAccuracyFromString:(NSString *)locationAccuracyString
+{
+    CLLocationAccuracy locationAccuracy;
+    
+    if ([locationAccuracyString isEqualToString:@"kCLLocationAccuracyBestForNavigation"])
+    {
+        locationAccuracy = kCLLocationAccuracyBestForNavigation;
+    }
+    else if ([locationAccuracyString isEqualToString:@"kCLLocationAccuracyBest"])
+    {
+        locationAccuracy = kCLLocationAccuracyBest;
+    }
+    else if ([locationAccuracyString isEqualToString:@"kCLLocationAccuracyNearestTenMeters"])
+    {
+        locationAccuracy = kCLLocationAccuracyNearestTenMeters;
+    }
+    else if ([locationAccuracyString isEqualToString:@"kCLLocationAccuracyHundredMeters"])
+    {
+        locationAccuracy = kCLLocationAccuracyHundredMeters;
+    }
+    else if ([locationAccuracyString isEqualToString:@"kCLLocationAccuracyKilometer"])
+    {
+        locationAccuracy = kCLLocationAccuracyKilometer;
+    }
+    else {
+        locationAccuracy = kCLLocationAccuracyThreeKilometers;
+    }
+    
+    return locationAccuracy;
+}
+
+
 # pragma mark - Public
 
 - (NSString *)debugDescription
@@ -266,7 +357,7 @@
         [self.locationManager stopUpdatingLocation];
         [self.locationManager setDistanceFilter:_locationAccuracy];
         [self.locationManager setDesiredAccuracy:_locationAccuracy];
-        [self.locationManager startUpdatingLocation];
+        [self initializeSchedulingLocationupdate];
     }
 }
 
@@ -274,6 +365,19 @@
 - (CLLocationAccuracy)getLocationAccuracy
 {
     return _locationAccuracy;
+}
+
+
+- (void)setLocationUpdateInterval:(NSTimeInterval)locationUpdateInterval
+{
+    _locationUpdateInterval = locationUpdateInterval;
+    [self initializeSchedulingLocationupdate];
+}
+
+
+- (NSTimeInterval)getLocationUpdateInterval
+{
+    return _locationUpdateInterval;
 }
 
 
