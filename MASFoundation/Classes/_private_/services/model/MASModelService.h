@@ -185,14 +185,15 @@
 
 /**
  *  Logout the device from the server (revoking id_token).
- *  If clearLocal is defined as true, as part of log out process (revoking id_token), 
- *  this method will also clear access_token, and refresh_token that are stored in local.
  *
- *  @param clearLocal BOOL
+ *  If force is defined as YES, as part of log out process, this method will also clear
+ *  access_token, refresh_token, and id_token that are stored in local even if the server call fails.
+ *
+ *  @param force BOOL Clear local tokens no matter the logout call to the server success or not.
  *  @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that
  *  receives the results.
  */
-- (void)logOutDeviceAndClearLocalAccessToken:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion;
+- (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion;
 
 
 ///--------------------------------------
@@ -215,9 +216,10 @@
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
  *
+ *  @param force BOOL Clear local tokens no matter the logout call to the server success or not.
  *  @param completion The completion block that receives the results.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion;
+- (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion;
 
 
 /**
@@ -259,5 +261,7 @@
  *  @param completion       MASCompletionErrorBlock block that notifies original caller for the result of validation.
  */
 - (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion;
+
+
 
 @end

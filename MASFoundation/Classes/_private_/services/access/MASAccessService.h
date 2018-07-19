@@ -352,6 +352,21 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 ///--------------------------------------
+/// @name accessGroup
+///--------------------------------------
+
+# pragma mark - accessGroup
+
+/**
+ Boolean value that indicates whether shared keychain storage is accessible or not.
+
+ @return Boolean indicator whether shared keychain storage is accessible or not
+ */
+- (BOOL)isAccessGroupAccessible;
+
+
+
+///--------------------------------------
 /// @name Public
 ///--------------------------------------
 

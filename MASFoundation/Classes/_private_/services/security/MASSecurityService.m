@@ -211,6 +211,9 @@ static MASSecurityService *_sharedService_ = nil;
     
     //device id
     NSString *deviceId = [MASDevice deviceIdBase64Encoded];
+    NSString *escape = @"|!*'();:@&=+$,/?%#[] \"";
+    NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:escape] invertedSet];
+    deviceId = [deviceId stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
     X509_NAME_add_entry_by_txt(name,"OU",
                                MBSTRING_ASC, (const unsigned char*)[deviceId UTF8String], -1, -1, 0);
     

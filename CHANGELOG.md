@@ -1,7 +1,10 @@
-# Version 1.8.00
+# Version 1.7.10
 
 ### Bug fixes
-- The Mobile SDK was causing delay on requests when the location information of the device is not available. The delay has been completely removed, and when the `location_enabled` is set to `true` in `msso_config.json`, the Mobile SDK will constantly monitor the updates for the location information depending on Privacy setting defined in the application `.plist` file. [US509356] 
+- MASFoundation's OTP channel selection was returning an internal error to the original request. The Mobile SDK now sends only cancellation of OTP process, and/or results of the original request. [DE366491]
+- During device registration, the Mobile SDK was causing an error: "The device has already been registered". This happened when the share keychain was incorrectly configured, preventing users from re-registering the device using different credentials. The Mobile SDK improved the device registration process to minimize this kind of error. [DE369778]
+- The Mobile SDK reserved "Content-Type" and "Accept" header for requests, but did not provide an option for developers to override these values. The Mobile SDK now allows developers to override the values as needed. [DE369138]
+- The Mobile SDK displayed an incorrect error for session lock when multiple applications are using SSO. The Mobile SDK now provides accurate session lock status. [DE374443]
 
 # Version 1.7.00
 
