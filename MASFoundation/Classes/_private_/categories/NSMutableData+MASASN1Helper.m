@@ -112,8 +112,6 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
 
 - (void)appendDERLength:(size_t)length
 {
-    assert(length < 0x8000);
-    
     if (length < 128)
     {
         uint8_t d = length;
@@ -150,12 +148,16 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
     int num_bytes = 1;
     int ret = 0;
     
-    if (data[itr] > 0x80) {
+    if (data[itr] > 0x80)
+    {
         num_bytes = data[itr] - 0x80;
         itr++;
     }
     
-    for (int i = 0 ; i < num_bytes; i++) ret = (ret * 0x100) + data[itr + i];
+    for (int i = 0 ; i < num_bytes; i++)
+    {
+        ret = (ret * 0x100) + data[itr + i];
+    }
     
     *iterator = itr + num_bytes;
     return ret;
@@ -166,10 +168,10 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
 {
     int iterator = 0;
     
-    iterator++; // TYPE - bit stream - mod + exp
-    [self derEncodingGetSizeFrom:publicKeyBits at:&iterator]; // Total size
+    iterator++;
+    [self derEncodingGetSizeFrom:publicKeyBits at:&iterator];
     
-    iterator++; // TYPE - bit stream mod
+    iterator++;
     int mod_size = [self derEncodingGetSizeFrom:publicKeyBits at:&iterator];
     
     return [publicKeyBits subdataWithRange:NSMakeRange(iterator, mod_size)];
@@ -180,14 +182,14 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
 {
     int iterator = 0;
     
-    iterator++; // TYPE - bit stream - mod + exp
-    [self derEncodingGetSizeFrom:publicKeyBits at:&iterator]; // Total size
+    iterator++;
+    [self derEncodingGetSizeFrom:publicKeyBits at:&iterator];
     
-    iterator++; // TYPE - bit stream mod
+    iterator++;
     int mod_size = [self derEncodingGetSizeFrom:publicKeyBits at:&iterator];
     iterator += mod_size;
     
-    iterator++; // TYPE - bit stream exp
+    iterator++;
     int exp_size = [self derEncodingGetSizeFrom:publicKeyBits at:&iterator];
     
     return [publicKeyBits subdataWithRange:NSMakeRange(iterator, exp_size)];

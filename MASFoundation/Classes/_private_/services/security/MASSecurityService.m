@@ -103,11 +103,15 @@ static MASSecurityService *_sharedService_ = nil;
 {
     NSMutableData *csrInfo = [[NSMutableData alloc] initWithCapacity:512];
     
-    //  Add version
-    uint8_t version[3] = {0x02, 0x01, 0x00}; // ASN.1 Representation of integer with value 1
+    //
+    // Version
+    //
+    uint8_t version[3] = {0x02, 0x01, 0x00};
     [csrInfo appendBytes:version length:sizeof(version)];
     
-    //  Adding DN attributes
+    //
+    // DN attributes
+    //
     NSMutableData *attributes = [[NSMutableData alloc] initWithCapacity:256];
     
     NSString *organization = [MASApplication currentApplication].organization;
@@ -144,28 +148,26 @@ static MASSecurityService *_sharedService_ = nil;
     //  enclose with sequence tag
     [csrInfo encloseWithSequenceTag];
     
-    //  Build signature - SHA1 hash
-    CC_SHA1_CTX SHA1;
-    CC_SHA1_Init(&SHA1);
-    CC_SHA1_Update(&SHA1, [csrInfo mutableBytes], (unsigned int)[csrInfo length]);
+    //
+    //  Sign and hash
+    //
     unsigned char digest[CC_SHA1_DIGEST_LENGTH];
-    CC_SHA1_Final(digest, &SHA1);
-    
-    // Build signature - step 2: Sign hash
+    CC_SHA1(csrInfo.bytes, (CC_LONG)csrInfo.length, digest);
     uint8_t signature[256];
     size_t signature_len = sizeof(signature);
-    OSStatus osrc = SecKeyRawSign(privateKey, kSecPaddingPKCS1SHA1, digest, sizeof(digest), signature, &signature_len);
-    assert(osrc == noErr);
+    OSStatus result = SecKeyRawSign(privateKey, kSecPaddingPKCS1SHA1, digest, sizeof(digest), signature, &signature_len);
+    assert(result == noErr);
     
     NSMutableData *certificateSigningRequest = [[NSMutableData alloc] initWithCapacity:1024];
     [certificateSigningRequest appendData:csrInfo];
-    // See: http://oid-info.com/get/1.2.840.113549.1.1.5
-    uint8_t sha1WithRSAEncryption[] = {0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 1, 1, 5, 0x05, 0x00};
+    // See: https://tools.ietf.org/html/rfc7427#appendix-A.1.1
+    uint8_t sha1WithRSAEncryption[] = {0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 1, 1, 5, 5, 0x00};
+
     [certificateSigningRequest appendBytes:sha1WithRSAEncryption length:sizeof(sha1WithRSAEncryption)];
     
     NSMutableData * signdata = [NSMutableData dataWithCapacity:257];
     uint8_t zero = 0;
-    [signdata appendBytes:&zero length:1]; // Prepend zero
+    [signdata appendBytes:&zero length:1];
     [signdata appendBytes:signature length:signature_len];
     [certificateSigningRequest appendBITString:signdata];
     
