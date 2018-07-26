@@ -204,56 +204,26 @@
             //
             MASOTPMultiFactorAuthenticator *otpAuthenticator = [[MASOTPMultiFactorAuthenticator alloc] init];
             [MAS registerMultiFactorAuthenticator:otpAuthenticator];
-            [MAS registerMultiFactorAuthenticator:[MASUser currentUser]];
             
-            //
-            //  Make sure to register the client (application)
-            //
-            [[MASModelService sharedService] registerApplication:^(BOOL completed, NSError *error) {
-               
+            NSString *jwt = [MASAccessService sharedService].currentAccessObj.idToken;
+            NSString *tokenType = [MASAccessService sharedService].currentAccessObj.idTokenType;
+            MASAuthCredentialsJWT *authCredentials = [MASAuthCredentialsJWT initWithJWT:jwt tokenType:tokenType];
+            [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:^(BOOL completed, NSError * _Nullable error) {
                 //
-                //  If the client registration was successful, perform id_token authentication
+                //  Regardless of result of the authentication, should post the successful result to SDK initialization completion block
                 //
-                if (completed && !error)
+                
+                //
+                // Post the notification
+                //
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
+                
+                //
+                // Notify
+                //
+                if (blockCompletion)
                 {
-                    NSString *jwt = [MASAccessService sharedService].currentAccessObj.idToken;
-                    NSString *tokenType = [MASAccessService sharedService].currentAccessObj.idTokenType;
-                    
-                    [MASUser loginWithIdToken:jwt tokenType:tokenType completion:^(BOOL completed, NSError * _Nullable error) {
-                        
-                        //
-                        //  Regardless of result of the authentication, should post the successful result to SDK initialization completion block
-                        //
-                        
-                        //
-                        // Post the notification
-                        //
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
-                        
-                        //
-                        // Notify
-                        //
-                        if(blockCompletion){
-                            blockCompletion(YES, nil);
-                        }
-                    }];
-                }
-                else {
-                    //
-                    //  Regardless of result of the client registration, should post the successful result to SDK initialization completion block
-                    //
-                    
-                    //
-                    // Post the notification
-                    //
-                    [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
-                    
-                    //
-                    // Notify
-                    //
-                    if(blockCompletion){
-                        blockCompletion(YES, nil);
-                    }
+                    blockCompletion(YES, nil);
                 }
             }];
         }
@@ -273,7 +243,8 @@
             //
             // Notify
             //
-            if(blockCompletion){
+            if (blockCompletion)
+            {
                 blockCompletion(YES, nil);
             }
         }

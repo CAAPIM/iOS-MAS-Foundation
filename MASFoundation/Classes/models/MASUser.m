@@ -72,6 +72,10 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (void)removeSessionLock
 {
+    //
+    //  Clearing currentUser like logging off as id_token and other credentials will be removed
+    //
+    [[MASModelService sharedService] clearCurrentUserForLogout];
     [[MASAccessService sharedService] removeSessionLock];
 }
 
