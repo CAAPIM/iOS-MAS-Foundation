@@ -9,9 +9,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MASObject.h"
 
 //
-//  Tag value reference
+//  enumeration values for ASN.1 tags
+//  Actual values can be found in following link, converted from decimal to hexadecimal value
 //  https://www.obj-sys.com/asn1tutorial/node124.html
 //
 typedef NS_ENUM(uint8_t, MASASN1Tag)
@@ -47,10 +49,30 @@ typedef NS_ENUM(uint8_t, MASASN1Tag)
     MASASN1TagGraphicStr = 0x19
 };
 
-@interface MASASN1Decoder : NSObject
 
+
+/**
+ MASASN1Decoder is an internal class that decodes NSData of DER format of certificate into understandable MASASN1Object(s) structure.
+ */
+@interface MASASN1Decoder : MASObject
+
+
+
+/**
+ Initialization method of MASASN1Decoder object
+
+ @param certData NSData of DER format of certificate to be decoded
+ @return MASASN1Decoder object
+ */
 - (instancetype)initWithDERData:(NSData *)certData;
 
+
+
+/**
+ A method to be used to decode NSData of DER format of certificate
+
+ @return NSArray containing MASASN1Object that represents entire certificate data structure
+ */
 - (NSArray *)decodeASN1;
 
 @end

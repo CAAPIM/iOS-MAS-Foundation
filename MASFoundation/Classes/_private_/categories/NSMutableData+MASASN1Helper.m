@@ -10,10 +10,6 @@
 
 #import "NSMutableData+MASASN1Helper.h"
 
-static uint8_t sequenceTag = 0x30;
-static uint8_t setTag = 0x31;
-static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00};
-
 @implementation NSMutableData (MASASN1Helper)
 
 # pragma mark - ASN.1 DER hex helper methods
@@ -23,8 +19,8 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
     NSMutableData *subjectItem = [[NSMutableData alloc] initWithCapacity:128];
     [subjectItem appendBytes:attribute length:size];
     [subjectItem appendUTF8String:value];
-    [subjectItem encloseWith:sequenceTag];
-    [subjectItem encloseWith:setTag];
+    [subjectItem encloseWith:0x30]; // Sequence tag
+    [subjectItem encloseWith:0x31]; // Set tag
     
     [self appendData:subjectItem];
 }
@@ -41,18 +37,13 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
 }
 
 
-- (void)encloseWithSequenceTag
-{
-    [self encloseWith:sequenceTag];
-}
-
-
 + (NSData *)buildPublicKeyForASN1:(NSData *)publicKeyBits
 {
     NSMutableData *publicKeyData = [[NSMutableData alloc] initWithCapacity:390];
     
+    uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00};
     [publicKeyData appendBytes:rsaEncryptionNULL length:sizeof(rsaEncryptionNULL)];
-    [publicKeyData encloseWith:sequenceTag];
+    [publicKeyData encloseWith:0x30];   // Sequence tag
     
     NSMutableData *publicKeyASN = [[NSMutableData alloc] initWithCapacity:260];
     
@@ -74,11 +65,11 @@ static uint8_t rsaEncryptionNULL[13] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7
     [publicKeyASN appendDERLength:[exp length]];
     [publicKeyASN appendData:exp];
     
-    [publicKeyASN encloseWith:sequenceTag];
+    [publicKeyASN encloseWith:0x30];    // Sequence tag
     [publicKeyASN prependByte:0x00];
     
     [publicKeyData appendBITString:publicKeyASN];
-    [publicKeyData encloseWith:sequenceTag];
+    [publicKeyData encloseWith:0x30];   // Sequence tag
     
     return publicKeyData;
 }

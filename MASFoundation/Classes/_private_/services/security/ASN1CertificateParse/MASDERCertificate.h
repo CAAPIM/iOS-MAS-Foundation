@@ -9,8 +9,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MASObject.h"
 
-@interface MASDERCertificate : NSObject
+/**
+ MASDERCertificate is a class that takes DER format certificate as NSData format, and represents certificate information in human-readable and understandable data structure
+ */
+@interface MASDERCertificate : MASObject
+
 
 ///--------------------------------------
 /// @name Properties
@@ -18,20 +23,28 @@
 
 # pragma mark - Properties
 
-//
-//  Issuer
-//
+
+/**
+ NSArray containing MASASN1Object(s) which represents issuer
+ */
 @property (strong, nonatomic) NSArray *issuer;
 
-//
-//  Certificate Subject
-//
+
+/**
+ NSArray containing MASASN1Object(s) which each element represents subject item
+ */
 @property (strong, nonatomic) NSArray *subject;
 
-//
-//  Validity
-//
+
+/**
+ NSDate which represents validity of the certificate where it is not valid before this date
+ */
 @property (strong, nonatomic) NSDate *notBefore;
+
+
+/**
+ NSDate which represents validity of the certificate where it is not valid after this date
+ */
 @property (strong, nonatomic) NSDate *notAfter;
 
 
@@ -42,6 +55,12 @@
 
 # pragma mark - Lifecycle
 
+/**
+ Designated initialization method of MASDERCertificate that takes NSData of DER format certificate
+
+ @param certData NSData format of DER format certificate
+ @return MASDERCertificate object
+ */
 - (instancetype)initWithDERCertificateData:(NSData *)certData NS_DESIGNATED_INITIALIZER;
 
 
@@ -70,6 +89,9 @@
 
 # pragma mark - Public
 
+/**
+ A method to parse certificate data that was taken from initialization 
+ */
 - (void)parseCertificateData;
 
 @end

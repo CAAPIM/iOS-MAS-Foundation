@@ -86,12 +86,16 @@
         //
         NSRange subRange = NSMakeRange(location, length);
         
+        //
         //  Constructive
+        //
         if ((firstByte >> 5) & 1)
         {
             thisObject.sub = [self parseWithRange:subRange];
         }
+        //
         //  Primitive
+        //
         else {
             
             NSData *subContentData =  [self.certData subdataWithRange:subRange];
@@ -162,14 +166,18 @@
                 case MASASN1TagCharStr:
                 case MASASN1TagT61Str:
                 {
+                    //
                     // utf8 str
+                    //
                     NSString *thisStr = [[NSString alloc] initWithData:subContentData encoding:NSUTF8StringEncoding];
                     thisObject.value = thisStr;
                     break;
                 }
                 case MASASN1TagBMPStr:
                 {
+                    //
                     // unicode str
+                    //
                     NSString *thisStr = [[NSString alloc] initWithData:subContentData encoding:NSUnicodeStringEncoding];
                     thisObject.value = thisStr;
                     break;
@@ -177,7 +185,9 @@
                 case MASASN1TagISO64Str:
                 case MASASN1TagIA5Str:
                 {
+                    //
                     // ascii str
+                    //
                     NSString *thisStr = [[NSString alloc] initWithData:subContentData encoding:NSASCIIStringEncoding];
                     thisObject.value = thisStr;
                     break;

@@ -9,11 +9,29 @@
 //
 
 #import "MASASN1Decoder.h"
+#import "MASObject.h"
 
-@interface MASASN1Object : NSObject
+/**
+ MASASN1Object is a class that represents ASN.1 element containing value, tag which represents type structure, and any child elements
+ */
+@interface MASASN1Object : MASObject
 
+
+/**
+ Value of the ASN.1 element
+ */
 @property (strong, nonatomic) id value;
+
+
+/**
+ NSArray of child MASASN1Object elements
+ */
 @property (strong, nonatomic) NSMutableArray *sub;
+
+
+/**
+ MASASN1Tag enumeration value representing ASN.1 tag for the element
+ */
 @property (assign) MASASN1Tag tag;
 
 @end

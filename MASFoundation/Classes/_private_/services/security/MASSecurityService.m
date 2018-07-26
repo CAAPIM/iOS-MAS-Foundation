@@ -133,20 +133,26 @@ static MASSecurityService *_sharedService_ = nil;
     [attributes appendSubjectItem:oiOrganizationName size:sizeof(oiOrganizationName) value:organization];
     [attributes appendSubjectItem:oiOrganizationUnitName size:sizeof(oiOrganizationUnitName) value:deviceId];
     [attributes appendSubjectItem:oiDomainComponent size:sizeof(oiDomainComponent) value:deviceName];
-    [attributes encloseWithSequenceTag];
+    [attributes encloseWith:0x30];
     
     [csrInfo appendData:attributes];
     
+    //
     //  Add public key info
+    //
     NSData *publicKeyInfoData = [NSMutableData buildPublicKeyForASN1:publicKeyBits];
     [csrInfo appendData:publicKeyInfoData];
     
+    //
     //  Add attributes
+    //
     uint8_t attrs[2] = {0xA0, 0x00};
     [csrInfo appendBytes:attrs length:sizeof(attrs)];
     
+    //
     //  enclose with sequence tag
-    [csrInfo encloseWithSequenceTag];
+    //
+    [csrInfo encloseWith:0x30];
     
     //
     //  Sign and hash
@@ -160,7 +166,9 @@ static MASSecurityService *_sharedService_ = nil;
     
     NSMutableData *certificateSigningRequest = [[NSMutableData alloc] initWithCapacity:1024];
     [certificateSigningRequest appendData:csrInfo];
+    //
     // See: https://tools.ietf.org/html/rfc7427#appendix-A.1.1
+    //
     uint8_t sha1WithRSAEncryption[] = {0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 1, 1, 5, 5, 0x00};
 
     [certificateSigningRequest appendBytes:sha1WithRSAEncryption length:sizeof(sha1WithRSAEncryption)];
@@ -171,7 +179,7 @@ static MASSecurityService *_sharedService_ = nil;
     [signdata appendBytes:signature length:signature_len];
     [certificateSigningRequest appendBITString:signdata];
     
-    [certificateSigningRequest encloseWithSequenceTag];
+    [certificateSigningRequest encloseWith:0x30];
     
     return [certificateSigningRequest base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
