@@ -1007,7 +1007,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeDeviceRecordIsNotValid: return @"The registered device record is invalid";
         case MASFoundationErrorCodeDeviceRegistrationAttemptedWithUnregisteredScope: return @"Attempted to register the device with a Scope that isn't registered in the application record on the Gateway";
         case MASFoundationErrorCodeDeviceRegistrationWithoutRequiredParameters: return @"The device registration does not have the required parameters";
-        case MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication: return @"The device does not support or have valid local authnetication method";
+        case MASFoundationErrorCodeDeviceDoesNotSupportLocalAuthentication: return @"The device does not support or have valid local authentication method";
         case MASFoundationErrorCodeDeviceInvalidAuthCredentialsForDeviceRegistration: return @"Device registration is not supported with given MASAuthCredentials object.";
             
         //
@@ -1083,9 +1083,9 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         // BLE
         //
-        case MASFoundationErrorCodeBLEUnknownState: return @"Unknown error occured while enabling BLE Central";
+        case MASFoundationErrorCodeBLEUnknownState: return @"Unknown error occurred while enabling BLE Central";
         case MASFoundationErrorCodeBLEPoweredOff: return @"Bluetooth is currently off";
-        case MASFoundationErrorCodeBLEResetting: return @"Bluetooth connection is momentarily lost; restting the connection";
+        case MASFoundationErrorCodeBLEResetting: return @"Bluetooth connection is momentarily lost; resetting the connection";
         case MASFoundationErrorCodeBLEUnauthorized: return @"Bluetooth feature is not authorized for this application";
         case MASFoundationErrorCodeBLEUnSupported: return @"Bluetooth feature is not supported";
         case MASFoundationErrorCodeBLEDelegateNotDefined: return @"MASDevice's BLE delegate is not defined. Delegate is mandatory to acquire permission from the user.";
@@ -1111,7 +1111,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // JWT
         //
         case MASFoundationErrorCodeJWTInvalidClaims: return @"MASClaims cannot be nil.";
-        case MASFoundationErrorCodeJWTUnexpectedClassType: return @"Mis-match of reserved JWT claim value's type (%@)";
+        case MASFoundationErrorCodeJWTUnexpectedClassType: return @"Mismatch of reserved JWT claim value's type (%@)";
         case MASFoundationErrorCodeJWTSerializationError: return @"Claim value (%@) cannot be serialized";
         
         //

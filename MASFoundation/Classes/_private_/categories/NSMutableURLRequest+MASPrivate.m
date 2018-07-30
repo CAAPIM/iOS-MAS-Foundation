@@ -17,41 +17,29 @@
 # pragma mark - Public
 
 - (void)setHeaderInfo:(NSDictionary *)headerInfo forRequestType:(MASRequestResponseType)requestType andResponseType:(MASRequestResponseType)responseType
-{
-    NSString *lowerKey;
-    NSString *value;
-    for(NSString *key in [headerInfo allKeys])
-    {
-        //
-        // Ignore Content-Type or Accept, we restrict these by our supported MASRequestResponseType
-        // values only
-        //
-        lowerKey = [key lowercaseString];
-        if( [lowerKey isEqualToString:MASContentTypeRequestResponseKey] ||
-            [lowerKey isEqualToString:MASAcceptRequestResponseKey])
-        {
-            //DLog(@"Ignoring content type: %@", [headerInfo objectForKey:key]);
-            
-            continue;
-        }
-        
-        value = [headerInfo objectForKey:key];
-        [self setValue:value forHTTPHeaderField:key];
-    }
-    
+{   
     //DLog(@"Setting request content type: %@", [self requestResponseTypeAsMimeTypeString:requestType]);
     
     //
     // Content Type based on MASRequestResponseType
     //
     [self setValue:[self requestResponseTypeAsMimeTypeString:requestType] forHTTPHeaderField:MASContentTypeRequestResponseKey];
-
+    
     //DLog(@"Setting response content type: %@", [self requestResponseTypeAsMimeTypeString:responseType]);
     
     //
     // Accept based on MASRequestResponseType
     //
     [self setValue:[self requestResponseTypeAsMimeTypeString:responseType] forHTTPHeaderField:MASAcceptRequestResponseKey];
+    
+    NSString *lowerKey;
+    NSString *value;
+    for(NSString *key in [headerInfo allKeys])
+    {
+        lowerKey = [key lowercaseString];
+        value = [headerInfo objectForKey:key];
+        [self setValue:value forHTTPHeaderField:key];
+    }
 }
 
 
