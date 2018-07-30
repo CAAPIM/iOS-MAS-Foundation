@@ -200,7 +200,7 @@
 # pragma mark - Device Metadata
 
 /**
- * Create or update a new attribute for the current device, return an error when exceed ${mag-device-max-tag} configuration in the server side
+ * Create or update a new attribute for the current device, return an error when exceed ${mag-device-max-metadata} configuration in the server
  *
  * @param name Key of the attribute to be associated with the device
  * @param value Value of the attribute to be associated with the device
@@ -212,7 +212,7 @@
 
 
 /*
- * Remove attribute by name, succeed even device attribute does not exists
+ * Remove attribute by name, fails if the device attribute does not exists
  *
  * @param name Key of the attribute to be removed for the current device
  * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.

@@ -1442,7 +1442,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
     NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
     
-    [self removeAttributeUsing:resourcePath completion:completion];
+    [self removeAttributeWithEndpoint:resourcePath completion:completion];
 }
 
 
@@ -1453,11 +1453,17 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
     
-    [self removeAttributeUsing:endPoint completion:completion];
+    [self removeAttributeWithEndpoint:endPoint completion:completion];
 }
 
 
-- (void)removeAttributeUsing:(NSString *)endPoint completion:(MASCompletionErrorBlock)completion
+/*
+ * Remove attributes for the current device using the given endpoint
+ *
+ * @param endPoint NSString containing the path for the attribute to be removed or default path to remove all attributes
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)removeAttributeWithEndpoint:(NSString *)endPoint completion:(MASCompletionErrorBlock)completion
 {
     //
     // Detect if there is a device registered, if not stop here
@@ -1527,7 +1533,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
     NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
     
-    [self getAttributeUsing:resourcePath completion:completion];
+    [self getAttributeWithEndpoint:resourcePath completion:completion];
 }
 
 
@@ -1538,11 +1544,17 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
     
-    [self getAttributeUsing:endPoint completion:completion];
+    [self getAttributeWithEndpoint:endPoint completion:completion];
 }
 
 
-- (void)getAttributeUsing:(NSString *)endPoint completion:(MASObjectResponseErrorBlock)completion
+/*
+ * Get attributes for the current device using the given endpoint
+ *
+ * @param endPoint NSString containing the path for the attribute to be retrieved or default path to retrieve all attributes
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)getAttributeWithEndpoint:(NSString *)endPoint completion:(MASObjectResponseErrorBlock)completion
 {
     //
     // Detect if there is a device registered, if not stop here
