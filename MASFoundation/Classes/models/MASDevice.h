@@ -212,7 +212,7 @@
 
 
 /*
- * Remove attribute by name, fails if the device attribute does not exists
+ * Remove attribute by name, fails if the device attribute does not exist
  *
  * @param name Key of the attribute to be removed for the current device
  * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.

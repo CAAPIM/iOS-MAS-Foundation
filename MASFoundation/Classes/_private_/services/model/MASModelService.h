@@ -197,7 +197,7 @@
 
 
 /**
- * Create or update an attribute for the current device, return an error when exceed ${mag-device-max-metadata} configuration in the server side
+ * Create or update an attribute for the current device, return an error when exceed ${mag-device-max-metadata} configuration in the server
  *
  * @param attribute Key and value of the attribute to be associated with the device
  * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
@@ -208,7 +208,7 @@
 
 
 /*
- * Remove attribute by name, fails if device attribute does not exists
+ * Remove attribute by name, fails if device attribute does not exist
  *
  * @param name Key of the attribute to be removed for the current device
  * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
