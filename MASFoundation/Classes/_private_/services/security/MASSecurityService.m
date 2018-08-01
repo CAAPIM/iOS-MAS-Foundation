@@ -389,6 +389,7 @@ static MASSecurityService *_sharedService_ = nil;
     SecKeyRef privateKeyRef = [[MASAccessService sharedService] getAccessValueCryptoKeyWithStorageKey:MASKeychainStorageKeyPrivateKey];
     if (privateKeyRef == NULL)
     {
+        [self deleteAsymmetricKeys];
         [self generateKeypair];
     }
 }
