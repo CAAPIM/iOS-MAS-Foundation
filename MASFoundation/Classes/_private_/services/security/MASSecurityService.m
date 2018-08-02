@@ -58,6 +58,12 @@ static MASSecurityService *_sharedService_ = nil;
 
 - (void)serviceWillStart
 {
+    [super serviceWillStart];
+}
+
+
+- (void)serviceDidStart
+{
     //
     //  Generate keypair during the initialization process of SDK to avoid delay on keypair generation.
     //  Keypair are not being used along with any authentication data, so that it can be generated in advance, and it will be stored in secured keychain storage.
@@ -70,11 +76,13 @@ static MASSecurityService *_sharedService_ = nil;
             [blockSelf deleteAsymmetricKeys];
             [blockSelf generateKeypair];
         }
+        else {
+            [blockSelf checkKeypair];
+        }
     });
     
-    [super serviceWillStart];
+    [super serviceDidStart];
 }
-
 
 - (void)serviceDidReset
 {
