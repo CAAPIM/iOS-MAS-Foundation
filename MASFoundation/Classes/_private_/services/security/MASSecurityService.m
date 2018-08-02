@@ -65,7 +65,11 @@ static MASSecurityService *_sharedService_ = nil;
     __block MASSecurityService *blockSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [blockSelf checkKeypair];
+        if (![MASDevice currentDevice].isRegistered)
+        {
+            [blockSelf deleteAsymmetricKeys];
+            [blockSelf generateKeypair];
+        }
     });
     
     [super serviceWillStart];
