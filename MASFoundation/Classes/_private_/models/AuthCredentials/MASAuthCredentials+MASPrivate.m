@@ -14,6 +14,7 @@
 #import "MASSecurityService.h"
 #import "MASModelService.h"
 #import "NSError+MASPrivate.h"
+#import "MASConfigurationService.h"
 
 #import "MASConstants.h"
 
@@ -105,7 +106,8 @@
                                           
                                           if ([headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey] &&
                                               [headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] &&
-                                              [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+                                              [[headerInfo objectForKey:MASIdTokenTypeHeaderRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant] &&
+                                              [MASConfigurationService isIdTokenValidationEnabled])
                                           {
                                               NSError *idTokenValidationError = nil;
                                               BOOL isIdTokenValid = [MASAccessService validateIdToken:[headerInfo objectForKey:MASIdTokenHeaderRequestResponseKey]
@@ -231,7 +233,8 @@
                                           
                                           if ([bodyInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
                                               [bodyInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                                              [[bodyInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+                                              [[bodyInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant] &&
+                                              [MASConfigurationService isIdTokenValidationEnabled])
                                           {
                                               NSError *idTokenValidationError = nil;
                                               BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodyInfo objectForKey:MASIdTokenBodyRequestResponseKey]

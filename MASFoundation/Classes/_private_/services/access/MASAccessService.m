@@ -1150,9 +1150,17 @@ static BOOL _isKeychainSynchronizable_ = NO;
     // verifying signature
     // processes to unwrap the header
     //
-    NSDictionary *headerDisctionary = [MASAccessService unwrap:headerString];
+    NSDictionary *headerDictionary = [MASAccessService unwrap:headerString];
     
-    if ([[headerDisctionary objectForKey:@"alg"] isEqualToString:@"HS256"])
+    if (![[headerDictionary allKeys] containsObject:@"alg"])
+    {
+        if (error)
+        {
+            *error = [NSError errorIdTokenInvalidSignature];
+        }
+        return NO;
+    }
+    else if ([[headerDictionary objectForKey:@"alg"] isEqualToString:@"HS256"])
     {
         
         //
@@ -1170,14 +1178,21 @@ static BOOL _isKeychainSynchronizable_ = NO;
         //
         // case 1: signature doesn't match
         //
-        if (![encodedSignedInput isEqualToString:[MASAccessService padding:signature]]){
-            
+        if (![encodedSignedInput isEqualToString:[MASAccessService padding:signature]])
+        {
             if (error)
             {
                 *error = [NSError errorIdTokenInvalidSignature];
             }
             return NO;
         }
+    }
+    else {
+        if (error)
+        {
+            *error = [NSError errorIdTokenNotSupportedAlgorithm];
+        }
+        return NO;
     }
     
     //
@@ -1204,7 +1219,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (![aud isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId]])
     {
-        
         if (error)
         {
             *error = [NSError errorIdTokenInvalidAud];
@@ -1217,7 +1231,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (![azp isEqualToString:magIdentifier])
     {
-        
         if (error)
         {
             *error = [NSError errorIdTokenInvalidAzp];
@@ -1230,7 +1243,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if ([exp timeIntervalSinceNow] < 0)
     {
-        
         if (error)
         {
             *error = [NSError errorIdTokenExpired];
@@ -1238,7 +1250,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
         return NO;
     }
 
-    
     return YES;
 }
 

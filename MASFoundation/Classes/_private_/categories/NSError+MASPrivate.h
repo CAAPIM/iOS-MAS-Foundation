@@ -578,6 +578,14 @@
 
 
 /**
+ Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeTokenIdTokenNotSupportedSigningAlgorithm.
+
+ @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and error MASFoundationErrorCodeTokenIdTokenNotSupportedSigningAlgorithm.
+ */
++ (NSError *)errorIdTokenNotSupportedAlgorithm;
+
+
+/**
  * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession.
  *
  * @returns Returns an NSError instance with the domain MASFoundationErrorDomainLocal and

@@ -148,6 +148,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeTokenIdTokenInvalidAzp = 130104,
     MASFoundationErrorCodeTokenIdTokenInvalidSignature = 130105,
     MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession = 130106,
+    MASFoundationErrorCodeTokenIdTokenNotSupportedSigningAlgorithm = 130107,
     
     MASFoundationErrorCodeAccessTokenInvalid = 130201,
     MASFoundationErrorCodeAccessTokenDisabled = 130202,
