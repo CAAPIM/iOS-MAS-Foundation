@@ -22,20 +22,6 @@
 # pragma mark - Public
 
 
-/**
- *
- */
-- (NSData *)dataFormattedAsCertificate;
-
-
-
-/**
- *
- */
-+ (NSData *)dataFromCertificateArray:(NSArray *)certificateArray;
-
-
-
 + (NSData *)converKeyRefToNSData:(SecKeyRef)keyRef;
 
 
@@ -86,7 +72,9 @@
  */
 - (NSString *)mimeType;
 
-#pragma mark - Encryption Methods
+
+
+# pragma mark - Encryption Methods
 
 /**
  *  This method is used to change the internal variable to True (encrypted) or False (not encrypted)

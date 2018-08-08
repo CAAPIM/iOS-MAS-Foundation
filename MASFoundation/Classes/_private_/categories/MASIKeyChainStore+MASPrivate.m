@@ -10,8 +10,6 @@
 
 #import "MASIKeyChainStore+MASPrivate.h"
 
-#import <openssl/x509.h>
-
 #import "MASAccessService.h"
 
 @interface MASIKeyChainStore ()
