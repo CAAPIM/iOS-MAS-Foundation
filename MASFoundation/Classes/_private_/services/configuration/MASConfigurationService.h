@@ -97,7 +97,7 @@
 
 
 /**
- Sets boolean indicator of enforcing id_token validation upon device registration/user authentication. id_token is being validated as part of authentication/registration process against known signing algorithm.
+ Gets boolean indicator of enforcing id_token validation upon device registration/user authentication. id_token is being validated as part of authentication/registration process against known signing algorithm.
  Mobile SDK currently supports following algorithm(s):
  - HS256
  
