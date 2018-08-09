@@ -57,6 +57,18 @@
 }
 
 
++ (void)enableIdTokenValidation:(BOOL)enable
+{
+    [MASConfigurationService enableIdTokenValidation:enable];
+}
+
+
++ (BOOL)isIdTokenValidationEnabled
+{
+    return [MASConfigurationService isIdTokenValidationEnabled];
+}
+
+
 + (void)enablePKCE:(BOOL)enable
 {
     [MASAccessService enablePKCE:enable];

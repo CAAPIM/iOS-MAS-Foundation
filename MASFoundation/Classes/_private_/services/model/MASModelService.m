@@ -10,6 +10,7 @@
 
 #import "MASModelService.h"
 #import "MASAccessService.h"
+#import "MASConfigurationService.h"
 #import "MASFileService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
@@ -1763,7 +1764,8 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           
                                           if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
                                               [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                                              [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+                                              [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant] &&
+                                              [MASConfigurationService isIdTokenValidationEnabled])
                                           {
                                               NSError *idTokenValidationError = nil;
                                               BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
