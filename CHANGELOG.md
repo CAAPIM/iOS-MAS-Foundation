@@ -1,13 +1,13 @@
 # Version 1.8.00
 
 ### New features
-- The Mobile SDK always enforced id_token validation during device registration, and user authentication which could potentially cause failure if id_token's signing algorithm is not supported by the Mobile SDK.  The Mobile SDK now provides an option to enable or disable id_token validation for unsupported id_token signing algorithm. [US514785]
-- The Mobile SDK now supports offline logout functionality. Logout call can be specified to delete or keep credentials upon error. [US520138]
+- In previous releases, the Mobile SDK always enforced id_token validation during device registration and user authentication. This caused a "JWT invalid" failure if the id_token signing algorithm was not supported by the Mobile SDK. The Mobile SDK now provides the option to enable or disable id_token validation to handle unsupported id_token signing algorithms. [US514785]
+- The Mobile SDK now supports offline logout. Use the new logout call to delete or keep credentials upon error. [US520138]
 
 ### Bug fixes
-- The Mobile SDK improves performance on initial device registration process. [US509357]
-- The Mobile SDK improves performance on geo-location data collecting process. [US509356]
-- The Mobile SDK returned device registration error message in an incorrect data format. The Mobile SDK now now returns correct format, and message. [DE372726]
+- The Mobile SDK improves performance during the initial device registration process. [US509357]
+- The Mobile SDK improves performance during the geolocation data collecting process. [US509356]
+- The Mobile SDK returned device registration error message using an incorrect data format. The Mobile SDK now returns the correct format and message. [DE372726]
 - The Mobile SDK returned an invalid state and unexpected error on specific APIs, such as device session lock, and `[[MASUser currentUser] requestUserInfoWithCompletion:]` after Single Sign-On. The Mobile SDK now properly validates the current state, and does not return the error on those APIs. [DE374706][DE374587]  
 
 ### Deprecated methods
