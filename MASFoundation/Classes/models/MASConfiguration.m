@@ -319,10 +319,13 @@ static float _systemVersionNumber_;
         [_endpointKeysToPaths addEntriesFromDictionary:customInfo];
     }
     
-    //
-    // Temporary Hardcoded Endpoints
-    //
-    _endpointKeysToPaths[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
+    if (![[_endpointKeysToPaths allKeys] containsObject:MASDeviceRegisterClientEndpoint])
+    {
+        //
+        // Temporary Hardcoded Endpoints for older MAG version where it does not export device registration endpoint for client credentials
+        //
+        _endpointKeysToPaths[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
+    }
     
     _endpointKeysToPaths[MASUsersLDAPEndpoint] = @"/scim/ldap/v2/users";
     _endpointKeysToPaths[MASUserGroupsLDAPEndpoint] = @"/scim/ldap/v2/groups";
