@@ -1,3 +1,18 @@
+# Version 1.8.00
+
+### New features
+- In previous releases, the Mobile SDK always enforced id_token validation during device registration and user authentication. This caused a "JWT invalid" failure if the id_token signing algorithm was not supported by the Mobile SDK. The Mobile SDK now provides the option to enable or disable id_token validation to handle unsupported id_token signing algorithms. [US514785]
+- The Mobile SDK now supports offline logout. Use the new logout call to delete or keep credentials upon error. [US520138]
+
+### Bug fixes
+- The Mobile SDK improves performance during the initial device registration process. [US509357]
+- The Mobile SDK improves performance during the geolocation data collecting process. [US509356]
+- The Mobile SDK returned device registration error message using an incorrect data format. The Mobile SDK now returns the correct format and message. [DE372726]
+- The Mobile SDK returned an invalid state and unexpected error on specific APIs, such as device session lock, and `[[MASUser currentUser] requestUserInfoWithCompletion:]` after Single Sign-On. The Mobile SDK now properly validates the current state, and does not return the error on those APIs. [DE374706][DE374587]  
+
+### Deprecated methods
+- `[[MASUser currentUser] logoutWithCompletion:]` is now deprecated to support new feature. Please use `[[MASUser currentUser] logout:completion]` to perform user logout. [US520138]
+
 # Version 1.7.10
 
 ### Bug fixes

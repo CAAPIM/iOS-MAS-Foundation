@@ -15,7 +15,6 @@
 #import "MASIKeyChainStore+MASPrivate.h"
 #import "MASSecurityService.h"
 
-#import <openssl/x509.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
 # pragma mark - Property Constants
@@ -1150,9 +1149,17 @@ static BOOL _isKeychainSynchronizable_ = NO;
     // verifying signature
     // processes to unwrap the header
     //
-    NSDictionary *headerDisctionary = [MASAccessService unwrap:headerString];
+    NSDictionary *headerDictionary = [MASAccessService unwrap:headerString];
     
-    if ([[headerDisctionary objectForKey:@"alg"] isEqualToString:@"HS256"])
+    if (![[headerDictionary allKeys] containsObject:@"alg"])
+    {
+        if (error)
+        {
+            *error = [NSError errorIdTokenInvalidSignature];
+        }
+        return NO;
+    }
+    else if ([[headerDictionary objectForKey:@"alg"] isEqualToString:@"HS256"])
     {
         
         //
@@ -1170,14 +1177,21 @@ static BOOL _isKeychainSynchronizable_ = NO;
         //
         // case 1: signature doesn't match
         //
-        if (![encodedSignedInput isEqualToString:[MASAccessService padding:signature]]){
-            
+        if (![encodedSignedInput isEqualToString:[MASAccessService padding:signature]])
+        {
             if (error)
             {
                 *error = [NSError errorIdTokenInvalidSignature];
             }
             return NO;
         }
+    }
+    else {
+        if (error)
+        {
+            *error = [NSError errorIdTokenNotSupportedAlgorithm];
+        }
+        return NO;
     }
     
     //
@@ -1204,7 +1218,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (![aud isEqualToString:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId]])
     {
-        
         if (error)
         {
             *error = [NSError errorIdTokenInvalidAud];
@@ -1217,7 +1230,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (![azp isEqualToString:magIdentifier])
     {
-        
         if (error)
         {
             *error = [NSError errorIdTokenInvalidAzp];
@@ -1230,7 +1242,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if ([exp timeIntervalSinceNow] < 0)
     {
-        
         if (error)
         {
             *error = [NSError errorIdTokenExpired];
@@ -1238,7 +1249,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
         return NO;
     }
 
-    
     return YES;
 }
 
@@ -1283,59 +1293,6 @@ static BOOL _isKeychainSynchronizable_ = NO;
     }
     
     return NO;
-}
-
-
-//
-// Reference & Credits To: http://stackoverflow.com/a/8903088/6242350
-//
-- (NSDate *)extractExpirationDateFromCertificate:(SecCertificateRef)certificate
-{
-    NSDate *expirationDate = nil;
-    
-    NSData *certificateData = (NSData *) CFBridgingRelease(SecCertificateCopyData(certificate));
-    
-    const unsigned char *certificateDataBytes = (const unsigned char *)[certificateData bytes];
-    X509 *certificateX509 = d2i_X509(NULL, &certificateDataBytes, [certificateData length]);
-    
-    
-    if (certificateX509 != NULL)
-    {
-        ASN1_TIME *certificateExpiryASN1 = X509_get_notAfter(certificateX509);
-        if (certificateExpiryASN1 != NULL)
-        {
-            ASN1_GENERALIZEDTIME *certificateExpiryASN1Generalized = ASN1_TIME_to_generalizedtime(certificateExpiryASN1, NULL);
-            if (certificateExpiryASN1Generalized != NULL)
-            {
-                unsigned char *certificateExpiryData = ASN1_STRING_data(certificateExpiryASN1Generalized);
-                
-                // ASN1 generalized times look like this: "20131114230046Z"
-                //                                format:  YYYYMMDDHHMMSS
-                //                               indices:  01234567890123
-                //                                                   1111
-                // There are other formats (e.g. specifying partial seconds or
-                // time zones) but this is good enough for our purposes since
-                // we only use the date and not the time.
-                //
-                // (Source: http://www.obj-sys.com/asn1tutorial/node14.html)
-                
-                NSString *expiryTimeStr = [NSString stringWithUTF8String:(char *)certificateExpiryData];
-                NSDateComponents *expiryDateComponents = [[NSDateComponents alloc] init];
-                
-                expiryDateComponents.year   = [[expiryTimeStr substringWithRange:NSMakeRange(0, 4)] intValue];
-                expiryDateComponents.month  = [[expiryTimeStr substringWithRange:NSMakeRange(4, 2)] intValue];
-                expiryDateComponents.day    = [[expiryTimeStr substringWithRange:NSMakeRange(6, 2)] intValue];
-                expiryDateComponents.hour   = [[expiryTimeStr substringWithRange:NSMakeRange(8, 2)] intValue];
-                expiryDateComponents.minute = [[expiryTimeStr substringWithRange:NSMakeRange(10, 2)] intValue];
-                expiryDateComponents.second = [[expiryTimeStr substringWithRange:NSMakeRange(12, 2)] intValue];
-                
-                NSCalendar *calendar = [NSCalendar currentCalendar];
-                expirationDate = [calendar dateFromComponents:expiryDateComponents];
-            }
-        }
-    }
-    
-    return expirationDate;
 }
 
 

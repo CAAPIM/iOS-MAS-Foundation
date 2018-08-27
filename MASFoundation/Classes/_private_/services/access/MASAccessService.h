@@ -396,16 +396,6 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
- Extracts the expiration date from the SecCertificateRef
-
- @param certificate SecCertificateRef of the certificate
- @return NSDate of the expiration date from SecCertificateRef
- */
-- (NSDate *)extractExpirationDateFromCertificate:(SecCertificateRef)certificate;
-
-
-
-/**
  Lock id_token, access_token, and refresh_token into secure keychain storage protected by device's local authentication (passcode and/or fingerprint)
 
  @param error NSError object that may occur during the process

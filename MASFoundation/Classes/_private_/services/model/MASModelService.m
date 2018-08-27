@@ -10,6 +10,7 @@
 
 #import "MASModelService.h"
 #import "MASAccessService.h"
+#import "MASConfigurationService.h"
 #import "MASFileService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
@@ -1236,7 +1237,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 }
 
 
-- (void)logOutDeviceAndClearLocalAccessToken:(BOOL)clearLocal completion:(MASCompletionErrorBlock)completion
+- (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     
     MASAccessService *accessService = [MASAccessService sharedService];
@@ -1320,6 +1321,25 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                               //    [error localizedDescription]);
                                               
                                               //
+                                              // If forced, clear credentials
+                                              //
+                                              if(force)
+                                              {
+                                                  //
+                                                  // Clear currentUser object upon log-out
+                                                  //
+                                                  [blockSelf clearCurrentUserForLogout];
+                                                  
+                                                  //
+                                                  // Set id_token and id_token_type to nil
+                                                  //
+                                                  [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+                                                  [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
+                                                  
+                                                  [[MASAccessService sharedService].currentAccessObj refresh];
+                                              }
+                                              
+                                              //
                                               // Notify
                                               //
                                               if (blockCompletion)
@@ -1334,22 +1354,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                               
                                               return;
                                           }
-                                          
+                                    
                                           //
-                                          // If clearLocal was YES, clear access_token, and refresh_token
+                                          // Clear currentUser object upon log-out
                                           //
-                                          if (clearLocal)
-                                          {
-                                              //
-                                              // Clear currentUser object upon log-out
-                                              //
-                                              [blockSelf clearCurrentUserForLogout];
-                                          }
-                                          
-                                          //
-                                          // Post the notification
-                                          //
-                                          [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+                                          [blockSelf clearCurrentUserForLogout];
                                           
                                           //
                                           // Set id_token and id_token_type to nil
@@ -1358,6 +1367,12 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyIdTokenType];
                                           
                                           [[MASAccessService sharedService].currentAccessObj refresh];
+                                          
+                                          //
+                                          // Post the notification
+                                          //
+                                          [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+                                          
                                           //
                                           // Notify
                                           //
@@ -1749,7 +1764,8 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           
                                           if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
                                               [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
-                                              [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant])
+                                              [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant] &&
+                                              [MASConfigurationService isIdTokenValidationEnabled])
                                           {
                                               NSError *idTokenValidationError = nil;
                                               BOOL isIdTokenValid = [MASAccessService validateIdToken:[bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey]
@@ -1807,9 +1823,10 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
  *
  *  This will remove the user available from 'currentUser' upon a successful result if one exists.
  *
+ *  @param force BOOL Clear local tokens no matter the logout call to the server success or not.
  *  @param completion The completion block that receives the results.
  */
-- (void)logoutWithCompletion:(MASCompletionErrorBlock)completion
+- (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     //
     // The application must be registered else stop here
@@ -1886,13 +1903,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
     
     // Token Type Hint
-    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"access_token";
+    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
     
-    // Access Token
-    NSString *accessToken = [MASAccessService sharedService].currentAccessObj.accessToken;
-    if (accessToken)
+    // Refresh Token
+    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
+    if (refreshToken)
     {
-        parameterInfo[MASTokenRequestResponseKey] = accessToken;
+        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
     }
     
     //
@@ -1913,6 +1930,14 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                                   // Post the notification
                                                   //
                                                   [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+                                                  
+                                                  //
+                                                  // Clear currentUser object if forced
+                                                  //
+                                                  if(force)
+                                                  {
+                                                      [blockSelf clearCurrentUserForLogout];
+                                                  }
                                                   
                                                   //
                                                   // Notify
@@ -2429,5 +2454,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         }
     }];
 }
+
 
 @end

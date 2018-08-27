@@ -475,6 +475,19 @@ static NSMutableArray *_multiFactorAuthenticators_;
             //  Create new error
             NSError *newError = [[NSError alloc] initWithDomain:error.domain code:error.code userInfo:errorUserInfo];
             error = newError;
+            
+            //  Parsing JSON error returned from the server
+            if (blockResponseType == MASRequestResponseTypeTextPlain)
+            {
+                NSError *parseError;
+                NSData *objectData = [responseObject dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&parseError];
+                
+                if(!parseError)
+                {
+                    responseObject = json;
+                }                
+            }
         }
 
         __block NSMutableDictionary *responseInfo = [NSMutableDictionary new];
@@ -534,7 +547,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
             //
             // If location service on the device is denied for the app, there is nothing that app nor SDK can do. Simply return an error.
             //
-            else if ([MASLocationService isLocationMonitoringDenied])
+            else if ([[MASLocationService sharedService] locationServiceStatus] == MASLocationServiceStatusDenied)
             {
                 if(blockCompletion)
                 {
@@ -544,47 +557,43 @@ static NSMutableArray *_multiFactorAuthenticators_;
             //
             // If location service was authorized, but somehow got an error for geo-location, try to retrieve the location once again.
             //
-            else if ([MASLocationService isLocationMonitoringAuthorized])
+            else if ([[MASLocationService sharedService] locationServiceStatus] == MASLocationServiceStatusAvailable)
             {
                 //
-                // Retrieve the geo-location coordinates
+                // If an invalid geolocation result is detected
                 //
-                [blockSelf retrieveLocation:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
-                
+                if([MASLocationService sharedService].lastKnownLocation == nil)
+                {
                     //
-                    // If an invalid geolocation result is detected
+                    // Notify
                     //
-                    if((status != MASLocationMonitoringStatusSuccess && status != MASLocationMonitoringStatusTimedOut) ||
-                       !location)
+                    if(blockCompletion)
                     {
-                        //
-                        // Notify
-                        //
-                        if(blockCompletion)
-                        {
-                            blockCompletion(nil, [NSError errorGeolocationIsInvalid]);
-                        }
+                        blockCompletion(nil, [NSError errorGeolocationIsInvalid]);
                     }
-                    else {
-                        
-                        //
-                        // Inject geo-location information in the header
-                        //
-                        [blockOriginalHeader setObject:[location locationAsGeoCoordinates] forKey:MASGeoLocationRequestResponseKey];
-                        
-                        //
-                        //  Proceed with original request
-                        //
-                        [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
-                                                       originalHeader:blockOriginalHeader
-                                                    originalParameter:blockOriginalParameter
-                                                          requestType:blockRequestType
-                                                         responseType:blockResponseType
-                                                             isPublic:isPublic
-                                                           httpMethod:blockHTTPMethod
-                                                           completion:blockCompletion];
+                }
+                else {
+                    
+                    //
+                    // Inject geo-location information in the header
+                    //
+                    if ([MASLocationService sharedService].lastKnownLocation != nil)
+                    {
+                        blockOriginalHeader[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
                     }
-                }];
+                    
+                    //
+                    //  Proceed with original request
+                    //
+                    [blockSelf proceedOriginalRequestWithEndPoint:blockEndPoint
+                                                   originalHeader:blockOriginalHeader
+                                                originalParameter:blockOriginalParameter
+                                                      requestType:blockRequestType
+                                                     responseType:blockResponseType
+                                                         isPublic:isPublic
+                                                       httpMethod:blockHTTPMethod
+                                                       completion:blockCompletion];
+                }
             }
             //
             // All other cases (which unlikely happen), return the original error from the server to the client
@@ -870,6 +879,29 @@ static NSMutableArray *_multiFactorAuthenticators_;
     }
     
     return;
+}
+
+
+- (void)reconstructAuthValidationOperation
+{
+    if (_authValidationOperation != nil && _authValidationOperation.isExecuting)
+    {
+        MASAuthValidationOperation *authOperation = [MASAuthValidationOperation sharedOperation];
+        
+        for (NSOperation *pendingOperation in _sessionManager.operationQueue.operations)
+        {
+            if (pendingOperation && [pendingOperation.dependencies containsObject:_authValidationOperation])
+            {
+                [pendingOperation addDependency:authOperation];
+            }
+        }
+        
+        [_sessionManager.internalOperationQueue addOperation:authOperation];
+        
+        [_authValidationOperation cancel];
+        _authValidationOperation = nil;
+        _authValidationOperation = authOperation;
+    }
 }
 
 
@@ -1354,164 +1386,100 @@ withParameters:(NSDictionary *)parameterInfo
 
 - (void)httpRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic completion:(MASResponseInfoErrorBlock)completion
 {
-    __block MASResponseInfoErrorBlock blockCompletion = completion;
+    //
+    // Update the header
+    //
+    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
     
-    [self retrieveLocation:^(CLLocation * _Nonnull location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
-        
-        //
-        // Update the header
-        //
-        NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
-        
-        if (location && status == MASLocationMonitoringStatusSuccess)
-        {
-            mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-        }
-        
-        MASURLRequest *request = nil;
-        
-        //
-        //  if location was successfully retrieved
-        //
-        if (location && status == MASLocationMonitoringStatusSuccess)
-        {
-            mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [location locationAsGeoCoordinates];
-        }
-        
-        //
-        //  Construct MASURLRequest object per HTTP method
-        //
-        if ([httpMethod isEqualToString:@"DELETE"])
-        {
-            request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        }
-        else if ([httpMethod isEqualToString:@"GET"])
-        {
-            request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        }
-        else if ([httpMethod isEqualToString:@"PATCH"])
-        {
-            request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        }
-        else if ([httpMethod isEqualToString:@"POST"])
-        {
-            request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        }
-        else if ([httpMethod isEqualToString:@"PUT"])
-        {
-            request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
-        }
-        
-        //
-        //  Construct MASSessionDataTaskOperation with request, and completion block to handle any responsive re-authentication or re-registration.
-        //
-        if(self.httpRedirectionBlock)
-        {
-            [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
-        }
-        
-        MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request
-                                                                         completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                                 parameters:parameterInfo
-                                                                                                                                    headers:headerInfo
-                                                                                                                                 httpMethod:request.HTTPMethod
-                                                                                                                                requestType:requestType
-                                                                                                                               responseType:responseType
-                                                                                                                                   isPublic:isPublic
-                                                                                                                            completionBlock:blockCompletion]];
-        
-        
-        if (![self isMAGEndpoint:endPoint])
-        {
-            //
-            //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
-            //  then, add dependency on shared validation operation which will validate current session
-            //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
-            //
-            if (!isPublic)
-            {
-                //
-                //  add dependency
-                //
-                [operation addDependency:self.sharedOperation];
-                
-                //
-                //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
-                //
-                if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
-                {
-                    //
-                    //  add sharedOperation into internal operation queue
-                    //
-                    [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
-                }
-            }
-            
-            //
-            //  add current request into normal operation queue
-            //
-            [_sessionManager.operationQueue addOperation:operation];
-        }
-        else {
-            //
-            //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
-            //
-            [_sessionManager.internalOperationQueue addOperation:operation];
-        }
-    }];
-}
-
-
-- (void)retrieveLocation:(MASLocationMonitorBlock)completion
-{
+    MASURLRequest *request = nil;
+    
     //
-    // Determine if we need to add the geo-location header value
+    //  if location was successfully retrieved
     //
-    MASConfiguration *configuration = [MASConfiguration currentConfiguration];
-    if(configuration.locationIsRequired && [MASLocationService isLocationMonitoringAuthorized])
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    //
+    //  Construct MASURLRequest object per HTTP method
+    //
+    if ([httpMethod isEqualToString:@"DELETE"])
+    {
+        request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+    }
+    else if ([httpMethod isEqualToString:@"GET"])
+    {
+        request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+    }
+    else if ([httpMethod isEqualToString:@"PATCH"])
+    {
+        request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+    }
+    else if ([httpMethod isEqualToString:@"POST"])
+    {
+        request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+    }
+    else if ([httpMethod isEqualToString:@"PUT"])
+    {
+        request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+    }
+    
+    //
+    //  Construct MASSessionDataTaskOperation with request, and completion block to handle any responsive re-authentication or re-registration.
+    //
+    if(self.httpRedirectionBlock)
+    {
+        [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
+    }
+    
+    MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:request
+                                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                             parameters:parameterInfo
+                                                                                                                                headers:headerInfo
+                                                                                                                             httpMethod:request.HTTPMethod
+                                                                                                                            requestType:requestType
+                                                                                                                           responseType:responseType
+                                                                                                                               isPublic:isPublic
+                                                                                                                        completionBlock:completion]];
+    
+    
+    if (![self isMAGEndpoint:endPoint])
     {
         //
-        // Request the one time, currently available location before proceeding
+        //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
+        //  then, add dependency on shared validation operation which will validate current session
+        //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
         //
-        [[MASLocationService sharedService] startSingleLocationUpdate:^(CLLocation *location, MASLocationMonitoringAccuracy accuracy, MASLocationMonitoringStatus status) {
+        if (!isPublic)
+        {
+            //
+            //  add dependency
+            //
+            [operation addDependency:self.sharedOperation];
             
-            if (completion)
+            //
+            //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
+            //
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
             {
-                completion(location, accuracy, status);
+                //
+                //  add sharedOperation into internal operation queue
+                //
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
             }
-        }];
+        }
+        
+        //
+        //  add current request into normal operation queue
+        //
+        [_sessionManager.operationQueue addOperation:operation];
     }
     else {
         //
-        //  if location is not required, return unknown status
+        //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
         //
-        if (completion)
-        {
-            completion([[CLLocation alloc] init], MASLocationMonitoringAccuracyNone, MASLocationMonitoringStatusUnknown);
-        }
-    }
-}
-
-
-- (void)reconstructAuthValidationOperation
-{
-    if (_authValidationOperation != nil && _authValidationOperation.isExecuting)
-    {
-        MASAuthValidationOperation *authOperation = [MASAuthValidationOperation sharedOperation];
- 
-        for (NSOperation *pendingOperation in _sessionManager.operationQueue.operations)
-        {
-            if (pendingOperation && [pendingOperation.dependencies containsObject:_authValidationOperation])
-            {
-                [pendingOperation addDependency:authOperation];
-            }
-        }
-        
-        [_sessionManager.internalOperationQueue addOperation:authOperation];
-        
-        [_authValidationOperation cancel];
-        _authValidationOperation = nil;
-        _authValidationOperation = authOperation;
+        [_sessionManager.internalOperationQueue addOperation:operation];
     }
 }
 
