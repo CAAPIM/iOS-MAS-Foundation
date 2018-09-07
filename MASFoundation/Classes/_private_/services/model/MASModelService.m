@@ -1512,17 +1512,29 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                          requestType:MASRequestResponseTypeWwwFormUrlEncoded
                                         responseType:MASRequestResponseTypeTextPlain
                                           completion:^(NSDictionary *responseInfo, NSError *error) {
+                                              
                                               //
                                               // Detect if error, if so stop here
                                               //
                                               if (error)
                                               {
+                                                  NSError *apiError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
+                                                  
                                                   //
                                                   // Notify
                                                   //
                                                   if (blockCompletion)
                                                   {
-                                                      blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                                      //
+                                                      // If error was found with 1016156: no attrbiute found, ignore the error
+                                                      //
+                                                      if (apiError.code == 1016156)
+                                                      {
+                                                          blockCompletion(YES, nil);
+                                                      }
+                                                      else {
+                                                          blockCompletion(NO, apiError);
+                                                      }
                                                   }
                                                   return;
                                               }
@@ -1601,29 +1613,41 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                    withParameters:nil
                                        andHeaders:mutableHeaderInfo
                                        completion:^(NSDictionary *responseInfo, NSError *error) {
-                                         //
-                                         // Detect if error, if so stop here
-                                         //
-                                         if (error)
-                                         {
-                                             //
-                                             // Notify
-                                             //
-                                             if (blockCompletion)
-                                             {
-                                                 blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-                                             }
-                                             return;
-                                         }
-                                         
-                                         //
-                                         // Notify
-                                         //
-                                         if (blockCompletion)
-                                         {
-                                             blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], nil);
-                                         }
-                                     }
+                                        
+                                           //
+                                           // Detect if error, if so stop here
+                                           //
+                                           if (error)
+                                           {
+                                               NSError *apiError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
+                                               
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   //
+                                                   // If error was found with 1016156: no attrbiute found, ignore the error
+                                                   //
+                                                   if (apiError.code == 1016156)
+                                                   {
+                                                       blockCompletion([NSDictionary dictionary], nil);
+                                                   }
+                                                   else {
+                                                       blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], apiError);
+                                                   }
+                                               }
+                                               return;
+                                           }
+                                           
+                                           //
+                                           // Notify
+                                           //
+                                           if (blockCompletion)
+                                           {
+                                               blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], nil);
+                                           }
+                                       }
      ];
 }
 
