@@ -19,9 +19,21 @@ static NSString *_configurationFileType_ = @"json";
 static NSDictionary *_newConfigurationObject_ = nil;
 static BOOL _newConfigurationDetected_ = NO;
 static NSMutableDictionary *_securityConfigurations_;
-
+static BOOL _enableIdTokenValidation_ = YES;
 
 # pragma mark - Properties
+
++ (void)enableIdTokenValidation:(BOOL)enable
+{
+    _enableIdTokenValidation_ = enable;
+}
+
+
++ (BOOL)isIdTokenValidationEnabled
+{
+    return _enableIdTokenValidation_;
+}
+
 
 + (void)setConfigurationFileName:(NSString *)fileName
 {

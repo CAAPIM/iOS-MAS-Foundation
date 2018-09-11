@@ -786,6 +786,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
++ (NSError *)errorIdTokenNotSupportedAlgorithm
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeTokenIdTokenNotSupportedSigningAlgorithm errorDomain:MASFoundationErrorDomainLocal];
+}
+
+
 + (NSError *)errorIdTokenNotExistForLockingUserSession
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession errorDomain:MASFoundationErrorDomainLocal];
@@ -1067,6 +1073,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeTokenIdTokenInvalidAzp: return @"JWT Validation: azp value does not match";
         case MASFoundationErrorCodeTokenIdTokenInvalidSignature: return @"JWT Validation: signature does not match";
         case MASFoundationErrorCodeTokenIdTokenNotExistForLockingUserSession: return @"id_token does not exist; id_token is required for locking user session";
+        case MASFoundationErrorCodeTokenIdTokenNotSupportedSigningAlgorithm: return @"id_token signing algorithm is not supported.";
             
         case MASFoundationErrorCodeAccessTokenNotGrantedScope: return @"Given access token is not granted for required scope.";
         case MASFoundationErrorCodeAccessTokenDisabled: return @"Given access token is disabled";

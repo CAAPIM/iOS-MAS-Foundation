@@ -14,9 +14,6 @@
 
 #import <CommonCrypto/CommonHMAC.h>
 #import <objc/runtime.h>
-#include <openssl/x509.h>
-#include <openssl/evp.h>
-#include <openssl/pem.h>
 
 static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
@@ -26,65 +23,6 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 bool _encrypted = NO;
 
 # pragma mark - Public
-
-- (NSData *)dataFormattedAsCertificate
-{
-    NSMutableArray *stringAsArray = [NSMutableArray new];
- 
-    //
-    // Convert data to string format
-    //
-    NSString *dataAsString = [[NSString alloc] initWithData:self encoding:NSUTF8StringEncoding];
-   
-    DLog(@"\n\nCertificate data as string: %@\n\n", dataAsString    );
-   
-    //
-    // Needs certificate prefix?
-    //
-    NSRange range = [dataAsString rangeOfString:MASCertificateBeginPrefix];
-    if(range.location == NSNotFound)
-    {
-        [stringAsArray addObject:MASCertificateBeginPrefix];
-    }
-   
-    //
-    // Handle certificate data
-    //
-    NSString *substring;
-    NSUInteger remaining;
-    int blockSize = 76;
-    for (int index = 0; index < dataAsString.length; index += blockSize)
-    {
-        remaining = dataAsString.length - index;
-
-        range = (remaining > blockSize ? NSMakeRange(index, blockSize) : NSMakeRange(index, remaining));
-        substring = [dataAsString substringWithRange:range];
-        
-        [stringAsArray addObject:substring];
-    }
-    
-    //
-    // Needs certificate suffix?
-    //
-    range = [dataAsString rangeOfString:MASCertificateEndSuffix];
-    if(range.location == NSNotFound)
-    {
-        [stringAsArray addObject:MASCertificateEndSuffix];
-    }
-    
-    DLog(@"\n\nCertificate data is: %@\n\n", stringAsArray);
-    
-    return [NSData dataFromCertificateArray:stringAsArray];
-}
-
-
-+ (NSData *)dataFromCertificateArray:(NSArray *)certificateArray
-{
-    NSString *certificateAsString = [certificateArray componentsJoinedByString:MASDefaultNewline];
-    
-    return [certificateAsString dataUsingEncoding:NSUTF8StringEncoding];
-}
-
 
 + (NSData *)pemDataFromCertificateArray:(NSArray *)certificateArray
 {

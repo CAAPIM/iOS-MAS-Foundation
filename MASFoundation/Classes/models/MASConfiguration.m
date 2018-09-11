@@ -103,7 +103,6 @@ static NSString *const MASDeviceRegisterEndpoint = @"device_register_endpoint_pa
 static NSString *const MASDeviceRegisterClientEndpoint = @"device_client_register_endpoint_path"; // string
 static NSString *const MASDeviceRenewEndpoint = @"device_renew_endpoint_path"; // string
 static NSString *const MASDeviceRemoveEndpoint = @"device_remove_endpoint_path"; // string
-static NSString *const MASDeviceMetadataEndpoint = @"device_metadata_endpoint_path"; // string
 static NSString *const MASEnterpriseBrowserEndpoint = @"enterprise_browser_endpoint_path"; // string
 static NSString *const MASTokenEndpoint = @"token_endpoint_path"; // string
 static NSString *const MASTokenRevokeEndpoint = @"token_revocation_endpoint_path"; // string
@@ -320,11 +319,13 @@ static float _systemVersionNumber_;
         [_endpointKeysToPaths addEntriesFromDictionary:customInfo];
     }
     
-    //
-    // Temporary Hardcoded Endpoints
-    //
-    _endpointKeysToPaths[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
-    _endpointKeysToPaths[MASDeviceMetadataEndpoint] = @"/connect/device/metadata";
+    if (![[_endpointKeysToPaths allKeys] containsObject:MASDeviceRegisterClientEndpoint])
+    {
+        //
+        // Temporary Hardcoded Endpoints for older MAG version where it does not export device registration endpoint for client credentials
+        //
+        _endpointKeysToPaths[MASDeviceRegisterClientEndpoint] = @"/connect/device/register/client";
+    }
     
     _endpointKeysToPaths[MASUsersLDAPEndpoint] = @"/scim/ldap/v2/users";
     _endpointKeysToPaths[MASUserGroupsLDAPEndpoint] = @"/scim/ldap/v2/groups";
@@ -722,12 +723,6 @@ static float _systemVersionNumber_;
 - (NSString *)deviceRemoveEndpointPath
 {
     return _endpointKeysToPaths[MASDeviceRemoveEndpoint];
-}
-
-
-- (NSString *)deviceMetadataEndpointPath
-{
-    return _endpointKeysToPaths[MASDeviceMetadataEndpoint];
 }
 
 
