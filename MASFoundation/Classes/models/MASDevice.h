@@ -170,7 +170,6 @@
 
 # pragma mark - Bluetooth Central
 
-
 /**
  *  Start the device acting as a bluetooth central.
  */
@@ -191,5 +190,65 @@
  * Stop the device acting as a bluetooth central.
  */
 - (void)stopAsBluetoothCentral;
+
+
+
+///--------------------------------------
+/// @name Device Metadata
+///--------------------------------------
+
+# pragma mark - Device Metadata
+
+/**
+ * Create or update a new attribute for the current device, return an error when exceed ${mag-device-max-metadata} configuration in the server
+ *
+ * @param name Key of the attribute to be associated with the device
+ * @param value Value of the attribute to be associated with the device
+ * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
+ * based on the object type, and NSError object when error occurs.
+ */
+- (void)addAttribute:(NSString *_Nonnull)name value:(NSString *_Nonnull)value completion:(MASObjectResponseErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Remove attribute by name, fails if the device attribute does not exist
+ *
+ * @param name Key of the attribute to be removed for the current device
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)removeAttribute:(NSString *_Nonnull)name completion:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Remove all attributes for the current device
+ *
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)removeAllAttributes:(MASCompletionErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Get attribute by name, return empty NSDictionary if no attribute is found
+ *
+ * @param name Key of the attribute to be retrieved for the current device
+ * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
+ * based on the object type, and NSError object when error occurs.
+ */
+- (void)getAttribute:(NSString *_Nonnull)name completion:(MASObjectResponseErrorBlock _Nullable)completion;
+
+
+
+/*
+ * Get all attributes for the current device, return empty NSDictionary if no attributes found
+ *
+ * @param completion A standard (id objects, NSError *error) block that will receive the response object which needs to perform type casting
+ * based on the object type, and NSError object when error occurs.
+ */
+- (void)getAttributes:(MASObjectResponseErrorBlock _Nullable)completion;
+
+
 
 @end
