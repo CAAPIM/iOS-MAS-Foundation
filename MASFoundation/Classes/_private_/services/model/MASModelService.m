@@ -1455,6 +1455,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Endpoint
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+
+    //
+    // Build URL
+    //
+    name = [name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
     NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
     
     [self removeAttributeWithEndpoint:resourcePath completion:completion];
@@ -1558,6 +1563,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     // Endpoint
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    
+    //
+    // Build URL
+    //
+    name = [name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
     NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
     
     [self getAttributeWithEndpoint:resourcePath completion:completion];
