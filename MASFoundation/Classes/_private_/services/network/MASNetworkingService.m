@@ -477,7 +477,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
             error = newError;
             
             //  Parsing JSON error returned from the server
-            if (blockResponseType == MASRequestResponseTypeTextPlain)
+            if (blockResponseType == MASRequestResponseTypeTextPlain && responseObject)
             {
                 NSError *parseError;
                 NSData *objectData = [responseObject dataUsingEncoding:NSUTF8StringEncoding];
