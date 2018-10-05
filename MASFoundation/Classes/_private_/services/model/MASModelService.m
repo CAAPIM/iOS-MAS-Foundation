@@ -1385,23 +1385,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 
 
 - (void)addAttribute:(NSDictionary *)attribute completion:(MASObjectResponseErrorBlock)completion
-{
-    //
-    // Detect if there is a device registered, if not stop here
-    //
-    if (![self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if (completion)
-        {
-            completion(nil, [NSError errorDeviceNotRegistered]);
-        }
-        
-        return;
-    }
-    
+{    
     //
     // Endpoint
     //
@@ -1485,22 +1469,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
  */
 - (void)removeAttributeWithEndpoint:(NSString *)endPoint completion:(MASCompletionErrorBlock)completion
 {
-    //
-    // Detect if there is a device registered, if not stop here
-    //
-    if (![self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if (completion)
-        {
-            completion(NO, [NSError errorDeviceNotRegistered]);
-        }
-        
-        return;
-    }
-
     //
     // Retrieve a mutable version of the header info, create a new one if nil
     //
@@ -1593,22 +1561,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
  */
 - (void)getAttributeWithEndpoint:(NSString *)endPoint completion:(MASObjectResponseErrorBlock)completion
 {
-    //
-    // Detect if there is a device registered, if not stop here
-    //
-    if (![self.currentDevice isRegistered])
-    {
-        //
-        // Notify
-        //
-        if (completion)
-        {
-            completion(nil, [NSError errorDeviceNotRegistered]);
-        }
-        
-        return;
-    }
- 
     //
     // Retrieve a mutable version of the header info, create a new one if nil
     //
