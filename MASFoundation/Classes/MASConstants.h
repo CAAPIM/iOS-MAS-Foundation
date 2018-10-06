@@ -386,6 +386,27 @@ typedef NS_ENUM(NSInteger, MASGatewayMonitoringStatus)
 };
 
 
+
+/**
+ Enumeration value representing level of debugging log
+
+ - MASDebugLevelNone: Debug log disbaled; no logging messages will be printed out
+ - MASDebugLevelError: Error level of debugging logs; any errors that could potentially stop processes will be printed out
+ - MASDebugLevelWarning: Warning level of debugging logs; any warnings that is not at critical level while SDK is still functional will be printed out
+ - MASDebugLevelDebug: Debug level of debugging logs; any debugging message especially API requests/responses logs will be printed out with this level
+ - MASDebugLevelInfo: Info level of debugging logs; any informational messages will be printed out
+ */
+typedef NS_ENUM(NSInteger, MASDebugLevel)
+{
+    MASDebugLevelNone       = 0,
+    MASDebugLevelError      = (1 << 0),
+    MASDebugLevelWarning    = (1 << 1),
+    MASDebugLevelDebug      = (1 << 2),
+    MASDebugLevelInfo       = (1 << 3),
+    MASDebugLevelAll        = (MASDebugLevelError | MASDebugLevelWarning | MASDebugLevelDebug | MASDebugLevelInfo)
+};
+
+
 /**
  * The Gateway monitor status block that will receive a MASGatewayMonitoringStatus update
  * when a new status value change is triggered.

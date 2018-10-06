@@ -46,9 +46,9 @@ static NSString *_Nonnull const MASModelServiceUUID = @"37a4f3f3-e029-430d-a2d2-
 static NSString *_Nonnull const MASNetworkServiceUUID = @"cd460414-b248-47a4-af8a-4eadfdb937f8";
 static NSString *_Nonnull const MASSecurityServiceUUID = @"8a1e8e72-e714-11e5-9730-9a79f06e9478";
 static NSString *_Nonnull const MASOTPServiceUUID = @"1dcd2f44-bdc2-449c-9ffc-084592feb046";
+static NSString *_Nonnull const MASDebugServiceUUID = @"018c9134-688e-4f47-ace9-f18b4430ca42";
 
 // Known external MAS service UUIDs, these are optional and pluggable services
-static NSString const *_Nonnull MASDebugServiceUUID = @"018c9134-688e-4f47-ace9-f18b4430ca42";
 static NSString const *_Nonnull MASProximityServiceUUID = @"88ed8292-9d60-4d2a-9d50-7e9158c83096";
 static NSString const *_Nonnull MASUIServiceUUID = @"c15a0126-fe71-46bb-98f0-f87966b3beb4";
 

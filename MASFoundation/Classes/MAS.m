@@ -177,6 +177,7 @@
 {
     //DLog(@"called");
     [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
+    MASLogError(@"testig");
     
     //
     // Post the notification
