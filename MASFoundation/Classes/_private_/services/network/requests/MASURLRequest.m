@@ -200,9 +200,17 @@ NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
         }
         
         //
+        // JSON
+        //
+        case MASRequestResponseTypeJson:
+        {
+            return [MASIJSONResponseSerializer masSerializer];
+        }
+        
+        //
         // Default
         //
-        default: return [MASIJSONResponseSerializer masSerializer];
+        default: return [MASIHTTPResponseSerializer serializer];
     }
 }
 
