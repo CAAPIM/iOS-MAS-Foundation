@@ -396,6 +396,15 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
+ *  Return the current session's lock status
+ *
+ *  @return BOOL if the session is locked or not
+ */
+- (BOOL)isSessionLocked;
+
+
+
+/**
  Lock id_token, access_token, and refresh_token into secure keychain storage protected by device's local authentication (passcode and/or fingerprint)
 
  @param error NSError object that may occur during the process

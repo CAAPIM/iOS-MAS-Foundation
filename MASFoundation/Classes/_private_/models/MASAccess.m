@@ -485,14 +485,7 @@
 
 - (BOOL)isSessionLocked
 {
-    //
-    // Obtain key chain items to determine device lock status
-    //
-    MASAccessService *accessService = [MASAccessService sharedService];
-    
-    NSNumber *isLocked = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyIsDeviceLocked];
-    
-    return [isLocked boolValue];
+    return [[MASAccessService sharedService] isSessionLocked];
 }
 
 
