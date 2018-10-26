@@ -29,6 +29,8 @@ static NSString *const kMASKeyChainClientExpiration = @"kMASKeyChainClientExpira
 static NSString *const kMASKeyChainClientId = @"kMASKeyChainClientId";
 static NSString *const kMASKeyChainClientSecret = @"kMASKeyChainClientSecret";
 
+static NSString *const kMASKeyChainJWKSet = @"kMASKeyChainJWKSet";
+
 # pragma mark - Shared Constants
 
 static NSString *const kMASKeyChainJwt = @"kMASKeyChainJwt";
@@ -69,6 +71,13 @@ static NSString *const kMASKeyChainSignedPublicCertificate = @"kMASKeyChainSigne
 
 
 - (id)identities;
+
+# pragma mark - Configuration
+
+- (NSDictionary *)jsonWebKeySet;
+
+
+- (void)setJsonWebKeySet:(NSDictionary *)jsonWebKeySet;
 
 
 # pragma mark - Local

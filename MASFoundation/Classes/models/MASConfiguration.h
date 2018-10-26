@@ -62,6 +62,12 @@
 
 
 /**
+ * The name of the algorithm that was used to sign the idToken.
+ */
+@property (nonatomic, strong, readonly, nonnull) NSString *idTokenSignedResponseAlgo;
+
+
+/**
  * The public server certificate of the Gateway as obtained from the configuration.
  */
 @property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *gatewayCertificates;

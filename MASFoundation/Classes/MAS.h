@@ -90,6 +90,34 @@
 
 
 /**
+ Sets boolean indicator of enforcing JWKS loading upon MAS Start.
+ JWK Set - A JSON object that represents a set of JWKs.
+ JWK -  A JSON object that represents a cryptographic key.
+        The members of the object represent properties of the key, including its value.
+ 
+ By default, JWKSet loading is disabled.
+ 
+ @param enable BOOL value of indicating whether JWKSet loading is enabled or not.
+ */
++ (void)enableJWKSetLoading:(BOOL)enable;
+
+
+
+/**
+ Gets boolean indicator of enforcing JWKS loading upon MAS Start.
+ JWK Set - A JSON object that represents a set of JWKs.
+ JWK -  A JSON object that represents a cryptographic key.
+ The members of the object represent properties of the key, including its value.
+ 
+ By default, JWKSet loading is disabled.
+ 
+ @return BOOL value of indicating whether JWKSet loading is enabled or not.
+ */
++ (BOOL)isJWKSetLoadingEnabled;
+    
+
+
+/**
  *  Sets BOOL indicator of PKCE (Proof Key for Code Exchange) enabled or not for authorization process in Social Login, and Proximity Login.
  *  By default, PKCE is enabled and enforced in authorization process; it can be opted-out.
  *

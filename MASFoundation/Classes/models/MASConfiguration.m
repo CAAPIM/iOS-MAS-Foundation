@@ -75,17 +75,26 @@ static NSString *const MASOAuthConfigurationKey = @"oauth"; // value is Dictiona
 static NSString *const MASOAuthApplicationKey = @"client"; // value is Dictionary
 static NSString *const MASOAuthApplicationClientId = @"client_id"; // string
 static NSString *const MASOAuthApplicationClientIds = @"client_ids"; // array
+static NSString *const MASOAuthApplicationClientKeyCustom = @"client_key_custom"; /// string
 static NSString *const MASOAuthApplicationClientSecret = @"client_secret"; // string
 static NSString *const MASOAuthApplicationNameKey = @"client_name"; // string
 static NSString *const MASOAuthApplicationTypeKey = @"client_type"; // string
 static NSString *const MASOAuthApplicationDescriptionKey = @"description"; // string
 static NSString *const MASOAuthApplicationOrganizationKey = @"organization"; // string
 static NSString *const MASOAuthApplicationRegisteredByKey = @"registered_by"; /// string
+static NSString *const MASOAuthIdTokenSignedResponseAlgoKey = @"id_token_signed_response_alg"; /// string
 
 
 # pragma mark - SCIM Configuration Constants
 
 static NSString *const MASScimConfigurationKey = @"scim"; // value is Dictionary
+
+
+# pragma mark - OpenId Registration Constants.
+
+static NSString *const MASOAuthClientCustomKeyOpenIdRegKey = @"openid_registration"; // value is Dictionary
+static NSString *const MASOAuthClientCustomKeyOpenIdRegResponse = @"response"; // value is Dictionary
+
 
 
 # pragma mark - Endpoint Constants
@@ -527,6 +536,15 @@ static float _systemVersionNumber_;
     NSDictionary *applicationInfo = oauthInfo[MASOAuthApplicationKey];
     
     return applicationInfo[MASOAuthApplicationRegisteredByKey];
+}
+
+- (NSString *)idTokenSignedResponseAlgo
+{
+    NSDictionary *defaultApplicationClientInfo = self.defaultApplicationClientInfo;
+    NSDictionary *clientKeyCustomInfo = defaultApplicationClientInfo[MASOAuthApplicationClientKeyCustom];
+    NSDictionary *clientKeyCustomOpenIdRegResponse =
+        clientKeyCustomInfo[MASOAuthClientCustomKeyOpenIdRegKey][MASOAuthClientCustomKeyOpenIdRegResponse];
+    return clientKeyCustomOpenIdRegResponse[MASOAuthIdTokenSignedResponseAlgoKey];
 }
 
 
