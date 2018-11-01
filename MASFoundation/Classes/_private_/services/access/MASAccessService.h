@@ -78,6 +78,16 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
+ Sets Keychain Sharing Group identifier that has been specified through [MAS setKeychainSharingGroup:] method.
+ If not specified, or null value passed, the group identifier will be defaulted to application's bundle identifier replaced last portion with 'singleSignOn'
+
+ @param keychainSharingGroup NSString value of Keychain Sharing Group identifier
+ */
++ (void)setKeychainSharingGroup:(NSString *)keychainSharingGroup;
+
+
+
+/**
  *  Static boolean property indicating PKCE is enabled or not.
  *
  *  @return return BOOL value indicating PKCE is enabled or not
