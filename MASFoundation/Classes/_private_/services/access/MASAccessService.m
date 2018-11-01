@@ -824,63 +824,27 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
-- (NSError *) revokeAndRemoveTokens
+- (void)revokeAndRemoveTokens
 {
-    __block NSError *error = nil;
-    
     //
     // Attempt to revoke access token
     //
-    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
-    
-    //
-    // Request parameters
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if (clientAuthorization)
-    {
-        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    }
-    
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
-    
-    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
-    if (refreshToken)
-    {
-        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
-    }
-    //
-    // Trigger revoke request, if error return it but proceed with the locking
-    //
-    [[MASNetworkingService sharedService] deleteFrom:endPoint
-                                      withParameters:parameterInfo
-                                          andHeaders:headerInfo
-                                          completion:^(NSDictionary *responseInfo, NSError *revokeError) {
-                                              //
-                                              // If error, return it
-                                              //
-                                              if(revokeError)
-                                              {
-                                                  error = revokeError;
-                                              }
-                                              
-                                              //
-                                              // Nullify the tokens
-                                              //
-                                              [self setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
-                                              [self setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
-                                              [self setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
-                                              [self setAccessValueNumber:[NSNumber numberWithBool:YES] storageKey:MASKeychainStorageKeyIsDeviceLocked];
-                                              
-                                              //
-                                              // Refresh the currentAccessObj to reflect the current status
-                                              //
-                                              [[MASAccessService sharedService].currentAccessObj refresh];
-                                          }];
-    
-    return error;
+    [[MASAccessService sharedService] revokeTokensWithCompletion:^(NSDictionary *responseInfo, NSError *revokeError) {
+        
+        //
+        // Nullify the tokens
+        //
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+        [self setAccessValueNumber:[NSNumber numberWithBool:YES] storageKey:MASKeychainStorageKeyIsDeviceLocked];
+        
+        //
+        // Refresh the currentAccessObj to reflect the current status
+        //
+        [[MASAccessService sharedService].currentAccessObj refresh];
+        
+    }];
 }
 
 
@@ -1078,9 +1042,9 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     else {
         //
-        // Try to revoke access token and remove tokens, return error in case of request failure
+        // Try to revoke access token and remove tokens
         //
-        *error = [self revokeAndRemoveTokens];
+        [self revokeAndRemoveTokens];
 
         success = YES;
     }
@@ -1384,6 +1348,51 @@ static BOOL _isKeychainSynchronizable_ = NO;
     }
     
     return isInternalData;
+}
+
+
+- (void)revokeTokensWithCompletion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    // Attempt to revoke access token
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
+    
+    //
+    // Request parameters
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if (clientAuthorization)
+    {
+        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    }
+    
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
+    
+    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
+    if (refreshToken)
+    {
+        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
+    }
+    
+    //
+    // Trigger revoke request, if error return it but proceed with the locking
+    //
+    [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                      withParameters:parameterInfo
+                                          andHeaders:headerInfo
+                                          completion:^(NSDictionary *responseInfo, NSError *revokeError) {
+                                              //
+                                              // Notify it
+                                              //
+                                              if(completion)
+                                              {
+                                                  completion(responseInfo, revokeError);
+                                              }
+                                              
+                                          }];
 }
 
 

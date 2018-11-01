@@ -444,6 +444,15 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 
+/**
+ *  Revoke tokens via asynchronous request.
+ *
+ *  @param completion The completion block that receives the results.
+ */
+- (void)revokeTokensWithCompletion:(MASResponseInfoErrorBlock)completion;
+
+
+
 # pragma mark - Debug only
 
 - (void)clearLocal;
