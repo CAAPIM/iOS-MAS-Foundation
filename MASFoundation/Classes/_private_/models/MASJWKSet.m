@@ -10,11 +10,12 @@
 
 #import "MASJWKSet.h"
 
-#import "MASJWTService.h"
 #import "MASConfiguration.h"
 #import "MASIKeyChainStore.h"
-#import "NSData+MASPrivate.h"
+#import "MASJWTService.h"
 #import "MASKeyChainService.h"
+
+#import "NSData+MASPrivate.h"
 
 
 # pragma mark - JSONWebKeySet Constants
@@ -25,7 +26,6 @@ static NSString *const MASJWKSetKeysKey = @"keys"; // value is Dictionary
 @implementation MASJWKSet
 
 static NSDictionary *_jsonWebKeySetInfo_;
-
 
 # pragma mark - Current Configuration
 
@@ -148,7 +148,6 @@ static NSDictionary *_jsonWebKeySetInfo_;
 
 
 # pragma mark - Properties
-
 
 - (NSArray *)jsonWebKeys
 {

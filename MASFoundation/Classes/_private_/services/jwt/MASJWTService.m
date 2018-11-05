@@ -11,8 +11,8 @@
 #import "MASJWTService.h"
 
 #import "JWT.h"
-#import "JWTCryptoKey.h"
 #import "JWTAlgorithmNone.h"
+#import "JWTCryptoKey.h"
 
 #import "MASAccessService.h"
 #import "MASConfigurationService.h"
@@ -24,6 +24,9 @@
 
 static BOOL _enableJWKSetLoading_ = NO;
 
+///--------------------------------------
+/// @name Properties
+///--------------------------------------
 
 # pragma mark - Properties
 
@@ -39,6 +42,10 @@ static BOOL _enableJWKSetLoading_ = NO;
 }
 
 
+///--------------------------------------
+/// @name Shared Service
+///-------------------------------------
+
 # pragma mark - Shared Service
 
 + (instancetype)sharedService
@@ -53,6 +60,10 @@ static BOOL _enableJWKSetLoading_ = NO;
     return sharedInstance;
 }
 
+
+///--------------------------------------
+/// @name Lifecycle
+///-------------------------------------
 
 # pragma mark - Lifecycle
 
@@ -119,6 +130,10 @@ static BOOL _enableJWKSetLoading_ = NO;
 }
 
 
+///--------------------------------------
+/// @name Public
+///--------------------------------------
+
 # pragma mark - Public
 
 - (NSString *)debugDescription
@@ -128,9 +143,11 @@ static BOOL _enableJWKSetLoading_ = NO;
 }
 
 
+///--------------------------------------
+/// @name Private
+///--------------------------------------
+
 # pragma mark - Private
-
-
 
 - (void)loadJWKSAsynchronously:(BOOL)async completion:(MASCompletionErrorBlock)completion {
  
@@ -276,6 +293,10 @@ static BOOL _enableJWKSetLoading_ = NO;
     }
 }
 
+
+///--------------------------------------
+/// @name Token Validation
+///--------------------------------------
 
 #pragma mark - Token Validation
 

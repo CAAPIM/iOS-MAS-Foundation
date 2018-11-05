@@ -8,16 +8,23 @@
 //  of the MIT license. See the LICENSE file for details.
 //
 
+#import "MASConstantsPrivate.h"
+#import "MASJWKSet.h"
 #import "MASService.h"
 
-#import "MASJWKSet.h"
-#import "MASConstantsPrivate.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+
 @interface MASJWTService : MASService
 
+///--------------------------------------
+/// @name Properties
+///--------------------------------------
+
+# pragma mark - Properties
 
 /**
  * The current JWKSet singleton.
@@ -25,6 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) MASJWKSet *currentJWKSet;
 
 
+
+///--------------------------------------
+/// @name Public
+///--------------------------------------
+
+# pragma mark - Public
 
 /**
  * Sets boolean indicator of enforcing JWKS loading upon MAS Start.
@@ -68,5 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     skipSignatureVerification:(BOOL)skipVerification error:(NSError *__autoreleasing *)error;
 
 @end
+
+
 
 NS_ASSUME_NONNULL_END
