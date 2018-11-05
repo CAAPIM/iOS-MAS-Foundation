@@ -39,6 +39,12 @@
 
 # pragma mark - Properties
 
++ (void)setKeychainSharingGroup:(NSString *)keychainSharingGroup
+{
+    [MASAccessService setKeychainSharingGroup:keychainSharingGroup];
+}
+
+
 + (void)setConfigurationFileName:(NSString *)fileName
 {
     [MASConfigurationService setConfigurationFileName:fileName];
@@ -209,7 +215,7 @@
         //
         //  If the device is registered, and id_token exists, which means MSSO can be used for this application
         //
-        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
+        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken] && [MASAccessService sharedService].currentAccessObj.accessToken == nil && [[MASAccessService sharedService].currentAccessObj.accessToken length] == 0)
         {
             //
             //  Register internal MFA

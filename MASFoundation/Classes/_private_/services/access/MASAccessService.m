@@ -59,6 +59,7 @@ NSString * const MASKeychainStorageKeyIsDeviceLocked = @"kMASAccessValueTypeIsDe
 NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType = @"kMASAccessValueTypeCurrentAuthCredentialsGrantType";
 NSString * const MASKeychainStorageKeyMASUserObjectData = @"kMASAccessValueTypeMASUserObjectData";
 NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendorId";
+NSString * const MASKeychainStorageKeyBundleIdentifiers = @"kMASKeychainStorageKeyBundleIdentifiers";
 
 
 @interface MASAccessService ()
@@ -86,10 +87,16 @@ NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendo
 @implementation MASAccessService
 
 static BOOL _isPKCEEnabled_ = YES;
-
 static BOOL _isKeychainSynchronizable_ = NO;
+static NSString *_keychainSharingGroupIdentifier_ = nil;
 
 # pragma mark - Properties
+
++ (void)setKeychainSharingGroup:(NSString *)keychainSharingGroup
+{
+    _keychainSharingGroupIdentifier_ = keychainSharingGroup;
+}
+
 
 + (BOOL)isPKCEEnabled
 {
@@ -192,7 +199,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
                            MASKeychainStorageKeyCurrentAuthCredentialsGrantType,
                            MASKeychainStorageKeyIsDeviceLocked,
                            MASKeychainStorageKeyMASUserObjectData,
-                           MASKeychainStorageKeyDeviceVendorId];
+                           MASKeychainStorageKeyDeviceVendorId,
+                           MASKeychainStorageKeyBundleIdentifiers];
     
     //
     // Retrieve gatewayUrl which is combination of hostname, port number, and prefix of the gateway.
@@ -254,6 +262,47 @@ static BOOL _isKeychainSynchronizable_ = NO;
         // For shared keychain, do not remove it as other apps via MSSO may access to those information.
         //
         [_storages[kMASAccessLocalStorageKey] removeAllItems];
+        
+        
+        //
+        //  Safety check for shared keychain storage
+        //  stores bundle identifier for the keychain sharing group, and if there is only one app installed into the shared storage
+        //  removes all data in shared keychain storage
+        //
+        NSData *bundleIdentifiers = [self getAccessValueDataWithStorageKey:MASKeychainStorageKeyBundleIdentifiers];
+        NSMutableSet *bundleIdentifierSet = [NSKeyedUnarchiver unarchiveObjectWithData:bundleIdentifiers];
+        
+        //
+        //  If some bundle identifiers found
+        //
+        if (bundleIdentifierSet != nil && [bundleIdentifierSet count] > 0)
+        {
+            //
+            //  If the only bundle identifier matches with current application, deletes
+            //
+            if ([bundleIdentifierSet containsObject:[[NSBundle mainBundle] bundleIdentifier]] && [bundleIdentifierSet count] == 1)
+            {
+                [_storages[kMASAccessSharedStorageKey] removeAllItems];
+            }
+            //
+            //  If there are other applications installed, add the current one on top
+            //
+            else if (![bundleIdentifierSet containsObject:[[NSBundle mainBundle] bundleIdentifier]] && [bundleIdentifierSet count] > 0) {
+                
+                [bundleIdentifierSet addObject:[[NSBundle mainBundle] bundleIdentifier]];
+                bundleIdentifiers = [NSKeyedArchiver archivedDataWithRootObject:bundleIdentifierSet];
+                [self setAccessValueData:bundleIdentifiers storageKey:MASKeychainStorageKeyBundleIdentifiers];
+            }
+        }
+        //
+        //  If no bundle identifier found
+        //
+        else {
+            bundleIdentifierSet = [NSMutableSet set];
+            [bundleIdentifierSet addObject:[[NSBundle mainBundle] bundleIdentifier]];
+            bundleIdentifiers = [NSKeyedArchiver archivedDataWithRootObject:bundleIdentifierSet];
+            [self setAccessValueData:bundleIdentifiers storageKey:MASKeychainStorageKeyBundleIdentifiers];
+        }
     }
     
     //
@@ -885,16 +934,24 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (!_accessGroup)
     {
-
-        NSString *groupSuffix = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"MSSOSDKKeychainGroup"];
-        _accessGroup = [self buildAccessGroup:groupSuffix];
+        //
+        //  if custom Keychain Sharing Group identifier is not defined; use the old default mechanism to generate one
+        //
+        if (_keychainSharingGroupIdentifier_ == nil)
+        {
+            NSString *groupSuffix = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"MSSOSDKKeychainGroup"];
+            _accessGroup = [self buildAccessGroup:groupSuffix];
+        }
+        else {
+            _accessGroup = [self buildAccessGroup:_keychainSharingGroupIdentifier_];
+        }
     }
     
     return _accessGroup;
 }
 
 
-- (NSString *)buildAccessGroup: (NSString*) groupSuffix {
+- (NSString *)buildAccessGroup:(NSString *)groupSuffix {
     
     NSDictionary *query = [NSDictionary dictionaryWithObjectsAndKeys:
                            (__bridge NSString *)kSecClassGenericPassword, (__bridge NSString *)kSecClass,
@@ -913,12 +970,12 @@ static BOOL _isKeychainSynchronizable_ = NO;
     NSMutableArray *components = (NSMutableArray *)[accessGroup componentsSeparatedByString:@"."];
     NSString *group;
     
-    if(components.count==1){
+    if (components.count==1) {
         group = nil;
-    }else if(groupSuffix == nil || groupSuffix.length==0){
+    } else if (groupSuffix == nil || groupSuffix.length==0) {
         [components replaceObjectAtIndex:components.count-1 withObject:@"singleSignOn"];
         group = [components componentsJoinedByString:@"."];
-    }else{
+    } else {
         group = [NSString stringWithFormat:@"%@.%@", [components objectAtIndex:0], groupSuffix];
     }
     
