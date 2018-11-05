@@ -2110,94 +2110,58 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:MASUserWillLogoutNotification object:self];
     
     //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    //
-    // Client Authorization
-    //
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if (clientAuthorization)
-    {
-        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    }
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-    
-    // Token Type Hint
-    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
-    
-    // Refresh Token
-    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
-    if (refreshToken)
-    {
-        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
-    }
-    
-    //
-    // Trigger the request
+    // Attempt to revoke access token
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    [[MASNetworkingService sharedService] deleteFrom:endPoint
-                                      withParameters:parameterInfo
-                                          andHeaders:headerInfo
-                                          completion:^(NSDictionary *responseInfo, NSError *error) {
-                                              //
-                                              // Detect if error, if so stop here
-                                              //
-                                              if (error)
-                                              {
-                                                  //
-                                                  // Post the notification
-                                                  //
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
-                                                  
-                                                  //
-                                                  // Clear currentUser object if forced
-                                                  //
-                                                  if(force)
-                                                  {
-                                                      [blockSelf clearCurrentUserForLogout];
-                                                  }
-                                                  
-                                                  //
-                                                  // Notify
-                                                  //
-                                                  if (blockCompletion)
-                                                  {
-                                                      blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-                                                  }
-                                                  return;
-                                              }
-                                              
-                                              //
-                                              // Clear currentUser object upon log-out
-                                              //
-                                              [blockSelf clearCurrentUserForLogout];
-                                              
-                                              //
-                                              // Post the notification
-                                              //
-                                              [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
-                                              
-                                              //
-                                              // Notify
-                                              //
-                                              if (blockCompletion)
-                                              {
-                                                  blockCompletion(YES, nil);
-                                              }
-                                          }];
+    [[MASAccessService sharedService] revokeTokensWithCompletion:^(NSDictionary *responseInfo, NSError *error) {
+        //
+        // Detect if error, if so stop here
+        //
+        if (error)
+        {
+            //
+            // Post the notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+            
+            //
+            // Clear currentUser object if forced
+            //
+            if(force)
+            {
+                [blockSelf clearCurrentUserForLogout];
+            }
+            
+            //
+            // Notify
+            //
+            if (blockCompletion)
+            {
+                blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+            }
+            return;
+        }
+        
+        //
+        // Clear currentUser object upon log-out
+        //
+        [blockSelf clearCurrentUserForLogout];
+        
+        //
+        // Post the notification
+        //
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+        
+        //
+        // Notify
+        //
+        if (blockCompletion)
+        {
+            blockCompletion(YES, nil);
+        }
+    }];
+    
 }
 
 

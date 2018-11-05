@@ -824,6 +824,30 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
+- (void)revokeAndRemoveTokens
+{
+    //
+    // Attempt to revoke access token
+    //
+    [[MASAccessService sharedService] revokeTokensWithCompletion:^(NSDictionary *responseInfo, NSError *revokeError) {
+        
+        //
+        // Nullify the tokens
+        //
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+        [self setAccessValueNumber:[NSNumber numberWithBool:YES] storageKey:MASKeychainStorageKeyIsDeviceLocked];
+        
+        //
+        // Refresh the currentAccessObj to reflect the current status
+        //
+        [[MASAccessService sharedService].currentAccessObj refresh];
+        
+    }];
+}
+
+
 # pragma mark - accessGroup
 
 - (BOOL)isAccessGroupAccessible
@@ -906,6 +930,30 @@ static BOOL _isKeychainSynchronizable_ = NO;
 
 
 # pragma mark - Public
+
+- (BOOL)isSessionLocked
+{
+    //
+    // Refresh the currentAccessObj to reflect the current status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // Obtain key chain items to determine device lock status
+    //
+    NSNumber *isLocked = [[MASAccessService sharedService] getAccessValueNumberWithStorageKey:MASKeychainStorageKeyIsDeviceLocked];
+    
+    if([isLocked boolValue] && [MASAccessService sharedService].currentAccessObj.accessToken)
+    {
+        //
+        // Revoke and clear the tokens, the session may be locked by other app
+        //
+        [self revokeAndRemoveTokens];
+    }
+    
+    return [isLocked boolValue];
+}
+
 
 - (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error
 {
@@ -990,20 +1038,14 @@ static BOOL _isKeychainSynchronizable_ = NO;
         }
     }
     //
-    // If it was successful to secure tokens with local authentication, nullify the tokens in unprotected keychain storage
+    // If it was successful to secure tokens with local authentication, try to revoke access token, and nullify the tokens in unprotected keychain storage
     //
     else {
-        
-        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
-        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
-        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
-        [self setAccessValueNumber:[NSNumber numberWithBool:YES] storageKey:MASKeychainStorageKeyIsDeviceLocked];
-        
         //
-        // Refresh the currentAccessObj to reflect the current status
+        // Try to revoke access token and remove tokens
         //
-        [[MASAccessService sharedService].currentAccessObj refresh];
-        
+        [self revokeAndRemoveTokens];
+
         success = YES;
     }
     
@@ -1306,6 +1348,51 @@ static BOOL _isKeychainSynchronizable_ = NO;
     }
     
     return isInternalData;
+}
+
+
+- (void)revokeTokensWithCompletion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    // Attempt to revoke access token
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
+    
+    //
+    // Request parameters
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if (clientAuthorization)
+    {
+        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    }
+    
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
+    
+    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
+    if (refreshToken)
+    {
+        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
+    }
+    
+    //
+    // Trigger revoke request, if error return it but proceed with the locking
+    //
+    [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                      withParameters:parameterInfo
+                                          andHeaders:headerInfo
+                                          completion:^(NSDictionary *responseInfo, NSError *revokeError) {
+                                              //
+                                              // Notify it
+                                              //
+                                              if(completion)
+                                              {
+                                                  completion(responseInfo, revokeError);
+                                              }
+                                              
+                                          }];
 }
 
 

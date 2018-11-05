@@ -396,6 +396,15 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
+ *  Return the current session's lock status
+ *
+ *  @return BOOL if the session is locked or not
+ */
+- (BOOL)isSessionLocked;
+
+
+
+/**
  Lock id_token, access_token, and refresh_token into secure keychain storage protected by device's local authentication (passcode and/or fingerprint)
 
  @param error NSError object that may occur during the process
@@ -432,6 +441,15 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  @return BOOL result of whether the key is reserved or not by internal system data
  */
 - (BOOL)isInternalDataForStorageKey:(NSString *)storageKey;
+
+
+
+/**
+ *  Revoke tokens via asynchronous request.
+ *
+ *  @param completion The completion block that receives the results.
+ */
+- (void)revokeTokensWithCompletion:(MASResponseInfoErrorBlock)completion;
 
 
 
