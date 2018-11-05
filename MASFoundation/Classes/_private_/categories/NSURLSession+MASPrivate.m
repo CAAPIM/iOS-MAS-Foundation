@@ -13,6 +13,7 @@
 
 @implementation NSURLSession (MASPrivate)
 
+
 + (NSData *)requestSynchronousData:(NSURLRequest *)request
 {
     __block NSData *data = nil;
@@ -31,12 +32,14 @@
     return data;
 }
 
+
 + (NSData *)requestSynchronousDataWithURLString:(NSString *)requestString
 {
     NSURL *url = [NSURL URLWithString:requestString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     return [self requestSynchronousData:request];
 }
+
 
 + (NSDictionary *)requestSynchronousJSON:(NSURLRequest *)request
 {
@@ -45,6 +48,7 @@
     NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&e];
     return jsonData;
 }
+
 
 + (NSDictionary *)requestSynchronousJSONWithURLString:(NSString *)requestString
 {
