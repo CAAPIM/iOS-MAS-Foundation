@@ -181,16 +181,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 + (void)loginWithUserName:(NSString *)userName password:(NSString *)password completion:(MASCompletionErrorBlock)completion
 {
-    //
-    //  If the user session has already been authenticated, throw an error.
-    //
-    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
-    {
-        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
-        
-        return;
-    }
-    
     MASAuthCredentialsPassword *authCredentials = [MASAuthCredentialsPassword initWithUsername:userName password:password];
     [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
@@ -198,16 +188,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 + (void)loginWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion
 {
-    //
-    //  If the user session has already been authenticated, throw an error.
-    //
-    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
-    {
-        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
-        
-        return;
-    }
-    
     MASAuthCredentialsAuthorizationCode *authCredentials = [MASAuthCredentialsAuthorizationCode initWithAuthorizationCode:authorizationCode];
     [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
@@ -215,16 +195,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 + (void)loginWithIdToken:(NSString *_Nonnull)idToken tokenType:(NSString *_Nonnull)tokenType completion:(MASCompletionErrorBlock _Nullable)completion
 {
-    //
-    //  If the user session has already been authenticated, throw an error.
-    //
-    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
-    {
-        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
-        
-        return;
-    }
-    
     MASAuthCredentialsJWT *authCredentials = [MASAuthCredentialsJWT initWithJWT:idToken tokenType:tokenType];
     [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
@@ -232,16 +202,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 + (void)loginWithAuthCredentials:(MASAuthCredentials *_Nonnull)authCredentials completion:(MASCompletionErrorBlock _Nullable)completion
 {
-    //
-    //  If the user session has already been authenticated, throw an error.
-    //
-    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
-    {
-        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
-        
-        return;
-    }
-    
     [[MASModelService sharedService] validateCurrentUserSessionWithAuthCredentials:authCredentials completion:completion];
 }
 
@@ -251,13 +211,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     if(![MASModelService browserBasedAuthentication])
     {
         if(completion) completion(NO, [NSError errorBrowserBasedAuthenticaionNotEnabled]);
-        return;
-    }
-    
-    if ([MASUser currentUser] && [MASUser currentUser].isAuthenticated)
-    {
-        if(completion) completion(NO, [NSError errorUserAlreadyAuthenticated]);
-        
         return;
     }
     
