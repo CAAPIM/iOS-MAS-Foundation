@@ -13,6 +13,7 @@
 #import "NSData+MASPrivate.h"
 #import "MASIKeyChainStore.h"
 #import "MASIKeyChainStore+MASPrivate.h"
+#import "MASJWTService.h"
 #import "MASSecurityService.h"
 
 #import <LocalAuthentication/LocalAuthentication.h>
@@ -1278,6 +1279,42 @@ static NSString *_keychainSharingGroupIdentifier_ = nil;
         //
         if (![encodedSignedInput isEqualToString:[MASAccessService padding:signature]])
         {
+            if (error)
+            {
+                *error = [NSError errorIdTokenInvalidSignature];
+            }
+            return NO;
+        }
+    }
+    else if ([[headerDictionary objectForKey:@"alg"] isEqualToString:@"RS256"])
+    {
+        
+        //
+        // Check keyId exists.
+        //
+        if (![[headerDictionary allKeys] containsObject:@"kid"])
+        {
+            if (error)
+            {
+                *error = [NSError errorIdTokenInvalidSignature];
+            }
+            return NO;
+        }
+        
+        //
+        // Check signature.
+        //
+        NSDictionary *headerAndPayloadDictionary =
+            [[MASJWTService sharedService] decodeToken:idToken
+                                      keyId:headerDictionary[@"kid"]
+                             skipSignatureVerification:NO error:error];
+        
+        //
+        // signature Doesn't match.
+        //
+        BOOL signatureVerified = (headerAndPayloadDictionary != nil);
+        if (!signatureVerified) {
+         
             if (error)
             {
                 *error = [NSError errorIdTokenInvalidSignature];

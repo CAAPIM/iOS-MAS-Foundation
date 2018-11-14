@@ -121,6 +121,20 @@
     if(configuration) [self setLocalData:configurationData forKey:kMASKeyChainConfiguration];
 }
 
+# pragma mark - JWKSet
+
+- (NSDictionary *)jsonWebKeySet
+{
+    NSData *jsonWebKeySetData = [_localStorage dataForKey:kMASKeyChainJWKSet];
+    
+    return (jsonWebKeySetData ? [NSKeyedUnarchiver unarchiveObjectWithData:jsonWebKeySetData] : nil);
+}
+- (void)setJsonWebKeySet:(NSDictionary *)jsonWebKeySet
+{
+    NSData *jsonWebKeySetData = [NSKeyedArchiver archivedDataWithRootObject:jsonWebKeySet];
+    
+    if(jsonWebKeySet) [self setLocalData:jsonWebKeySetData forKey:kMASKeyChainJWKSet];
+}
 
 # pragma mark - Local
 

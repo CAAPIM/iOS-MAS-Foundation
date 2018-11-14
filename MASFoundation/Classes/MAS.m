@@ -10,6 +10,7 @@
 
 #import "MAS.h"
 
+#import "MASJWTService.h"
 #import "MASAccessService.h"
 #import "MASBluetoothService.h"
 #import "MASConfigurationService.h"
@@ -72,6 +73,18 @@
 + (BOOL)isIdTokenValidationEnabled
 {
     return [MASConfigurationService isIdTokenValidationEnabled];
+}
+
+
++ (void)enableJWKSetLoading:(BOOL)enable
+{
+    [MASJWTService enableJWKSetLoading:enable];
+}
+
+
++ (BOOL)isJWKSetLoadingEnabled
+{
+    return [MASJWTService isJWKSetLoadingEnabled];
 }
 
 
