@@ -1,14 +1,14 @@
 # Version 1.9.00
 
 ### New features
-- The Mobile SDK now supports client side validation for RS256 type of id_token. [US542359]
-- The Mobile SDK now supports SSO with different bundle identifier structure. [US552675]
-- The Mobile SDK now an ability to add customized meta data to the registered device. [US507853] 
+- The Mobile SDK now supports client-side validation of ID tokens signed with RS256. [US542359]
+- The Mobile SDK now allows SSO between apps that use different bundle identifier structures. [US552675]
+- The Mobile SDK now lets you add customized metadata to the registered device. [US507853]
 
 ### Bug fixes
-- The Mobile SDK improves device registration experience, and changes device identifier generation from The Mobile SDK. The previously registered device upgrading to the new version of The Mobile SDK will not be impacted, and persist registration status [US552675]
-- The Mobile SDK response serialization was set to JSON by default when response type was set to Unknown. The Mobile SDK now response data as in bytes array by default. [DE389481]
-- The Mobile SDK now revokes token(s) against OTK upon locking user session with local authentication. [DE386922]
+- The Mobile SDK improves the device registration experience, and changes device identifier generation in the Mobile SDK. Registered devices that are upgraded to version 1.9.00 will not be impacted, and registration status is persisted. [US552675]
+- The Mobile SDK default response serialization was previously set to JSON when response type was set to Unknown. The new default for response data is in byte arrays. [DE389481]
+- The Mobile SDK now revokes token(s) against OTK upon locking the user session with local authentication. [DE386922]
 
 # Version 1.8.00
 
