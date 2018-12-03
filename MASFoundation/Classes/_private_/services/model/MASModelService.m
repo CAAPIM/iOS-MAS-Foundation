@@ -2419,6 +2419,19 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 
 - (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
 {
+    //
+    //  Validate if the current session is locked
+    //
+    if ([MASUser currentUser].isSessionLocked)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
+        }
+        
+        return;
+    }
+    
     __block MASCompletionErrorBlock blockCompletion = completion;
     __block MASAuthCredentials *blockAuthCredentials = authCredentials;
     __block MASModelService *blockSelf = self;
