@@ -58,12 +58,11 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
     MASAccessService *accessService = [MASAccessService sharedService];
     
     NSString *vendorIdFromKeychain = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyDeviceVendorId];
-    NSString *vendorIdCurrent = [MASDevice deviceVendorId];
 
     //
-    // Check if the vendorId in Keychain macth with current vendorId
+    // Check if the device identifier exists
     //
-    if ([vendorIdCurrent isEqualToString:vendorIdFromKeychain])
+    if (vendorIdFromKeychain != nil && [vendorIdFromKeychain length] > 0)
     {
         NSString *magIdentifier = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier];
         NSData *certificateData = [accessService getAccessValueCertificateWithStorageKey:MASKeychainStorageKeySignedPublicCertificate];
@@ -198,6 +197,58 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 - (void)stopAsBluetoothCentral
 {
     [[MASBluetoothService sharedService].central stopScanning];
+}
+
+
+# pragma mark - Device Metadata
+
+- (void)addAttribute:(NSString *_Nonnull)name value:(NSString *)value completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Prepare the payload
+    //
+    NSDictionary *attribute = @{@"name":name, @"value":value};
+    
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] addAttribute:attribute completion:completion];
+}
+
+
+- (void)removeAttribute:(NSString *)name completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] removeAttribute:name completion:completion];
+}
+
+
+- (void)removeAllAttributes:(MASCompletionErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] removeAllAttributes:completion];
+}
+
+
+- (void)getAttribute:(NSString *)name completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] getAttribute:name completion:completion];
+}
+
+
+- (void)getAttributes:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Pass through to the service
+    //
+    [[MASModelService sharedService] getAttributes:completion];
 }
 
 

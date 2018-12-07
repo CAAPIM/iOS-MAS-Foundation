@@ -31,6 +31,21 @@
 
 # pragma mark - Properties
 
+
+/**
+ Sets Keychain Sharing Group identifier that Mobile SDK will store, and access shared credentials with other applications.
+ If null value passed in, or it has never been configure prior to SDK initialization, the application's bundle identifier replaced last portion with 'singleSignOn' will be used.
+ 
+ i.e. if the application's bundle identifier is 'com.ca.mag.iosapplication', then Keychain Sharing Group, by default, will be 'com.ca.mag.singleSignOn' unless otherwsie specified with this method.
+ 
+ @warning *Important:* Keychain Sharing Group must be set before SDK initialization as group identifier will be used, and set as part of SDK initialization, and highly recommend this only once.
+
+ @param sharedKeychainGroup NSString value of Keychain Sharing Group identifier
+ */
++ (void)setKeychainSharingGroup:(NSString *_Nonnull)keychainSharingGroup;
+
+
+
 /**
  *  Set the name of the configuration file.  This gives the ability to set the file's name
  *  to a custom value.
@@ -87,6 +102,34 @@
  */
 + (BOOL)isIdTokenValidationEnabled;
 
+
+
+/**
+ Sets boolean indicator of enforcing JWKS loading upon MAS Start.
+ JWK Set - A JSON object that represents a set of JWKs.
+ JWK -  A JSON object that represents a cryptographic key.
+        The members of the object represent properties of the key, including its value.
+ 
+ By default, JWKSet loading is disabled.
+ 
+ @param enable BOOL value of indicating whether JWKSet loading is enabled or not.
+ */
++ (void)enableJWKSetLoading:(BOOL)enable;
+
+
+
+/**
+ Gets boolean indicator of enforcing JWKS loading upon MAS Start.
+ JWK Set - A JSON object that represents a set of JWKs.
+ JWK -  A JSON object that represents a cryptographic key.
+ The members of the object represent properties of the key, including its value.
+ 
+ By default, JWKSet loading is disabled.
+ 
+ @return BOOL value of indicating whether JWKSet loading is enabled or not.
+ */
++ (BOOL)isJWKSetLoadingEnabled;
+    
 
 
 /**

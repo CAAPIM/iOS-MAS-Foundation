@@ -10,6 +10,7 @@
 
 #import "MAS.h"
 
+#import "MASJWTService.h"
 #import "MASAccessService.h"
 #import "MASBluetoothService.h"
 #import "MASConfigurationService.h"
@@ -39,6 +40,12 @@
 
 # pragma mark - Properties
 
++ (void)setKeychainSharingGroup:(NSString *)keychainSharingGroup
+{
+    [MASAccessService setKeychainSharingGroup:keychainSharingGroup];
+}
+
+
 + (void)setConfigurationFileName:(NSString *)fileName
 {
     [MASConfigurationService setConfigurationFileName:fileName];
@@ -66,6 +73,18 @@
 + (BOOL)isIdTokenValidationEnabled
 {
     return [MASConfigurationService isIdTokenValidationEnabled];
+}
+
+
++ (void)enableJWKSetLoading:(BOOL)enable
+{
+    [MASJWTService enableJWKSetLoading:enable];
+}
+
+
++ (BOOL)isJWKSetLoadingEnabled
+{
+    return [MASJWTService isJWKSetLoadingEnabled];
 }
 
 
@@ -209,7 +228,7 @@
         //
         //  If the device is registered, and id_token exists, which means MSSO can be used for this application
         //
-        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken])
+        else if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken] && [MASAccessService sharedService].currentAccessObj.accessToken == nil && [[MASAccessService sharedService].currentAccessObj.accessToken length] == 0)
         {
             //
             //  Register internal MFA

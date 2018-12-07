@@ -13,6 +13,7 @@
 #import "NSData+MASPrivate.h"
 #import "MASIKeyChainStore.h"
 #import "MASIKeyChainStore+MASPrivate.h"
+#import "MASJWTService.h"
 #import "MASSecurityService.h"
 
 #import <LocalAuthentication/LocalAuthentication.h>
@@ -59,6 +60,7 @@ NSString * const MASKeychainStorageKeyIsDeviceLocked = @"kMASAccessValueTypeIsDe
 NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType = @"kMASAccessValueTypeCurrentAuthCredentialsGrantType";
 NSString * const MASKeychainStorageKeyMASUserObjectData = @"kMASAccessValueTypeMASUserObjectData";
 NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendorId";
+NSString * const MASKeychainStorageKeyBundleIdentifiers = @"kMASKeychainStorageKeyBundleIdentifiers";
 
 
 @interface MASAccessService ()
@@ -86,10 +88,16 @@ NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendo
 @implementation MASAccessService
 
 static BOOL _isPKCEEnabled_ = YES;
-
 static BOOL _isKeychainSynchronizable_ = NO;
+static NSString *_keychainSharingGroupIdentifier_ = nil;
 
 # pragma mark - Properties
+
++ (void)setKeychainSharingGroup:(NSString *)keychainSharingGroup
+{
+    _keychainSharingGroupIdentifier_ = keychainSharingGroup;
+}
+
 
 + (BOOL)isPKCEEnabled
 {
@@ -192,7 +200,8 @@ static BOOL _isKeychainSynchronizable_ = NO;
                            MASKeychainStorageKeyCurrentAuthCredentialsGrantType,
                            MASKeychainStorageKeyIsDeviceLocked,
                            MASKeychainStorageKeyMASUserObjectData,
-                           MASKeychainStorageKeyDeviceVendorId];
+                           MASKeychainStorageKeyDeviceVendorId,
+                           MASKeychainStorageKeyBundleIdentifiers];
     
     //
     // Retrieve gatewayUrl which is combination of hostname, port number, and prefix of the gateway.
@@ -254,6 +263,47 @@ static BOOL _isKeychainSynchronizable_ = NO;
         // For shared keychain, do not remove it as other apps via MSSO may access to those information.
         //
         [_storages[kMASAccessLocalStorageKey] removeAllItems];
+        
+        
+        //
+        //  Safety check for shared keychain storage
+        //  stores bundle identifier for the keychain sharing group, and if there is only one app installed into the shared storage
+        //  removes all data in shared keychain storage
+        //
+        NSData *bundleIdentifiers = [self getAccessValueDataWithStorageKey:MASKeychainStorageKeyBundleIdentifiers];
+        NSMutableSet *bundleIdentifierSet = [NSKeyedUnarchiver unarchiveObjectWithData:bundleIdentifiers];
+        
+        //
+        //  If some bundle identifiers found
+        //
+        if (bundleIdentifierSet != nil && [bundleIdentifierSet count] > 0)
+        {
+            //
+            //  If the only bundle identifier matches with current application, deletes
+            //
+            if ([bundleIdentifierSet containsObject:[[NSBundle mainBundle] bundleIdentifier]] && [bundleIdentifierSet count] == 1)
+            {
+                [_storages[kMASAccessSharedStorageKey] removeAllItems];
+            }
+            //
+            //  If there are other applications installed, add the current one on top
+            //
+            else if (![bundleIdentifierSet containsObject:[[NSBundle mainBundle] bundleIdentifier]] && [bundleIdentifierSet count] > 0) {
+                
+                [bundleIdentifierSet addObject:[[NSBundle mainBundle] bundleIdentifier]];
+                bundleIdentifiers = [NSKeyedArchiver archivedDataWithRootObject:bundleIdentifierSet];
+                [self setAccessValueData:bundleIdentifiers storageKey:MASKeychainStorageKeyBundleIdentifiers];
+            }
+        }
+        //
+        //  If no bundle identifier found
+        //
+        else {
+            bundleIdentifierSet = [NSMutableSet set];
+            [bundleIdentifierSet addObject:[[NSBundle mainBundle] bundleIdentifier]];
+            bundleIdentifiers = [NSKeyedArchiver archivedDataWithRootObject:bundleIdentifierSet];
+            [self setAccessValueData:bundleIdentifiers storageKey:MASKeychainStorageKeyBundleIdentifiers];
+        }
     }
     
     //
@@ -824,6 +874,30 @@ static BOOL _isKeychainSynchronizable_ = NO;
 }
 
 
+- (void)revokeAndRemoveTokens
+{
+    //
+    // Attempt to revoke access token
+    //
+    [[MASAccessService sharedService] revokeTokensWithCompletion:^(NSDictionary *responseInfo, NSError *revokeError) {
+        
+        //
+        // Nullify the tokens
+        //
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
+        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
+        [self setAccessValueNumber:[NSNumber numberWithBool:YES] storageKey:MASKeychainStorageKeyIsDeviceLocked];
+        
+        //
+        // Refresh the currentAccessObj to reflect the current status
+        //
+        [[MASAccessService sharedService].currentAccessObj refresh];
+        
+    }];
+}
+
+
 # pragma mark - accessGroup
 
 - (BOOL)isAccessGroupAccessible
@@ -861,16 +935,24 @@ static BOOL _isKeychainSynchronizable_ = NO;
     //
     if (!_accessGroup)
     {
-
-        NSString *groupSuffix = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"MSSOSDKKeychainGroup"];
-        _accessGroup = [self buildAccessGroup:groupSuffix];
+        //
+        //  if custom Keychain Sharing Group identifier is not defined; use the old default mechanism to generate one
+        //
+        if (_keychainSharingGroupIdentifier_ == nil)
+        {
+            NSString *groupSuffix = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"MSSOSDKKeychainGroup"];
+            _accessGroup = [self buildAccessGroup:groupSuffix];
+        }
+        else {
+            _accessGroup = [self buildAccessGroup:_keychainSharingGroupIdentifier_];
+        }
     }
     
     return _accessGroup;
 }
 
 
-- (NSString *)buildAccessGroup: (NSString*) groupSuffix {
+- (NSString *)buildAccessGroup:(NSString *)groupSuffix {
     
     NSDictionary *query = [NSDictionary dictionaryWithObjectsAndKeys:
                            (__bridge NSString *)kSecClassGenericPassword, (__bridge NSString *)kSecClass,
@@ -889,12 +971,12 @@ static BOOL _isKeychainSynchronizable_ = NO;
     NSMutableArray *components = (NSMutableArray *)[accessGroup componentsSeparatedByString:@"."];
     NSString *group;
     
-    if(components.count==1){
+    if (components.count==1) {
         group = nil;
-    }else if(groupSuffix == nil || groupSuffix.length==0){
+    } else if (groupSuffix == nil || groupSuffix.length==0) {
         [components replaceObjectAtIndex:components.count-1 withObject:@"singleSignOn"];
         group = [components componentsJoinedByString:@"."];
-    }else{
+    } else {
         group = [NSString stringWithFormat:@"%@.%@", [components objectAtIndex:0], groupSuffix];
     }
     
@@ -906,6 +988,30 @@ static BOOL _isKeychainSynchronizable_ = NO;
 
 
 # pragma mark - Public
+
+- (BOOL)isSessionLocked
+{
+    //
+    // Refresh the currentAccessObj to reflect the current status
+    //
+    [[MASAccessService sharedService].currentAccessObj refresh];
+    
+    //
+    // Obtain key chain items to determine device lock status
+    //
+    NSNumber *isLocked = [[MASAccessService sharedService] getAccessValueNumberWithStorageKey:MASKeychainStorageKeyIsDeviceLocked];
+    
+    if([isLocked boolValue] && [MASAccessService sharedService].currentAccessObj.accessToken)
+    {
+        //
+        // Revoke and clear the tokens, the session may be locked by other app
+        //
+        [self revokeAndRemoveTokens];
+    }
+    
+    return [isLocked boolValue];
+}
+
 
 - (BOOL)lockSession:(NSError * __nullable __autoreleasing * __nullable)error
 {
@@ -990,20 +1096,14 @@ static BOOL _isKeychainSynchronizable_ = NO;
         }
     }
     //
-    // If it was successful to secure tokens with local authentication, nullify the tokens in unprotected keychain storage
+    // If it was successful to secure tokens with local authentication, try to revoke access token, and nullify the tokens in unprotected keychain storage
     //
     else {
-        
-        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
-        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
-        [self setAccessValueString:nil storageKey:MASKeychainStorageKeyIdToken];
-        [self setAccessValueNumber:[NSNumber numberWithBool:YES] storageKey:MASKeychainStorageKeyIsDeviceLocked];
-        
         //
-        // Refresh the currentAccessObj to reflect the current status
+        // Try to revoke access token and remove tokens
         //
-        [[MASAccessService sharedService].currentAccessObj refresh];
-        
+        [self revokeAndRemoveTokens];
+
         success = YES;
     }
     
@@ -1186,6 +1286,42 @@ static BOOL _isKeychainSynchronizable_ = NO;
             return NO;
         }
     }
+    else if ([[headerDictionary objectForKey:@"alg"] isEqualToString:@"RS256"])
+    {
+        
+        //
+        // Check keyId exists.
+        //
+        if (![[headerDictionary allKeys] containsObject:@"kid"])
+        {
+            if (error)
+            {
+                *error = [NSError errorIdTokenInvalidSignature];
+            }
+            return NO;
+        }
+        
+        //
+        // Check signature.
+        //
+        NSDictionary *headerAndPayloadDictionary =
+            [[MASJWTService sharedService] decodeToken:idToken
+                                      keyId:headerDictionary[@"kid"]
+                             skipSignatureVerification:NO error:error];
+        
+        //
+        // signature Doesn't match.
+        //
+        BOOL signatureVerified = (headerAndPayloadDictionary != nil);
+        if (!signatureVerified) {
+         
+            if (error)
+            {
+                *error = [NSError errorIdTokenInvalidSignature];
+            }
+            return NO;
+        }
+    }
     else {
         if (error)
         {
@@ -1306,6 +1442,51 @@ static BOOL _isKeychainSynchronizable_ = NO;
     }
     
     return isInternalData;
+}
+
+
+- (void)revokeTokensWithCompletion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    // Attempt to revoke access token
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
+    
+    //
+    // Request parameters
+    //
+    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
+    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
+    if (clientAuthorization)
+    {
+        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
+    }
+    
+    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
+    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
+    
+    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
+    if (refreshToken)
+    {
+        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
+    }
+    
+    //
+    // Trigger revoke request, if error return it but proceed with the locking
+    //
+    [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                      withParameters:parameterInfo
+                                          andHeaders:headerInfo
+                                          completion:^(NSDictionary *responseInfo, NSError *revokeError) {
+                                              //
+                                              // Notify it
+                                              //
+                                              if(completion)
+                                              {
+                                                  completion(responseInfo, revokeError);
+                                              }
+                                              
+                                          }];
 }
 
 

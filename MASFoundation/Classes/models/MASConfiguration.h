@@ -62,6 +62,12 @@
 
 
 /**
+ * The name of the algorithm that was used to sign the idToken.
+ */
+@property (nonatomic, strong, readonly, nonnull) NSString *idTokenSignedResponseAlgo;
+
+
+/**
  * The public server certificate of the Gateway as obtained from the configuration.
  */
 @property (nonatomic, copy, readonly, nullable) NSArray<NSString *> *gatewayCertificates;
@@ -243,6 +249,7 @@
 @property (nonatomic, copy, readonly, nullable) NSString *deviceRegisterClientEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *deviceRenewEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *deviceRemoveEndpointPath;
+@property (nonatomic, copy, readonly, nullable) NSString *deviceMetadataEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *enterpriseBrowserEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *tokenEndpointPath;
 @property (nonatomic, copy, readonly, nullable) NSString *tokenRevokeEndpointPath;

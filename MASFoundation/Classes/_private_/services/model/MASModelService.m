@@ -1384,6 +1384,237 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 }
 
 
+- (void)addAttribute:(NSDictionary *)attribute completion:(MASObjectResponseErrorBlock)completion
+{    
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+
+    //
+    // Retrieve a mutable version of the header info, create a new one if nil
+    //
+    // We must guarantee standard security headers are added here
+    //
+    MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
+
+    //
+    // Trigger the request
+    //
+    __block MASObjectResponseErrorBlock blockCompletion = completion;
+    [[MASNetworkingService sharedService] putTo:endPoint
+                                withParameters:attribute
+                                    andHeaders:mutableHeaderInfo
+                                    completion:^(NSDictionary *responseInfo, NSError *error) {
+                                          //
+                                          // Detect if error, if so stop here
+                                          //
+                                          if (error)
+                                          {
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+                                              }
+                                              return;
+                                          }
+                                        
+                                          //
+                                          // Notify
+                                          //
+                                          if (blockCompletion)
+                                          {
+                                              blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], nil);
+                                          }
+                                      }
+     ];
+}
+
+
+- (void)removeAttribute:(NSString *)name completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+
+    //
+    // Build URL
+    //
+    name = [name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
+    
+    [self removeAttributeWithEndpoint:resourcePath completion:completion];
+}
+
+
+- (void)removeAllAttributes:(MASCompletionErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    
+    [self removeAttributeWithEndpoint:endPoint completion:completion];
+}
+
+
+/*
+ * Remove attributes for the current device using the given endpoint
+ *
+ * @param endPoint NSString containing the path for the attribute to be removed or default path to remove all attributes
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)removeAttributeWithEndpoint:(NSString *)endPoint completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Retrieve a mutable version of the header info, create a new one if nil
+    //
+    // We must guarantee standard security headers are added here
+    //
+    MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
+    
+    //
+    // Trigger the request
+    //
+    __block MASCompletionErrorBlock blockCompletion = completion;
+    [[MASNetworkingService sharedService] deleteFrom:endPoint
+                                      withParameters:nil
+                                          andHeaders:mutableHeaderInfo
+                                         requestType:MASRequestResponseTypeWwwFormUrlEncoded
+                                        responseType:MASRequestResponseTypeTextPlain
+                                          completion:^(NSDictionary *responseInfo, NSError *error) {
+                                              
+                                              //
+                                              // Detect if error, if so stop here
+                                              //
+                                              if (error)
+                                              {
+                                                  NSError *apiError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
+                                                  
+                                                  //
+                                                  // Notify
+                                                  //
+                                                  if (blockCompletion)
+                                                  {
+                                                      //
+                                                      // If error was found with 1016156: no attrbiute found, ignore the error
+                                                      //
+                                                      if (apiError.code == 1016156)
+                                                      {
+                                                          blockCompletion(YES, nil);
+                                                      }
+                                                      else {
+                                                          blockCompletion(NO, apiError);
+                                                      }
+                                                  }
+                                                  return;
+                                              }
+                                              
+                                              //
+                                              // Notify
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(YES, nil);
+                                              }
+                                          }
+     ];
+}
+
+
+- (void)getAttribute:(NSString *)name completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    
+    //
+    // Build URL
+    //
+    name = [name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    NSString *resourcePath = [endPoint stringByAppendingString:[NSString stringWithFormat:@"/%@", name]];
+    
+    [self getAttributeWithEndpoint:resourcePath completion:completion];
+}
+
+
+- (void)getAttributes:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Endpoint
+    //
+    NSString *endPoint = [MASConfiguration currentConfiguration].deviceMetadataEndpointPath;
+    
+    [self getAttributeWithEndpoint:endPoint completion:completion];
+}
+
+
+/*
+ * Get attributes for the current device using the given endpoint
+ *
+ * @param endPoint NSString containing the path for the attribute to be retrieved or default path to retrieve all attributes
+ * @param completion The MASCompletionErrorBlock (BOOL completed, NSError *error) block that receives the results.
+ */
+- (void)getAttributeWithEndpoint:(NSString *)endPoint completion:(MASObjectResponseErrorBlock)completion
+{
+    //
+    // Retrieve a mutable version of the header info, create a new one if nil
+    //
+    // We must guarantee standard security headers are added here
+    //
+    MASIMutableOrderedDictionary *mutableHeaderInfo = [MASIMutableOrderedDictionary new];
+    
+    //
+    // Trigger the request
+    //
+    __block MASObjectResponseErrorBlock blockCompletion = completion;
+    [[MASNetworkingService sharedService] getFrom:endPoint
+                                   withParameters:nil
+                                       andHeaders:mutableHeaderInfo
+                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+                                        
+                                           //
+                                           // Detect if error, if so stop here
+                                           //
+                                           if (error)
+                                           {
+                                               NSError *apiError = [NSError errorFromApiResponseInfo:responseInfo andError:error];
+                                               
+                                               //
+                                               // Notify
+                                               //
+                                               if (blockCompletion)
+                                               {
+                                                   //
+                                                   // If error was found with 1016156: no attrbiute found, ignore the error
+                                                   //
+                                                   if (apiError.code == 1016156)
+                                                   {
+                                                       blockCompletion([NSDictionary dictionary], nil);
+                                                   }
+                                                   else {
+                                                       blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], apiError);
+                                                   }
+                                               }
+                                               return;
+                                           }
+                                           
+                                           //
+                                           // Notify
+                                           //
+                                           if (blockCompletion)
+                                           {
+                                               blockCompletion([responseInfo objectForKey:MASResponseInfoBodyInfoKey], nil);
+                                           }
+                                       }
+     ];
+}
+
+
 # pragma mark - Login & Logout
 
 - (void)loginUsingUserCredentials:(MASCompletionErrorBlock)completion
@@ -1879,94 +2110,58 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:MASUserWillLogoutNotification object:self];
     
     //
-    // Endpoint
-    //
-    NSString *endPoint = [MASConfiguration currentConfiguration].tokenRevokeEndpointPath;
-    
-    //
-    // Headers
-    //
-    MASIMutableOrderedDictionary *headerInfo = [MASIMutableOrderedDictionary new];
-    
-    //
-    // Client Authorization
-    //
-    NSString *clientAuthorization = [[MASApplication currentApplication] clientAuthorizationBasicHeaderValue];
-    if (clientAuthorization)
-    {
-        headerInfo[MASAuthorizationRequestResponseKey] = clientAuthorization;
-    }
-    
-    //
-    // Parameters
-    //
-    MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
-    
-    // Token Type Hint
-    parameterInfo[MASTokenTypeHintRequestResponseKey] = @"refresh_token";
-    
-    // Refresh Token
-    NSString *refreshToken = [MASAccessService sharedService].currentAccessObj.refreshToken;
-    if (refreshToken)
-    {
-        parameterInfo[MASTokenRequestResponseKey] = refreshToken;
-    }
-    
-    //
-    // Trigger the request
+    // Attempt to revoke access token
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    [[MASNetworkingService sharedService] deleteFrom:endPoint
-                                      withParameters:parameterInfo
-                                          andHeaders:headerInfo
-                                          completion:^(NSDictionary *responseInfo, NSError *error) {
-                                              //
-                                              // Detect if error, if so stop here
-                                              //
-                                              if (error)
-                                              {
-                                                  //
-                                                  // Post the notification
-                                                  //
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
-                                                  
-                                                  //
-                                                  // Clear currentUser object if forced
-                                                  //
-                                                  if(force)
-                                                  {
-                                                      [blockSelf clearCurrentUserForLogout];
-                                                  }
-                                                  
-                                                  //
-                                                  // Notify
-                                                  //
-                                                  if (blockCompletion)
-                                                  {
-                                                      blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
-                                                  }
-                                                  return;
-                                              }
-                                              
-                                              //
-                                              // Clear currentUser object upon log-out
-                                              //
-                                              [blockSelf clearCurrentUserForLogout];
-                                              
-                                              //
-                                              // Post the notification
-                                              //
-                                              [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
-                                              
-                                              //
-                                              // Notify
-                                              //
-                                              if (blockCompletion)
-                                              {
-                                                  blockCompletion(YES, nil);
-                                              }
-                                          }];
+    [[MASAccessService sharedService] revokeTokensWithCompletion:^(NSDictionary *responseInfo, NSError *error) {
+        //
+        // Detect if error, if so stop here
+        //
+        if (error)
+        {
+            //
+            // Post the notification
+            //
+            [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidFailToLogoutNotification object:blockSelf];
+            
+            //
+            // Clear currentUser object if forced
+            //
+            if(force)
+            {
+                [blockSelf clearCurrentUserForLogout];
+            }
+            
+            //
+            // Notify
+            //
+            if (blockCompletion)
+            {
+                blockCompletion(NO, [NSError errorFromApiResponseInfo:responseInfo andError:error]);
+            }
+            return;
+        }
+        
+        //
+        // Clear currentUser object upon log-out
+        //
+        [blockSelf clearCurrentUserForLogout];
+        
+        //
+        // Post the notification
+        //
+        [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidLogoutNotification object:blockSelf];
+        
+        //
+        // Notify
+        //
+        if (blockCompletion)
+        {
+            blockCompletion(YES, nil);
+        }
+    }];
+    
 }
 
 
@@ -2224,6 +2419,19 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 
 - (void)validateCurrentUserSessionWithAuthCredentials:(MASAuthCredentials *)authCredentials completion:(MASCompletionErrorBlock)completion
 {
+    //
+    //  Validate if the current session is locked
+    //
+    if ([MASUser currentUser].isSessionLocked)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorUserSessionIsCurrentlyLocked]);
+        }
+        
+        return;
+    }
+    
     __block MASCompletionErrorBlock blockCompletion = completion;
     __block MASAuthCredentials *blockAuthCredentials = authCredentials;
     __block MASModelService *blockSelf = self;
