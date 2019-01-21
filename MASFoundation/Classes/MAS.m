@@ -258,6 +258,24 @@
                 }
             }];
         }
+        else if ([MASDevice currentDevice].isRegistered && ![MASApplication currentApplication].isRegistered)
+        {
+            [[MASModelService sharedService] registerApplication:^(BOOL completed, NSError * _Nullable error) {
+               
+                //
+                // Post the notification
+                //
+                [[NSNotificationCenter defaultCenter] postNotificationName:MASDidStartNotification object:nil];
+                
+                //
+                // Notify
+                //
+                if (blockCompletion)
+                {
+                    blockCompletion(YES, nil);
+                }
+            }];
+        }
         else {
             
             //

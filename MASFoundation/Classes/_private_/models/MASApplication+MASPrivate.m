@@ -293,10 +293,16 @@
     NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
     NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
 
-    NSString *clientAuthStr = [NSString stringWithFormat:@"%@:%@", clientId, clientSecret];
-    NSData *clientAuthData = [clientAuthStr dataUsingEncoding:NSUTF8StringEncoding];
-    
-    return [NSString stringWithFormat:@"Basic %@", [clientAuthData base64EncodedStringWithOptions:0]];
+    if (clientId == nil || [clientId length] == 0)
+    {
+        return nil;
+    }
+    else {
+        NSString *clientAuthStr = [NSString stringWithFormat:@"%@:%@", clientId, clientSecret];
+        NSData *clientAuthData = [clientAuthStr dataUsingEncoding:NSUTF8StringEncoding];
+        
+        return [NSString stringWithFormat:@"Basic %@", [clientAuthData base64EncodedStringWithOptions:0]];
+    }
 }
 
 
