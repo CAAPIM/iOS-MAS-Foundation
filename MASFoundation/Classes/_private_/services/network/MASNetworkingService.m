@@ -835,6 +835,10 @@ static NSMutableArray *_multiFactorAuthenticators_;
     {
         isMAGEndpoint = YES;
     }
+    else if ([endpoint isEqualToString:[MASConfiguration currentConfiguration].userSessionLogoutEndpointPath])
+    {
+        isMAGEndpoint = YES;
+    }
     else if ([endpoint hasPrefix:@"/auth/device/authorization/"])
     {
         isMAGEndpoint = YES;
