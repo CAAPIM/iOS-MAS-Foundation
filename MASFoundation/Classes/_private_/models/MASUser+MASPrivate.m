@@ -23,6 +23,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 @implementation MASUser (MASPrivate)
 
+static BOOL _isCurrentUserBeforeUserInfo_ = NO;
+
 
 # pragma mark - Lifecycle
 
@@ -31,10 +33,18 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     self = [super init];
     if (self)
     {
+        _isCurrentUserBeforeUserInfo_ = YES;
+        
         [self saveWithUpdatedInfo:info];
     }
     
     return self;
+}
+
+
++ (BOOL)isCurrentUserBeforeUserInfo
+{
+    return _isCurrentUserBeforeUserInfo_;
 }
 
 

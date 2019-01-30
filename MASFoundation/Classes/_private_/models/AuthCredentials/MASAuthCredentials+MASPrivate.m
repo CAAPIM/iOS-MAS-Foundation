@@ -301,33 +301,37 @@
                                           
                                           [[MASAccessService sharedService].currentAccessObj refresh];
                                           
+                                
                                           //
                                           // Retrieve userinfo unless otherwise authCredentialsType is client credentials
                                           //
                                           if (![self.credentialsType isEqualToString:MASGrantTypeClientCredentials])
                                           {
-                                              [[MASModelService sharedService] requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
-                                                  
-                                                  //
-                                                  // Post the notification
-                                                  //
-                                                  [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
-                                                  
-                                                  //
-                                                  // Requesting additional userInfo upon successful authentication
-                                                  // and do not depend on the result of userInfo call.
-                                                  // This a workaround to fix other frameworks' dependency issue on userInfo.
-                                                  // James Go @ April 4, 2016
-                                                  //
-                                                  
-                                                  //
-                                                  // Notify
-                                                  //
-                                                  if (blockCompletion)
-                                                  {
-                                                      blockCompletion(YES, nil);
-                                                  }
-                                              }];
+                                              dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+                                                  [[MASModelService sharedService] requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
+                                              
+                                                      //
+                                                      // Post the notification
+                                                      //
+                                                      [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
+                                                      
+                                                      //
+                                                      // Requesting additional userInfo upon successful authentication
+                                                      // and do not depend on the result of userInfo call.
+                                                      // This a workaround to fix other frameworks' dependency issue on userInfo.
+                                                      // James Go @ April 4, 2016
+                                                      //
+                                                      
+                                                      //
+                                                      // Notify
+                                                      //
+                                                      if (blockCompletion)
+                                                      {
+                                                          blockCompletion(YES, nil);
+                                                      }
+                                                  }];
+                                              });
                                           }
                                           else {
                                               

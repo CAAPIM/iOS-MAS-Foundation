@@ -29,6 +29,11 @@
 - (id)initWithInfo:(NSDictionary *)info;
 
 
+
++ (BOOL)isCurrentUserBeforeUserInfo;
+
+
+
 /**
  * Retrieves the instance of MASUser from local storage, it it exists.
  *

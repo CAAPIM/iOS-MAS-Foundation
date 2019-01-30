@@ -2028,23 +2028,26 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           //
                                           [[NSNotificationCenter defaultCenter] postNotificationName:MASUserDidAuthenticateNotification object:blockSelf];
                                           
-                                          [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
-                                              
-                                              //
-                                              // Requesting additional userInfo upon successful authentication
-                                              // and do not depend on the result of userInfo call.
-                                              // This a workaround to fix other frameworks' dependency issue on userInfo.
-                                              // James Go @ April 4, 2016
-                                              //
-                                              
-                                              //
-                                              // Notify
-                                              //
-                                              if (blockCompletion)
-                                              {
-                                                  blockCompletion(YES, nil);
-                                              }
-                                          }];
+                                          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+                                              [self requestUserInfoWithCompletion:^(MASUser *user, NSError *error) {
+                                          
+                                                  //
+                                                  // Requesting additional userInfo upon successful authentication
+                                                  // and do not depend on the result of userInfo call.
+                                                  // This a workaround to fix other frameworks' dependency issue on userInfo.
+                                                  // James Go @ April 4, 2016
+                                                  //
+                                                  
+                                                  //
+                                                  // Notify
+                                                  //
+                                                  if (blockCompletion)
+                                                  {
+                                                      blockCompletion(YES, nil);
+                                                  }
+                                              }];
+                                          });
                                       }];
 }
 

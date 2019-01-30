@@ -29,6 +29,7 @@ static NSString *const MASUserGroupsPropertyKey = @"groups"; // string
 static NSString *const MASUserActivePropertyKey = @"active"; // bool
 static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
+
 @implementation MASUser
 @synthesize accessToken = _accessToken;
 
@@ -135,12 +136,23 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (BOOL)isCurrentUser
 {
+    BOOL isCurrentUser = NO;
+    
     //
     // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
     //
     NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
-    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
+    if (currentlyAuthenticatedUserObjectId && ![currentlyAuthenticatedUserObjectId isEqualToString:@""]) {
+        
+        isCurrentUser = [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
+    }
+    else {
+        
+        isCurrentUser = [MASUser isCurrentUserBeforeUserInfo];
+    }
+    
+    return isCurrentUser;
 }
 
 
@@ -156,7 +168,8 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     // if the user status is not MASUserStatusNotLoggedIn,
     // the user is authenticated either anonymously or with username and password
     //
-    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
+    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser &&
+            [self isCurrentUser]);
 }
 
 
@@ -167,7 +180,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
-    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
+    if ([self isCurrentUser])
     {
         return [MASAccess currentAccess].isSessionLocked;
     }
