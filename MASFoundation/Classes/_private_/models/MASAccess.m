@@ -338,8 +338,6 @@
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
     
-    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
-    
     [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     _tokenType = nil;
@@ -377,8 +375,6 @@
     //
     _accessToken = nil;
     [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAccessToken];
-    
-    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
     
     [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     

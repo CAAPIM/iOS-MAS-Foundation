@@ -33,7 +33,6 @@ static NSString *const kMASAccessIsNotFreshInstallFlag = @"isNotFreshInstall";
 
 NSString * const MASKeychainStorageKeyConfiguration = @"kMASKeyChainConfiguration";
 NSString * const MASKeychainStorageKeyAccessToken = @"kMASKeyChainAccessToken";
-NSString * const MASKeychainStorageKeyAuthenticatedUserObjectId = @"MASAccessValueTypeAuthenticatedUserObjectId";
 NSString * const MASKeychainStorageKeyRefreshToken = @"kMASKeyChainRefreshToken";
 NSString * const MASKeychainStorageKeyScope = @"kMASKeyChainScope";
 NSString * const MASKeychainStorageKeyTokenType = @"kMASKeyChainTokenType";
@@ -183,8 +182,7 @@ static NSString *_keychainSharingGroupIdentifier_ = nil;
     //
     //  Define a list of keys to be stored in shared keychain storage
     //
-    _sharedStorageKeys = @[MASKeychainStorageKeyAuthenticatedUserObjectId,
-                           MASKeychainStorageKeySecuredIdToken,
+    _sharedStorageKeys = @[MASKeychainStorageKeySecuredIdToken,
                            MASKeychainStorageKeyIdToken,
                            MASKeychainStorageKeyIdTokenType,
                            MASKeychainStorageKeyJWT,

@@ -70,6 +70,13 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     }
     
     _currentUser = user;
+    
+    //
+    //  Mark as current user and store into the storage as MASUser has already been persisted into keychain upon completion of token endpoint.
+    //  Intention to do this is to share the most up-to-date data across application which may access to the current MASUser object at any time.
+    //
+    [_currentUser markAsCurrentUser];
+    [_currentUser saveToStorage];
 }
 
 

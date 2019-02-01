@@ -27,10 +27,12 @@ static NSString *const MASUserAddressesPropertyKey = @"addresses"; // string
 static NSString *const MASUserPhotosPropertyKey = @"photos"; // string
 static NSString *const MASUserGroupsPropertyKey = @"groups"; // string
 static NSString *const MASUserActivePropertyKey = @"active"; // bool
+static NSString *const MASUserIsCurrentUserPropertyKey = @"isCurrentUser"; // bool
 static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 @implementation MASUser
 @synthesize accessToken = _accessToken;
+@synthesize isCurrentUser = _isCurrentUser;
 
 # pragma mark - Current User
 
@@ -133,47 +135,38 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 }
 
 
-- (BOOL)isCurrentUser
-{
-    //
-    // Get currently authenticated user's object id to make sure that isCurrentUser flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
-    
-    return [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId];
-}
-
-
 // Special case which is determined by other fields
 - (BOOL)isAuthenticated
 {
     //
-    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
-    
-    //
     // if the user status is not MASUserStatusNotLoggedIn,
     // the user is authenticated either anonymously or with username and password
     //
-    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && [self.objectId isEqualToString:currentlyAuthenticatedUserObjectId]);
+    return ([MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser && self.isCurrentUser);
 }
 
 
 - (BOOL)isSessionLocked
 {
-    //
-    // Get currently authenticated user's object id to make sure that isAuthenticated flag can be determined properly for other users
-    //
-    NSString *currentlyAuthenticatedUserObjectId = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
-    
-    if ([self.objectId isEqualToString:currentlyAuthenticatedUserObjectId])
+    if (self.isCurrentUser)
     {
         return [MASAccess currentAccess].isSessionLocked;
     }
     else {
         return NO;
     }
+}
+
+
+- (void)setIsCurrentUser:(BOOL)isCurrentUser
+{
+    _isCurrentUser = isCurrentUser;
+}
+
+
+- (BOOL)isCurrentUser
+{
+    return _isCurrentUser;
 }
 
 
@@ -284,6 +277,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     [user setValue:self.groups forKey:@"groups"];
     [user setValue:[NSNumber numberWithBool:self.active] forKey:@"active"];
     [user setValue:self.photos forKey:@"photos"];
+    [user setValue:[NSNumber numberWithBool:self.active] forKey:@"isCurrentUser"];
     
     return user;
 }
@@ -304,13 +298,13 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     if(self.photos) [aCoder encodeObject:self.photos forKey:MASUserPhotosPropertyKey];
     if(self.groups) [aCoder encodeObject:self.groups forKey:MASUserGroupsPropertyKey];
     if(self.active) [aCoder encodeBool:self.active forKey:MASUserActivePropertyKey];
+    if(self.isCurrentUser) [aCoder encodeBool:self.isCurrentUser forKey:MASUserIsCurrentUserPropertyKey];
 }
 
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if(self = [super initWithCoder:aDecoder]) //ObjectID is decoded in the super class MASObject
-        
     {
         [self setValue:[aDecoder decodeObjectForKey:MASUserUserNamePropertyKey] forKey:@"userName"];
         [self setValue:[aDecoder decodeObjectForKey:MASUserFamilyNamePropertyKey] forKey:@"familyName"];
@@ -324,6 +318,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
         
         [self setValue:[aDecoder decodeObjectForKey:MASUserGroupsPropertyKey] forKey:@"groups"];
         [self setValue:[NSNumber numberWithBool:[aDecoder decodeBoolForKey:MASUserActivePropertyKey]] forKey:@"active"];
+        [self setValue:[NSNumber numberWithBool:[aDecoder decodeBoolForKey:MASUserIsCurrentUserPropertyKey]] forKey:@"isCurrentUser"];
     }
     
     return self;

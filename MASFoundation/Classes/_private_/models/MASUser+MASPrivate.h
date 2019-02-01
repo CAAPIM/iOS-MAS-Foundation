@@ -38,6 +38,14 @@
 
 
 /**
+ Persists the instance of currently authenticated MASUser into local storage.
+ 
+ **Important**: Note that this method is only intended to be used internally to store current user object.  Not intended to expose it to external developers.
+ */
+- (void)saveToStorage;
+
+
+/**
  * Save the current MASUser instance with newly provided information.
  *
  * @param info An NSDictionary containing newly provided information.
@@ -84,5 +92,12 @@
  * @return Returns the value as partially Base64 encoded NSString.
  */
 + (NSString *)authorizationBearerWithAccessToken;
+
+
+/**
+ Marking MASUser object instance as a current user.
+ **Important:** This is only intended to be used as an internal private method for MAG SDK to distinguish other MASUser objects from currently authenticated user.
+ */
+- (void)markAsCurrentUser;
 
 @end

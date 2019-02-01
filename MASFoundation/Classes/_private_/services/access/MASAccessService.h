@@ -21,7 +21,6 @@
 //
 extern NSString * const MASKeychainStorageKeyConfiguration;
 extern NSString * const MASKeychainStorageKeyAccessToken;
-extern NSString * const MASKeychainStorageKeyAuthenticatedUserObjectId;
 extern NSString * const MASKeychainStorageKeyRefreshToken;
 extern NSString * const MASKeychainStorageKeyScope;
 extern NSString * const MASKeychainStorageKeyTokenType;

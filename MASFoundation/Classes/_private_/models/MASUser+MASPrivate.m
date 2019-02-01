@@ -21,8 +21,13 @@
 
 static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
-@implementation MASUser (MASPrivate)
+@interface MASUser ()
 
+@property (nonatomic, assign, readwrite) BOOL isCurrentUser;
+
+@end
+
+@implementation MASUser (MASPrivate)
 
 # pragma mark - Lifecycle
 
@@ -200,11 +205,6 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     [accessService setAccessValueNumber:authenticatedTimestamp storageKey:MASKeychainStorageKeyAuthenticatedTimestamp];
     
     //
-    // set authenticated user's objectId
-    //
-    [accessService setAccessValueString:self.objectId storageKey:MASKeychainStorageKeyAuthenticatedUserObjectId];
-    
-    //
     // storing access information into keychain
     //
     [accessService saveAccessValuesWithDictionary:bodyInfo forceToOverwrite:NO];
@@ -277,5 +277,10 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     return [NSString stringWithFormat:@"Bearer %@", [MASAccessService sharedService].currentAccessObj.accessToken];
 }
 
+
+- (void)markAsCurrentUser
+{
+    self.isCurrentUser = YES;
+}
 
 @end
