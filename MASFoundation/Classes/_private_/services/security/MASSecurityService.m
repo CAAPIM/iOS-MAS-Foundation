@@ -169,11 +169,11 @@ static MASSecurityService *_sharedService_ = nil;
     //
     //  Sign and hash
     //
-    unsigned char digest[CC_SHA1_DIGEST_LENGTH];
-    CC_SHA1(csrInfo.bytes, (CC_LONG)csrInfo.length, digest);
+    unsigned char digest[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256(csrInfo.bytes, (CC_LONG)csrInfo.length, digest);
     uint8_t signature[256];
     size_t signature_len = sizeof(signature);
-    OSStatus result = SecKeyRawSign(privateKey, kSecPaddingPKCS1SHA1, digest, sizeof(digest), signature, &signature_len);
+    OSStatus result = SecKeyRawSign(privateKey, kSecPaddingPKCS1SHA256, digest, sizeof(digest), signature, &signature_len);
     assert(result == noErr);
     
     NSMutableData *certificateSigningRequest = [[NSMutableData alloc] initWithCapacity:1024];
@@ -181,10 +181,9 @@ static MASSecurityService *_sharedService_ = nil;
     //
     // See: https://tools.ietf.org/html/rfc7427#appendix-A.1.1
     //
-    uint8_t sha1WithRSAEncryption[] = {0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 1, 1, 5, 5, 0x00};
+    uint8_t sha256WithRSAEncryption[] = {0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 1, 1, 0x0B, 5, 0x00};
+    [certificateSigningRequest appendBytes:sha256WithRSAEncryption length:sizeof(sha256WithRSAEncryption)];
 
-    [certificateSigningRequest appendBytes:sha1WithRSAEncryption length:sizeof(sha1WithRSAEncryption)];
-    
     NSMutableData * signdata = [NSMutableData dataWithCapacity:257];
     uint8_t zero = 0;
     [signdata appendBytes:&zero length:1];
