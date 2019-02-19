@@ -1,7 +1,7 @@
 # Version 1.9.10
 
 ### Bug fixes
-- CSR Gemeration fix for SHA256. [DE404260]
+- CSR Generation fix for SHA256. [DE404260]
 - Logout fix for login screen being presented under certain circumstances. [DE395105]
 
 # Version 1.9.00
