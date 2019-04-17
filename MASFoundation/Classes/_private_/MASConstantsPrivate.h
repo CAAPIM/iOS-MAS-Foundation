@@ -15,8 +15,6 @@
 #import "MASNetworkingService.h"
 #import "MASIOrderedDictionary.h"
 
-#import "CBCentralManager+MASPrivate.h"
-#import "CBPeripheralManager+MASPrivate.h"
 #import "CLLocation+MASPrivate.h"
 #import "CLLocationManager+MASPrivate.h"
 #import "MASApplication+MASPrivate.h"
@@ -37,7 +35,6 @@
 
 // Known internal MASFoundation service UUIDs
 static NSString *_Nonnull const MASAccessServiceUUID = @"46987e7b-a694-4b44-b02d-694c90ae6952";
-static NSString *_Nonnull const MASBluetoothServiceUUID = @"e1c58e79-3df9-4dcc-b32d-f947762450c8";
 static NSString *_Nonnull const MASConfigurationServiceUUID = @"277a5b4a-b665-4ace-b23b-237c80bd7083";
 static NSString *_Nonnull const MASConnectaServiceUUID = @"ce68de11-609c-42cb-9fb1-96d661e9ff17";
 static NSString *_Nonnull const MASLocationServiceUUID = @"83c5830a-019f-4415-a46c-41470bc28219";
@@ -332,12 +329,6 @@ typedef void (^MASLocationMonitorBlock)(CLLocation *_Nonnull location, MASLocati
  * The SessionDataTask completion block that will receive the reponse, the response object and/or error if applicable.
  */
 typedef void (^MASSessionDataTaskCompletionBlock)(NSURLResponse *_Nonnull response, id _Nonnull responseObject, NSError *_Nonnull error);
-
-
-/**
- * Void code block.
- */
-typedef void (^MASVoidCodeBlock)(void);
 
 
 //
