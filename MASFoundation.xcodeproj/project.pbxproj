@@ -1758,7 +1758,7 @@
 				TargetAttributes = {
 					1059D36F1B61AA3700223267 = {
 						CreatedOnToolsVersion = 6.4;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					1059D37A1B61AA3800223267 = {
 						CreatedOnToolsVersion = 6.4;
@@ -1774,6 +1774,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 1059D3661B61AA3700223267;
@@ -2116,6 +2117,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.9.10;
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
@@ -2151,6 +2153,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ca.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
@@ -2161,6 +2164,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.9.10;
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
@@ -2196,6 +2200,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ca.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
