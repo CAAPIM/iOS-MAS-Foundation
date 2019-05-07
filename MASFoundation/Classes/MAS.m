@@ -12,7 +12,6 @@
 
 #import "MASJWTService.h"
 #import "MASAccessService.h"
-#import "MASBluetoothService.h"
 #import "MASConfigurationService.h"
 #import "MASConstantsPrivate.h"
 #import "MASClaims+MASPrivate.h"
@@ -1518,19 +1517,17 @@ withParameters:(nullable NSDictionary *)parameterInfo
 {
     MASServiceRegistry *registry = [MASServiceRegistry sharedRegistry];
     MASConfigurationService *configurationService = [MASConfigurationService sharedService];
-    MASBluetoothService *bluetoothService = [MASBluetoothService sharedService];
     MASFileService *fileService = [MASFileService sharedService];
     MASLocationService *locationService = [MASLocationService sharedService];
     MASModelService *modelService = [MASModelService sharedService];
     MASNetworkingService *networkingService = [MASNetworkingService sharedService];
     
     DLog(@"\n\n\n%@\n\n  ****************************** Services Summary ******************************\n\n\n"
-         "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
+         "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
          (registry ? [registry debugDescription] : @"(Service Registry Not Initialized"),
          (configurationService ? [configurationService debugDescription] : @"(Configuration Service Not Initialized)\n\n"),
          (networkingService ? [networkingService debugDescription] : @"(Networking Service Not Initialized)\n\n"),
          (locationService ? [locationService debugDescription] : @"(Location Service Not Initialized)\n\n"),
-         (bluetoothService ? [bluetoothService debugDescription] : @"(Bluetooth Service Not Initialized)\n\n"),
          (modelService ? [modelService debugDescription] : @"(Model Service Not Initialized)\n\n"),
          (fileService ? [fileService debugDescription] : @"(File Service Not Initialized)\n\n"),
          [[MASAccessService sharedService] debugSecuredDescription]);

@@ -7,9 +7,9 @@ The MASFoundation framework has the following features:
 - Authentication
     + OAuth
     + OIDC - OpenID Connect
-    + BLE
+    + BLE (in [MASProximity][MASProximity] SDK)
     + Dynamic Client ID & Client Secret
-    + QR Code
+    + QR Code (in [MASProximity][MASProximity] SDK)
     + Social Login
     + Single Sign On
     + OTP - One Time Password
@@ -144,6 +144,7 @@ Copyright (c) 2016 CA. All rights reserved.
 This software may be modified and distributed under the terms
 of the MIT license. See the [LICENSE][license-link] file for details.
 
+ [MASProximity]: https://github.com/CAAPIM/iOS-MAS-Proximity
  [mag]: https://docops.ca.com/mag
  [mas.ca.com]: http://mas.ca.com/
  [get-started]: http://mas.ca.com/get-started/

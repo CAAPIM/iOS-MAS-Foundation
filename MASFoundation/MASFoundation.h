@@ -23,7 +23,6 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 //
 #import <MASFoundation/MAS.h>
 #import <MASFoundation/MASConstants.h>
-#import <MASFoundation/MASProximityLoginDelegate.h>
 #import <MASFoundation/MASService.h>
 #import <MASFoundation/MASSecurityConfiguration.h>
 #import <MASFoundation/MASError.h>
@@ -49,8 +48,6 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASFile.h>
 #import <MASFoundation/MASGroup.h>
 #import <MASFoundation/MASObject.h>
-#import <MASFoundation/MASProximityLogin.h>
-#import <MASFoundation/MASProximityLoginQRCode.h>
 #import <MASFoundation/MASRequestBuilder.h>
 #import <MASFoundation/MASRequest.h>
 #import <MASFoundation/MASSharedStorage.h>

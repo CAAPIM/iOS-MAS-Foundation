@@ -828,18 +828,6 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
 }
 
 
-+ (NSError *)errorProximityLoginAuthorizationInProgress
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeProximityLoginAuthorizationInProgress errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
-+ (NSError *)errorProximityLoginInvalidAuthroizeURL
-{
-    return [self errorForFoundationCode:MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL errorDomain:MASFoundationErrorDomainLocal];
-}
-
-
 + (NSError *)errorBrowserBasedAuthenticaionNotEnabled
 {
     return [self errorForFoundationCode:MASFoundationErrorCodeBBANotEnabled errorDomain:MASFoundationErrorDomainLocal];
@@ -1086,34 +1074,7 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         case MASFoundationErrorCodeEnterpriseBrowserNativeAppDoesNotExist: return @"Native app does not exist";
         case MASFoundationErrorCodeEnterpriseBrowserNativeAppCannotOpen: return @"Error loading the native app";
         case MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist: return @"Enterprise Browser App does not exist";
-        
-        //
-        // BLE
-        //
-        case MASFoundationErrorCodeBLEUnknownState: return @"Unknown error occurred while enabling BLE Central";
-        case MASFoundationErrorCodeBLEPoweredOff: return @"Bluetooth is currently off";
-        case MASFoundationErrorCodeBLEResetting: return @"Bluetooth connection is momentarily lost; resetting the connection";
-        case MASFoundationErrorCodeBLEUnauthorized: return @"Bluetooth feature is not authorized for this application";
-        case MASFoundationErrorCodeBLEUnSupported: return @"Bluetooth feature is not supported";
-        case MASFoundationErrorCodeBLEDelegateNotDefined: return @"MASDevice's BLE delegate is not defined. Delegate is mandatory to acquire permission from the user.";
-        case MASFoundationErrorCodeBLEAuthorizationFailed: return @"BLE authorization failed due to invalid or expired authorization request.";
-        case MASFoundationErrorCodeBLECentralDeviceNotFound: return @"BLE authorization failed due to no subscribed central device.";
-        case MASFoundationErrorCodeBLERSSINotInRange: return @"BLE RSSI is not in range.  Please refer to msso_config.json for BLE RSSI configuration.";
-        case MASFoundationErrorCodeBLEAuthorizationPollingFailed: return @"BLE authorization failed while polling authorization code from gateway.";
-        case MASFoundationErrorCodeBLEInvalidAuthenticationProvider: return @"BLE authorization failed due to invalid authentication provider.";
-        case MASFoundationErrorCodeBLECentral: return @"BLE Central error encountered in CBCentral with specific reason in userInfo.";
-        case MASFoundationErrorCodeBLEPeripheral: return @"BLE Peripheral error encountered while discovering, or connecting central device with specific reason in userInfo.";
-        case MASFoundationErrorCodeBLEPeripheralServices: return @"BLE Peripheral error encountered while discovering or connecting peripheral services with specific reason in userInfo.";
-        case MASFoundationErrorCodeBLEPeripheralCharacteristics: return @"BLE Peripheral error encountered while discovering, connecting, or writing peripheral service's characteristics with specific reason in userInfo.";
-        
-        //
-        // Session Sharing
-        //
-        case MASFoundationErrorCodeProximityLoginAuthorizationInProgress: return @"Authorization is currently in progress through proximity login.";
-        case MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed: return @"QR Code proximity login authentication failed with specific information on userInfo.";
-        case MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL: return @"Invalid authentication URL is provided for proximity login.";
-        case MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL: return @"Invalid authorization url.";
-          
+
         //
         // JWT
         //
