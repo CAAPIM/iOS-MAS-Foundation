@@ -47,6 +47,7 @@
 }
 
 
+
 - (NSArray *)convertCertificatesToSecCertificateRef
 {
     NSMutableArray *certAsData = [[self convertCertificatesToData] mutableCopy];
