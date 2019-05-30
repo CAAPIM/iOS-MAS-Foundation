@@ -40,6 +40,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
         self.trustPublicPKI = NO;
         self.validateCertificateChain = NO;
         self.validateDomainName = YES;
+        self.pinningMode = MASSecuritySSLPinningModeCertificate;
     }
     
     return self;
@@ -99,6 +100,11 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
         self.trustPublicPKI = [[configuration objectForKey:@"trustPublicPKI"] boolValue];
     }
     
+    if ([configuration.allKeys containsObject:@"pinningMode"])
+    {
+        self.pinningMode = [MASSecurityConfiguration praseStringToPinningMode:[configuration objectForKey:@"pinningMode"]];
+    }
+    
     if ([configuration.allKeys containsObject:@"certificates"] && [[configuration objectForKey:@"certificates"] isKindOfClass:[NSArray class]])
     {
         self.certificates = [configuration objectForKey:@"certificates"];
@@ -108,6 +114,27 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
     {
         self.publicKeyHashes = [configuration objectForKey:@"publicKeyHashes"];
     }
+}
+
+
++ (MASSecuritySSLPinningMode)praseStringToPinningMode:(NSString *)pinningMode
+{
+    MASSecuritySSLPinningMode pinningModeValue = MASSecuritySSLPinningModeCertificate;
+    
+    if ([pinningMode isEqualToString:MASSecurityConfigurationPinningModeCertificate])
+    {
+        pinningModeValue = MASSecuritySSLPinningModeCertificate;
+    }
+//    else if ([pinningMode isEqualToString:MASSecurityConfigurationPinningModePublicKey])
+//    {
+//        pinningModeValue = MASSecuritySSLPinningModePublicKey;
+//    }
+    else if ([pinningMode isEqualToString:MASSecurityConfigurationPinningModePublicKeyHash])
+    {
+        pinningModeValue = MASSecuritySSLPinningModePublicKeyHash;
+    }
+    
+    return pinningModeValue;
 }
 
 

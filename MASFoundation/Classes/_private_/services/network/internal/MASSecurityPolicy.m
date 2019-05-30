@@ -77,7 +77,7 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     //  If trustPublicPKI is set to NO, and there is no pinning information defined, reject connection
     //
-    else if (!securityConfiguration.trustPublicPKI && ((([securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] == 0) || securityConfiguration.certificates == nil) && (([securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] == 0) || securityConfiguration.publicKeyHashes == nil)))
+    else if (!securityConfiguration.trustPublicPKI && (((([securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] == 0)  || securityConfiguration.certificates == nil) && (([securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] == 0) || securityConfiguration.publicKeyHashes == nil))))
     {
         return NO;
     }
@@ -88,29 +88,42 @@ static unsigned char rsa2048Asn1Header[] = {
     BOOL isPinningVerified = YES;
     NSArray *certificateChain = [self extractCertificateDataFromServerTrust:serverTrust];
     
+    switch (securityConfiguration.pinningMode) {
+        case MASSecuritySSLPinningModeCertificate:
+        {
+            isPinningVerified = [self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain];
+        }
+            break;
+        case MASSecuritySSLPinningModeIntermediateCertifcate:
+        {
+            isPinningVerified = [self validateIntermediateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain];
+        }
+            break;
+        case MASSecuritySSLPinningModePublicKeyHash:
+        {
+            isPinningVerified = [self validatePublicKeyHash:serverTrust configuration:securityConfiguration];
+        }
+            break;
+        
+    }
+    
+    return isPinningVerified;
+}
+
+
+- (BOOL)validateCertPinning:(SecTrustRef)serverTrust configuration:(MASSecurityConfiguration *)securityConfiguration certChain:(NSArray *)certificateChain
+{
     //
     //  pinning with certificates
     //
     if (securityConfiguration.certificates != nil && [securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] > 0)
     {
-        //
-        //  Set anchor cert with pinned certificates
-        //
-        NSMutableArray *pinnedCertificates = [NSMutableArray array];
         NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
-        for (NSData *certificateData in pinnedCertificatesData)
-        {
-            [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
-        }
-        SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
-        
-        //
-        //  Stop proceeding if validation of server trust against anchor (pinned) certificates
-        //
-        if (![self validateServerTrust:serverTrust])
+        if(![self validateAnchorTrust:serverTrust pinnedCerts:pinnedCertificatesData])
         {
             return NO;
         }
+        
         
         //
         //  As of this point, if the configuration forces to validate the entire chain, validate entire chain of certificates
@@ -137,6 +150,67 @@ static unsigned char rsa2048Asn1Header[] = {
         }
     }
     
+    return YES;
+}
+
+
+//Validate the intermediate certificate pinning
+
+- (BOOL)validateIntermediateCertPinning:(SecTrustRef)serverTrust configuration:(MASSecurityConfiguration *)securityConfiguration certChain:(NSArray *)certificateChain
+{
+    if (securityConfiguration.certificates != nil && [securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] > 0)
+    {
+        NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
+        if(![self validateAnchorTrust:serverTrust pinnedCerts:pinnedCertificatesData])
+        {
+            return NO;
+        }
+        
+        //
+        // Since this part is only pinning intermediate certificates no need to validate the entire chain. Only make sure if the intermediate certs are part of the CertificateChain that server presented
+        //
+        for (NSData *pinnedCertData in pinnedCertificatesData)
+        {
+            if (![certificateChain containsObject:pinnedCertData])
+            {
+                return NO;
+            }
+        }
+        
+    }
+    
+    return YES;
+}
+
+
+//Validate server anchor trust based on the certificates that are pinned
+- (BOOL)validateAnchorTrust:(SecTrustRef)serverTrust pinnedCerts:(NSArray *)pinnedCertificatesData
+{
+    //
+    //  Set anchor cert with pinned certificates
+    //
+    NSMutableArray *pinnedCertificates = [NSMutableArray array];
+    
+    for (NSData *certificateData in pinnedCertificatesData)
+    {
+        [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
+    }
+    SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
+    
+    //
+    //  Stop proceeding if validation of server trust against anchor (pinned) certificates
+    //
+    if (![self validateServerTrust:serverTrust])
+    {
+        return NO;
+    }
+    
+    return YES;
+}
+
+//Pinning based on public key hash
+- (BOOL)validatePublicKeyHash:(SecTrustRef)serverTrust configuration:(MASSecurityConfiguration *)securityConfiguration
+{
     //
     //  pinning with public key hashes
     //
@@ -201,8 +275,10 @@ static unsigned char rsa2048Asn1Header[] = {
         }
     }
     
-    return isPinningVerified;
+    return YES;
 }
+    
+
 
 
 - (BOOL)validateServerTrust:(SecTrustRef)serverTrust

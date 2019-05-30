@@ -18,7 +18,6 @@
 - (NSArray *)convertCertificatesToData;
 
 
-
 /**
  Converts MASSecurityConfiguration's array of certificate array into array of SecCertificateRef
 
