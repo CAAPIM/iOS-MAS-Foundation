@@ -169,6 +169,23 @@
 }
 
 
+- (MASSessionDownloadTaskOperation *)downloadOperationWithRequest:(MASURLRequest *)request destinationPath:(NSString *)destinationPath progress:(MASFileDownloadProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completion
+{
+    MASSessionDownloadTaskOperation *downloadTask = [[MASSessionDownloadTaskOperation alloc] initWithSession:_session request:request destination:destinationPath progress:progress];
+    [self.operations addObject:downloadTask];
+    
+    downloadTask.didCompleteWithDataErrorBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSData *data, NSError *error) {
+        
+        if (completion)
+        {
+            completion(task.response, data, error);
+        }
+    };
+    
+    return downloadTask;
+}
+
+
 # pragma mark - NSOperationQueue
 
 - (NSOperationQueue *)operationQueue

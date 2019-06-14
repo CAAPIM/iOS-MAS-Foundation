@@ -1060,6 +1060,17 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 
 ///--------------------------------------
+/// @name HTTP File Requests
+///--------------------------------------
+
+# pragma mark - HTTP File Requests
+/**
+ * Request method to download a file from a URL. Normaly HTTP GET method based file requests.
+ */
++ (void)downloadFile:(nonnull MASRequest *)request destinationPath:(NSString* _Nullable)destinationPath progress:(MASFileDownloadProgressBlock _Nullable )progress completion:(MASResponseObjectErrorBlock _Nullable)completion;
+
+
+///--------------------------------------
 /// @name JWT Signing
 ///--------------------------------------
 

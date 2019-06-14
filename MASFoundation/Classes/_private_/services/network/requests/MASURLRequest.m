@@ -15,6 +15,7 @@ NSString * const MASRequestResponseTypeScimJsonValue = @"application/scim+json";
 NSString * const MASRequestResponseTypeTextPlainValue = @"text/plain";
 NSString * const MASRequestResponseTypeWwwFormUrlEncodedValue = @"application/x-www-form-urlencoded";
 NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
+NSString * const MASRequestResponseTypeImageJPEGValue = @"image/jpeg";
 
 
 @implementation MASURLRequest

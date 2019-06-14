@@ -1128,6 +1128,12 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (void)downloadFile:(nonnull MASRequest *)request destinationPath:(NSString* _Nullable)destinationPath progress:(MASFileDownloadProgressBlock _Nullable )progress completion:(MASResponseObjectErrorBlock _Nullable)completion
+{
+    [MAS httpFileMethod:request.httpMethod endPoint:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType destinationPath:destinationPath isPublic:request.isPublic progress:progress completion:completion];
+}
+
+
 # pragma mark - Private
 
 + (void)httpMethod:(NSString *)httpMethod
@@ -1256,6 +1262,58 @@ withParameters:(nullable NSDictionary *)parameterInfo
     return responseCompletionBlock;
 }
 
+
++ (void)httpFileMethod:(NSString *)httpMethod
+              endPoint:(NSString *)endPoint
+        withParameters:(NSDictionary *)parameterInfo
+            andHeaders:(NSDictionary *)headerInfo
+           requestType:(MASRequestResponseType)requestType
+          responseType:(MASRequestResponseType)responseType
+       destinationPath:(NSString*)destinationPath
+              isPublic:(BOOL)isPublic
+              progress:(MASFileDownloadProgressBlock)progress
+            completion:(MASResponseObjectErrorBlock)completion
+{
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(nil, nil,[NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(nil, nil,[NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    
+    __block MASResponseObjectErrorBlock blockCompletion = completion;
+    __block MASFileDownloadProgressBlock blockprogress = progress;
+    __block NSString *blockEndPoint = endPoint;
+    __block NSString *blockDestinationPath = destinationPath;
+    __block NSDictionary *blockParameterInfo = parameterInfo ? parameterInfo : [NSDictionary dictionary];
+    __block NSDictionary *blockHeaderInfo = headerInfo ? headerInfo : [NSDictionary dictionary];
+    __block MASRequestResponseType blockRequestType = requestType;
+    __block MASRequestResponseType blockResponseType = responseType;
+    __block BOOL blockIsPublic = isPublic;
+    
+    [MAS validateScopeForRequest:headerInfo isPublic:isPublic completion:^(BOOL completed, NSError *error) {
+        
+        [[MASNetworkingService sharedService] getFileFrom:blockEndPoint destinationPath:blockDestinationPath withParameters:blockParameterInfo andHeaders:blockHeaderInfo requestType:blockRequestType responseType:blockResponseType isPublic:blockIsPublic progress:blockprogress completion:blockCompletion];
+    }];
+    
+}
 
 + (MASResponseInfoErrorBlock)parseTargetAPIErrorForCompletionBlock:(MASResponseInfoErrorBlock)completionBlock
 {

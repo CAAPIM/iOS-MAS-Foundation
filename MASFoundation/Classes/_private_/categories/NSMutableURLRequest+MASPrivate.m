@@ -69,6 +69,11 @@
         // XML
         //
         case MASRequestResponseTypeXml: return MASRequestResponseTypeXmlValue;
+            
+        //
+        // JPEG
+        //
+        case MASRequestResponseTypeImageJPEG : return MASRequestResponseTypeImageJPEGValue;
         
         //
         // Default

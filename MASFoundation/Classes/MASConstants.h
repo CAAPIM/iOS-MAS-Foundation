@@ -115,6 +115,12 @@ typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nul
 
 
 /**
+ * A standard file progress block. Typically used with APIs related to file downloads.
+ */
+typedef void (^MASFileDownloadProgressBlock) (NSProgress* _Nullable progress);
+
+
+/**
  *  The MASAuthCredentialsBlcok to provide auth credentials for device registration and/or user authentication.
  */
 typedef void (^MASAuthCredentialsBlock)(MASAuthCredentials *_Nullable authCredentials, BOOL cancel, MASCompletionErrorBlock _Nullable);
@@ -169,6 +175,8 @@ typedef void (^MASBiometricRegistrationModalitiesSelectionBlock)(NSArray *_Nonnu
  * _Nonnull biometricModalitiesBlock) block.
  */
 typedef void (^MASBiometricDeregistrationModalitiesSelectionBlock)(NSArray *_Nonnull availableModalities,  MASBiometricModalitiesBlock _Nonnull biometricModalitiesBlock);
+
+
 
 
 ///--------------------------------------
@@ -239,6 +247,11 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
      * Standard XML encoding.
      */
     MASRequestResponseTypeXml,
+    
+    /**
+     * Standard Image in JPEG format
+     */
+    MASRequestResponseTypeImageJPEG,
     
     /**
      * The total number of supported types.

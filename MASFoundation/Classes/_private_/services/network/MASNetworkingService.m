@@ -1487,4 +1487,85 @@ withParameters:(NSDictionary *)parameterInfo
     }
 }
 
+
+- (void)getFileFrom:(NSString*)endPoint destinationPath:(NSString*)destinationPath withParameters:(NSDictionary *)parameterInfo
+         andHeaders:(NSDictionary *)headerInfo
+        requestType:(MASRequestResponseType)requestType
+       responseType:(MASRequestResponseType)responseType
+           isPublic:(BOOL)isPublic progress:(MASFileDownloadProgressBlock)progress
+         completion:(MASResponseObjectErrorBlock)completion
+{
+    [self httpFileRequest:@"GET" endPoint:endPoint destinationPath:destinationPath parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic progress:progress completion:completion];
+}
+
+
+- (void)httpFileRequest:(NSString*)httpMethod endPoint:(NSString*)endPoint destinationPath:(NSString*)destinationPath parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic progress:(MASFileDownloadProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+{
+    //
+    // Update the header
+    //
+    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+    
+    MASURLRequest *request = nil;
+    
+    //
+    //  if location was successfully retrieved
+    //
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    
+    request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
+    
+    
+    MASSessionDataTaskCompletionBlock taskCompletionBlock = ^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error){
+        
+        completion(response,responseObject,error);
+    };
+    
+    
+    // MASSessionDownloadTaskOperation* operation = [_sessionManager downloadOperationWithRequest:request progress:progress completionHandler:taskCompletionBlock];
+    MASSessionDownloadTaskOperation* operation = [_sessionManager downloadOperationWithRequest:request destinationPath:destinationPath progress:progress completionHandler:taskCompletionBlock];
+    
+    if (![self isMAGEndpoint:endPoint])
+    {
+        //
+        //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
+        //  then, add dependency on shared validation operation which will validate current session
+        //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
+        //
+        if (!isPublic)
+        {
+            //
+            //  add dependency
+            //
+            [operation addDependency:self.sharedOperation];
+            
+            //
+            //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
+            //
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
+            {
+                //
+                //  add sharedOperation into internal operation queue
+                //
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
+            }
+        }
+        
+        //
+        //  add current request into normal operation queue
+        //
+        [_sessionManager.operationQueue addOperation:operation];
+    }
+    else {
+        //
+        //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
+        //
+        [_sessionManager.internalOperationQueue addOperation:operation];
+    }
+}
+
 @end
