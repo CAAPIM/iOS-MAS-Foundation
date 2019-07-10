@@ -128,7 +128,8 @@ static unsigned char rsa2048Asn1Header[] = {
         //
         //  As of this point, if the configuration forces to validate the entire chain, validate entire chain of certificates
         //
-        if ([securityConfiguration validateCertificateChain])
+        
+        if (![securityConfiguration validateCertificateChain])
         {
             int matchingCertificatesCount = 0;
             
