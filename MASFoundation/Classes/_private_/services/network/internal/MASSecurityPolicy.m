@@ -102,9 +102,10 @@ static unsigned char rsa2048Asn1Header[] = {
                 isPublicKeyHashVerified = YES;
             }
             
-            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) && isPublicKeyHashVerified;
+            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) || isPublicKeyHashVerified;
         }
             break;
+            
         case MASSecuritySSLPinningModeIntermediateCertifcate:
         {
             isPinningVerified = [self validateIntermediateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain];
@@ -162,7 +163,7 @@ static unsigned char rsa2048Asn1Header[] = {
         }
     }
     
-    return YES;
+    return NO;
 }
 
 
@@ -191,7 +192,7 @@ static unsigned char rsa2048Asn1Header[] = {
         
     }
     
-    return YES;
+    return NO;
 }
 
 
@@ -287,7 +288,7 @@ static unsigned char rsa2048Asn1Header[] = {
         }
     }
     
-    return YES;
+    return NO;
 }
     
 
