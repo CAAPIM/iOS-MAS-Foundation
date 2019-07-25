@@ -91,7 +91,18 @@ static unsigned char rsa2048Asn1Header[] = {
     switch (securityConfiguration.pinningMode) {
         case MASSecuritySSLPinningModeCertificate:
         {
-            isPinningVerified = [self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain];
+            BOOL isPublicKeyHashVerified = NO;
+            
+            if (securityConfiguration.publicKeyHashes != nil && [securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] > 0)
+            {
+                isPublicKeyHashVerified = [self validatePublicKeyHash:serverTrust configuration:securityConfiguration];
+            }
+            else
+            {
+                isPublicKeyHashVerified = YES;
+            }
+            
+            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) && isPublicKeyHashVerified;
         }
             break;
         case MASSecuritySSLPinningModeIntermediateCertifcate:
