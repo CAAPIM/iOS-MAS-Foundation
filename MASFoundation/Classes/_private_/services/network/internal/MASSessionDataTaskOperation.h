@@ -23,4 +23,6 @@
 @property (nonatomic, copy) MASNetworkDataTaskWillCacheResponseBlock willCacheResponseBlock;
 @property (nonatomic, copy) MASNetworkDataTaskDidReceiveResponseBlock didReceiveResponseBlock;
 
+- (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request progress:(MASFileRequestProgressBlock)progress;
+
 @end

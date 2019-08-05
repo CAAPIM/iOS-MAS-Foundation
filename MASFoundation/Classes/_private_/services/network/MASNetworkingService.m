@@ -29,6 +29,7 @@
 #import "MASSecurityPolicy.h"
 #import "MASNetworkReachability.h"
 #import "MASMultiFactorHandler+MASPrivate.h"
+#import "MASMultiPartRequestSerializer.h"
 
 
 # pragma mark - Configuration Constants
@@ -1385,6 +1386,96 @@ withParameters:(NSDictionary *)parameterInfo
     }
     
     [self httpRequest:@"PUT" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:completion];
+}
+
+
+- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+{
+    //
+    //  endPoint cannot be nil
+    //
+    if (!endPoint)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, nil,[NSError errorInvalidEndpoint]);
+        
+        return;
+    }
+    
+    [self httpFileUploadRequest:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic constructingBodyBlock:formDataBlock progress:progress completion:completion];
+}
+
+
+- (void)httpFileUploadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+{
+    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+    
+    MASURLRequest *request = nil;
+    
+    //
+    //  if location was successfully retrieved
+    //
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    request = [MASPostFormURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic constructingBodyBlock:formDataBlock];
+    
+    //
+    //  Construct MASSessionDataTaskOperation with request, and completion block to handle any responsive re-authentication or re-registration.
+    //
+    if(self.httpRedirectionBlock)
+    {
+        [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
+    }
+    
+    MASSessionDataTaskOperation *operation = [self.sessionManager fileUploadOperation:request progress:progress completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint parameters:parameterInfo headers:headerInfo httpMethod:request.HTTPMethod requestType:requestType responseType:responseType isPublic:isPublic completionBlock:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
+            if (completion)
+            {
+               completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], [responseInfo objectForKey:MASResponseInfoBodyInfoKey], error);
+            }
+    }]];
+    
+    if (![self isMAGEndpoint:endPoint])
+    {
+        //
+        //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
+        //  then, add dependency on shared validation operation which will validate current session
+        //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
+        //
+        if (!isPublic)
+        {
+            //
+            //  add dependency
+            //
+            [operation addDependency:self.sharedOperation];
+            
+            //
+            //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
+            //
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
+            {
+                //
+                //  add sharedOperation into internal operation queue
+                //
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
+            }
+        }
+        
+        //
+        //  add current request into normal operation queue
+        //
+        [_sessionManager.operationQueue addOperation:operation];
+    }
+    else {
+        //
+        //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
+        //
+        [_sessionManager.internalOperationQueue addOperation:operation];
+    }
 }
 
 

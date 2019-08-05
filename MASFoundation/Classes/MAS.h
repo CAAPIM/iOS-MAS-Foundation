@@ -14,6 +14,7 @@
 #import "MASClaims.h"
 #import "MASRequest.h"
 #import "MASMultiFactorAuthenticator.h"
+#import "MASMultiPartFormData.h"
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -1058,6 +1059,10 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 + (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseObjectErrorBlock)completion;
 
 
+
+# pragma mark - FILE Requests
+
++ (void)upload:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDatablock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion;
 
 ///--------------------------------------
 /// @name JWT Signing

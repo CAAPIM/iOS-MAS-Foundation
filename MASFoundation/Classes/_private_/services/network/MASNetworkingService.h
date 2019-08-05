@@ -667,5 +667,11 @@ withParameters:(NSDictionary *)parameterInfo
      isPublic:(BOOL)isPublic
    completion:(MASResponseInfoErrorBlock)completion;
 
+
+
+# pragma mark - HTTP File Requests
+
+- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
+
 @end
 

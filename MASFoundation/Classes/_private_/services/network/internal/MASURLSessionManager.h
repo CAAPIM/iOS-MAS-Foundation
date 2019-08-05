@@ -14,6 +14,7 @@
 #import "MASSecurityPolicy.h"
 #import "MASSessionDataTaskOperation.h"
 #import "MASURLRequest.h"
+#import "MASPostFormURLRequest.h"
 
 //
 //  NSURLSessionDelegate
@@ -81,6 +82,7 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 - (MASSessionDataTaskOperation *)dataOperationWithRequest:(MASURLRequest *)request completionHandler:(MASSessionDataTaskCompletionBlock)completionHandler;
 
 
+-(MASSessionDataTaskOperation *)fileUploadOperation:(MASURLRequest *)request progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completionHandler;
 
 ///--------------------------------------
 /// @name Public

@@ -51,7 +51,8 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     if (securityConfiguration == nil)
     {
-        return NO;
+        //return NO;
+        return YES;
     }
     
     NSMutableArray *policies = [NSMutableArray array];
@@ -91,7 +92,18 @@ static unsigned char rsa2048Asn1Header[] = {
     switch (securityConfiguration.pinningMode) {
         case MASSecuritySSLPinningModeCertificate:
         {
-            isPinningVerified = [self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain];
+            BOOL isPublicKeyHashVerified = NO;
+            
+            if (securityConfiguration.publicKeyHashes != nil && [securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] > 0)
+            {
+                isPublicKeyHashVerified = [self validatePublicKeyHash:serverTrust configuration:securityConfiguration];
+            }
+            else
+            {
+                isPublicKeyHashVerified = YES;
+            }
+            
+            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) || isPublicKeyHashVerified;
         }
             break;
         case MASSecuritySSLPinningModeIntermediateCertifcate:
@@ -150,7 +162,7 @@ static unsigned char rsa2048Asn1Header[] = {
         }
     }
     
-    return YES;
+    return NO;
 }
 
 
@@ -179,7 +191,7 @@ static unsigned char rsa2048Asn1Header[] = {
         
     }
     
-    return YES;
+    return NO;
 }
 
 
@@ -273,9 +285,11 @@ static unsigned char rsa2048Asn1Header[] = {
         {
             return NO;
         }
+        
+        return YES;
     }
     
-    return YES;
+    return NO;
 }
     
 

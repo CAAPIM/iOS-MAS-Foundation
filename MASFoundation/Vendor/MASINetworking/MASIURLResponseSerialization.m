@@ -111,6 +111,7 @@ static id MASIJSONObjectByRemovingKeysWithNullValues(id JSONObject, NSJSONReadin
     NSError *validationError = nil;
 
     if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSLog(@"response mime type is %@",[response MIMEType]);
         if (self.acceptableContentTypes && ![self.acceptableContentTypes containsObject:[response MIMEType]]) {
             if ([data length] > 0 && [response URL]) {
                 NSMutableDictionary *mutableUserInfo = [@{
