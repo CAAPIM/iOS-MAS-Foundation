@@ -71,14 +71,14 @@
     // to format.  It's possible there isn't.
     //
     // THIS PART Is not needed. Confirm from testing
-  /*  NSData *data = [self dataForBodyFromParameterInfo:parameterInfo forRequestType:requestType];
+    NSData *data = [self dataForBodyFromParameterInfo:parameterInfo forRequestType:requestType];
     if(data)
     {
         //
         // Set the body with the data
         //
         [request setHTTPBody:data];
-    }*/
+    }
     
     return request;
 }

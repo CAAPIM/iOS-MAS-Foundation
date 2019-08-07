@@ -64,4 +64,13 @@
     
     
 }
+
+- (MASURLRequest *)rebuildRequest
+{
+    [self setHeaderInfo:self.headerInfo forRequestType:self.requestType andResponseType:self.responseType];
+    
+    return self;
+}
+
+
 @end
