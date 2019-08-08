@@ -102,7 +102,7 @@ static unsigned char rsa2048Asn1Header[] = {
                 isPublicKeyHashVerified = YES;
             }
             
-            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) || isPublicKeyHashVerified;
+            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) && isPublicKeyHashVerified;
         }
             break;
             
@@ -160,6 +160,8 @@ static unsigned char rsa2048Asn1Header[] = {
             {
                 return NO;
             }
+            
+            return YES;
         }
     }
     
@@ -189,6 +191,8 @@ static unsigned char rsa2048Asn1Header[] = {
                 return NO;
             }
         }
+        
+        return YES;
         
     }
     
@@ -286,6 +290,8 @@ static unsigned char rsa2048Asn1Header[] = {
         {
             return NO;
         }
+        
+        return YES;
     }
     
     return NO;
