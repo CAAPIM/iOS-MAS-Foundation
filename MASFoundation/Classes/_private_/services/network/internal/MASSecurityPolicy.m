@@ -304,13 +304,20 @@ static unsigned char rsa2048Asn1Header[] = {
 {
     BOOL isValid = YES;
     SecTrustResultType result = 0;
+    CFErrorRef trustErrorRef = NULL;
     
-    if (SecTrustEvaluate(serverTrust, &result) != errSecSuccess)
-    {
-        isValid = NO;
+    if ([NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){13,0,0}]) {
+        
+        isValid = SecTrustEvaluateWithError(serverTrust, &trustErrorRef);
     }
     else {
-        isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
+        if (SecTrustEvaluate(serverTrust, &result) != errSecSuccess)
+        {
+            isValid = NO;
+        }
+        else {
+            isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
+        }
     }
     
     return isValid;
