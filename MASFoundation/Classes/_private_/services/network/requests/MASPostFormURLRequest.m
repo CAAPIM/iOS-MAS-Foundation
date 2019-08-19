@@ -73,4 +73,66 @@
 }
 
 
+//overriding the behavior for this class as the super class does not know about boundary string
+
+- (void)setHeaderInfo:(NSDictionary *)headerInfo forRequestType:(MASRequestResponseType)requestType andResponseType:(MASRequestResponseType)responseType
+{
+    
+    //don't set the request type as we don't want to disturb the boundary string
+    
+    //
+    // Accept based on MASRequestResponseType
+    //
+    [self setValue:[self requestResponseTypeAsMimeTypeString:responseType] forHTTPHeaderField:MASAcceptRequestResponseKey];
+    
+    NSString *lowerKey;
+    NSString *value;
+    for(NSString *key in [headerInfo allKeys])
+    {
+        lowerKey = [key lowercaseString];
+        value = [headerInfo objectForKey:key];
+        [self setValue:value forHTTPHeaderField:key];
+    }
+}
+
+//overriding the behavior for this class as the super class does not know about boundary string
+- (NSString *)requestResponseTypeAsMimeTypeString:(MASRequestResponseType)type
+{
+    //
+    // Detect type and respond approriately
+    //
+    switch(type)
+    {
+            //
+            // JSON
+            //
+        case MASRequestResponseTypeJson: return MASRequestResponseTypeJsonValue;
+            
+            //
+            // SCIM variant JSON
+            //
+        case MASRequestResponseTypeScimJson: return MASRequestResponseTypeScimJsonValue;
+            
+            //
+            // Form URL Encoded
+            //
+        case MASRequestResponseTypeWwwFormUrlEncoded: return MASRequestResponseTypeWwwFormUrlEncodedValue;
+            
+            //
+            // XML
+            //
+        case MASRequestResponseTypeXml: return MASRequestResponseTypeXmlValue;
+            
+        case MASRequestResponseTypeFormData : return MASRequestResponseTypeFormDataValue;
+            
+            //
+            // Default
+            //
+        default: return MASRequestResponseTypeTextPlainValue;
+    }
+}
+
+
+
+
 @end
