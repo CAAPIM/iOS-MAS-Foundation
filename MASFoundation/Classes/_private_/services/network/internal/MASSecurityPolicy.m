@@ -51,8 +51,7 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     if (securityConfiguration == nil)
     {
-        //return NO;
-        return YES;
+        return NO;
     }
     
     NSMutableArray *policies = [NSMutableArray array];
