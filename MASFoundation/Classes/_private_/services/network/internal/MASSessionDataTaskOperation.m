@@ -21,7 +21,7 @@
 @property (nonatomic, strong) NSMutableData *responseData;
 @property (nonatomic, strong) NSError *error;
 
-@property (nonatomic) long long didSendBodyDataBlock;
+@property (nonatomic) long long totalBytesExpected;
 @property (nonatomic) long long bytesReceived;
 
 @property (nonatomic, readwrite, getter = isFinished) BOOL finished;
@@ -210,7 +210,6 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
-    NSLog(@"did receive content disposition");
     NSURLSessionResponseDisposition disposition = NSURLSessionResponseAllow;
     
     if (self.didReceiveResponseBlock)
