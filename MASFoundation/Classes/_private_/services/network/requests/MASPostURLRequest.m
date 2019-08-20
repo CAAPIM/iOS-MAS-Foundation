@@ -70,7 +70,6 @@
     // Body ... format the parameter dictionary to data for the request type if there is anything
     // to format.  It's possible there isn't.
     //
-    // THIS PART Is not needed. Confirm from testing
     NSData *data = [self dataForBodyFromParameterInfo:parameterInfo forRequestType:requestType];
     if(data)
     {
