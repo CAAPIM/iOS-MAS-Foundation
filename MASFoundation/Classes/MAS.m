@@ -1130,6 +1130,13 @@ withParameters:(nullable NSDictionary *)parameterInfo
 
 + (void)upload:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDatablock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
 {
+    if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
+    {
+        NSError* error = [NSError errorInvalidRequestForFileUpload];
+        completion(nil,nil,error);
+        return;
+    }
+    
     [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
         
         if(!completed){
