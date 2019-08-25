@@ -185,6 +185,8 @@
 		C81CC3CD1FC2EA190058718E /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */; };
 		C81CC3D01FC2EFBB0058718E /* UIAlertController+MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */; };
 		C81CC3D11FC2EFBB0058718E /* UIAlertController+MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */; };
+		C891D02B23129F5600846666 /* MASSessionDownloadTaskOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C891D02923129F5600846666 /* MASSessionDownloadTaskOperation.m */; };
+		C891D02C23129F5600846666 /* MASSessionDownloadTaskOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = C891D02A23129F5600846666 /* MASSessionDownloadTaskOperation.h */; };
 		C8C32B0D22D706B900D64DF0 /* MASMultiPartFormData.h in Headers */ = {isa = PBXBuildFile; fileRef = C8C32B0C22D706B900D64DF0 /* MASMultiPartFormData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8C32B1022D7163100D64DF0 /* MASMultiPartRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = C8C32B0E22D7163100D64DF0 /* MASMultiPartRequestSerializer.h */; };
 		C8C32B1122D7163100D64DF0 /* MASMultiPartRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C32B0F22D7163100D64DF0 /* MASMultiPartRequestSerializer.m */; };
@@ -565,6 +567,8 @@
 		C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASBrowserBasedAuthentication.m; sourceTree = "<group>"; };
 		C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertController+MAS.h"; sourceTree = "<group>"; };
 		C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertController+MAS.m"; sourceTree = "<group>"; };
+		C891D02923129F5600846666 /* MASSessionDownloadTaskOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSessionDownloadTaskOperation.m; sourceTree = "<group>"; };
+		C891D02A23129F5600846666 /* MASSessionDownloadTaskOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSessionDownloadTaskOperation.h; sourceTree = "<group>"; };
 		C8C32B0C22D706B900D64DF0 /* MASMultiPartFormData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASMultiPartFormData.h; sourceTree = "<group>"; };
 		C8C32B0E22D7163100D64DF0 /* MASMultiPartRequestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASMultiPartRequestSerializer.h; sourceTree = "<group>"; };
 		C8C32B0F22D7163100D64DF0 /* MASMultiPartRequestSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASMultiPartRequestSerializer.m; sourceTree = "<group>"; };
@@ -1249,6 +1253,8 @@
 		CB23578F1F0EF52800D4C420 /* internal */ = {
 			isa = PBXGroup;
 			children = (
+				C891D02A23129F5600846666 /* MASSessionDownloadTaskOperation.h */,
+				C891D02923129F5600846666 /* MASSessionDownloadTaskOperation.m */,
 				CBFA70F21F1ED5D6006D025D /* MASSecurityPolicy.h */,
 				CBFA70F31F1ED5D6006D025D /* MASSecurityPolicy.m */,
 				CB2357901F0EF53600D4C420 /* MASURLSessionManager.h */,
@@ -1692,6 +1698,7 @@
 				A47F126C1C1D6B4B0008E3F2 /* MASURLRequest.h in Headers */,
 				CB9B1211210949E1008A2075 /* MASASN1Decoder.h in Headers */,
 				10D2D49E1C1686ED00DF8AC4 /* MASGroup+MASPrivate.h in Headers */,
+				C891D02C23129F5600846666 /* MASSessionDownloadTaskOperation.h in Headers */,
 				C8C32B1022D7163100D64DF0 /* MASMultiPartRequestSerializer.h in Headers */,
 				CB5E4C681C1D21FB001B3B8A /* MASPostURLRequest.h in Headers */,
 				A4150ED41BF16D9A00037E27 /* MASNetworkingService.h in Headers */,
@@ -1915,6 +1922,7 @@
 				A46F49C71C2F5FC500A4C370 /* MASIHTTPRequestOperationManager.m in Sources */,
 				CB6492061FE9DAF300281288 /* MQTTTransport.m in Sources */,
 				CB2A4049209A341A00F988AA /* MASMultiFactorHandler.m in Sources */,
+				C891D02B23129F5600846666 /* MASSessionDownloadTaskOperation.m in Sources */,
 				CB6491E31FE9DAF300281288 /* MQTTCFSocketTransport.m in Sources */,
 				A46F49D21C2F5FC500A4C370 /* MASIURLConnectionOperation.m in Sources */,
 				A419B3A21C176259008DC88C /* NSData+MAS.m in Sources */,

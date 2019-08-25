@@ -13,6 +13,7 @@
 #import "MASAuthValidationOperation.h"
 #import "MASSecurityPolicy.h"
 #import "MASSessionDataTaskOperation.h"
+#import "MASSessionDownloadTaskOperation.h"
 #import "MASURLRequest.h"
 #import "MASPostFormURLRequest.h"
 
@@ -83,6 +84,15 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 
 
 -(MASSessionDataTaskOperation *)fileUploadOperation:(MASURLRequest *)request progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completionHandler;
+
+
+/**
+ Constructs MASSessionDownloadTaskOperation object for file download API request with given MASURLRequest object and internal NSURLSession object.
+ @param request MASURLRequest object that holds header, parameter, URL, and HTTP method of the request.
+ @param completionHandler MASSessionDataTaskCompletionBlock hanlder which will be notified upon completion of the request.
+ @return an instance of MASSessionDownloadTaskOperation
+ */
+- (MASSessionDownloadTaskOperation *)downloadOperationWithRequest:(MASURLRequest *)request destinationPath:(NSString *)destinationPath progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completion;
 
 ///--------------------------------------
 /// @name Public

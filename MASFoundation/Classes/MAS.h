@@ -1064,6 +1064,12 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 + (void)upload:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDatablock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion;
 
+
+/**
+ * Request method to download a file from a URL. Normaly HTTP GET method based file requests.
+ */
++ (void)downloadFile:(nonnull MASRequest *)request destinationPath:(NSString* _Nullable)destinationPath progress:(MASFileRequestProgressBlock _Nullable )progressBlock completion:(MASResponseObjectErrorBlock _Nullable)completion;
+
 ///--------------------------------------
 /// @name JWT Signing
 ///--------------------------------------

@@ -1150,6 +1150,27 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (void)downloadFile:(nonnull MASRequest *)request destinationPath:(NSString* _Nullable)destinationPath progress:(MASFileRequestProgressBlock _Nullable )progressBlock completion:(MASResponseObjectErrorBlock _Nullable)completion
+{
+    if(![request.httpMethod isEqualToString:@"GET"])
+    {
+        NSError* error = [NSError errorInvalidRequestForFileUpload];
+        completion(nil,nil,error);
+        return;
+    }
+    
+    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
+        
+        if(!completed){
+            completion(nil,nil,error);
+            return;
+        }
+        
+        
+    }];
+}
+
+
 # pragma mark - Private
 
 + (void)checkAndValidateRequestScope:(NSString*)endPoint headerInfo:(NSDictionary *)headerInfo isPublic:(BOOL)isPublic completion:(MASCompletionErrorBlock)completion
