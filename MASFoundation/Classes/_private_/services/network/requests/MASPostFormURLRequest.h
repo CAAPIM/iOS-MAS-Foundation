@@ -2,9 +2,12 @@
 //  MASPostFormURLRequest.h
 //  MASFoundation
 //
-//  Created by nimma01 on 12/07/19.
 //  Copyright © 2019 CA Technologies. All rights reserved.
 //
+//  This software may be modified and distributed under the terms
+//  of the MIT license. See the LICENSE file for details.
+//
+
 
 #import "MASURLRequest.h"
 
