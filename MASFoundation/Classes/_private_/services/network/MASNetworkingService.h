@@ -673,5 +673,7 @@ withParameters:(NSDictionary *)parameterInfo
 
 - (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
 
+- (void)dowloadFileRequest:(MASRequest*)request destinationPath:(NSString*)filePath progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
+
 @end
 

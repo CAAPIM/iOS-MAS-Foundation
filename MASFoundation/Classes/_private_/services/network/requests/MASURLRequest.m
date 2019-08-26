@@ -16,6 +16,7 @@ NSString * const MASRequestResponseTypeTextPlainValue = @"text/plain";
 NSString * const MASRequestResponseTypeWwwFormUrlEncodedValue = @"application/x-www-form-urlencoded";
 NSString * const MASRequestResponseTypeXmlValue = @"application/xml";
 NSString * const MASRequestResponseTypeFormDataValue = @"multipart/form-data";
+NSString * const MASRequestResponseTypeImageDataValue = @"image/*";
 
 
 @implementation MASURLRequest

@@ -140,12 +140,9 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
     NSLog(@"bytes written so far %lld",totalBytesWritten/totalBytesExpectedToWrite);
     //send progress
-    NSLog(@"%@",downloadTask.originalRequest.allHTTPHeaderFields);
-    self.downloadProgress.totalUnitCount = totalBytesExpectedToWrite;
-    self.downloadProgress.completedUnitCount = totalBytesWritten;
     
     if(self.progress){
-        self.progress(self.downloadProgress);
+        self.progress(downloadTask.progress);
     }
 }
 

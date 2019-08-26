@@ -1479,7 +1479,7 @@ withParameters:(NSDictionary *)parameterInfo
 }
 
 
--(void)dowloadFileRequest:(MASRequest*)request destinationPath:(NSString*)filePath progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)dowloadFileRequest:(MASRequest*)request destinationPath:(NSString*)filePath progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
 {
     //
     //  endPoint cannot be nil

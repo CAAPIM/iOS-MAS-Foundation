@@ -257,6 +257,11 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
     MASRequestResponseTypeFormData,
     
     /**
+     * Standard http image MIME type
+     */
+    MASRequestResponseTypeImageData,
+    
+    /**
      * The total number of supported types.
      */
     MASRequestResponseTypeCount

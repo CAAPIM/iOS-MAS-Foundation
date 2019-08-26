@@ -1166,6 +1166,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
             return;
         }
         
+        [[MASNetworkingService sharedService] dowloadFileRequest:request destinationPath:destinationPath progress:progressBlock completion:completion];
         
     }];
 }

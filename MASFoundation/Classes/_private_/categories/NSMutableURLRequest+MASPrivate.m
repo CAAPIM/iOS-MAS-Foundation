@@ -71,6 +71,8 @@
         case MASRequestResponseTypeXml: return MASRequestResponseTypeXmlValue;
             
         case MASRequestResponseTypeFormData : return MASRequestResponseTypeFormDataValue;
+            
+        case MASRequestResponseTypeImageData : return MASRequestResponseTypeImageDataValue;
         
         //
         // Default
@@ -104,6 +106,8 @@
     
     
     else if([mimeType isEqualToString:MASRequestResponseTypeFormDataValue]) return MASRequestResponseTypeFormData;
+    
+    else if([mimeType isEqualToString:MASRequestResponseTypeImageDataValue]) return MASRequestResponseTypeImageData;
     //
     // Default to text/plain
     //

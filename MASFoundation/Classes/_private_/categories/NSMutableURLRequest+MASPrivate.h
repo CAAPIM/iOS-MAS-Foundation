@@ -18,6 +18,7 @@ extern NSString * const MASRequestResponseTypeTextPlainValue;
 extern NSString * const MASRequestResponseTypeWwwFormUrlEncodedValue;
 extern NSString * const MASRequestResponseTypeXmlValue;
 extern NSString * const MASRequestResponseTypeFormDataValue;
+extern NSString * const MASRequestResponseTypeImageDataValue;
 
 
 @interface NSMutableURLRequest (MASPrivate)
