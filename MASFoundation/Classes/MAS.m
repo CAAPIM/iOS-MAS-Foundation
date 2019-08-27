@@ -1128,7 +1128,65 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
+{
+    if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
+    {
+        NSError* error = [NSError errorInvalidRequestForFileUpload];
+        completion(nil,nil,error);
+        return;
+    }
+    
+    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
+        
+        if(!completed){
+            completion(nil,nil,error);
+            return;
+        }
+        
+        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic constructingBodyBlock:formDataBlock progress:progressBlock completion:completion];
+        
+    }];
+}
+
+
 # pragma mark - Private
+
++ (void)checkAndValidateRequestScope:(NSString*)endPoint headerInfo:(NSDictionary *)headerInfo isPublic:(BOOL)isPublic completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Check for endpoint
+    //
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    //
+    //  Validate if new scope has been requested in header
+    //  Validation will be ignored if the request is being made as public
+    //
+    [MAS validateScopeForRequest:headerInfo isPublic:isPublic completion:completion];
+        
+}
 
 + (void)httpMethod:(NSString *)httpMethod
           endPoint:(NSString *)endPoint

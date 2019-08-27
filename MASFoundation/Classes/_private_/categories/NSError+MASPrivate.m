@@ -833,6 +833,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeBBANotEnabled errorDomain:MASFoundationErrorDomainLocal];
 }
 
++ (NSError *)errorInvalidRequestForFileUpload
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeInvalidRequestForFileUpload errorDomain:MASFoundationErrorDomainLocal];
+}
+
 
 # pragma mark - Foundation Errors Private
 
@@ -1097,6 +1102,12 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         case MASFoundationErrorCodeMultiFactorAuthenticationCancelled : return @"Multi factor authentication process has been cancelled.";
         case MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest : return @"Invalid request for multi factor authentication.";
+            
+        //
+        // File Request Errors
+        //
+        
+        case MASFoundationErrorCodeInvalidRequestForFileUpload : return @"the MASRequest is not valid for multi-part file upload. Please check if the request is of method POST and the request type is MASRequestResponseTypeFormData.";
             
         //
         // Default

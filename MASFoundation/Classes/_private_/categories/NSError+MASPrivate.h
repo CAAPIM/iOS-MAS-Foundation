@@ -647,4 +647,13 @@
  */
 + (NSError *)errorBrowserBasedAuthenticaionNotEnabled;
 
+
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidRequestForFileUpload.
+ *
+ * @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error MASFoundationErrorCodeInvalidRequestForFileUpload
+ */
++ (NSError *)errorInvalidRequestForFileUpload;
+
 @end

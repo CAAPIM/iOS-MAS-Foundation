@@ -99,6 +99,7 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeResponseSerializationFailedToParseResponse = 100407,
     MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure = 100408,
     
+    
     //
     // Application
     //
@@ -197,6 +198,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     MASFoundationErrorCodeMultiFactorAuthenticationCancelled = 180002,
     MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest = 180003,
+    
+    //
+    // File Request Errors
+    //
+    MASFoundationErrorCodeInvalidRequestForFileUpload = 180100,
     
     MASFoundationErrorCodeCount = -999999
 };
