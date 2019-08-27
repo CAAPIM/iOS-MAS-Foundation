@@ -1062,7 +1062,31 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 # pragma mark - FILE Requests
 
-+ (void)upload:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDatablock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion;
+/**
+ *  Post a multi-part form with the parameters defined in the MASRequest object
+ *
+ *  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
+ *  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
+ *  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
+ *  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
+ *
+ *  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
+ *
+ *  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
+ *  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
+ *  with isPublic being YES.
+ *
+ *  The API appends the file data and any other parameters to the body and follows the standards defined for Content-Type = multipart/form-data
+ *
+ *  @param request MASRequest An object containing all parameters to call the endpoint
+ *      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
+ *  @param formDataBlock This is a block that gets called while constructing the body of the multi-part form request. Typically files can be added to the body by calling various APIs available in MASMultiPartFormData
+ *  @see MASMultiPartFormData
+ *  @param progressBlock Block which gives back the NSProgress of the task that is going on. Different values can be read from the progress object to present a meaningful progress updates in the UI. Recommend to use progress.fractioncompleted for progress bar updates.
+ *  @param completion An MASResponseObjectErrorBlock (NSHTTPURLResponse *response, id responseObject, NSError *error) that will
+ *      receive the NSHTTPURLResponse object, response object which needs to perform type casting based on the object type, and NSError object when error occurs.
+ */
++ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion;
 
 
 /**

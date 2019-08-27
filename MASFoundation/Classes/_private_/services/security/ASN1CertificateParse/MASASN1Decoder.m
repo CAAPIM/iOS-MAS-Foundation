@@ -194,7 +194,11 @@
                 }
                 case MASASN1TagBitStr:
                 {
-                    NSData *dataWithoutUnusedBit = [subContentData subdataWithRange:NSMakeRange(1, [subContentData length]-1)];
+                    NSData *dataWithoutUnusedBit = [NSData data];
+                    if (subContentData && [subContentData length]) {
+                        
+                        dataWithoutUnusedBit = [subContentData subdataWithRange:NSMakeRange(1, [subContentData length]-1)];
+                    }
                     thisObject.value = dataWithoutUnusedBit;
                     break;
                 }

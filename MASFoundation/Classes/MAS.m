@@ -1128,7 +1128,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
-+ (void)upload:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDatablock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
++ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
 {
     if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
     {
@@ -1144,7 +1144,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
             return;
         }
         
-        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic constructingBodyBlock:formDatablock progress:progressBlock completion:completion];
+        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic constructingBodyBlock:formDataBlock progress:progressBlock completion:completion];
         
     }];
 }
