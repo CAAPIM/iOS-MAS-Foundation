@@ -15,6 +15,7 @@
 #import "MASRequest.h"
 #import "MASMultiFactorAuthenticator.h"
 #import "MASMultiPartFormData.h"
+#import "MASFileObject.h"
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -1092,7 +1093,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 /**
  * Request method to download a file from a URL. Normaly HTTP GET method based file requests.
  */
-+ (void)downloadFile:(nonnull MASRequest *)request destinationPath:(NSString* _Nullable)destinationPath progress:(MASFileRequestProgressBlock _Nullable )progressBlock completion:(MASResponseObjectErrorBlock _Nullable)completion;
++ (void)downloadFile:(nonnull MASRequest *)request destinationFile:(MASFileObject* _Nullable)destinationFile progress:(MASFileRequestProgressBlock _Nullable )progressBlock completion:(MASResponseObjectErrorBlock _Nullable)completion;
 
 ///--------------------------------------
 /// @name JWT Signing

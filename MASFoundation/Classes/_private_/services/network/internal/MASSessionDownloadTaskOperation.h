@@ -7,12 +7,13 @@
 //
 
 #import "MASSessionTaskOperation.h"
+#import "MASFileObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MASSessionDownloadTaskOperation : MASSessionTaskOperation <NSURLSessionDownloadDelegate>
 
-- (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request destination:(NSString*)destinationPath progress:(MASFileRequestProgressBlock)progress;
+- (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request destinationFile:(MASFileObject *)file progress:(MASFileRequestProgressBlock)progress;
 
 @end
 

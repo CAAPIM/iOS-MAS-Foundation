@@ -17,7 +17,7 @@
 
 @property(nonatomic, strong) NSMutableData *responseData;
 @property (nonatomic, readwrite, strong) MASURLRequest *request;
-@property (nonatomic,strong)NSString* destinationPath;
+@property (nonatomic,strong)MASFileObject* destinationFile;
 @property (nonatomic)MASFileRequestProgressBlock progress;
 @property (nonatomic)NSProgress* downloadProgress;
 @property (nonatomic, readwrite, strong) NSURLSession *session;
@@ -35,14 +35,14 @@
 @synthesize executing = _executing;
 @synthesize finished = _finished;
 
-- (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request destination:(NSString*)destinationPath progress:(MASFileRequestProgressBlock)progress
+- (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request destinationFile:(MASFileObject*)file progress:(MASFileRequestProgressBlock)progress
 {
     self = [super initWithSession:session request:request];
     if (self)
     {
         self.request = (MASURLRequest *)request;
         [self setResponseType:self.request.responseType];
-        self.destinationPath = destinationPath;
+        self.destinationFile = file;
         self.progress = progress;
         self.downloadProgress = [[NSProgress alloc] initWithParent:nil userInfo:nil];
     }
@@ -99,12 +99,11 @@
             return;
         }
     }
-    
-    //self.task = [self.session downloadTaskWithRequest:self.request];
-    self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
-    
-    //[self.request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-    self.task = [self.session downloadTaskWithRequest:self.request];
+
+    //self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
+    NSURLSessionConfiguration* currentConfiguration = [self.session configuration];
+    self.session = [NSURLSession sessionWithConfiguration:currentConfiguration delegate:self delegateQueue:nil];
+     self.task = [self.session downloadTaskWithRequest:self.request];
     
     [self.task resume];
 }
@@ -132,6 +131,11 @@
 }
 
 
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error
+{
+    
+}
+
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
       didWriteData:(int64_t)bytesWritten
@@ -153,11 +157,11 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
     NSLog(@"downloaded");
     
     NSError* serializationError = nil;
-    __block id responseObj = nil;
+    //__block id responseObj = nil;
     //responseObj = [self.responseSerializer responseObjectForResponse:downloadTask.response data:self.responseData error:&serializationError];
     
-    if(self.destinationPath){
-        [[NSFileManager defaultManager] moveItemAtURL:location toURL:[NSURL fileURLWithPath:self.destinationPath] error:&serializationError];
+    if(self.destinationFile && self.destinationFile.fileURL){
+        [[NSFileManager defaultManager] moveItemAtURL:location toURL:self.destinationFile.fileURL error:&serializationError];
         
         self.didCompleteWithDataErrorBlock(session, downloadTask,nil,nil);
         return;

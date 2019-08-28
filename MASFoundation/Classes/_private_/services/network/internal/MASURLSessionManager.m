@@ -188,9 +188,9 @@
 }
 
 
-- (MASSessionDownloadTaskOperation *)downloadOperationWithRequest:(MASURLRequest *)request destinationPath:(NSString *)destinationPath progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completion
+- (MASSessionDownloadTaskOperation *)downloadOperationWithRequest:(MASURLRequest *)request destinationFile:(MASFileObject *)file progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completion
 {
-    MASSessionDownloadTaskOperation *downloadTask = [[MASSessionDownloadTaskOperation alloc] initWithSession:_session request:request destination:destinationPath progress:progress];
+    MASSessionDownloadTaskOperation *downloadTask = [[MASSessionDownloadTaskOperation alloc] initWithSession:_session request:request destinationFile:file progress:progress];
     [self.operations addObject:downloadTask];
     
     downloadTask.didCompleteWithDataErrorBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSData *data, NSError *error) {

@@ -92,7 +92,7 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
  @param completionHandler MASSessionDataTaskCompletionBlock hanlder which will be notified upon completion of the request.
  @return an instance of MASSessionDownloadTaskOperation
  */
-- (MASSessionDownloadTaskOperation *)downloadOperationWithRequest:(MASURLRequest *)request destinationPath:(NSString *)destinationPath progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completion;
+- (MASSessionDownloadTaskOperation *)downloadOperationWithRequest:(MASURLRequest *)request destinationFile:(MASFileObject *)file progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completion;
 
 ///--------------------------------------
 /// @name Public

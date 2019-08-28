@@ -1150,7 +1150,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
-+ (void)downloadFile:(nonnull MASRequest *)request destinationPath:(NSString* _Nullable)destinationPath progress:(MASFileRequestProgressBlock _Nullable )progressBlock completion:(MASResponseObjectErrorBlock _Nullable)completion
++ (void)downloadFile:(nonnull MASRequest *)request destinationFile:(MASFileObject* _Nullable)destinationFile progress:(MASFileRequestProgressBlock _Nullable )progressBlock completion:(MASResponseObjectErrorBlock _Nullable)completion
 {
     if(![request.httpMethod isEqualToString:@"GET"])
     {
@@ -1166,7 +1166,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
             return;
         }
         
-        [[MASNetworkingService sharedService] dowloadFileRequest:request destinationPath:destinationPath progress:progressBlock completion:completion];
+        [[MASNetworkingService sharedService] dowloadFileRequest:request destinationFile:destinationFile progress:progressBlock completion:completion];
         
     }];
 }

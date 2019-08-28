@@ -1479,7 +1479,7 @@ withParameters:(NSDictionary *)parameterInfo
 }
 
 
-- (void)dowloadFileRequest:(MASRequest*)request destinationPath:(NSString*)filePath progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)dowloadFileRequest:(nonnull MASRequest*)request destinationFile:(nonnull MASFileObject*)file progress:(MASFileRequestProgressBlock _Nullable )progress completion:(nullable MASResponseObjectErrorBlock)completion
 {
     //
     //  endPoint cannot be nil
@@ -1494,12 +1494,12 @@ withParameters:(NSDictionary *)parameterInfo
         return;
     }
     
-    [self httpFileDownloadRequest:request.endPoint parameters:request.body headers:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic destinationPath:filePath progress:progress completion:completion];
+    [self httpFileDownloadRequest:request.endPoint parameters:request.body headers:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic destinationFile:file progress:progress completion:completion];
 }
 
 
 
-- (void)httpFileDownloadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic  destinationPath:(NSString*)filePath progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)httpFileDownloadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic  destinationFile:(MASFileObject*)file progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
 {
     NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
     
@@ -1524,7 +1524,7 @@ withParameters:(NSDictionary *)parameterInfo
         [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
     }
     
-    MASSessionDownloadTaskOperation* operation = [_sessionManager downloadOperationWithRequest:request destinationPath:filePath progress:progress completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint parameters:parameterInfo headers:headerInfo httpMethod:request.HTTPMethod requestType:requestType responseType:responseType isPublic:isPublic completionBlock:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
+    MASSessionDownloadTaskOperation* operation = [_sessionManager downloadOperationWithRequest:request destinationFile:file progress:progress completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint parameters:parameterInfo headers:headerInfo httpMethod:request.HTTPMethod requestType:requestType responseType:responseType isPublic:isPublic completionBlock:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
         if (completion)
         {
             completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], [responseInfo objectForKey:MASResponseInfoBodyInfoKey], error);
