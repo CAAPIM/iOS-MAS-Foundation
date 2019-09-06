@@ -110,21 +110,15 @@ static inline NSString * MASContentTypeForPathExtension(NSString *extension) {
 }
 
 
-- (void)appendPartWithFormData:(NSData *)data name:(NSString *)name
+-(BOOL)appendPartWithFileData:(NSData *)data name:(NSString *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType
 {
     [self.body appendData:[[NSString stringWithFormat:@"%@", MASMultipartFormEncapsulationBoundary(self.boundary)] dataUsingEncoding:NSUTF8StringEncoding]];
-    [self.body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", name] dataUsingEncoding:NSUTF8StringEncoding]];
-    [self.body appendData:data];
-}
-
-
--(void)appendPartWithFileData:(NSData *)data name:(NSString *)name fileName:(NSString *)fileName mimeType:(NSString *)mimeType
-{
-    [self.body appendData:[[NSString stringWithFormat:@"--%@\r\n", MASMultipartFormEncapsulationBoundary(self.boundary)] dataUsingEncoding:NSUTF8StringEncoding]];
     [self.body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", name, fileName] dataUsingEncoding:NSUTF8StringEncoding]];
     [self.body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", mimeType] dataUsingEncoding:NSUTF8StringEncoding]];
     [self.body appendData:data];
     [self.body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    return YES;
 }
 
 
