@@ -1435,7 +1435,7 @@ withParameters:(NSDictionary *)parameterInfo
     MASSessionDataTaskOperation *operation = [self.sessionManager fileUploadOperation:request progress:progress completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint parameters:parameterInfo headers:headerInfo httpMethod:request.HTTPMethod requestType:requestType responseType:responseType isPublic:isPublic completionBlock:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
             if (completion)
             {
-               completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], responseInfo, error);
+                completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], responseInfo[MASResponseInfoBodyInfoKey], error);
             }
     }]];
     

@@ -79,7 +79,7 @@ static inline NSString * MASContentTypeForPathExtension(NSString *extension) {
 -(void)setBodyParameters
 {
     [self.request.parameterInfo enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
-        [self.body appendData:[[NSString stringWithFormat:@"%@", self.boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [self.body appendData:[[NSString stringWithFormat:@"%@", MASMultipartFormEncapsulationBoundary(self.boundary)] dataUsingEncoding:NSUTF8StringEncoding]];
         [self.body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", parameterKey] dataUsingEncoding:NSUTF8StringEncoding]];
         [self.body appendData:[[NSString stringWithFormat:@"%@\r\n", parameterValue] dataUsingEncoding:NSUTF8StringEncoding]];
     }];
