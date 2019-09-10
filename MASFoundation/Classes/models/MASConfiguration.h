@@ -9,6 +9,7 @@
 //
 
 @import Foundation;
+@class MASNetworkConfiguration;
 @class MASSecurityConfiguration;
 
 /**
@@ -170,6 +171,46 @@
  * @param endpointKey The key which applies to the endpoint path.
  */
 - (NSString *_Nullable)endpointPathForKey:(NSString *_Nonnull)endpointKey;
+
+
+
+///--------------------------------------
+/// @name Security Configuration
+///--------------------------------------
+
+# pragma mark - Network Configuration
+
+/**
+ */
++ (BOOL)setNetworkConfiguration:(MASNetworkConfiguration *_Nonnull)networkConfiguration error:(NSError *__nullable __autoreleasing *__nullable)error;
+
+
+
+/**
+ Removes network configuration object based on the domain (host, and port number).
+
+ @param domain NSURL object of domain to delete MASNetworkConfiguration.
+ */
++ (void)removeNetworkConfigurationForDomain:(NSURL *_Nonnull)domain;
+
+
+
+/**
+ Returns an array of MASNetworkConfiguration objects for each host.
+
+ @return Returns an array of currently active MASNetworkConfigurations.
+ */
++ (NSArray *_Nullable)networkConfigurations;
+
+
+
+/**
+ Returns MASSecurityConfiguration object for a specific domain.
+
+ @param domain NSURL of the domain for the MASSecurityConfiguration object.
+ @return Returns a MASSecurityConfiguration object for the domain.
+ */
++ (MASNetworkConfiguration *_Nullable)networkConfigurationForDomain:(NSURL *_Nonnull)domain;
 
 
 

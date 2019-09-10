@@ -98,6 +98,12 @@
 @property (assign) MASRequestResponseType responseType;
 
 
+/**
+The NSTimeInterval value that specifies the timeInterval of the request.
+*/
+@property (assign) NSTimeInterval timeoutInterval;
+
+
 ///--------------------------------------
 /// @name Lifecycle
 ///--------------------------------------

@@ -99,6 +99,10 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeResponseSerializationFailedToParseResponse = 100407,
     MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure = 100408,
     
+    //
+    //  Network Configuration
+    //
+    MASFoundationErrorCodeConfigurationInvalidHostForNetworkConfiguration = 100501,
     
     //
     // Application

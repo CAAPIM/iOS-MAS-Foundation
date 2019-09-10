@@ -204,6 +204,9 @@ static NSString *_Nonnull const MASUserPhoneRequestResponseKey = @"phone_number"
 static NSString *_Nonnull const MASUserPictureRequestResponseKey = @"picture"; // string
 static NSString *_Nonnull const MASUserRefreshTokenRequestResponseKey = @"refresh_token"; // string
 
+// Default network timeout configuration.
+static int const MASDefaultNetworkTimeoutConfiguration = 60;
+
 
 # pragma mark - GrantType Constants
 

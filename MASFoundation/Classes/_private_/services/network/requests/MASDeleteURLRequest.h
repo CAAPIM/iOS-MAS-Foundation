@@ -40,6 +40,7 @@
                                  andHeaders:(NSDictionary *)headerInfo
                                 requestType:(MASRequestResponseType)requestType
                                responseType:(MASRequestResponseType)responseType
-                                   isPublic:(BOOL)isPublic;
+                                   isPublic:(BOOL)isPublic
+                            timeoutInterval:(NSTimeInterval)timeoutInterval;
 
 @end

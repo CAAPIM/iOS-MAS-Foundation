@@ -15,7 +15,7 @@
 @implementation MASPostFormURLRequest
 
 
-+ (MASPostFormURLRequest *)requestForEndpoint:(NSString *)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock
++ (MASPostFormURLRequest *)requestForEndpoint:(NSString *)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock
 {
     //
     // Adding prefix to the endpoint path
@@ -35,7 +35,7 @@
     //
     // Create the request
     //
-    MASPostFormURLRequest *request = [MASPostFormURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:240];
+    MASPostFormURLRequest *request = [MASPostFormURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:timeoutInterval];
     
     //
     // Method

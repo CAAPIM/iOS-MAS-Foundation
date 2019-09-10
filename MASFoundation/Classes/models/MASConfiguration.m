@@ -419,6 +419,49 @@ static float _systemVersionNumber_;
 }
 
 
+# pragma mark - Network Configuration
+
++ (BOOL)setNetworkConfiguration:(MASNetworkConfiguration *)networkConfiguration error:(NSError **)error
+{
+    //
+    //  Validate the NSURL host for security configuration.
+    //
+    if (!networkConfiguration.host || !networkConfiguration.host.port)
+    {
+        if (error)
+        {
+            *error = [NSError errorForFoundationCode:MASFoundationErrorCodeConfigurationInvalidHostForNetworkConfiguration errorDomain:MASFoundationErrorDomainLocal];
+        }
+        
+        return NO;
+    }
+    
+    [MASConfigurationService setNetworkConfiguration:networkConfiguration];
+    
+    return YES;
+}
+
+
++ (void)removeNetworkConfigurationForDomain:(NSURL *)domain
+{
+    [MASConfigurationService removeNetworkConfigurationForDomain:domain];
+}
+
+
++ (NSArray *)networkConfigurations
+{
+    return [MASConfigurationService networkConfigurations];
+}
+
+
++ (MASNetworkConfiguration *)networkConfigurationForDomain:(NSURL *)domain
+{
+    return [MASConfigurationService networkConfigurationForDomain:domain];
+}
+
+
+# pragma mark - Security Configuration
+
 + (BOOL)setSecurityConfiguration:(MASSecurityConfiguration *)securityConfiguration error:(NSError **)error
 {
     //

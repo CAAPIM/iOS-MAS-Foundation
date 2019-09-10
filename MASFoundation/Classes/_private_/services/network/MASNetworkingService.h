@@ -276,6 +276,15 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
         completion:(MASResponseInfoErrorBlock)completion;
 
 
+- (void)deleteFrom:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+    completion:(MASResponseInfoErrorBlock)completion;
+
 /**
  * Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type 
  * places it's parameters within the NSURL itself as an HTTP query extension as so:
@@ -369,6 +378,16 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
      completion:(MASResponseInfoErrorBlock)completion;
 
 
+- (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+     completion:(MASResponseInfoErrorBlock)completion;
+
+
 /**
  * Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
  * places it's parameters within the HTTP body in www-form-urlencoded format:
@@ -467,6 +486,15 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
        isPublic:(BOOL)isPublic
      completion:(MASResponseInfoErrorBlock)completion;
 
+
+- (void)patchTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+    completion:(MASResponseInfoErrorBlock)completion;
 
 /**
  * Request method for an HTTP POST call to the Gateway.  This type of HTTP Method type
@@ -569,6 +597,15 @@ withParameters:(NSDictionary *)parameterInfo
     completion:(MASResponseInfoErrorBlock)completion;
 
 
+- (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+    completion:(MASResponseInfoErrorBlock)completion;
+
 /**
  * Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
  * places it's parameters within the HTTP body in www-form-urlencoded format:
@@ -668,10 +705,20 @@ withParameters:(NSDictionary *)parameterInfo
    completion:(MASResponseInfoErrorBlock)completion;
 
 
+- (void)putTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+   andHeaders:(NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+   completion:(MASResponseInfoErrorBlock)completion;
+
+
 
 # pragma mark - HTTP File Requests
 
-- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
+- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
 
 @end
 

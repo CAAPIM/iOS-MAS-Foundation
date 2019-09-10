@@ -26,6 +26,7 @@
                               requestType:(MASRequestResponseType)requestType
                              responseType:(MASRequestResponseType)responseType
                                  isPublic:(BOOL)isPublic
+                          timeoutInterval:(NSTimeInterval)timeoutInterval
 {
     //
     // Adding prefix to the endpoint path
@@ -45,7 +46,7 @@
     //
     // Create the request
     //
-    MASPostURLRequest *request = [MASPostURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+    MASPostURLRequest *request = [MASPostURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:timeoutInterval];
     
     //
     // Method

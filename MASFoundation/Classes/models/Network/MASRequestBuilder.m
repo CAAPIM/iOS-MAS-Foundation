@@ -10,7 +10,9 @@
 
 #import "MASRequestBuilder.h"
 
+#import "MASConstantsPrivate.h"
 #import "MASRequest+MASPrivate.h"
+
 
 @interface MASRequestBuilder ()
 
@@ -36,6 +38,7 @@
         self.sign = NO;
         self.requestType = MASRequestResponseTypeJson;
         self.responseType = MASRequestResponseTypeJson;
+        self.timeoutInterval = MASDefaultNetworkTimeoutConfiguration; // default to 60 seconds.
     }
     
     return self;
