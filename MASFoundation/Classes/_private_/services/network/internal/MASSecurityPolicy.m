@@ -89,6 +89,7 @@ static unsigned char rsa2048Asn1Header[] = {
     NSArray *certificateChain = [self extractCertificateDataFromServerTrust:serverTrust];
     
     switch (securityConfiguration.pinningMode) {
+        //Tricky case where the default behaviour is still the same as older release. If certificate is set check it or check if atleast public key hash is set, if yes verify public key hash. Not setting both would have errored out in the code above
         case MASSecuritySSLPinningModeCertificate:
         {
             BOOL isPublicKeyHashVerified = NO;
@@ -102,7 +103,11 @@ static unsigned char rsa2048Asn1Header[] = {
                 isPublicKeyHashVerified = YES;
             }
             
-            isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) && isPublicKeyHashVerified;
+            if(securityConfiguration.certificates != nil && [securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] > 0)
+            {
+                isPinningVerified = ([self validateCertPinning:serverTrust configuration:securityConfiguration certChain:certificateChain]) && isPublicKeyHashVerified;
+            }
+            
         }
             break;
             
