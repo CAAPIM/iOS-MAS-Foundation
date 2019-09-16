@@ -62,6 +62,7 @@
     //  capture request
     //
     request.isPublic = isPublic;
+    request.timeoutInterval = timeoutInterval;
     request.requestType = requestType;
     request.responseType = responseType;
     request.headerInfo = headerInfo;

@@ -424,7 +424,7 @@ static float _systemVersionNumber_;
 + (BOOL)setNetworkConfiguration:(MASNetworkConfiguration *)networkConfiguration error:(NSError **)error
 {
     //
-    //  Validate the NSURL host for security configuration.
+    //  Validate the NSURL host for network configuration.
     //
     if (!networkConfiguration.host || !networkConfiguration.host.port)
     {

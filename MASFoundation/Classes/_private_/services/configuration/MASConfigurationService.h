@@ -25,9 +25,12 @@
 # pragma mark - Network Configuration
 
 /**
- */
-+ (void)setNetworkConfiguration:(MASNetworkConfiguration *)networkConfiguration;
+Sets network timeout for specified host in MASNetworkConfiguration object
 
+@warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASNetworkConfiguration object will be overwritten. If primary gateway's network configuration has to be modified, ensure to set network configuration after SDK initialization.
+@param networkConfiguration MASNetworkConfiguration object with host, and network configuration values.
+*/
++ (void)setNetworkConfiguration:(MASNetworkConfiguration *)networkConfiguration;
 
 
 

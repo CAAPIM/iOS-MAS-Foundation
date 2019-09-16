@@ -175,13 +175,17 @@
 
 
 ///--------------------------------------
-/// @name Security Configuration
+/// @name Network Configuration
 ///--------------------------------------
 
 # pragma mark - Network Configuration
 
 /**
- */
+Sets network timeout for specified host in MASNetworkConfiguration object
+
+@warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASNetworkConfiguration object will be overwritten. If primary gateway's network configuration has to be modified, ensure to set network configuration after SDK initialization.
+@param networkConfiguration MASNetworkConfiguration object with host, and network configuration values.
+*/
 + (BOOL)setNetworkConfiguration:(MASNetworkConfiguration *_Nonnull)networkConfiguration error:(NSError *__nullable __autoreleasing *__nullable)error;
 
 

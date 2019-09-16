@@ -18,6 +18,7 @@
  
  Default configuration value for designated initializer, [[MASRequestBuilder alloc] initWithHTTPMethod:], would be:
  isPublic: NO,
+ timeoutInterval: 60,
  sign: NO,
  requestType:MASRequestResponseTypeJson, 
  responseType:MASRequestResponseTypeJson.

@@ -33,6 +33,7 @@
  * @param requestType Represents the expected encoding of the request contents.
  * @param responseType Represents the excepted encoding of the response contents.
  * @param isPublic Represents whether to include or exclude necessary credentials of MAG to inject in the header of the request.
+ * @param timeoutInterval Represents the request's timeout interval, in seconds.
  * @return MASPostURLRequest which could be used to create NSURLSessionDataTask.
  */
 + (MASPostURLRequest *)requestForEndpoint:(NSString *)endPoint
