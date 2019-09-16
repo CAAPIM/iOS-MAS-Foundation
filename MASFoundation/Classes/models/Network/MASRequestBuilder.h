@@ -18,6 +18,7 @@
  
  Default configuration value for designated initializer, [[MASRequestBuilder alloc] initWithHTTPMethod:], would be:
  isPublic: NO,
+ timeoutInterval: 60,
  sign: NO,
  requestType:MASRequestResponseTypeJson, 
  responseType:MASRequestResponseTypeJson.
@@ -96,6 +97,12 @@
  MASRequestResponseType value that specifies what type formatting is required for response body.
  */
 @property (assign) MASRequestResponseType responseType;
+
+
+/**
+The NSTimeInterval value that specifies the timeInterval of the request.
+*/
+@property (assign) NSTimeInterval timeoutInterval;
 
 
 ///--------------------------------------

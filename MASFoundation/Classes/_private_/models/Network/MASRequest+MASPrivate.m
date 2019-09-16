@@ -23,6 +23,7 @@
 @property (assign, readwrite) BOOL sign;
 @property (assign, readwrite) MASRequestResponseType requestType;
 @property (assign, readwrite) MASRequestResponseType responseType;
+@property (assign, readwrite) NSTimeInterval timeoutInterval;
 
 @end
 
@@ -48,6 +49,7 @@
         self.header = builder.header;
         self.body = builder.body;
         self.query = builder.query;
+        self.timeoutInterval = builder.timeoutInterval;
         
         
         //

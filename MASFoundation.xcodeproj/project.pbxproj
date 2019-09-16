@@ -175,6 +175,8 @@
 		A4F671331BAFC345000E2223 /* NSString+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */; };
 		A858C6651D0978A6001FB9AD /* MASOTPService.h in Headers */ = {isa = PBXBuildFile; fileRef = A858C6631D0978A6001FB9AD /* MASOTPService.h */; };
 		A858C6661D0978A6001FB9AD /* MASOTPService.m in Sources */ = {isa = PBXBuildFile; fileRef = A858C6641D0978A6001FB9AD /* MASOTPService.m */; };
+		A888437E2327858D0005F502 /* MASNetworkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = A888437C2327858C0005F502 /* MASNetworkConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A888437F2327858D0005F502 /* MASNetworkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = A888437D2327858C0005F502 /* MASNetworkConfiguration.m */; };
 		A898EF632182D30A00CF291B /* MASJWTService.m in Sources */ = {isa = PBXBuildFile; fileRef = A898EF612182D30900CF291B /* MASJWTService.m */; };
 		A898EF642182D30A00CF291B /* MASJWTService.h in Headers */ = {isa = PBXBuildFile; fileRef = A898EF622182D30900CF291B /* MASJWTService.h */; };
 		A898EF672182D35700CF291B /* MASJWKSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A898EF652182D35700CF291B /* MASJWKSet.h */; };
@@ -555,6 +557,8 @@
 		A4F671311BAFC345000E2223 /* NSString+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MASPrivate.m"; sourceTree = "<group>"; };
 		A858C6631D0978A6001FB9AD /* MASOTPService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASOTPService.h; sourceTree = "<group>"; };
 		A858C6641D0978A6001FB9AD /* MASOTPService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASOTPService.m; sourceTree = "<group>"; };
+		A888437C2327858C0005F502 /* MASNetworkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASNetworkConfiguration.h; sourceTree = "<group>"; };
+		A888437D2327858C0005F502 /* MASNetworkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASNetworkConfiguration.m; sourceTree = "<group>"; };
 		A898EF612182D30900CF291B /* MASJWTService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASJWTService.m; sourceTree = "<group>"; };
 		A898EF622182D30900CF291B /* MASJWTService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASJWTService.h; sourceTree = "<group>"; };
 		A898EF652182D35700CF291B /* MASJWKSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASJWKSet.h; sourceTree = "<group>"; };
@@ -1242,6 +1246,8 @@
 				C8C32B0C22D706B900D64DF0 /* MASMultiPartFormData.h */,
 				C8C32B0E22D7163100D64DF0 /* MASMultiPartRequestSerializer.h */,
 				C8C32B0F22D7163100D64DF0 /* MASMultiPartRequestSerializer.m */,
+				A888437C2327858C0005F502 /* MASNetworkConfiguration.h */,
+				A888437D2327858C0005F502 /* MASNetworkConfiguration.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1681,6 +1687,7 @@
 				A4831AEC1BD1A87C007B4AE6 /* MASApplication+MASPrivate.h in Headers */,
 				CB5E4C741C1D26BA001B3B8A /* MASPatchURLRequest.h in Headers */,
 				A42157261BF864590034BDC9 /* MASConfigurationService.h in Headers */,
+				A888437E2327858D0005F502 /* MASNetworkConfiguration.h in Headers */,
 				CB5E4C701C1D250D001B3B8A /* MASPutURLRequest.h in Headers */,
 				CB6491DE1FE9DAF300281288 /* MQTTCFSocketDecoder.h in Headers */,
 				CB9975461EDF5799006CEBB1 /* MASAuthCredentials+MASPrivate.h in Headers */,
@@ -2011,6 +2018,7 @@
 				CB1907F91C17950700A5EF16 /* MASAccessService.m in Sources */,
 				CBD25B0A1E78C47C00DFB47F /* JWTCoding.m in Sources */,
 				CBD25B101E78C47C00DFB47F /* JWTErrorDescription.m in Sources */,
+				A888437F2327858D0005F502 /* MASNetworkConfiguration.m in Sources */,
 				CB5E4C6D1C1D2467001B3B8A /* MASDeleteURLRequest.m in Sources */,
 				A46F49CE1C2F5FC500A4C370 /* MASINetworkReachabilityManager.m in Sources */,
 				A4831AEF1BD1A87C007B4AE6 /* MASAuthenticationProvider+MASPrivate.m in Sources */,

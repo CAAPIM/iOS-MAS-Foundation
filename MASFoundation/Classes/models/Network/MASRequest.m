@@ -22,6 +22,7 @@
 @property (assign, readwrite) BOOL sign;
 @property (assign, readwrite) MASRequestResponseType requestType;
 @property (assign, readwrite) MASRequestResponseType responseType;
+@property (assign, readwrite) NSTimeInterval timeoutInterval;
 
 @end
 

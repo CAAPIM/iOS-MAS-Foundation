@@ -277,6 +277,40 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
 
 
 /**
+* Request method for an HTTP DELETE call from the Gateway.  This type of HTTP Method type
+* places it's parameters within the NSURL itself as an HTTP query extension as so:
+*
+*     https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+*
+* @param endPointPath The specific end point path fragment NSString to append to the base
+*     Gateway URL.
+* @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+*     query portion of the URL.
+* @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+*     header.
+* @param requestType The expected content type encoding for the parameter values.
+* @param responseType The expected content type encoding for any response data.
+* @param isPublic Represents whether to include or exclude necessary credentials of MAG to inject in the header of the request.
+* @param timeoutInterval Represents the request's timeout interval, in seconds.
+* @param completion An MASResponseInfoErrorBlock type (NSDictionary *responseInfo, NSError *error) that will
+*     receive the NSDictionary responseInfo and an NSError object if there is a failure.
+*
+* The responseInfo can have two keys:
+*
+*     MASResponseInfoHeaderInfoKey: the value will be an NSDictionary of key/value pairs from the HTTP header.
+*     MASResponseInfoBodyInfoKey: the value will be an NSObject of some kind that is expected in the body of
+*                                    the particular request (optional)
+*/
+- (void)deleteFrom:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+    completion:(MASResponseInfoErrorBlock)completion;
+
+/**
  * Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type 
  * places it's parameters within the NSURL itself as an HTTP query extension as so:
  *
@@ -370,6 +404,41 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
 
 
 /**
+* Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
+* places it's parameters within the NSURL itself as an HTTP query extension as so:
+*
+*     https://<hostname>:<port>/<endPointPath><?type=value&type2=value2&...>
+*
+* @param endPointPath The specific end point path fragment NSString to append to the base
+*     Gateway URL.
+* @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+*     query portion of the URL.
+* @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+*     header.
+* @param requestType The expected content type encoding for the parameter values.
+* @param responseType The expected content type encoding for any response data.
+* @param isPublic Represents whether to include or exclude necessary credentials of MAG to inject in the header of the request.
+* @param timeoutInterval Represents the request's timeout interval, in seconds.
+* @param completion An MASResponseInfoErrorBlock type (NSDictionary *responseInfo, NSError *error) that will
+*     receive the NSDictionary responseInfo and an NSError object if there is a failure.
+*
+* The responseInfo can have two keys:
+*
+*     MASResponseInfoHeaderInfoKey: the value will be an NSDictionary of key/value pairs from the HTTP header.
+*     MASResponseInfoBodyInfoKey: the value will be an NSObject of some kind that is expected in the body of
+*                                    the particular request (optional)
+*/
+- (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+     completion:(MASResponseInfoErrorBlock)completion;
+
+
+/**
  * Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
  * places it's parameters within the HTTP body in www-form-urlencoded format:
  *
@@ -467,6 +536,42 @@ typedef NSURLRequest* (^MASSessionDataTaskHTTPRedirectBlock)(NSURLSession *sessi
        isPublic:(BOOL)isPublic
      completion:(MASResponseInfoErrorBlock)completion;
 
+
+/**
+* Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
+* places it's parameters within the HTTP body in www-form-urlencoded format:
+*
+*     <body>
+*         <type=value&type2=value2&...>
+*     </body>
+*
+* @param endPointPath The specific end point path fragment NSString to append to the base
+*     Gateway URL.
+* @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+*     query portion of the URL.
+* @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+*     header.
+* @param requestType The expected content type encoding for the parameter values.
+* @param responseType The expected content type encoding for any response data.
+* @param isPublic Represents whether to include or exclude necessary credentials of MAG to inject in the header of the request.
+* @param timeoutInterval Represents the request's timeout interval, in seconds.
+* @param completion An MASResponseInfoErrorBlock type (NSDictionary *responseInfo, NSError *error) that will
+*     receive the NSDictionary responseInfo and an NSError object if there is a failure.
+*
+* The responseInfo can have two keys:
+*
+*     MASResponseInfoHeaderInfoKey: the value will be an NSDictionary of key/value pairs from the HTTP header.
+*     MASResponseInfoBodyInfoKey: the value will be an NSObject of some kind that is expected in the body of
+*                                    the particular request (optional)
+*/
+- (void)patchTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+    completion:(MASResponseInfoErrorBlock)completion;
 
 /**
  * Request method for an HTTP POST call to the Gateway.  This type of HTTP Method type
@@ -570,6 +675,42 @@ withParameters:(NSDictionary *)parameterInfo
 
 
 /**
+* Request method for an HTTP POST call to the Gateway.  This type of HTTP Method type
+* places it's parameters within the HTTP body in www-form-urlencoded format:
+*
+*     <body>
+*         <type=value&type2=value2&...>
+*     </body>
+*
+* @param endPointPath The specific end point path fragment NSString to append to the base
+*     Gateway URL.
+* @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+*     query portion of the URL.
+* @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+*     header.
+* @param requestType The expected content type encoding for the parameter values.
+* @param responseType The expected content type encoding for any response data.
+* @param isPublic Represents whether to include or exclude necessary credentials of MAG to inject in the header of the request.
+* @param timeoutInterval Represents the request's timeout interval, in seconds.
+* @param completion An MASResponseInfoErrorBlock type (NSDictionary *responseInfo, NSError *error) that will
+*     receive the NSDictionary responseInfo and an NSError object if there is a failure.
+*
+* The responseInfo can have two keys:
+*
+*     MASResponseInfoHeaderInfoKey: the value will be an NSDictionary of key/value pairs from the HTTP header.
+*     MASResponseInfoBodyInfoKey: the value will be an NSObject of some kind that is expected in the body of
+*                                    the particular request (optional)
+*/
+- (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+    completion:(MASResponseInfoErrorBlock)completion;
+
+/**
  * Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
  * places it's parameters within the HTTP body in www-form-urlencoded format:
  *
@@ -668,10 +809,47 @@ withParameters:(NSDictionary *)parameterInfo
    completion:(MASResponseInfoErrorBlock)completion;
 
 
+/**
+* Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
+* places it's parameters within the HTTP body in www-form-urlencoded format:
+*
+*     <body>
+*         <type=value&type2=value2&...>
+*     </body>
+*
+* @param endPointPath The specific end point path fragment NSString to append to the base
+*     Gateway URL.
+* @param parameterInfo An NSDictionary of key/value parameter values that will go into the
+*     query portion of the URL.
+* @param headerInfo An NSDictionary of key/value header values that will go into the HTTP
+*     header.
+* @param requestType The expected content type encoding for the parameter values.
+* @param responseType The expected content type encoding for any response data.
+* @param isPublic Represents whether to include or exclude necessary credentials of MAG to inject in the header of the request.
+* @param timeoutInterval Represents the request's timeout interval, in seconds.
+* @param completion An MASResponseInfoErrorBlock type (NSDictionary *responseInfo, NSError *error) that will
+*     receive the NSDictionary responseInfo and an NSError object if there is a failure.
+*
+* The responseInfo can have two keys:
+*
+*     MASResponseInfoHeaderInfoKey: the value will be an NSDictionary of key/value pairs from the HTTP header.
+*     MASResponseInfoBodyInfoKey: the value will be an NSObject of some kind that is expected in the body of
+*                                    the particular request (optional)
+*/
+- (void)putTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+   andHeaders:(NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+   completion:(MASResponseInfoErrorBlock)completion;
+
+
 
 # pragma mark - HTTP File Requests
 
-- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
+- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
 
 @end
 

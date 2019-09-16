@@ -27,6 +27,7 @@
 @property (assign) BOOL isPublic;
 @property (assign) MASRequestResponseType requestType;
 @property (assign) MASRequestResponseType responseType;
+@property (assign) NSTimeInterval timeoutInterval;
 @property (nonatomic, strong) NSString *endPoint;
 @property (nonatomic, strong) NSDictionary *parameterInfo;
 @property (nonatomic, strong) NSDictionary *headerInfo;

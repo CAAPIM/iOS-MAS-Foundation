@@ -84,6 +84,12 @@
 @property (assign, readonly) MASRequestResponseType responseType;
 
 
+/**
+The NSTimeInterval value that specifies the timeInterval of the request.
+*/
+@property (assign, readonly) NSTimeInterval timeoutInterval;
+
+
 # pragma mark - Public
 
 
