@@ -21,7 +21,7 @@ Follow these steps for pull requests:
 6. If you haven't already, complete the [Contributor License Agreement ("CLA")][cla].
 
 ### Contributor License Agreement ("CLA")
-To accept pull requests, submit a CLA. (Submitting a single CLA lets you work on any open source projects from CA, Inc.)
+To accept pull requests, submit a CLA. (Submitting a single CLA lets you work on any open source projects from Broadcom, Inc.)
 
 Complete your CLA here: <https://www.clahub.com/agreements/CAAPIM/iOS-MAS-Foundation>
 
