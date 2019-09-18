@@ -1,3 +1,8 @@
+# Version 1.9.20
+
+### Bug fixes
+- ASN.1 Bit String Null Range Handled. [US604961]
+
 # Version 1.9.10
 
 ### Bug fixes
