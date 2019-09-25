@@ -1,7 +1,24 @@
-# Version 1.9.20
+# Version 2.0.00
+
+### Bug fixes
+- None
 
 ### New features
 - Proximity Login feature (BLE and QR Code) is now moved to [MASProximity][MASProximity] framework. No code change is required, and no functionality change was made. In order to use Proxmity Login feature, please include [MASProximity][MASProximity] framework into a project. [US584914]
+- Intermediate Certificate Pinning-Implementation Cordova-iOS [US579432]
+- Multipart Form data support (Usage: File Upload) [US605851]
+- Ability to specify Timeout parameter for HTTP(S) Requests [US609984]
+
+### Deprecated methods
+- None
+
+### Removed methods
+- None
+
+# Version 1.9.20
+
+### Bug fixes
+- ASN.1 Bit String Null Range Handled. [US604884]
 
 # Version 1.9.10
 
