@@ -72,7 +72,7 @@ For manual install, you add the Mobile SDK to your Xcode project. Note that you 
 
 ## Set Up Project and Start the SDK
 
-To start your project, see [developer site](https://mas.ca.com/docs)
+To start your project, see [developer site](http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html)
 
 After your project is properly configured, you must start the SDK to establish a secure connection with the backend services. The startup process includes: initialize necessary services for library (such as geo-location, BLE, and network services), and load configuration.
 
@@ -149,7 +149,7 @@ of the MIT license. See the [LICENSE][license-link] file for details.
  [mag]: https://docops.ca.com/mag
  [mas.ca.com]: http://mas.ca.com/
  [get-started]: http://mas.ca.com/get-started/
- [docs]: http://mas.ca.com/docs/
+ [docs]: http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html
  [blog]: http://mas.ca.com/blog/
  [videos]: https://www.ca.com/us/developers/mas/videos.html
  [StackOverflow]: http://stackoverflow.com/questions/tagged/massdk
