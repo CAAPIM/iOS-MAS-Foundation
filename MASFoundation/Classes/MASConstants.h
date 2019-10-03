@@ -13,6 +13,7 @@
 @class CLLocation;
 @class MASAuthCredentials;
 @class MASUser;
+@protocol MASMultiPartFormData;
 
 
 /**
@@ -113,6 +114,16 @@ typedef void (^MASResponseObjectErrorBlock)(NSHTTPURLResponse *_Nullable respons
  */
 typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nullable error);
 
+/**
+ * Progress block for File requests
+ */
+typedef void (^MASFileRequestProgressBlock) (NSProgress* _Nullable progress);
+
+
+/**
+ * Multi Part body data that needs to be supplied
+ */
+typedef void (^MASMultiPartFormDataBlock)(id <MASMultiPartFormData> _Nonnull formData);
 
 /**
  *  The MASAuthCredentialsBlcok to provide auth credentials for device registration and/or user authentication.
@@ -239,6 +250,11 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
      * Standard XML encoding.
      */
     MASRequestResponseTypeXml,
+    
+    /**
+     * Standard Multi-part form data
+     */
+    MASRequestResponseTypeFormData,
     
     /**
      * The total number of supported types.

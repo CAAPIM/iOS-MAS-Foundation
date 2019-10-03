@@ -17,6 +17,51 @@
 @interface MASConfigurationService : MASService
 
 
+
+///--------------------------------------
+/// @name Network Configuration
+///--------------------------------------
+
+# pragma mark - Network Configuration
+
+/**
+Sets network timeout for specified host in MASNetworkConfiguration object
+
+@warning Upon SDK initialization, [MASConfiguration currentConfiguration].gatewayUrl's MASNetworkConfiguration object will be overwritten. If primary gateway's network configuration has to be modified, ensure to set network configuration after SDK initialization.
+@param networkConfiguration MASNetworkConfiguration object with host, and network configuration values.
+*/
++ (void)setNetworkConfiguration:(MASNetworkConfiguration *)networkConfiguration;
+
+
+
+/**
+ Removes network configuration object based on the domain.
+
+ @param domain NSURL of the domain to delete network configuration.
+ */
++ (void)removeNetworkConfigurationForDomain:(NSURL *)domain;
+
+
+
+/**
+ Returns an array of MASNetworkConfiguration objects for each host.
+ 
+ @return Returns an array of currently active MASNetworkConfigurations.
+ */
++ (NSArray *)networkConfigurations;
+
+
+
+/**
+ Returns MASNetworkConfiguration object for a specific domain.
+ 
+ @param domain NSURL of the domain for the MASNetworkConfiguration object.
+ @return Returns a MASNetworkConfiguration object for the domain.
+ */
++ (MASNetworkConfiguration *)networkConfigurationForDomain:(NSURL *)domain;
+
+
+
 ///--------------------------------------
 /// @name Security Configuration
 ///--------------------------------------

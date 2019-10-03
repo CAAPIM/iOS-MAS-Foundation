@@ -11,9 +11,6 @@
 #import "MASDevice.h"
 
 #import "MASAccessService.h"
-#import "MASBluetoothCentral.h"
-#import "MASBluetoothPeripheral.h"
-#import "MASBluetoothService.h"
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 #import "MASSecurityService.h"
@@ -28,22 +25,6 @@ static NSString *const MASDeviceStatusPropertyKey = @"status"; // string
 
 @implementation MASDevice
 @synthesize isRegistered = _isRegistered;
-
-static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
-
-
-# pragma mark - Property
-
-+ (id<MASProximityLoginDelegate>)proximityLoginDelegate
-{
-    return _proximityLoginDelegate_;
-}
-
-
-+ (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate>)delegate
-{
-    _proximityLoginDelegate_ = delegate;
-}
 
 
 # pragma mark - Properties
@@ -163,40 +144,6 @@ static id<MASProximityLoginDelegate> _proximityLoginDelegate_;
 {
     return [NSString stringWithFormat:@"(%@) is registered: %@\n\n        identifier: %@\n        name: %@\n        status: %@",
         [self class], (self.isRegistered ? @"Yes" : @"No"), [self identifier], [self name], [self status]];
-}
-
-
-# pragma mark - Bluetooth Peripheral
-
-- (void)startAsBluetoothPeripheral
-{
-    [[MASBluetoothService sharedService].peripheral startAdvertising];
-}
-
-
-- (void)stopAsBluetoothPeripheral
-{
-    [[MASBluetoothService sharedService].peripheral stopAdvertising];
-}
-
-
-# pragma mark - Bluetooth Central
-
-- (void)startAsBluetoothCentral
-{
-    [[MASBluetoothService sharedService].central startScanning];
-}
-
-
-- (void)startAsBluetoothCentralWithAuthenticationProvider:(MASAuthenticationProvider *)provider
-{
-    [[MASBluetoothService sharedService].central startScanningWithAuthenticationProvider:provider];
-}
-
-
-- (void)stopAsBluetoothCentral
-{
-    [[MASBluetoothService sharedService].central stopScanning];
 }
 
 

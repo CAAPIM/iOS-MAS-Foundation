@@ -10,6 +10,7 @@
 
 #import "MASAuthenticationProviders.h"
 
+#import "MASAccessService.h"
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 
@@ -20,6 +21,7 @@ static NSString *const MASAuthenticationProvidersIDPPropertyKey = @"idp"; // str
 
 @implementation MASAuthenticationProviders
 
+@synthesize PKCEstate = _PKCEstate;
 
 - (id)init
 {
@@ -57,6 +59,13 @@ static NSString *const MASAuthenticationProvidersIDPPropertyKey = @"idp"; // str
         [self class], (long)[self providers].count, providers];
 }
 
+
+# pragma mark - Properties
+
+- (NSString *)PKCEstate
+{
+    return [[MASAccessService sharedService].currentAccessObj retrievePKCEState];
+}
 
 # pragma mark - Authentication Providers
 
