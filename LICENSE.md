@@ -1,7 +1,8 @@
 The MIT License (MIT)
 =====================
 
-Copyright (c) 2016 CA. All rights reserved.
+Copyright (c) 2019 Broadcom. All Rights Reserved.
+The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

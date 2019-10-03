@@ -69,6 +69,8 @@
         // XML
         //
         case MASRequestResponseTypeXml: return MASRequestResponseTypeXmlValue;
+            
+        case MASRequestResponseTypeFormData : return MASRequestResponseTypeFormDataValue;
         
         //
         // Default
@@ -100,6 +102,8 @@
     //
     else if([mimeType isEqualToString:MASRequestResponseTypeXmlValue]) return MASRequestResponseTypeXml;
     
+    
+    else if([mimeType isEqualToString:MASRequestResponseTypeFormDataValue]) return MASRequestResponseTypeFormData;
     //
     // Default to text/plain
     //

@@ -1,7 +1,24 @@
+# Version 2.0.00
+
+### Bug fixes
+- None
+
+### New features
+- Proximity Login feature (BLE and QR Code) is now moved to [MASProximity][MASProximity] framework. No code change is required, and no functionality change was made. In order to use Proxmity Login feature, please include [MASProximity][MASProximity] framework into a project. [US584914]
+- Intermediate Certificate Pinning-Implementation Cordova-iOS [US579432]
+- Multipart Form data support (Usage: File Upload) [US605851]
+- Ability to specify Timeout parameter for HTTP(S) Requests [US609984]
+
+### Deprecated methods
+- None
+
+### Removed methods
+- None
+
 # Version 1.9.20
 
 ### Bug fixes
-- ASN.1 Bit String Null Range Handled. [US604961]
+- ASN.1 Bit String Null Range Handled. [US604884]
 
 # Version 1.9.10
 
@@ -233,11 +250,10 @@ None.
 
 - .
 
-
+ [MASProximity]: https://github.com/CAAPIM/iOS-MAS-Proximity
  [mag]: https://docops.ca.com/mag
- [mas.ca.com]: http://mas.ca.com/
- [docs]: http://mas.ca.com/docs/
- [blog]: http://mas.ca.com/blog/
+ [techdocs.broadcom.com]: http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html
+ [docs]: http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html
 
  [releases]: ../../releases
  [contributing]: /CONTRIBUTING.md

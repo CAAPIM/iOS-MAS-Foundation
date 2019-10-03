@@ -21,6 +21,27 @@
 @interface MASSecurityConfiguration : MASObject
 
 
+/**
+ * Different SSL pinning modes that can be opted.
+ */
+typedef NS_ENUM(NSUInteger, MASSecuritySSLPinningMode) {
+    /**
+     * SSL pinning based on Public Key Hash.
+     */
+    MASSecuritySSLPinningModePublicKeyHash,
+    
+    /**
+     * SSL pinning based on Leaf Certificate.
+     */
+    MASSecuritySSLPinningModeCertificate,
+    
+    /**
+     * SSL pinning based on Intermediate Certificate.
+     */
+    MASSecuritySSLPinningModeIntermediateCertifcate,
+};
+
+
 ///--------------------------------------
 /// @name Properties
 ///--------------------------------------
@@ -44,6 +65,12 @@
  BOOL value that determines whether or not to validate the server trust against iOS' trusted root certificates.
  */
 @property (assign) BOOL trustPublicPKI;
+
+/**
+ enum value that determines the SSL pinning mode. The Certifcates array needs to be set accordingly with the certificates that needs to be pinned. If MASSecuritySSLPinningModeIntermediateCertifcate is chosen, then the certificates array should contain intermediate certificate.
+ @see certificates
+ */
+@property (assign) MASSecuritySSLPinningMode pinningMode;
 
 
 /**

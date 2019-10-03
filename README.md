@@ -7,9 +7,9 @@ The MASFoundation framework has the following features:
 - Authentication
     + OAuth
     + OIDC - OpenID Connect
-    + BLE
+    + BLE (in [MASProximity][MASProximity] SDK)
     + Dynamic Client ID & Client Secret
-    + QR Code
+    + QR Code (in [MASProximity][MASProximity] SDK)
     + Social Login
     + Single Sign On
     + OTP - One Time Password
@@ -72,7 +72,7 @@ For manual install, you add the Mobile SDK to your Xcode project. Note that you 
 
 ## Set Up Project and Start the SDK
 
-To start your project, see [developer site](https://mas.ca.com/docs)
+To start your project, see [developer site](http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html)
 
 After your project is properly configured, you must start the SDK to establish a secure connection with the backend services. The startup process includes: initialize necessary services for library (such as geo-location, BLE, and network services), and load configuration.
 
@@ -139,17 +139,17 @@ For more documentation and API references, go to our [main website][docs]
 
 ## License
 
-Copyright (c) 2016 CA. All rights reserved.
+Copyright (c) 2019 Broadcom. All Rights Reserved.
+The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 This software may be modified and distributed under the terms
 of the MIT license. See the [LICENSE][license-link] file for details.
 
+ [MASProximity]: https://github.com/CAAPIM/iOS-MAS-Proximity
  [mag]: https://docops.ca.com/mag
- [mas.ca.com]: http://mas.ca.com/
- [get-started]: http://mas.ca.com/get-started/
- [docs]: http://mas.ca.com/docs/
- [blog]: http://mas.ca.com/blog/
- [videos]: https://www.ca.com/us/developers/mas/videos.html
+ [techdocs.broadcom.com]: http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html
+ [get-started]: http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html
+ [docs]: http://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/mobile-sdk-for-ca-mobile-api-gateway/2-0.html
  [StackOverflow]: http://stackoverflow.com/questions/tagged/massdk
  [download]: https://github.com/CAAPIM/iOS-MAS-Foundation/archive/master.zip
  [contributing]: https://github.com/CAAPIM/iOS-MAS-Foundation/blob/develop/CONTRIBUTING.md

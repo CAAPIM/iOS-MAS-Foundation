@@ -12,6 +12,8 @@
 
 #import "MASSecurityService.h"
 
+#import "MASPostFormURLRequest.h"
+
 @interface MASURLSessionManager () <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDataDelegate>
 
 @property (readwrite, nonatomic, strong) NSURLSession *session;
@@ -159,6 +161,23 @@
     
     dataTask.didCompleteWithDataErrorBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSData *data, NSError *error) {
       
+        if (completionHandler)
+        {
+            completionHandler(task.response, data, error);
+        }
+    };
+    
+    return dataTask;
+}
+
+-(MASSessionDataTaskOperation *)fileUploadOperation:(MASURLRequest *)request progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completionHandler
+{
+    MASSessionDataTaskOperation *dataTask = [[MASSessionDataTaskOperation alloc] initWithSession:_session request:request progress:progress];
+    
+    [self.operations addObject:dataTask];
+    
+    dataTask.didCompleteWithDataErrorBlock = ^(NSURLSession *session, NSURLSessionTask *task, NSData *data, NSError *error) {
+        
         if (completionHandler)
         {
             completionHandler(task.response, data, error);

@@ -100,6 +100,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeNetworkSSLAuthenticationChallengeFailure = 100408,
     
     //
+    //  Network Configuration
+    //
+    MASFoundationErrorCodeConfigurationInvalidHostForNetworkConfiguration = 100501,
+    
+    //
     // Application
     //
     MASFoundationErrorCodeApplicationAlreadyRegistered = 110001,
@@ -163,34 +168,6 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     MASFoundationErrorCodeEnterpriseBrowserAppDoesNotExist = 140004,
     
     //
-    // BLE
-    //
-    MASFoundationErrorCodeBLEUnknownState = 150001,
-    MASFoundationErrorCodeBLEAuthorizationFailed = 150002,
-    MASFoundationErrorCodeBLEAuthorizationPollingFailed = 150003,
-    MASFoundationErrorCodeBLECentralDeviceNotFound = 150004,
-    MASFoundationErrorCodeBLEDelegateNotDefined = 150005,
-    MASFoundationErrorCodeBLEInvalidAuthenticationProvider = 150006,
-    MASFoundationErrorCodeBLEPoweredOff = 150007,
-    MASFoundationErrorCodeBLEResetting = 150008,
-    MASFoundationErrorCodeBLERSSINotInRange = 150009,
-    MASFoundationErrorCodeBLEUnSupported = 150010,
-    MASFoundationErrorCodeBLEUnauthorized = 150011,
-    MASFoundationErrorCodeBLEUserDeclined = 150012,
-    MASFoundationErrorCodeBLECentral = 150013,
-    MASFoundationErrorCodeBLEPeripheral = 150014,
-    MASFoundationErrorCodeBLEPeripheralServices = 150015,
-    MASFoundationErrorCodeBLEPeripheralCharacteristics = 150016,
-    
-    //
-    // Proximity Login
-    //
-    MASFoundationErrorCodeProximityLoginAuthorizationInProgress = 150101,
-    MASFoundationErrorCodeProximityLoginInvalidAuthenticationURL = 150102,
-    MASFoundationErrorCodeQRCodeProximityLoginAuthorizationPollingFailed = 150103,
-    MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL = 150104,
-    
-    //
     // OTP
     //
     MASFoundationErrorCodeInvalidOTPChannelSelectionBlock = 160101,
@@ -225,6 +202,11 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     MASFoundationErrorCodeMultiFactorAuthenticationCancelled = 180002,
     MASFoundationErrorCodeMultiFactorAuthenticationInvalidRequest = 180003,
+    
+    //
+    // File Request Errors
+    //
+    MASFoundationErrorCodeInvalidRequestForFileUpload = 180100,
     
     MASFoundationErrorCodeCount = -999999
 };

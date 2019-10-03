@@ -30,6 +30,8 @@
 @property (nonatomic, readwrite, strong) MASURLRequest *request;
 @property (nonatomic, readwrite, strong) NSURLSession *session;
 
+@property (nonatomic)MASFileRequestProgressBlock fileProgressblock;
+
 @end
 
 
@@ -41,6 +43,7 @@
 
 - (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request
 {
+    
     self = [super initWithSession:session request:request];
     if (self)
     {
@@ -49,6 +52,20 @@
     }
     
     return self;
+}
+
+- (instancetype)initWithSession:(NSURLSession *)session request:(NSURLRequest *)request progress:(MASFileRequestProgressBlock)progress
+{
+    self = [super initWithSession:session request:request];
+    if(self)
+    {
+        self.request = (MASURLRequest *)request;
+        [self setResponseType:self.request.responseType];
+        self.fileProgressblock = progress;
+    }
+    
+    return self;
+    
 }
 
 # pragma mark - Public
@@ -279,4 +296,17 @@
     
 }
 
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+    
+    NSLog(@"total bytes sent - %lld total bytes expected %lld",totalBytesSent,totalBytesExpectedToSend);
+    if(self.fileProgressblock){
+        //NSProgress* progress = [NSProgress progressWithTotalUnitCount:totalBytesExpectedToSend];
+        //[progress set]
+        self.fileProgressblock(task.progress);
+    }
+    
+    [super URLSession:session task:task didSendBodyData:bytesSent totalBytesSent:totalBytesSent totalBytesExpectedToSend:totalBytesExpectedToSend];
+}
 @end

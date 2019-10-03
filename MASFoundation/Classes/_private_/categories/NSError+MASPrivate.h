@@ -640,29 +640,20 @@
 
 
 /**
- *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
- *
- *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
- *  error MASFoundationErrorCodeProximityLoginAuthorizationInProgress.
- */
-+ (NSError *)errorProximityLoginAuthorizationInProgress;
-
-
-/**
- *  Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL.
- *
- *  @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
- *  error MASFoundationErrorCodeProximityLoginInvalidAuthorizeURL
- */
-+ (NSError *)errorProximityLoginInvalidAuthroizeURL;
-
-
-/**
  * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeBBANotEnabled.
  *
  * @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
  * error MASFoundationErrorCodeBBANotEnabled
  */
 + (NSError *)errorBrowserBasedAuthenticaionNotEnabled;
+
+
+/**
+ * Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeInvalidRequestForFileUpload.
+ *
+ * @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+ * error MASFoundationErrorCodeInvalidRequestForFileUpload
+ */
++ (NSError *)errorInvalidRequestForFileUpload;
 
 @end

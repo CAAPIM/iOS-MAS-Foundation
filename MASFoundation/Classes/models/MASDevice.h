@@ -11,11 +11,6 @@
 #import "MASObject.h"
 
 
-@class MASAuthenticationProvider;
-
-@protocol MASProximityLoginDelegate;
-
-
 /**
  * The `MASDevice` class is a local representation of device data.
  */
@@ -57,18 +52,6 @@
  *  Boolean indicator of whether the device is being authorized with other devices through proximity login.
  */
 @property (assign) BOOL isBeingAuthorized;
-
-
-/**
- *  The MASProximityLoginDelegate static property getter
- */
-+ (id<MASProximityLoginDelegate> _Nullable)proximityLoginDelegate;
-
-
-/**
- *  The MASProximityLoginDelegate static property setter
- */
-+ (void)setProximityLoginDelegate:(id<MASProximityLoginDelegate> _Nonnull)delegate;
 
 
 ///--------------------------------------
@@ -141,55 +124,6 @@
  *  Re-authentication proccess will be triggered whenever you are trying to access the gateway.
  */
 - (void)resetLocally;
-
-
-
-///--------------------------------------
-/// @name Bluetooth Peripheral
-///--------------------------------------
-
-# pragma mark - Bluetooth Peripheral
-
-/**
- * Start the device acting as a bluetooth peripheral.
- */
-- (void)startAsBluetoothPeripheral;
-
-
-
-/**
- * Stop the device acting as a bluetooth peripheral.
- */
-- (void)stopAsBluetoothPeripheral;
-
-
-
-///--------------------------------------
-/// @name Bluetooth Central
-///--------------------------------------
-
-# pragma mark - Bluetooth Central
-
-/**
- *  Start the device acting as a bluetooth central.
- */
-- (void)startAsBluetoothCentral;
-
-
-
-/**
- *  Start the device acting as a bluetooth central with given authentication provider.
- *
- *  @param provider MASAuthenticationProvider to pass authentication information to other devices
- */
-- (void)startAsBluetoothCentralWithAuthenticationProvider:(MASAuthenticationProvider *_Nonnull)provider;
-
-
-
-/**
- * Stop the device acting as a bluetooth central.
- */
-- (void)stopAsBluetoothCentral;
 
 
 
