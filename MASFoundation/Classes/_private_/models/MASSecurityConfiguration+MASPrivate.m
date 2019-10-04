@@ -23,7 +23,7 @@
         {
             NSData *certificateAsData = [NSData pemDataFromCertificateArray:certificate];
             
-            if (certificateAsData)
+            if (certificateAsData && [certificateAsData length])
             {
                 [certsAsData addObject:certificateAsData];
             }
@@ -32,12 +32,12 @@
         {
             NSData *certificateAsData = [NSData dataFromPEMBase64String:certificate];
 
-            if (certificateAsData)
+            if (certificateAsData && [certificateAsData length])
             {
                 [certsAsData addObject:certificateAsData];
             }
         }
-        else if ([certificate isKindOfClass:[NSData class]])
+        else if ([certificate isKindOfClass:[NSData class]] && [certificate length])
         {
             [certsAsData addObject:certificate];
         }
@@ -45,6 +45,7 @@
     
     return [certsAsData count] > 0 ? certsAsData : nil;
 }
+
 
 
 - (NSArray *)convertCertificatesToSecCertificateRef

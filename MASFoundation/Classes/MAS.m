@@ -12,7 +12,6 @@
 
 #import "MASJWTService.h"
 #import "MASAccessService.h"
-#import "MASBluetoothService.h"
 #import "MASConfigurationService.h"
 #import "MASConstantsPrivate.h"
 #import "MASClaims+MASPrivate.h"
@@ -642,7 +641,7 @@
                                                           withParameters:urlParameters
                                                               andHeaders:nil
                                                              requestType:MASRequestResponseTypeJson
-                                                            responseType:MASRequestResponseTypeJson isPublic:YES];
+                                                            responseType:MASRequestResponseTypeJson isPublic:YES timeoutInterval:MASDefaultNetworkTimeoutConfiguration];
         MASSessionDataTaskOperation *dataTaskOperation = [urlSessionManager dataOperationWithRequest:request
                                                                                    completionHandler:^(NSURLResponse * _Nonnull response, id  _Nonnull responseObject, NSError * _Nonnull error) {
             if (error)
@@ -927,7 +926,8 @@
           isPublic:(BOOL)isPublic
         completion:(MASResponseInfoErrorBlock)completion
 {
-    [MAS httpMethod:@"DELETE" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
+    [MAS httpMethod:@"DELETE" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:[self timeoutIntervalForEndpoint:endPoint]
+         completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
 }
 
 
@@ -972,7 +972,8 @@
        isPublic:(BOOL)isPublic
      completion:(MASResponseInfoErrorBlock)completion
 {
-    [MAS httpMethod:@"GET" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
+    [MAS httpMethod:@"GET" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:[self timeoutIntervalForEndpoint:endPoint]
+         completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
 }
 
 
@@ -1016,7 +1017,8 @@
        isPublic:(BOOL)isPublic
      completion:(MASResponseInfoErrorBlock)completion
 {
-    [MAS httpMethod:@"PATCH" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
+    [MAS httpMethod:@"PATCH" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:[self timeoutIntervalForEndpoint:endPoint]
+         completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
 }
 
 
@@ -1060,7 +1062,8 @@ withParameters:(NSDictionary *)parameterInfo
       isPublic:(BOOL)isPublic
     completion:(MASResponseInfoErrorBlock)completion
 {
-    [MAS httpMethod:@"POST" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
+    [MAS httpMethod:@"POST" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:[self timeoutIntervalForEndpoint:endPoint]
+         completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
 }
 
 
@@ -1104,13 +1107,19 @@ withParameters:(nullable NSDictionary *)parameterInfo
      isPublic:(BOOL)isPublic
    completion:(nullable MASResponseInfoErrorBlock)completion
 {
-    [MAS httpMethod:@"PUT" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
+    [MAS httpMethod:@"PUT" endPoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:[self timeoutIntervalForEndpoint:endPoint]
+         completion:[MAS parseToEjectURLResponseForCompletionBlock:completion]];
 }
 
 
 + (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseObjectErrorBlock)completion
 {
     __block MASResponseObjectErrorBlock blockCompletion = completion;
+    
+    // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
+    NSTimeInterval timeoutInterval =
+        (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
+        [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
     
     [MAS httpMethod:request.httpMethod
            endPoint:request.endPoint
@@ -1119,6 +1128,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
         requestType:request.requestType
        responseType:request.responseType
            isPublic:request.isPublic
+    timeoutInterval:request.timeoutInterval
          completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
              
              if (blockCompletion)
@@ -1129,7 +1139,70 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
+{
+    if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
+    {
+        NSError* error = [NSError errorInvalidRequestForFileUpload];
+        completion(nil,nil,error);
+        return;
+    }
+    
+    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
+        
+        if(!completed){
+            completion(nil,nil,error);
+            return;
+        }
+        
+        // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
+        NSTimeInterval timeoutInterval =
+            (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
+            [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
+        
+        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval  constructingBodyBlock:formDataBlock progress:progressBlock completion:completion];
+        
+    }];
+}
+
+
 # pragma mark - Private
+
++ (void)checkAndValidateRequestScope:(NSString*)endPoint headerInfo:(NSDictionary *)headerInfo isPublic:(BOOL)isPublic completion:(MASCompletionErrorBlock)completion
+{
+    //
+    // Check for endpoint
+    //
+    if (!endPoint)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorInvalidEndpoint]);
+            
+            return;
+        }
+    }
+    
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        if (completion)
+        {
+            completion(NO, [NSError errorMASIsNotStarted]);
+            
+            return;
+        }
+    }
+    
+    //
+    //  Validate if new scope has been requested in header
+    //  Validation will be ignored if the request is being made as public
+    //
+    [MAS validateScopeForRequest:headerInfo isPublic:isPublic completion:completion];
+        
+}
 
 + (void)httpMethod:(NSString *)httpMethod
           endPoint:(NSString *)endPoint
@@ -1138,6 +1211,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
        requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
           isPublic:(BOOL)isPublic
+   timeoutInterval:(NSTimeInterval)timeoutInterval
         completion:(MASResponseInfoErrorBlock)completion
 {
     //
@@ -1174,6 +1248,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
     __block MASRequestResponseType blockRequestType = requestType;
     __block MASRequestResponseType blockResponseType = responseType;
     __block BOOL blockIsPublic = isPublic;
+    __block NSTimeInterval blockTimeoutInterval = timeoutInterval;
     
     //
     //  Validate if new scope has been requested in header
@@ -1192,6 +1267,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                                  requestType:blockRequestType
                                                 responseType:blockResponseType
                                                     isPublic:blockIsPublic
+                                              timeoutInterval:blockTimeoutInterval
                                                   completion:[MAS parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }
         else if ([blockHttpMethod isEqualToString:@"GET"])
@@ -1202,6 +1278,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                               requestType:blockRequestType
                                              responseType:blockResponseType
                                                  isPublic:blockIsPublic
+                                          timeoutInterval:blockTimeoutInterval
                                                completion:[MAS parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }
         else if ([blockHttpMethod isEqualToString:@"PATCH"])
@@ -1212,6 +1289,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                               requestType:blockRequestType
                                              responseType:blockResponseType
                                                  isPublic:blockIsPublic
+                                          timeoutInterval:blockTimeoutInterval
                                                completion:[MAS parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }
         else if ([blockHttpMethod isEqualToString:@"POST"])
@@ -1222,6 +1300,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                              requestType:blockRequestType
                                             responseType:blockResponseType
                                                 isPublic:blockIsPublic
+                                         timeoutInterval:blockTimeoutInterval
                                               completion:[MAS parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }
         else if ([blockHttpMethod isEqualToString:@"PUT"])
@@ -1232,6 +1311,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                             requestType:blockRequestType
                                            responseType:blockResponseType
                                                isPublic:blockIsPublic
+                                        timeoutInterval:blockTimeoutInterval
                                              completion:[MAS parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }
     }];
@@ -1404,6 +1484,27 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (NSTimeInterval)timeoutIntervalForEndpoint:(NSString *)endPoint
+{
+    NSTimeInterval timeoutInterval = MASDefaultNetworkTimeoutConfiguration;
+    
+    NSURL *endpointURL = [NSURL URLWithString:endPoint];
+    if (endpointURL.scheme && endpointURL.host)
+    {
+        MASNetworkConfiguration *networkConfiguration = [MASConfiguration networkConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", endpointURL.scheme, endpointURL.host, endpointURL.port]]];
+        timeoutInterval = networkConfiguration.timeoutInterval;
+    }
+    else if ([MASConfiguration currentConfiguration])
+    {
+        NSURL *gatewayURL = [MASConfiguration currentConfiguration].gatewayUrl;
+        MASNetworkConfiguration *networkConfiguration = [MASConfiguration networkConfigurationForDomain:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", gatewayURL.scheme, gatewayURL.host, gatewayURL.port]]];
+        timeoutInterval = networkConfiguration.timeoutInterval;
+    }
+    
+    return timeoutInterval;
+}
+
+
 # pragma mark - JWT Signing
 
 + (NSString * _Nullable)signWithClaims:(MASClaims *_Nonnull)claims error:(NSError *__nullable __autoreleasing *__nullable)error
@@ -1518,19 +1619,17 @@ withParameters:(nullable NSDictionary *)parameterInfo
 {
     MASServiceRegistry *registry = [MASServiceRegistry sharedRegistry];
     MASConfigurationService *configurationService = [MASConfigurationService sharedService];
-    MASBluetoothService *bluetoothService = [MASBluetoothService sharedService];
     MASFileService *fileService = [MASFileService sharedService];
     MASLocationService *locationService = [MASLocationService sharedService];
     MASModelService *modelService = [MASModelService sharedService];
     MASNetworkingService *networkingService = [MASNetworkingService sharedService];
     
     DLog(@"\n\n\n%@\n\n  ****************************** Services Summary ******************************\n\n\n"
-         "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
+         "  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n  %@\n\n\n",
          (registry ? [registry debugDescription] : @"(Service Registry Not Initialized"),
          (configurationService ? [configurationService debugDescription] : @"(Configuration Service Not Initialized)\n\n"),
          (networkingService ? [networkingService debugDescription] : @"(Networking Service Not Initialized)\n\n"),
          (locationService ? [locationService debugDescription] : @"(Location Service Not Initialized)\n\n"),
-         (bluetoothService ? [bluetoothService debugDescription] : @"(Bluetooth Service Not Initialized)\n\n"),
          (modelService ? [modelService debugDescription] : @"(Model Service Not Initialized)\n\n"),
          (fileService ? [fileService debugDescription] : @"(File Service Not Initialized)\n\n"),
          [[MASAccessService sharedService] debugSecuredDescription]);

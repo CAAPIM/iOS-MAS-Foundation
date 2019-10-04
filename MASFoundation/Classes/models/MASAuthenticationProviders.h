@@ -38,6 +38,11 @@
 @property (nonatomic, copy, readonly, nullable) NSString *idp;
 
 
+/**
+ *  PKCE state value being used for current authentication providers
+ */
+@property (nonatomic, copy, readonly, nullable) NSString *PKCEstate;
+
 
 ///--------------------------------------
 /// @name Authentication Providers

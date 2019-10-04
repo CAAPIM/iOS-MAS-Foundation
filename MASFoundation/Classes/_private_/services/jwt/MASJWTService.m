@@ -167,6 +167,7 @@ static BOOL _enableJWKSetLoading_ = NO;
                                           requestType:MASRequestResponseTypeJson
                                          responseType:MASRequestResponseTypeJson
                                              isPublic:YES
+                                      timeoutInterval:MASDefaultNetworkTimeoutConfiguration
                                            completion:
          ^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
              
@@ -191,6 +192,7 @@ static BOOL _enableJWKSetLoading_ = NO;
                                                requestType:MASRequestResponseTypeJson
                                               responseType:MASRequestResponseTypeJson
                                                   isPublic:YES
+                                           timeoutInterval:MASDefaultNetworkTimeoutConfiguration
                                                 completion:
               ^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
                   

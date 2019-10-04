@@ -18,6 +18,7 @@ static NSString *_configurationFileName_ = @"msso_config";
 static NSString *_configurationFileType_ = @"json";
 static NSDictionary *_newConfigurationObject_ = nil;
 static BOOL _newConfigurationDetected_ = NO;
+static NSMutableDictionary *_networkConfigurations_;
 static NSMutableDictionary *_securityConfigurations_;
 static BOOL _enableIdTokenValidation_ = YES;
 
@@ -77,6 +78,42 @@ static BOOL _enableIdTokenValidation_ = YES;
     }
     
     return info;
+}
+
+
+# pragma mark - Network Configuration
+
++ (void)setNetworkConfiguration:(MASNetworkConfiguration *)networkConfiguration
+{
+    if (!_networkConfigurations_)
+    {
+        _networkConfigurations_ = [NSMutableDictionary dictionary];
+    }
+    
+    if ([networkConfiguration.host absoluteString])
+    {
+        [_networkConfigurations_ setObject:networkConfiguration forKey:[networkConfiguration.host absoluteString]];
+    }
+}
+
+
++ (void)removeNetworkConfigurationForDomain:(NSURL *)domain
+{
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", domain.scheme, domain.host, domain.port]];
+    [_networkConfigurations_ removeObjectForKey:[thisDomain absoluteString]];
+}
+
+
++ (NSArray *)networkConfigurations
+{
+    return _networkConfigurations_ ? [_networkConfigurations_ allValues] : nil;
+}
+
+
++ (MASNetworkConfiguration *)networkConfigurationForDomain:(NSURL *)domain
+{
+    NSURL *thisDomain = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", domain.scheme, domain.host, domain.port]];
+    return thisDomain ? [_networkConfigurations_ objectForKey:[thisDomain absoluteString]] : nil;
 }
 
 
@@ -281,10 +318,18 @@ static BOOL _enableIdTokenValidation_ = YES;
         }
     }
     
+    
+    NSURL *currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayHostName, _currentConfiguration.gatewayPort]];
+    
+    //
+    //  Construct and set MASNetworkConfiguration for the primary gateway
+    //
+    MASNetworkConfiguration *defaultNetworkConfiguration = [[MASNetworkConfiguration alloc] initWithURL:currentURL];
+    [MASConfiguration setNetworkConfiguration:defaultNetworkConfiguration error:nil];
+    
     //
     //  Construct and set MASSecurityConfiguration for the primary gateway
     //
-    NSURL *currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", _currentConfiguration.gatewayUrl.scheme, _currentConfiguration.gatewayHostName, _currentConfiguration.gatewayPort]];
     MASSecurityConfiguration *defaultSecurityConfiguration = [[MASSecurityConfiguration alloc] initWithURL:currentURL];
     defaultSecurityConfiguration.trustPublicPKI = _currentConfiguration.enabledTrustedPublicPKI;
     defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublicKeyHashes;

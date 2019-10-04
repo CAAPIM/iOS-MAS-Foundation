@@ -105,7 +105,6 @@ static NSArray const *_serviceUUIDs_;
     [
         MASAccessServiceUUID,
         MASConfigurationServiceUUID,
-        MASBluetoothServiceUUID,
         MASLocationServiceUUID,
         MASFileServiceUUID,
         MASModelServiceUUID,
