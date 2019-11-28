@@ -187,6 +187,31 @@
     return dataTask;
 }
 
+-(NSURLSessionUploadTask*)fileUploadTask:(MASPostFormURLRequest*)request
+{
+    
+    NSURL* directory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* filePath = [directory URLByAppendingPathComponent:@"file"];
+    NSData* data = request.HTTPBody;
+    NSError* error;
+    [data writeToURL:filePath options:NSDataWritingFileProtectionNone error:&error];
+    
+    NSURLSessionConfiguration* sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"upload"];
+    //sessionConfig.
+    NSURLSession* sessionNew = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:nil];
+    
+    NSURLRequest* urlRequest = [[NSURLRequest alloc] initWithURL:request.URL];
+    
+    
+    NSString* string = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"large5.jpg"];
+    NSURLSessionUploadTask* task = [sessionNew uploadTaskWithRequest:urlRequest fromFile:[NSURL fileURLWithPath:string]];
+    
+    
+    [task resume];
+    
+    return task;
+}
+
 
 # pragma mark - NSOperationQueue
 

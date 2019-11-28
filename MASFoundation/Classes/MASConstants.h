@@ -114,6 +114,10 @@ typedef void (^MASResponseObjectErrorBlock)(NSHTTPURLResponse *_Nullable respons
  */
 typedef void (^MASUserResponseErrorBlock)(MASUser *_Nullable user, NSError *_Nullable error);
 
+typedef void(^MASUploadTaskBlock) (NSURLSessionUploadTask* _Nonnull uploadTask,NSError* _Nullable error);
+
+typedef void(^MASDataTaskBlock) (NSURLSessionDataTask* _Nonnull uploadTask,NSError* _Nullable error);
+
 /**
  * Progress block for File requests
  */

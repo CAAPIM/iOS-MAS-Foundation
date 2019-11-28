@@ -851,5 +851,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 
 - (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;
 
+- (void)httpbackgroundFileUploadRequest:(MASRequest*)request taskBlock:(MASUploadTaskBlock)uploadTask construction:(nonnull MASMultiPartFormDataBlock)formDataBlock completion:(MASResponseObjectErrorBlock)completion;
+
 @end
 

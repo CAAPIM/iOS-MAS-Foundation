@@ -84,6 +84,8 @@ typedef void (^MASNetworkSessionDidFinishEventsForBackgroundURLSessionBlock)(NSU
 
 -(MASSessionDataTaskOperation *)fileUploadOperation:(MASURLRequest *)request progress:(MASFileRequestProgressBlock)progress completionHandler:(MASSessionDataTaskCompletionBlock)completionHandler;
 
+-(NSURLSessionUploadTask*)fileUploadTask:(MASPostFormURLRequest*)request;
+
 ///--------------------------------------
 /// @name Public
 ///--------------------------------------

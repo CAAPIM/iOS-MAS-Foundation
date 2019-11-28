@@ -1058,6 +1058,12 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  */
 + (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseObjectErrorBlock)completion;
 
++ (void)invoke:(nonnull MASRequest *)request taskBlock:(MASDataTaskBlock _Nullable)task completion:(nullable MASResponseObjectErrorBlock)completion;
+
+
++ (void)uploadFile:(NSURL*)fileURL request:(MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock taskBlock:(MASUploadTaskBlock _Nullable )task  completion:(MASResponseObjectErrorBlock)completion;
+
+
 
 
 # pragma mark - FILE Requests

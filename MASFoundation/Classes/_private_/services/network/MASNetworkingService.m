@@ -383,8 +383,9 @@ static NSMutableArray *_multiFactorAuthenticators_;
         //
         MASSecurityPolicy *securityPolicy = [[MASSecurityPolicy alloc] init];
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        sessionConfig.URLCredentialStorage = nil;
-        sessionConfig.URLCache = nil;
+       // NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"myidentifier"];
+       // sessionConfig.URLCredentialStorage = nil;
+        //sessionConfig.URLCache = nil;
         
         //
         //  NSURLSessionManager
@@ -1606,6 +1607,27 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         //
         [_sessionManager.internalOperationQueue addOperation:operation];
     }
+}
+
+- (void)httpbackgroundFileUploadRequest:(MASRequest*)request taskBlock:(MASUploadTaskBlock)uploadTask construction:(nonnull MASMultiPartFormDataBlock)formDataBlock completion:(MASResponseObjectErrorBlock)completion
+{
+    //NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+    
+    //MASURLRequest *request = nil;
+    
+    //
+    //  if location was successfully retrieved
+    //
+//    if ([MASLocationService sharedService].lastKnownLocation != nil)
+//    {
+//        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+//    }
+    
+    MASPostFormURLRequest* formRequest = [MASPostFormURLRequest requestForEndpoint:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:60 constructingBodyBlock:formDataBlock];
+    
+    [self.sessionManager fileUploadTask:formRequest];
+    
+    
 }
 
 

@@ -43,6 +43,7 @@ static unsigned char rsa2048Asn1Header[] = {
 
 - (BOOL)evaluateSecurityConfigurationsForServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain
 {
+    //return YES;
     NSURL *domainURL = [NSURL URLWithString:domain];
     MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:domainURL];
     
@@ -149,6 +150,15 @@ static unsigned char rsa2048Asn1Header[] = {
         if (![securityConfiguration validateCertificateChain])
         {
             int matchingCertificatesCount = 0;
+            
+            for(int i=0;i<certificateChain.count;i++){
+                NSData* dataVar = [[NSData alloc] initWithData:[certificateChain objectAtIndex:i]];
+                NSString* base64String = [dataVar base64Encoding];
+                NSLog(@"*************");
+                NSLog(@"%@",base64String);
+                NSLog(@"/********");
+            }
+            
             
             for (NSData *pinnedCertData in pinnedCertificatesData)
             {

@@ -1138,6 +1138,32 @@ withParameters:(nullable NSDictionary *)parameterInfo
     }];
 }
 
++ (void)invoke:(nonnull MASRequest *)request taskBlock:(MASDataTaskBlock _Nullable)task completion:(nullable MASResponseObjectErrorBlock)completion
+{
+    __block MASResponseObjectErrorBlock blockCompletion = completion;
+    
+    // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
+    NSTimeInterval timeoutInterval =
+        (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
+        [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
+    
+    [MAS httpMethod:request.httpMethod
+           endPoint:request.endPoint
+     withParameters:request.body
+         andHeaders:request.header
+        requestType:request.requestType
+       responseType:request.responseType
+           isPublic:request.isPublic
+    timeoutInterval:request.timeoutInterval
+         completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
+             
+             if (blockCompletion)
+             {
+                 blockCompletion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], [responseInfo objectForKey:MASResponseInfoBodyInfoKey], error);
+             }
+    }];
+}
+
 
 + (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
 {
@@ -1161,6 +1187,34 @@ withParameters:(nullable NSDictionary *)parameterInfo
             [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
         
         [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval  constructingBodyBlock:formDataBlock progress:progressBlock completion:completion];
+        
+    }];
+}
+
+
++ (void)uploadFile:(NSURL*)fileURL request:(MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock taskBlock:(MASUploadTaskBlock _Nullable )task  completion:(MASResponseObjectErrorBlock)completion
+{
+    if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
+    {
+        NSError* error = [NSError errorInvalidRequestForFileUpload];
+        completion(nil,nil,error);
+        return;
+    }
+    
+    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
+        
+        if(!completed){
+            completion(nil,nil,error);
+            return;
+        }
+        
+        // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
+        NSTimeInterval timeoutInterval =
+            (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
+            [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
+        
+        
+        [[MASNetworkingService sharedService] httpbackgroundFileUploadRequest:request taskBlock:task construction:formDataBlock completion:completion];
         
     }];
 }

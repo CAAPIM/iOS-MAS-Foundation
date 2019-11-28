@@ -302,8 +302,6 @@
     
     NSLog(@"total bytes sent - %lld total bytes expected %lld",totalBytesSent,totalBytesExpectedToSend);
     if(self.fileProgressblock){
-        //NSProgress* progress = [NSProgress progressWithTotalUnitCount:totalBytesExpectedToSend];
-        //[progress set]
         self.fileProgressblock(task.progress);
     }
     
