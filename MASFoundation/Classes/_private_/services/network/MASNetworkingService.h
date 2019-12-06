@@ -847,6 +847,8 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 
 
 
+- (void)httpRequestWithCancel:(MASRequest*)request taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion;
+
 # pragma mark - HTTP File Requests
 
 - (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion;

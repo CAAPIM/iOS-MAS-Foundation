@@ -30,7 +30,7 @@
 #import "MASNetworkReachability.h"
 #import "MASMultiFactorHandler+MASPrivate.h"
 #import "MASMultiPartRequestSerializer.h"
-
+#import "MASDataTask+MASPrivate.h"
 
 # pragma mark - Configuration Constants
 
@@ -461,6 +461,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         // Response header info
         //
         NSDictionary *headerInfo = [httpResponse allHeaderFields];
+        NSLog(@"Response headers : %@",headerInfo);
         
         //
         //  If the error exists from the server, inject http status code in error userInfo
@@ -1409,6 +1410,24 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     [self httpRequest:@"POST" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval completion:completion];
 }
 
+- (void)httpPostTo:(MASRequest*)request taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    //  endPoint cannot be nil
+    //
+    if (!request.endPoint)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, [NSError errorInvalidEndpoint]);
+        
+        return;
+    }
+    
+    
+}
+
 
 - (void)putTo:(NSString *)endPoint
 withParameters:(NSDictionary *)parameterInfo
@@ -1569,6 +1588,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
             }
     }]];
     
+    
     if (![self isMAGEndpoint:endPoint])
     {
         //
@@ -1607,6 +1627,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         [_sessionManager.internalOperationQueue addOperation:operation];
     }
 }
+
 
 
 - (void)httpRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic
@@ -1707,6 +1728,136 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         //
         [_sessionManager.internalOperationQueue addOperation:operation];
     }
+}
+
+
+- (void)httpRequestWithCancel:(MASRequest*)request taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion
+{
+    NSMutableDictionary *mutableHeaderInfo;
+    //
+    // Update the header
+    //
+    if(request.header){
+        mutableHeaderInfo = [request.header mutableCopy];
+    }
+    else{
+        mutableHeaderInfo = [NSMutableDictionary mutableCopy];
+    }
+    
+    
+    MASURLRequest* urlRequest = [self getURLRequest:request.httpMethod endPoint:request.endPoint parameters:request.body headers:[NSDictionary dictionary] requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:request.timeoutInterval];
+    
+    //
+    //  if location was successfully retrieved
+    //
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    if(self.httpRedirectionBlock)
+    {
+        [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
+    }
+    
+    MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:urlRequest
+                                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:request.endPoint
+                                                                                                                             parameters:request.body
+                                                                                                                                headers:request.header
+                                                                                                                             httpMethod:urlRequest.HTTPMethod
+                                                                                                                            requestType:request.requestType
+                                                                                                                           responseType:request.responseType
+                                                                                                                               isPublic:request.isPublic
+                                                                                                                        completionBlock:completion]];
+    
+    MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
+    
+    
+    if (![self isMAGEndpoint:request.endPoint])
+    {
+        //
+        //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
+        //  then, add dependency on shared validation operation which will validate current session
+        //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
+        //
+        if (!request.isPublic)
+        {
+            //
+            //  add dependency
+            //
+            [operation addDependency:self.sharedOperation];
+            
+            //
+            //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
+            //
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
+            {
+                //
+                //  add sharedOperation into internal operation queue
+                //
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
+            }
+        }
+        
+        //
+        //  add current request into normal operation queue
+        //
+        [_sessionManager.operationQueue addOperation:operation];
+    }
+    else {
+        //
+        //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
+        //
+        [_sessionManager.internalOperationQueue addOperation:operation];
+    }
+    
+    taskBlock(newDataTask,nil);
+}
+
+
+- (MASURLRequest*)getURLRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+{
+    //
+    // Update the header
+    //
+    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+    
+    MASURLRequest *request = nil;
+    
+    //
+    //  if location was successfully retrieved
+    //
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    //
+    //  Construct MASURLRequest object per HTTP method
+    //
+    if ([httpMethod isEqualToString:@"DELETE"])
+    {
+        request = [MASDeleteURLRequest requestForEndpoint:request.endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"GET"])
+    {
+        request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"PATCH"])
+    {
+        request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"POST"])
+    {
+        request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"PUT"])
+    {
+        request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    
+    return request;
 }
 
 @end

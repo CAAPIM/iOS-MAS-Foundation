@@ -1058,7 +1058,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  */
 + (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseObjectErrorBlock)completion;
 
-
++ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)dataTask completion:(nullable MASResponseObjectErrorBlock)completion;
 
 # pragma mark - FILE Requests
 

@@ -13,6 +13,7 @@
 @class CLLocation;
 @class MASAuthCredentials;
 @class MASUser;
+@class MASDataTask;
 @protocol MASMultiPartFormData;
 
 
@@ -108,6 +109,11 @@ typedef void (^MASResponseInfoErrorBlock)(NSDictionary<NSString *, id> *_Nullabl
  */
 typedef void (^MASResponseObjectErrorBlock)(NSHTTPURLResponse *_Nullable response, id _Nullable responseObject, NSError *_Nullable error);
 
+
+/**
+* The MASDataTaskBlock which contains the dataTask object that is being invoked. Users can typically call cancel on the request using this callback.
+*/
+typedef void  (^MASDataTaskBlock)(MASDataTask* _Nullable dataTask,NSError* _Nullable error);
 
 /**
  * The MASUser specific (MASUser *user, NSError *error) block.

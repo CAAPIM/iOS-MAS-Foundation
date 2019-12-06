@@ -29,6 +29,7 @@
 
 @property (nonatomic, readwrite, strong) MASURLRequest *request;
 @property (nonatomic, readwrite, strong) NSURLSession *session;
+@property (nonatomic, strong) NSString* taskID;
 
 @property (nonatomic)MASFileRequestProgressBlock fileProgressblock;
 
@@ -49,6 +50,7 @@
     {
         self.request = (MASURLRequest *)request;
         [self setResponseType:self.request.responseType];
+        self.taskID = [[NSUUID UUID] UUIDString];
     }
     
     return self;
