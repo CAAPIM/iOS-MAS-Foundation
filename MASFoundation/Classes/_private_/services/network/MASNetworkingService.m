@@ -1538,7 +1538,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 }
 
 
-- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseObjectErrorBlock)completion
 {
     //
     //  endPoint cannot be nil
@@ -1553,11 +1553,11 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         return;
     }
     
-    [self httpFileUploadRequest:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval constructingBodyBlock:formDataBlock progress:progress completion:completion];
+    [self httpFileUploadRequest:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval constructingBodyBlock:formDataBlock progress:progress taskBlock:taskBlock completion:completion];
 }
 
 
-- (void)httpFileUploadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)httpFileUploadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseObjectErrorBlock)completion
 {
     NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
     
@@ -1587,6 +1587,8 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
                 completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], responseInfo[MASResponseInfoBodyInfoKey], error);
             }
     }]];
+    
+    MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
     
     
     if (![self isMAGEndpoint:endPoint])
@@ -1625,6 +1627,10 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
         //
         [_sessionManager.internalOperationQueue addOperation:operation];
+    }
+    
+    if(taskBlock){
+        taskBlock(newDataTask,nil);
     }
 }
 
@@ -1811,7 +1817,10 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         [_sessionManager.internalOperationQueue addOperation:operation];
     }
     
-    taskBlock(newDataTask,nil);
+    if(taskBlock){
+        taskBlock(newDataTask,nil);
+    }
+    
 }
 
 

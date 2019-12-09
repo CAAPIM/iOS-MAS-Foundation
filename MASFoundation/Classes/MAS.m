@@ -1188,7 +1188,35 @@ withParameters:(nullable NSDictionary *)parameterInfo
             (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
             [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
         
-        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval  constructingBodyBlock:formDataBlock progress:progressBlock completion:completion];
+    
+        
+        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval constructingBodyBlock:formDataBlock progress:progressBlock taskBlock:nil completion:completion];
+        
+    }];
+}
+
++ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock taskBlock:(MASDataTaskBlock _Nullable )taskBlock completion:(nullable MASResponseObjectErrorBlock)completion
+{
+    if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
+    {
+        NSError* error = [NSError errorInvalidRequestForFileUpload];
+        completion(nil,nil,error);
+        return;
+    }
+    
+    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
+        
+        if(!completed){
+            completion(nil,nil,error);
+            return;
+        }
+        
+        // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
+        NSTimeInterval timeoutInterval =
+            (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
+            [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
+        
+        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval  constructingBodyBlock:formDataBlock progress:progressBlock taskBlock:taskBlock completion:completion];
         
     }];
 }
