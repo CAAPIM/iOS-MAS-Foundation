@@ -197,7 +197,7 @@
                     blockSelf.webLoginCallBack(nil, YES, nil);
                 }
             }
-            return request;
+            return nil;
     };
     
     return redirectionBlock;
