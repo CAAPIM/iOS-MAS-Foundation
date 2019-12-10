@@ -64,6 +64,7 @@
         self.request = (MASURLRequest *)request;
         [self setResponseType:self.request.responseType];
         self.fileProgressblock = progress;
+        self.taskID = [[NSUUID UUID] UUIDString];
     }
     
     return self;

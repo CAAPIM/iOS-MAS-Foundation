@@ -30,7 +30,10 @@
 
 - (void)cancel
 {
-    [self.operation cancel];
+    if(![self.operation isFinished] && ![self.operation isCancelled]){
+        [self.operation cancel];
+    }
+    
 }
 
 @end

@@ -31,6 +31,17 @@
     return self;
 }
 
+- (BOOL)isFinished
+{
+    return [self.operation isFinished];
+}
+
+
+-(BOOL)isCancelled
+{
+    return [self.operation isCancelled];
+}
+
 
 
 

@@ -1222,6 +1222,12 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
++ (void)cancelRequest:(MASDataTask*)task
+{
+    [[MASNetworkingService sharedService] cancelRequest:task];
+}
+
+
 # pragma mark - Private
 
 + (void)checkAndValidateRequestScope:(NSString*)endPoint headerInfo:(NSDictionary *)headerInfo isPublic:(BOOL)isPublic completion:(MASCompletionErrorBlock)completion

@@ -63,6 +63,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 @property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
 @property (nonatomic, strong, readwrite) MASNetworkReachability *gatewayReachabilityManager;
 @property (readwrite, nonatomic, strong) MASAuthValidationOperation *authValidationOperation;
+@property (nonatomic, strong) NSMutableDictionary* tasks;
 
 @end
 
@@ -240,7 +241,9 @@ static NSMutableArray *_multiFactorAuthenticators_;
     dispatch_once(&onceToken, ^
                   {
                       sharedInstance = [[MASNetworkingService alloc] initProtected];
+        
                   });
+    
     
     return sharedInstance;
 }
@@ -269,6 +272,10 @@ static NSMutableArray *_multiFactorAuthenticators_;
 
 - (void)serviceWillStart
 {
+    
+    if(!self.tasks){
+        self.tasks = [[NSMutableDictionary alloc] init];
+    }
     //
     // establish URLSession with configuration's host name and start networking monitoring
     //
@@ -431,8 +438,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
                                                                      httpMethod:(NSString *)httpMethod
                                                                     requestType:(MASRequestResponseType)requestType
                                                                    responseType:(MASRequestResponseType)responseType
-                                                                       isPublic:(BOOL)isPublic
-                                                                completionBlock:(MASResponseInfoErrorBlock)completion
+                                                                       isPublic:(BOOL)isPublic completionBlock:(MASResponseInfoErrorBlock)completion
 {
     __block MASRequestResponseType blockResponseType = responseType;
     __block MASRequestResponseType blockRequestType = requestType;
@@ -1589,6 +1595,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     }]];
     
     MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
+    [self cacheDataTask:newDataTask];
     
     
     if (![self isMAGEndpoint:endPoint])
@@ -1773,10 +1780,12 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
                                                                                                                              httpMethod:urlRequest.HTTPMethod
                                                                                                                             requestType:request.requestType
                                                                                                                            responseType:request.responseType
-                                                                                                                               isPublic:request.isPublic
-                                                                                                                        completionBlock:completion]];
+                                                                                                                               isPublic:request.isPublic                                                                                                                        completionBlock:completion]];
     
+
     MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
+    [self cacheDataTask:newDataTask];
+    
     
     
     if (![self isMAGEndpoint:request.endPoint])
@@ -1821,6 +1830,36 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         taskBlock(newDataTask,nil);
     }
     
+}
+
+
+- (void)cacheDataTask:(MASDataTask*)dataTask
+{
+    [self cleanUpFinishedTasks];
+    if(dataTask.taskID){
+        [self.tasks setObject:dataTask forKey:dataTask.taskID];
+    }
+}
+
+- (void)cleanUpFinishedTasks
+{
+    NSLog(@"cleaning up tasks");
+    for (NSString* key in self.tasks){
+        if([[self.tasks objectForKey:key] isFinished] || [[self.tasks objectForKey:key] isCancelled]){
+            [self.tasks removeObjectForKey:key];
+        }
+    }
+    NSLog(@"finished cleaning up");
+}
+
+- (void)cancelRequest:(MASDataTask*)task
+{
+    NSString* taskID = task.taskID;
+    if([self.tasks objectForKey:taskID]){
+        MASDataTask* taskToBeCancelled = [self.tasks objectForKey:taskID];
+        [taskToBeCancelled cancel];
+        [self.tasks removeObjectForKey:taskToBeCancelled.taskID];
+    }
 }
 
 

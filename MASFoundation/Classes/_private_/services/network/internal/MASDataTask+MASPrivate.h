@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithTask:(MASSessionDataTaskOperation*)operation;
-- (void)cancelOperation;
+- (BOOL)isFinished;
+-(BOOL)isCancelled;
 
 @end
 
