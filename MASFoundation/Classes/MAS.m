@@ -1227,6 +1227,11 @@ withParameters:(nullable NSDictionary *)parameterInfo
     [[MASNetworkingService sharedService] cancelRequest:task];
 }
 
++ (void)cancelAllRequests
+{
+    [[MASNetworkingService sharedService] cancelAllRequests];
+}
+
 
 # pragma mark - Private
 

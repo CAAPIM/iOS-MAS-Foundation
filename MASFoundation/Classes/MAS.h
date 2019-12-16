@@ -1060,7 +1060,9 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 
 + (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)dataTask completion:(nullable MASResponseObjectErrorBlock)completion;
 
-+ (void)cancelRequest:(MASDataTask*)task;
++ (void)cancelRequest:(nonnull MASDataTask*)task;
+
++ (void)cancelAllRequests;
 
 # pragma mark - FILE Requests
 

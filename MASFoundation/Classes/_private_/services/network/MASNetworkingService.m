@@ -1844,11 +1844,14 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 - (void)cleanUpFinishedTasks
 {
     NSLog(@"cleaning up tasks");
+    NSMutableArray* keysToRemove = [[NSMutableArray alloc] init];
     for (NSString* key in self.tasks){
         if([[self.tasks objectForKey:key] isFinished] || [[self.tasks objectForKey:key] isCancelled]){
-            [self.tasks removeObjectForKey:key];
+            [keysToRemove addObject:key];
+            //[self.tasks removeObjectForKey:key];
         }
     }
+    [self.tasks removeObjectsForKeys:keysToRemove];
     NSLog(@"finished cleaning up");
 }
 
@@ -1861,6 +1864,15 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         [self.tasks removeObjectForKey:taskToBeCancelled.taskID];
     }
 }
+
+
+- (void)cancelAllRequests
+{
+    [[_sessionManager operationQueue] cancelAllOperations];
+    [[_sessionManager internalOperationQueue] cancelAllOperations];
+    
+}
+
 
 
 - (MASURLRequest*)getURLRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic
