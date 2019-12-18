@@ -303,7 +303,7 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
     
-    NSLog(@"total bytes sent - %lld total bytes expected %lld",totalBytesSent,totalBytesExpectedToSend);
+    //DLog(@"total bytes sent - %lld total bytes expected %lld",totalBytesSent,totalBytesExpectedToSend);
     if(self.fileProgressblock){
         //NSProgress* progress = [NSProgress progressWithTotalUnitCount:totalBytesExpectedToSend];
         //[progress set]
