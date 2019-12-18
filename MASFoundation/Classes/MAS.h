@@ -1084,26 +1084,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 + (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)dataTask completion:(nullable MASResponseObjectErrorBlock)completion;
 
 
-/**
-*  API to cancel a pending HTTP request that was invoked using the API  invoke:taksBlock:completion:
-*  This is a best effort cancel and uses the underlying cancel functionality of iOS.
-* This means there could be scenarios where the request has already been complete and the response is received. In such cases calling cancel has no real meaning.
-*  The completion handler returns with an error description that the task has been cancelled. But in some cases if the request has a dependent Task like a login to be completed, then calling cancel on the request may not return a response back as the task has not been started yet.
-* Cancelling an already finished task has no effect.
-*  @param task MASDataTask object that was obtained as a result of invoking a request using the API  invoke:taksBlock:completion:
-*/
 
-+ (void)cancelRequest:(nonnull MASDataTask*)task error:(NSError*_Nullable*_Nullable)error;
-
-
-/**
-*  API to cancel all the pending requests in the queue.
-*  This is a best effort cancel and uses the underlying cancel functionality of iOS.
-* This means there could be scenarios where the request has already been complete and the response is received. In such cases calling cancel has no real meaning.
-* All the taks that are pending and not finished yet will be cancelled. There is no guarantee for a callback with error for all the requests.
- * Use this when you are sure to cancel all the existing requests and do not really care about the outcome. For example, User moved away from the flow and does not really need any response from earlier tasks.
-*/
-+ (void)cancelAllRequests;
 
 # pragma mark - FILE Requests
 
@@ -1158,8 +1139,36 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 * @param taskBlock Block which gives back handle to the underlying task object. This task can be cancelled by calling cancel on the object.
 *  @param completion An MASResponseObjectErrorBlock (NSHTTPURLResponse *response, id responseObject, NSError *error) that will
 *      receive the NSHTTPURLResponse object, response object which needs to perform type casting based on the object type, and NSError object when error occurs.
+ @see cancelRequest
 */
 + (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock taskBlock:(MASDataTaskBlock _Nullable )taskBlock completion:(nullable MASResponseObjectErrorBlock)completion;
+
+
+///--------------------------------------
+/// @name Cancel HTTP Requests
+///--------------------------------------
+# pragma mark - Cancel APIs
+
+/**
+*  API to cancel a pending HTTP request that was invoked using the API  invoke:taksBlock:completion:
+*  This is a best effort cancel and uses the underlying cancel functionality of iOS.
+* This means there could be scenarios where the request has already been complete and the response is received. In such cases calling cancel has no real meaning.
+*  The completion handler returns with an error description that the task has been cancelled. But in some cases if the request has a dependent Task like a login to be completed, then calling cancel on the request may not return a response back as the task has not been started yet.
+* Cancelling an already finished task has no effect.
+*  @param task MASDataTask object that was obtained as a result of invoking a request using the API  invoke:taksBlock:completion:
+*/
+
++ (void)cancelRequest:(nonnull MASDataTask*)task error:(NSError*_Nullable*_Nullable)error;
+
+
+/**
+*  API to cancel all the pending requests in the queue.
+*  This is a best effort cancel and uses the underlying cancel functionality of iOS.
+* This means there could be scenarios where the request has already been complete and the response is received. In such cases calling cancel has no real meaning.
+* All the taks that are pending and not finished yet will be cancelled. There is no guarantee for a callback with error for all the requests.
+ * Use this when you are sure to cancel all the existing requests and do not really care about the outcome. For example, User moved away from the flow and does not really need any response from earlier tasks.
+*/
++ (void)cancelAllRequests;
 
 ///--------------------------------------
 /// @name JWT Signing
