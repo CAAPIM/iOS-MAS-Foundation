@@ -1784,6 +1784,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     
 
     MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
+    DLog(@"MASNetworkingService : created Task with ID %@",newDataTask.taskID);
     [self cacheDataTask:newDataTask];
     
     
@@ -1837,13 +1838,14 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 {
     [self cleanUpFinishedTasks];
     if(dataTask.taskID){
+        DLog(@"MASNetworkingService : Added Task with ID %@ to the cache",dataTask.taskID);
         [self.tasks setObject:dataTask forKey:dataTask.taskID];
     }
 }
 
 - (void)cleanUpFinishedTasks
 {
-    NSLog(@"cleaning up tasks");
+    NSLog(@"cleanUpFinishedTasks : cleaning up tasks");
     NSMutableArray* keysToRemove = [[NSMutableArray alloc] init];
     for (NSString* key in self.tasks){
         if([[self.tasks objectForKey:key] isFinished] || [[self.tasks objectForKey:key] isCancelled]){
@@ -1852,13 +1854,13 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         }
     }
     [self.tasks removeObjectsForKeys:keysToRemove];
-    NSLog(@"finished cleaning up");
+    NSLog(@"cleanUpFinishedTasks : finished cleaning up");
 }
 
 - (void)cancelRequest:(MASDataTask*)task
 {
     NSString* taskID = task.taskID;
-    if([self.tasks objectForKey:taskID]){
+    if(self.tasks && [self.tasks objectForKey:taskID]){
         MASDataTask* taskToBeCancelled = [self.tasks objectForKey:taskID];
         [taskToBeCancelled cancel];
         [self.tasks removeObjectForKey:taskToBeCancelled.taskID];
@@ -1868,9 +1870,9 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 
 - (void)cancelAllRequests
 {
+    NSLog(@"Cancel All Requests");
     [[_sessionManager operationQueue] cancelAllOperations];
     [[_sessionManager internalOperationQueue] cancelAllOperations];
-    
 }
 
 

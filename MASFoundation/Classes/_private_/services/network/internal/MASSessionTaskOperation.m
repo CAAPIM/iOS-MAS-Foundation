@@ -135,6 +135,16 @@
 
 - (void)cancel
 {
+    if(!self.isExecuting){
+        [self.task cancel];
+        [super cancel];
+        if(self.didCompleteWithDataErrorBlock){
+            self.didCompleteWithDataErrorBlock(nil, nil, nil, [NSError errorDataTaskCancelled]);
+        }
+        
+        return;
+    }
+    
     [self.task cancel];
     [super cancel];
 }

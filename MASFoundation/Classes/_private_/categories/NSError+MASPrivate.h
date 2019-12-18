@@ -656,4 +656,13 @@
  */
 + (NSError *)errorInvalidRequestForFileUpload;
 
+
+/**
+* Create MASFoundationErrorDomainLocal NSError for MASFoundationErrorCodeTaskCancelled.
+*
+* @return Returns an NSError instance with the domain MASFoundationErrorDomainLocal and
+* error MASFoundationErrorCodeTaskCancelled
+*/
++ (NSError *)errorDataTaskCancelled;
+
 @end

@@ -13,7 +13,7 @@
 {
     
 }
-@property(nonatomic,readwrite)MASSessionDataTaskOperation* operation;
+@property(nonatomic,readwrite,weak)MASSessionDataTaskOperation* operation;
 @property(readwrite)NSString* taskID;
 @end
 
@@ -30,7 +30,8 @@
 
 - (void)cancel
 {
-    if(![self.operation isFinished] && ![self.operation isCancelled]){
+    if(self.operation && (![self.operation isFinished] && ![self.operation isCancelled])){
+        DLog(@"Cancelling task with ID %@",self.taskID);
         [self.operation cancel];
     }
     

@@ -838,6 +838,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeInvalidRequestForFileUpload errorDomain:MASFoundationErrorDomainLocal];
 }
 
++ (NSError *)errorDataTaskCancelled
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeTaskCancelled errorDomain:MASFoundationErrorDomainLocal];
+}
+
 
 # pragma mark - Foundation Errors Private
 
@@ -1113,6 +1118,11 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         //
         
         case MASFoundationErrorCodeInvalidRequestForFileUpload : return @"the MASRequest is not valid for multi-part file upload. Please check if the request is of method POST and the request type is MASRequestResponseTypeFormData.";
+            
+        //
+        // Task Cancelled Error
+        //
+        case MASFoundationErrorCodeTaskCancelled : return @"The request has been Cancelled";
             
         //
         // Default

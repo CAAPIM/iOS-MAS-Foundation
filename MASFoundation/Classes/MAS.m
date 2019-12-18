@@ -1222,8 +1222,17 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
-+ (void)cancelRequest:(MASDataTask*)task
++ (void)cancelRequest:(nonnull MASDataTask*)task error:(NSError**)error
 {
+    //
+    // Check if MAS has been started.
+    //
+    if ([MAS MASState] != MASStateDidStart)
+    {
+        *error = [NSError errorMASIsNotStarted];
+        
+    }
+    
     [[MASNetworkingService sharedService] cancelRequest:task];
 }
 
