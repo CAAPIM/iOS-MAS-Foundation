@@ -296,6 +296,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         [_gatewayReachabilityManager stopMonitoring];
         _sessionManager = nil;
     }
+    [self cleanUpFinishedTasks];
     
     [super serviceWillStop];
 }
@@ -1836,7 +1837,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 
 - (void)cacheDataTask:(MASDataTask*)dataTask
 {
-    [self cleanUpFinishedTasks];
+    //[self cleanUpFinishedTasks];
     if(dataTask.taskID){
         DLog(@"MASNetworkingService : Added Task with ID %@ to the cache",dataTask.taskID);
         [self.tasks setObject:dataTask forKey:dataTask.taskID];
@@ -1857,14 +1858,23 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     NSLog(@"cleanUpFinishedTasks : finished cleaning up");
 }
 
-- (void)cancelRequest:(MASDataTask*)task
+- (void)cancelRequest:(MASDataTask*)task error:(NSError**)error;
 {
     NSString* taskID = task.taskID;
     if(self.tasks && [self.tasks objectForKey:taskID]){
         MASDataTask* taskToBeCancelled = [self.tasks objectForKey:taskID];
-        [taskToBeCancelled cancel];
+        BOOL isTaskCancelled = [taskToBeCancelled cancelTask];
         [self.tasks removeObjectForKey:taskToBeCancelled.taskID];
+        
+        if (!isTaskCancelled){
+            *error = [NSError errorDataTaskNotFound];
+        }
     }
+    else {
+        //task not found error
+        *error = [NSError errorDataTaskNotFound];
+    }
+    
 }
 
 

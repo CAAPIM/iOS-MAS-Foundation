@@ -843,6 +843,16 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
     return [self errorForFoundationCode:MASFoundationErrorCodeTaskCancelled errorDomain:MASFoundationErrorDomainLocal];
 }
 
++ (NSError *)errorDataTaskNotFound
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDataTaskNotFound errorDomain:MASFoundationErrorDomainLocal];
+}
+
++ (NSError *)errorDataTaskNotCancellable
+{
+    return [self errorForFoundationCode:MASFoundationErrorCodeDataTaskNotCancellable errorDomain:MASFoundationErrorDomainLocal];
+}
+
 
 # pragma mark - Foundation Errors Private
 
@@ -1123,6 +1133,20 @@ typedef NS_ENUM(NSInteger, MASUrlErrorCode)
         // Task Cancelled Error
         //
         case MASFoundationErrorCodeTaskCancelled : return @"The request has been Cancelled";
+            
+            
+        //
+        // Task Not found Error
+        //
+            
+        case MASFoundationErrorCodeDataTaskNotFound : return @"The given DataTask is either invalid or does not exist";
+            
+           
+        //
+        // Task Can not be Cancelled Error
+        //
+            
+        case MASFoundationErrorCodeDataTaskNotCancellable : return @"Unable to cancel the task. The Task is either finished or cancelled";
             
         //
         // Default

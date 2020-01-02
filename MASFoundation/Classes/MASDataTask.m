@@ -30,13 +30,5 @@
     return nil;
 }
 
-- (void)cancel
-{
-    if(self.operation && (![self.operation isFinished] && ![self.operation isCancelled])){
-        DLog(@"Cancelling task with ID %@",self.taskID);
-        [self.operation cancel];
-    }
-    
-}
 
 @end

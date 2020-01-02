@@ -44,6 +44,18 @@
     return [self.operation isCancelled];
 }
 
+- (BOOL)cancelTask
+{
+    if(self.operation && (![self.operation isFinished] && ![self.operation isCancelled])){
+        DLog(@"Cancelling task with ID %@",self.taskID);
+        [self.operation cancel];
+        return YES;
+    }
+    
+    DLog(@"Unable to cancel task. The operation is either finished or cancelled earlier");
+    return NO;
+}
+
 
 
 

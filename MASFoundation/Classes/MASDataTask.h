@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly)NSString* taskID;
 
 
-- (void)cancel;
-
 @end
 
 NS_ASSUME_NONNULL_END

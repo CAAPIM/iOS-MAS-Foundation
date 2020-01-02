@@ -1230,10 +1230,11 @@ withParameters:(nullable NSDictionary *)parameterInfo
     if ([MAS MASState] != MASStateDidStart)
     {
         *error = [NSError errorMASIsNotStarted];
+        return;
         
     }
     
-    [[MASNetworkingService sharedService] cancelRequest:task];
+    [[MASNetworkingService sharedService] cancelRequest:task error:error];
 }
 
 + (void)cancelAllRequests
