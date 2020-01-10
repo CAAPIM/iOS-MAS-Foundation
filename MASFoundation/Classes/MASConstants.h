@@ -113,7 +113,7 @@ typedef void (^MASResponseObjectErrorBlock)(NSHTTPURLResponse *_Nullable respons
 /**
 * The MASDataTaskBlock which contains the dataTask object that is being invoked. Users can typically call cancel on the request using this callback.
 */
-typedef void  (^MASDataTaskBlock)(MASDataTask* _Nullable dataTask,NSError* _Nullable error);
+typedef void  (^MASDataTaskBlock)(MASDataTask* _Nullable dataTask);
 
 /**
  * The MASUser specific (MASUser *user, NSError *error) block.

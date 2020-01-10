@@ -1638,7 +1638,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     }
     
     if(taskBlock){
-        taskBlock(newDataTask,nil);
+        taskBlock(newDataTask);
     }
 }
 
@@ -1829,7 +1829,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     }
     
     if(taskBlock){
-        taskBlock(newDataTask,nil);
+        taskBlock(newDataTask);
     }
     
 }

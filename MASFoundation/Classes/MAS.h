@@ -1081,7 +1081,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  @see cancelRequest
 */
 
-+ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)dataTask completion:(nullable MASResponseObjectErrorBlock)completion;
++ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)taskBlock completion:(nullable MASResponseObjectErrorBlock)completion;
 
 
 

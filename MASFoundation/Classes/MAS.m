@@ -1139,7 +1139,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
-+ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)dataTask completion:(nullable MASResponseObjectErrorBlock)completion
++ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)taskBlock completion:(nullable MASResponseObjectErrorBlock)completion
 {
     __block MASResponseObjectErrorBlock blockCompletion = completion;
     
@@ -1157,7 +1157,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
             (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
             [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
         
-        [MAS httpRouterMethod:request taskBlock:dataTask completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
+        [MAS httpRouterMethod:request taskBlock:taskBlock completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
                  if (blockCompletion)
                  {
                      blockCompletion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], [responseInfo objectForKey:MASResponseInfoBodyInfoKey], error);
