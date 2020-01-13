@@ -187,6 +187,10 @@
 		C81CC3CD1FC2EA190058718E /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */; };
 		C81CC3D01FC2EFBB0058718E /* UIAlertController+MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */; };
 		C81CC3D11FC2EFBB0058718E /* UIAlertController+MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */; };
+		C858D6B52398FC5400963763 /* MASDataTask+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = C858D6B32398FC5400963763 /* MASDataTask+MASPrivate.h */; };
+		C858D6B62398FC5400963763 /* MASDataTask+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = C858D6B42398FC5400963763 /* MASDataTask+MASPrivate.m */; };
+		C8B1700B238FD1A7007BB903 /* MASDataTask.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B17009238FD1A7007BB903 /* MASDataTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C8B1700C238FD1A7007BB903 /* MASDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B1700A238FD1A7007BB903 /* MASDataTask.m */; };
 		C8C32B0D22D706B900D64DF0 /* MASMultiPartFormData.h in Headers */ = {isa = PBXBuildFile; fileRef = C8C32B0C22D706B900D64DF0 /* MASMultiPartFormData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8C32B1022D7163100D64DF0 /* MASMultiPartRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = C8C32B0E22D7163100D64DF0 /* MASMultiPartRequestSerializer.h */; };
 		C8C32B1122D7163100D64DF0 /* MASMultiPartRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C32B0F22D7163100D64DF0 /* MASMultiPartRequestSerializer.m */; };
@@ -569,6 +573,10 @@
 		C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASBrowserBasedAuthentication.m; sourceTree = "<group>"; };
 		C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertController+MAS.h"; sourceTree = "<group>"; };
 		C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertController+MAS.m"; sourceTree = "<group>"; };
+		C858D6B32398FC5400963763 /* MASDataTask+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASDataTask+MASPrivate.h"; sourceTree = "<group>"; };
+		C858D6B42398FC5400963763 /* MASDataTask+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASDataTask+MASPrivate.m"; sourceTree = "<group>"; };
+		C8B17009238FD1A7007BB903 /* MASDataTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASDataTask.h; sourceTree = "<group>"; };
+		C8B1700A238FD1A7007BB903 /* MASDataTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASDataTask.m; sourceTree = "<group>"; };
 		C8C32B0C22D706B900D64DF0 /* MASMultiPartFormData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASMultiPartFormData.h; sourceTree = "<group>"; };
 		C8C32B0E22D7163100D64DF0 /* MASMultiPartRequestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASMultiPartRequestSerializer.h; sourceTree = "<group>"; };
 		C8C32B0F22D7163100D64DF0 /* MASMultiPartRequestSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASMultiPartRequestSerializer.m; sourceTree = "<group>"; };
@@ -1112,6 +1120,8 @@
 				699570E52062FF1300017244 /* MASError.m */,
 				699570E02060650400017244 /* MASNotifications.h */,
 				699570E12060650400017244 /* MASNotifications.m */,
+				C8B17009238FD1A7007BB903 /* MASDataTask.h */,
+				C8B1700A238FD1A7007BB903 /* MASDataTask.m */,
 				107389F21C7118F800B7E87E /* MQTT */,
 				A419B39A1C17622E008DC88C /* categories */,
 				A4831A9A1BD1A551007B4AE6 /* models */,
@@ -1267,6 +1277,8 @@
 				CB3173DF1F1FFF2C00C85E47 /* MASNetworkMonitor.m */,
 				CBBA9A7E20742BA800BB307F /* MASNetworkReachability.h */,
 				CBBA9A7F20742BA800BB307F /* MASNetworkReachability.m */,
+				C858D6B32398FC5400963763 /* MASDataTask+MASPrivate.h */,
+				C858D6B42398FC5400963763 /* MASDataTask+MASPrivate.m */,
 			);
 			path = internal;
 			sourceTree = "<group>";
@@ -1551,6 +1563,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8B1700B238FD1A7007BB903 /* MASDataTask.h in Headers */,
 				C8C32B0D22D706B900D64DF0 /* MASMultiPartFormData.h in Headers */,
 				CB2A4048209A341A00F988AA /* MASMultiFactorHandler.h in Headers */,
 				CB1FD14B1FB23701000AFA25 /* MASSharedStorage.h in Headers */,
@@ -1631,6 +1644,7 @@
 				A46F49D31C2F5FC500A4C370 /* MASIURLRequestSerialization.h in Headers */,
 				A4831AB11BD1A551007B4AE6 /* MASFile.h in Headers */,
 				699570E22060650400017244 /* MASNotifications.h in Headers */,
+				C858D6B52398FC5400963763 /* MASDataTask+MASPrivate.h in Headers */,
 				1059D3761B61AA3800223267 /* MASFoundation.h in Headers */,
 				A898EF6B2182D3DF00CF291B /* NSURLSession+MASPrivate.h in Headers */,
 				A46F49CD1C2F5FC500A4C370 /* MASINetworkReachabilityManager.h in Headers */,
@@ -1783,6 +1797,7 @@
 				TargetAttributes = {
 					1059D36F1B61AA3700223267 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 2JJZ96P8P5;
 						ProvisioningStyle = Manual;
 					};
 					1059D37A1B61AA3800223267 = {
@@ -1955,6 +1970,7 @@
 				CB9975471EDF5799006CEBB1 /* MASAuthCredentials+MASPrivate.m in Sources */,
 				CB273F011DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.m in Sources */,
 				CB9975531EDF591C006CEBB1 /* MASAuthCredentialsJWT.m in Sources */,
+				C858D6B62398FC5400963763 /* MASDataTask+MASPrivate.m in Sources */,
 				CBD25B041E78C47C00DFB47F /* JWTCoding+VersionOne.m in Sources */,
 				CB9B1208210949D5008A2075 /* NSMutableData+MASASN1Helper.m in Sources */,
 				CB99754B1EDF57D6006CEBB1 /* MASAuthCredentialsPassword.m in Sources */,
@@ -1979,6 +1995,7 @@
 				CB6491FA1FE9DAF300281288 /* MQTTSessionSynchron.m in Sources */,
 				A4831AB01BD1A551007B4AE6 /* MASDevice.m in Sources */,
 				CBD25B001E78C47C00DFB47F /* JWTClaimsSetVerifier.m in Sources */,
+				C8B1700C238FD1A7007BB903 /* MASDataTask.m in Sources */,
 				A46F49E31C2F5FC500A4C370 /* UIImageView+MASINetworking.m in Sources */,
 				A421571C1BF863480034BDC9 /* MASServiceRegistry.m in Sources */,
 				CBD25AEB1E78C47C00DFB47F /* JWTAlgorithmDataHolder.m in Sources */,
@@ -2066,7 +2083,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2115,7 +2132,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2143,13 +2160,13 @@
 		1059D3871B61AA3800223267 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2.0.00;
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2JJZ96P8P5;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2191,13 +2208,13 @@
 		1059D3881B61AA3800223267 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2.0.00;
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2JJZ96P8P5;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2239,7 +2256,7 @@
 		1059D38A1B61AA3800223267 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2JJZ96P8P5;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2262,7 +2279,7 @@
 		1059D38B1B61AA3800223267 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2JJZ96P8P5;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2281,7 +2298,7 @@
 		1059D3BA1B61C00500223267 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = YES;
 				MACH_O_TYPE = staticlib;
@@ -2293,7 +2310,7 @@
 		1059D3BB1B61C00500223267 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = YES;
 				MACH_O_TYPE = staticlib;

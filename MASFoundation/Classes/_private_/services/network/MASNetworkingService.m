@@ -30,7 +30,7 @@
 #import "MASNetworkReachability.h"
 #import "MASMultiFactorHandler+MASPrivate.h"
 #import "MASMultiPartRequestSerializer.h"
-
+#import "MASDataTask+MASPrivate.h"
 
 # pragma mark - Configuration Constants
 
@@ -63,6 +63,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 @property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
 @property (nonatomic, strong, readwrite) MASNetworkReachability *gatewayReachabilityManager;
 @property (readwrite, nonatomic, strong) MASAuthValidationOperation *authValidationOperation;
+@property (nonatomic, strong) NSMutableDictionary* tasks;
 
 @end
 
@@ -240,7 +241,9 @@ static NSMutableArray *_multiFactorAuthenticators_;
     dispatch_once(&onceToken, ^
                   {
                       sharedInstance = [[MASNetworkingService alloc] initProtected];
+        
                   });
+    
     
     return sharedInstance;
 }
@@ -269,6 +272,10 @@ static NSMutableArray *_multiFactorAuthenticators_;
 
 - (void)serviceWillStart
 {
+    
+    if(!self.tasks){
+        self.tasks = [[NSMutableDictionary alloc] init];
+    }
     //
     // establish URLSession with configuration's host name and start networking monitoring
     //
@@ -289,6 +296,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         [_gatewayReachabilityManager stopMonitoring];
         _sessionManager = nil;
     }
+    [self cleanUpFinishedTasks];
     
     [super serviceWillStop];
 }
@@ -431,8 +439,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
                                                                      httpMethod:(NSString *)httpMethod
                                                                     requestType:(MASRequestResponseType)requestType
                                                                    responseType:(MASRequestResponseType)responseType
-                                                                       isPublic:(BOOL)isPublic
-                                                                completionBlock:(MASResponseInfoErrorBlock)completion
+                                                                       isPublic:(BOOL)isPublic completionBlock:(MASResponseInfoErrorBlock)completion
 {
     __block MASRequestResponseType blockResponseType = responseType;
     __block MASRequestResponseType blockRequestType = requestType;
@@ -461,6 +468,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         // Response header info
         //
         NSDictionary *headerInfo = [httpResponse allHeaderFields];
+        NSLog(@"Response headers : %@",headerInfo);
         
         //
         //  If the error exists from the server, inject http status code in error userInfo
@@ -1409,6 +1417,24 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     [self httpRequest:@"POST" endPoint:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval completion:completion];
 }
 
+- (void)httpPostTo:(MASRequest*)request taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion
+{
+    //
+    //  endPoint cannot be nil
+    //
+    if (!request.endPoint)
+    {
+        //
+        // Notify
+        //
+        if(completion) completion(nil, [NSError errorInvalidEndpoint]);
+        
+        return;
+    }
+    
+    
+}
+
 
 - (void)putTo:(NSString *)endPoint
 withParameters:(NSDictionary *)parameterInfo
@@ -1519,7 +1545,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 }
 
 
-- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)postMultiPartForm:(NSString*)endPoint withParameters:(NSDictionary *)parameterInfo andHeaders:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseObjectErrorBlock)completion
 {
     //
     //  endPoint cannot be nil
@@ -1534,11 +1560,11 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         return;
     }
     
-    [self httpFileUploadRequest:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval constructingBodyBlock:formDataBlock progress:progress completion:completion];
+    [self httpFileUploadRequest:endPoint parameters:parameterInfo headers:headerInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval constructingBodyBlock:formDataBlock progress:progress taskBlock:taskBlock completion:completion];
 }
 
 
-- (void)httpFileUploadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress completion:(MASResponseObjectErrorBlock)completion
+- (void)httpFileUploadRequest:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic timeoutInterval:(NSTimeInterval)timeoutInterval constructingBodyBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:(MASFileRequestProgressBlock)progress taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseObjectErrorBlock)completion
 {
     NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
     
@@ -1568,6 +1594,10 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
                 completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], responseInfo[MASResponseInfoBodyInfoKey], error);
             }
     }]];
+    
+    MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
+    [self cacheDataTask:newDataTask];
+    
     
     if (![self isMAGEndpoint:endPoint])
     {
@@ -1606,7 +1636,12 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         //
         [_sessionManager.internalOperationQueue addOperation:operation];
     }
+    
+    if(taskBlock){
+        taskBlock(newDataTask);
+    }
 }
+
 
 
 - (void)httpRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic
@@ -1707,6 +1742,194 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         //
         [_sessionManager.internalOperationQueue addOperation:operation];
     }
+}
+
+
+- (void)httpRequestWithCancel:(MASRequest*)request taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion
+{
+    NSMutableDictionary *mutableHeaderInfo;
+    //
+    // Update the header
+    //
+    if(request.header){
+        mutableHeaderInfo = [request.header mutableCopy];
+    }
+    else{
+        mutableHeaderInfo = [NSMutableDictionary mutableCopy];
+    }
+    
+    
+    MASURLRequest* urlRequest = [self getURLRequest:request.httpMethod endPoint:request.endPoint parameters:request.body headers:[NSDictionary dictionary] requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:request.timeoutInterval];
+    
+    //
+    //  if location was successfully retrieved
+    //
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    if(self.httpRedirectionBlock)
+    {
+        [_sessionManager setSessionDidReceiveHTTPRedirectBlock:self.httpRedirectionBlock];
+    }
+    
+    MASSessionDataTaskOperation *operation = [_sessionManager dataOperationWithRequest:urlRequest
+                                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:request.endPoint
+                                                                                                                             parameters:request.body
+                                                                                                                                headers:request.header
+                                                                                                                             httpMethod:urlRequest.HTTPMethod
+                                                                                                                            requestType:request.requestType
+                                                                                                                           responseType:request.responseType
+                                                                                                                               isPublic:request.isPublic                                                                                                                        completionBlock:completion]];
+    
+
+    MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
+    DLog(@"MASNetworkingService : created Task with ID %@",newDataTask.taskID);
+    [self cacheDataTask:newDataTask];
+    
+    
+    
+    if (![self isMAGEndpoint:request.endPoint])
+    {
+        //
+        //  if the request is being made to system endpoint, and is not a public request which requires user credentials (tokens)
+        //  then, add dependency on shared validation operation which will validate current session
+        //  sharedOperation will only exist one at any given time as long as sharedOperation is being executed
+        //
+        if (!request.isPublic)
+        {
+            //
+            //  add dependency
+            //
+            [operation addDependency:self.sharedOperation];
+            
+            //
+            //  to make sure SDK to not enqueue sharedOperation that is already enqueue and being executed
+            //
+            if (!self.sharedOperation.isFinished && !self.sharedOperation.isExecuting && ![_sessionManager.internalOperationQueue.operations containsObject:self.sharedOperation])
+            {
+                //
+                //  add sharedOperation into internal operation queue
+                //
+                [_sessionManager.internalOperationQueue addOperation:self.sharedOperation];
+            }
+        }
+        
+        //
+        //  add current request into normal operation queue
+        //
+        [_sessionManager.operationQueue addOperation:operation];
+    }
+    else {
+        //
+        //  if the request is being made to any one of system endpoints (registration, and/or authentication), then, add the operation into internal operation queue
+        //
+        [_sessionManager.internalOperationQueue addOperation:operation];
+    }
+    
+    if(taskBlock){
+        taskBlock(newDataTask);
+    }
+    
+}
+
+
+- (void)cacheDataTask:(MASDataTask*)dataTask
+{
+    //[self cleanUpFinishedTasks];
+    if(dataTask.taskID){
+        DLog(@"MASNetworkingService : Added Task with ID %@ to the cache",dataTask.taskID);
+        [self.tasks setObject:dataTask forKey:dataTask.taskID];
+    }
+}
+
+- (void)cleanUpFinishedTasks
+{
+    NSLog(@"cleanUpFinishedTasks : cleaning up tasks");
+    NSMutableArray* keysToRemove = [[NSMutableArray alloc] init];
+    for (NSString* key in self.tasks){
+        if([[self.tasks objectForKey:key] isFinished] || [[self.tasks objectForKey:key] isCancelled]){
+            [keysToRemove addObject:key];
+            //[self.tasks removeObjectForKey:key];
+        }
+    }
+    [self.tasks removeObjectsForKeys:keysToRemove];
+    NSLog(@"cleanUpFinishedTasks : finished cleaning up");
+}
+
+- (void)cancelRequest:(MASDataTask*)task error:(NSError**)error;
+{
+    NSString* taskID = task.taskID;
+    if(self.tasks && [self.tasks objectForKey:taskID]){
+        MASDataTask* taskToBeCancelled = [self.tasks objectForKey:taskID];
+        BOOL isTaskCancelled = [taskToBeCancelled cancelTask];
+        [self.tasks removeObjectForKey:taskToBeCancelled.taskID];
+        
+        if (!isTaskCancelled){
+            *error = [NSError errorDataTaskNotFound];
+        }
+    }
+    else {
+        //task not found error
+        *error = [NSError errorDataTaskNotFound];
+    }
+    
+}
+
+
+- (void)cancelAllRequests
+{
+    NSLog(@"Cancel All Requests");
+    [[_sessionManager operationQueue] cancelAllOperations];
+    [[_sessionManager internalOperationQueue] cancelAllOperations];
+}
+
+
+
+- (MASURLRequest*)getURLRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic
+timeoutInterval:(NSTimeInterval)timeoutInterval
+{
+    //
+    // Update the header
+    //
+    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+    
+    MASURLRequest *request = nil;
+    
+    //
+    //  if location was successfully retrieved
+    //
+    if ([MASLocationService sharedService].lastKnownLocation != nil)
+    {
+        mutableHeaderInfo[MASGeoLocationRequestResponseKey] = [[MASLocationService sharedService].lastKnownLocation locationAsGeoCoordinates];
+    }
+    
+    //
+    //  Construct MASURLRequest object per HTTP method
+    //
+    if ([httpMethod isEqualToString:@"DELETE"])
+    {
+        request = [MASDeleteURLRequest requestForEndpoint:request.endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"GET"])
+    {
+        request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"PATCH"])
+    {
+        request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"POST"])
+    {
+        request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    else if ([httpMethod isEqualToString:@"PUT"])
+    {
+        request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic timeoutInterval:timeoutInterval];
+    }
+    
+    return request;
 }
 
 @end
