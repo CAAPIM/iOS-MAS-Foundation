@@ -1858,7 +1858,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     NSLog(@"cleanUpFinishedTasks : finished cleaning up");
 }
 
-- (void)cancelRequest:(MASDataTask*)task error:(NSError**)error;
+- (BOOL)cancelRequest:(MASDataTask*)task error:(NSError**)error;
 {
     NSString* taskID = task.taskID;
     if(self.tasks && [self.tasks objectForKey:taskID]){
@@ -1867,13 +1867,21 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
         [self.tasks removeObjectForKey:taskToBeCancelled.taskID];
         
         if (!isTaskCancelled){
-            *error = [NSError errorDataTaskNotFound];
+            if (error != NULL){
+                *error = [NSError errorDataTaskNotFound];
+            }
+            return NO;
         }
     }
     else {
         //task not found error
-        *error = [NSError errorDataTaskNotFound];
+        if (error != NULL){
+            *error = [NSError errorDataTaskNotFound];
+        }
+        return NO;
     }
+    
+    return YES;
     
 }
 
