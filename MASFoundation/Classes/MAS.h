@@ -1158,7 +1158,7 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 *  @param task MASDataTask object that was obtained as a result of invoking a request using the API  invoke:taksBlock:completion:
 */
 
-+ (void)cancelRequest:(nonnull MASDataTask*)task error:(NSError*_Nullable*_Nullable)error;
++ (BOOL)cancelRequest:(nonnull MASDataTask*)task error:(NSError*_Nullable*_Nullable)error;
 
 
 /**

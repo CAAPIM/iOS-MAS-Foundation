@@ -849,7 +849,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 
 - (void)httpRequestWithCancel:(MASRequest*)request taskBlock:(MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion;
 
-- (void)cancelRequest:(MASDataTask*)task error:(NSError**)error;
+- (BOOL)cancelRequest:(MASDataTask*)task error:(NSError**)error;
 
 - (void)cancelAllRequests;
 
