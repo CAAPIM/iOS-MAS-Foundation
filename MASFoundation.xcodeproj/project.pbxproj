@@ -2163,7 +2163,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.0.00;
+				CURRENT_PROJECT_VERSION = 2.0.10;
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
@@ -2195,6 +2195,7 @@
 					"$(PROJECT_DIR)/MASFoundation/Vendor/OpenSSL/include/lib",
 				);
 				MACH_O_TYPE = mh_dylib;
+				MARKETING_VERSION = 2.0.10;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ca.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2211,7 +2212,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.0.00;
+				CURRENT_PROJECT_VERSION = 2.0.10;
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
@@ -2243,6 +2244,7 @@
 					"$(PROJECT_DIR)/MASFoundation/Vendor/OpenSSL/include/lib",
 				);
 				MACH_O_TYPE = mh_dylib;
+				MARKETING_VERSION = 2.0.10;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ca.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
