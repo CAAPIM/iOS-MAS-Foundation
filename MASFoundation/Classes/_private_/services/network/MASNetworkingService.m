@@ -63,7 +63,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 @property (nonatomic, strong, readwrite) MASURLSessionManager *sessionManager;
 @property (nonatomic, strong, readwrite) MASNetworkReachability *gatewayReachabilityManager;
 @property (readwrite, nonatomic, strong) MASAuthValidationOperation *authValidationOperation;
-@property (nonatomic, strong) NSMutableDictionary* tasks;
+@property (atomic, strong) NSMutableDictionary* tasks;
 
 @end
 
