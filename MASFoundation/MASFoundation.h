@@ -53,7 +53,6 @@ FOUNDATION_EXPORT const unsigned char MASFoundationVersionString[];
 #import <MASFoundation/MASRequest.h>
 #import <MASFoundation/MASSharedStorage.h>
 #import <MASFoundation/MASUser.h>
-#import <MASFoundation/MASDataTask.h>
 
 //
 //  AuthCredentials Models

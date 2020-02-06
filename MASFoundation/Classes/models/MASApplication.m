@@ -14,6 +14,10 @@
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 #import "MASAccessService.h"
+#import <WebKit/WebKit.h>
+#import "MASSecurityService.h"
+
+
 
 # pragma mark - Property Constants
 
@@ -37,13 +41,13 @@ static NSString *const MASApplicationSecretPropertyKey = @"secret"; // string
 static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 
-@interface MASApplication ()
-    <UIWebViewDelegate>
+@interface MASApplication () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, NSURLConnectionDelegate>
 {
     id _originalDelegate;
+    NSMutableURLRequest *mutableRequest;
 }
 
-@property (nonatomic, strong, readonly) UIWebView *webView;
+@property (nonatomic, strong, readonly) WKWebView *webView;
 @property (nonatomic, copy) MASCompletionErrorBlock errorBlock;
 
 @end
@@ -87,13 +91,13 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 - (NSString *)debugDescription
 {
     return [NSString stringWithFormat:@"(%@) is registered: %@\n\n        organization: %@\n        name: %@"
-        "\n        detailed description: %@\n        identifier: %@\n        environment: %@\n        status: %@"
-        "\n        icon url: %@\n        auth url: %@\n        native url: %@\n        redirect uri: %@"
-        "\n        registered by: %@\n        scope: %@\n        custom properties: %@",
-        [self class], ([self isRegistered] ? @"Yes" : @"No"), [self organization], [self name], [self detailedDescription],
-        [self identifier], [self environment], [self status], [self iconUrl], [self authUrl], [self nativeUrl],
-        [self redirectUri],[self registeredBy], [self scopeAsString],
-        (![self customProperties] ? @"<none>" : [NSString stringWithFormat:@"\n\n%@", [self customProperties]])];
+            "\n        detailed description: %@\n        identifier: %@\n        environment: %@\n        status: %@"
+            "\n        icon url: %@\n        auth url: %@\n        native url: %@\n        redirect uri: %@"
+            "\n        registered by: %@\n        scope: %@\n        custom properties: %@",
+            [self class], ([self isRegistered] ? @"Yes" : @"No"), [self organization], [self name], [self detailedDescription],
+            [self identifier], [self environment], [self status], [self iconUrl], [self authUrl], [self nativeUrl],
+            [self redirectUri],[self registeredBy], [self scopeAsString],
+            (![self customProperties] ? @"<none>" : [NSString stringWithFormat:@"\n\n%@", [self customProperties]])];
 }
 
 # pragma mark - Properties
@@ -107,11 +111,11 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     // Obtain key chain items to determine registration status
     //
     MASAccessService *accessService = [MASAccessService sharedService];
-
+    
     NSNumber *clientExpiration = [accessService getAccessValueNumberWithStorageKey:MASKeychainStorageKeyClientExpiration];
     NSString *clientId = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
     NSString *clientSecret = [accessService getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientSecret];
-
+    
     _isRegistered = (clientExpiration && clientId && clientSecret && !self.isExpired);
     return _isRegistered;
 }
@@ -154,7 +158,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //DLog(@"\n\n  access token: %@\n  refresh token: %@\n  expiresIn: %@, expires in date: %@\n\n",
     //    accessToken, refreshToken, expiresIn, expiresInDate);
     
-
+    
     //
     // If there is an idToken and a current user
     //
@@ -247,7 +251,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 }
 
 
-- (void)loadWebApp:(UIWebView *)webView completion:(MASCompletionErrorBlock)completion
+- (void)loadWebApp:(WKWebView *)webView completion:(MASCompletionErrorBlock)completion
 {
     //
     // Validate URL
@@ -256,7 +260,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     {
         // Invalid URL
         NSError *error = [NSError errorEnterpriseBrowserWebAppInvalidURL];
-
+        
         if (completion) completion(NO,error);
         
         return;
@@ -265,27 +269,38 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Create the URL request
     //
+    //    NSString *urlString = @"https://www.stackoverflow.com";
+    //    NSURL *myUrl = [NSURL URLWithString: urlString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.authUrl]];
+    
+    if ([MASApplication currentApplication].isAuthenticated && [self.class isProtectedResource:request.URL])
+    {
+//        NSString *authorization = [MASUser authorizationBearerWithAccessToken];
+//        [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+        [self setAuthorization:request];
+    }
+    
     
     //
     // If the UIWebView already has a delegate we must store it
     //
-    if(webView.delegate != nil)
+    if(webView.UIDelegate != nil)
     {
-        _originalDelegate = webView.delegate;
+        _originalDelegate = webView.UIDelegate;
     }
     
-    webView.delegate = self;
+    webView.UIDelegate = self;
+    webView.navigationDelegate = self;
     _webView = webView;
     
     if (completion) completion(YES,nil);
     
     /*
-    [[NSNotificationCenter defaultCenter] addObserver:self
-        selector:@selector(didReceiveStatusUpdate:)
-        name:L7SDidReceiveStatusUpdateNotification
-        object:nil];
-    */
+     [[NSNotificationCenter defaultCenter] addObserver:self
+     selector:@selector(didReceiveStatusUpdate:)
+     name:L7SDidReceiveStatusUpdateNotification
+     object:nil];
+     */
     
     [webView loadRequest:request];
 }
@@ -302,7 +317,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     if([resourceURLHost hasPrefix:endpointHost])
     {
         if( resourceURLHost.length == endpointHost.length ||
-            [resourceURLHost isEqualToString:[endpointHost stringByAppendingString:@"."]])
+           [resourceURLHost isEqualToString:[endpointHost stringByAppendingString:@"."]])
         {
             return YES;
         }
@@ -327,7 +342,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
         {
             // Native app does not exist
             NSError *error = [NSError errorEnterpriseBrowserNativeAppDoesNotExist];
-
+            
             if (self.errorBlock) {
                 self.errorBlock(YES,error);
             }
@@ -342,7 +357,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
         {
             // Native app failed to open
             NSError *error = [NSError errorEnterpriseBrowserNativeAppCannotOpen];
-
+            
             if (self.errorBlock) {
                 self.errorBlock(YES,error);
             }
@@ -361,7 +376,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     if(self.authUrl)
     {
-
+        
         [self.delegate enterpriseWebApp:self];
         
         if (self.errorBlock) {
@@ -384,49 +399,243 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 # pragma mark - UIWebViewDelegate
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+//- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error
 {
     DLog(@"didFailLoadWithError %@",error);
-    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)])
-    {
-        return [_originalDelegate webView:webView didFailLoadWithError:error];
-    }
-}
-
-
-- (void)webViewDidStartLoad:(UIWebView *)webView{
     
-    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webViewDidStartLoad:)])
+    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didFailProvisionalNavigation:withError:)])
     {
-        return [_originalDelegate webViewDidStartLoad:webView];
+        //return [_originalDelegate webView:webView didFailLoadWithError:error];
+        return [_originalDelegate webView:webView didFailProvisionalNavigation:navigation withError:error];
     }
 }
 
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
+//- (void)webViewDidStartLoad:(UIWebView *)webView{
+- (void) webView: (WKWebView *) webView didStartProvisionalNavigation: (WKNavigation *) navigation {
     
-    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webViewDidFinishLoad:)])
+    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didStartProvisionalNavigation:)])
     {
-        return [_originalDelegate webViewDidFinishLoad:webView];
+        return [_originalDelegate webView:webView didStartProvisionalNavigation:navigation];
     }
 }
 
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+//- (void)webViewDidFinishLoad:(UIWebView *)webView{
+- (void) webView: (WKWebView *) webView didFinishNavigation: (WKNavigation *) navigation {
+    
+    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didFinishNavigation:)])
+    {
+        return [_originalDelegate webView:webView didFinishNavigation:navigation];
+    }
+}
+
+
+//- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    
+   if ([navigationAction.request.allHTTPHeaderFields valueForKey:@"Authorization"] == nil && ![navigationAction.request.URL.absoluteString  isEqual: @"https://mobile.dhcp.broadcom.net:8443/connect/enterprise/browser/websso/login"]) {
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:navigationAction.request.URL];
+            [self setAuthorization:request];
+            [webView loadRequest:request];
+        }
+    decisionHandler(WKNavigationActionPolicyAllow);
+    return (_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:decidePolicyForNavigationAction:decisionHandler:)] ?
+            
+            //
+            // Call the original delegate
+            //
+            [_originalDelegate webView:webView decidePolicyForNavigationAction:navigationAction decisionHandler:decisionHandler] :
+            
+            //
+            // Just return YES
+            //
+            YES);
+}
+
+
+-(void) setAuthorization: (NSMutableURLRequest *) request {
+    NSString *authorization = [MASUser authorizationBearerWithAccessToken];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+}
+
+-(void) webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
+    
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        SecPolicyRef policy = SecPolicyCreateBasicX509();
+        CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
+        NSMutableArray *trustChain = [NSMutableArray arrayWithCapacity:certificateCount];
+        
+        for (CFIndex i = 0; i < certificateCount; i++) {
+            SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+            
+            [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
+        }
+        
+        CFRelease(policy);
+        
+        {
+            for (id serverCertificateData in trustChain) {
+                if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
+                    NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                    [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+                    completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+                    return;
+                }
+            }
+            
+            SecTrustResultType result = 0;
+            SecTrustEvaluate(serverTrust, &result);
+            
+            if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
+                NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+            } else {
+                [[challenge sender] cancelAuthenticationChallenge:challenge];
+            }
+        }
+        completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+    } else {
+        if ([challenge previousFailureCount] == 0) {
+            //client side authentication
+            NSURLCredential * credential = [[MASSecurityService sharedService] createUrlCredential];
+            if (credential) {
+                [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+            } else {
+                [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+            }
+        } else {
+            [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+        }
+    }
+    completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+}
+
+/*- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    DLog(@"shouldStartLoadWithRequest %@",request);
-    return (_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)] ?
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
         
-        //
-        // Call the original delegate
-        //
-        [_originalDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType] :
+        SecPolicyRef policy = SecPolicyCreateBasicX509();
+        CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
+        NSMutableArray *trustChain = [NSMutableArray arrayWithCapacity:certificateCount];
         
-        //
-        // Just return YES
-        //
-        YES);
+        for (CFIndex i = 0; i < certificateCount; i++) {
+            SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+            
+            [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
+        }
+        
+        CFRelease(policy);
+        
+        {
+            for (id serverCertificateData in trustChain) {
+                if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
+                    NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                    [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+                    return;
+                }
+            }
+            
+            SecTrustResultType result = 0;
+            SecTrustEvaluate(serverTrust, &result);
+            
+            if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
+                NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+            } else {
+                [[challenge sender] cancelAuthenticationChallenge:challenge];
+            }
+        }
+    } else {
+        if ([challenge previousFailureCount] == 0) {
+            //client side authentication
+            NSURLCredential * credential = [[MASSecurityService sharedService] createUrlCredential];
+            if (credential) {
+                [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+            } else {
+                [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+            }
+        } else {
+            [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+        }
+    }
+}*/
+
++ (NSArray *)pinnedCertificates {
+    static NSMutableArray *_pinnedCertificates = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSArray *paths = [bundle pathsForResourcesOfType:@"cer" inDirectory:@"."];
+        
+        NSMutableArray *certificates = [NSMutableArray arrayWithCapacity:[paths count]];
+        for (NSString *path in paths) {
+            NSData *certificateData = [NSData dataWithContentsOfFile:path];
+            [certificates addObject:certificateData];
+        }
+        
+        _pinnedCertificates = [[NSMutableArray alloc] initWithArray:certificates];
+        //adding the certificates from Json configuration
+        [_pinnedCertificates addObjectsFromArray:[[MASConfiguration currentConfiguration] gatewayCertificatesAsDERData]];
+        
+    });
+    return _pinnedCertificates;
 }
+
+
++ (NSArray *)pinnedPublicKeys {
+    static NSArray *_pinnedPublicKeys = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSArray *pinnedCertificates = [self pinnedCertificates];
+        NSMutableArray *publicKeys = [NSMutableArray arrayWithCapacity:[pinnedCertificates count]];
+        
+        for (NSData *data in pinnedCertificates) {
+            SecCertificateRef allowedCertificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)data);
+            NSParameterAssert(allowedCertificate);
+            
+            SecCertificateRef allowedCertificates[] = {allowedCertificate};
+            CFArrayRef certificates = CFArrayCreate(NULL, (const void **)allowedCertificates, 1, NULL);
+            
+            SecPolicyRef policy = SecPolicyCreateBasicX509();
+            SecTrustRef allowedTrust = NULL;
+            OSStatus status = SecTrustCreateWithCertificates(certificates, policy, &allowedTrust);
+            NSAssert(status == errSecSuccess, @"SecTrustCreateWithCertificates error: %ld", (long int)status);
+            
+            SecTrustResultType result = 0;
+            status = SecTrustEvaluate(allowedTrust, &result);
+            NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
+            
+            SecKeyRef allowedPublicKey = SecTrustCopyPublicKey(allowedTrust);
+            NSParameterAssert(allowedPublicKey);
+            [publicKeys addObject:(__bridge_transfer id)allowedPublicKey];
+            
+            CFRelease(allowedTrust);
+            CFRelease(policy);
+            CFRelease(certificates);
+            CFRelease(allowedCertificate);
+        }
+        
+        _pinnedPublicKeys = [[NSArray alloc] initWithArray:publicKeys];
+    });
+    
+    return _pinnedPublicKeys;
+}
+
+//- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+//  NSLog(@"Allowing all");
+//  SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+//  CFDataRef exceptions = SecTrustCopyExceptions (serverTrust);
+//  SecTrustSetExceptions (serverTrust, exceptions);
+//  CFRelease (exceptions);
+//  completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+//}
 
 
 # pragma mark - NSCoding
@@ -478,6 +687,14 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     }
     
     return self;
+}
+
+- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
+    
+}
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+    return nil;
 }
 
 @end

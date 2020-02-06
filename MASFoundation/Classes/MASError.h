@@ -208,21 +208,6 @@ typedef NS_ENUM(NSInteger, MASFoundationErrorCode)
     //
     MASFoundationErrorCodeInvalidRequestForFileUpload = 180100,
     
-    //
-    // Data Task Cancelled
-    //
-    MASFoundationErrorCodeTaskCancelled = 180102,
-    
-    //
-    // Data task not found
-    //
-    MASFoundationErrorCodeDataTaskNotFound = 180103,
-    
-    //
-    // Data task not cancellable
-    //
-    MASFoundationErrorCodeDataTaskNotCancellable = 180104,
-    
     MASFoundationErrorCodeCount = -999999
 };
 

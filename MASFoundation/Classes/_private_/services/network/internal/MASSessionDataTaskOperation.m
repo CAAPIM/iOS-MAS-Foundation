@@ -29,7 +29,6 @@
 
 @property (nonatomic, readwrite, strong) MASURLRequest *request;
 @property (nonatomic, readwrite, strong) NSURLSession *session;
-@property (nonatomic, strong) NSString* taskID;
 
 @property (nonatomic)MASFileRequestProgressBlock fileProgressblock;
 
@@ -50,7 +49,6 @@
     {
         self.request = (MASURLRequest *)request;
         [self setResponseType:self.request.responseType];
-        self.taskID = [[NSUUID UUID] UUIDString];
     }
     
     return self;
@@ -64,7 +62,6 @@
         self.request = (MASURLRequest *)request;
         [self setResponseType:self.request.responseType];
         self.fileProgressblock = progress;
-        self.taskID = [[NSUUID UUID] UUIDString];
     }
     
     return self;
@@ -303,7 +300,7 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
     
-    //DLog(@"total bytes sent - %lld total bytes expected %lld",totalBytesSent,totalBytesExpectedToSend);
+    NSLog(@"total bytes sent - %lld total bytes expected %lld",totalBytesSent,totalBytesExpectedToSend);
     if(self.fileProgressblock){
         //NSProgress* progress = [NSProgress progressWithTotalUnitCount:totalBytesExpectedToSend];
         //[progress set]

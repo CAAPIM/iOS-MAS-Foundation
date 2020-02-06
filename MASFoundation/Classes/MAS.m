@@ -194,7 +194,7 @@
 + (void)start:(MASCompletionErrorBlock)completion
 {
     //DLog(@"called");
-    [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
+   // [NSURLProtocol registerClass:[L7SBrowserURLProtocol class]];
     
     //
     // Post the notification
@@ -1139,34 +1139,6 @@ withParameters:(nullable NSDictionary *)parameterInfo
 }
 
 
-+ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)taskBlock completion:(nullable MASResponseObjectErrorBlock)completion
-{
-    __block MASResponseObjectErrorBlock blockCompletion = completion;
-    
-    
-    
-    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
-        
-        if(!completed){
-            completion(nil,nil,error);
-            return;
-        }
-        
-        // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
-        NSTimeInterval timeoutInterval =
-            (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
-            [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
-        
-        [MAS httpRouterMethod:request taskBlock:taskBlock completion:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
-                 if (blockCompletion)
-                 {
-                     blockCompletion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], [responseInfo objectForKey:MASResponseInfoBodyInfoKey], error);
-                 }
-        }];
-        
-    }];
-}
-
 + (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion
 {
     if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
@@ -1188,61 +1160,9 @@ withParameters:(nullable NSDictionary *)parameterInfo
             (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
             [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
         
-    
-        
-        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval constructingBodyBlock:formDataBlock progress:progressBlock taskBlock:nil completion:completion];
+        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval  constructingBodyBlock:formDataBlock progress:progressBlock completion:completion];
         
     }];
-}
-
-+ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock taskBlock:(MASDataTaskBlock _Nullable )taskBlock completion:(nullable MASResponseObjectErrorBlock)completion
-{
-    if(![request.httpMethod isEqualToString:@"POST"] || request.requestType != MASRequestResponseTypeFormData)
-    {
-        NSError* error = [NSError errorInvalidRequestForFileUpload];
-        completion(nil,nil,error);
-        return;
-    }
-    
-    [MAS checkAndValidateRequestScope:request.endPoint headerInfo:request.header isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
-        
-        if(!completed){
-            completion(nil,nil,error);
-            return;
-        }
-        
-        // If default timeoutInterval override to NetworkConfiguration timeoutInterval.
-        NSTimeInterval timeoutInterval =
-            (request.timeoutInterval == MASDefaultNetworkTimeoutConfiguration) ?
-            [self timeoutIntervalForEndpoint:request.endPoint] : request.timeoutInterval;
-        
-        [[MASNetworkingService sharedService] postMultiPartForm:request.endPoint withParameters:request.body andHeaders:request.header requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:timeoutInterval  constructingBodyBlock:formDataBlock progress:progressBlock taskBlock:taskBlock completion:completion];
-        
-    }];
-}
-
-
-+ (BOOL)cancelRequest:(nonnull MASDataTask*)task error:(NSError**)error
-{
-    //
-    // Check if MAS has been started.
-    //
-    if ([MAS MASState] != MASStateDidStart)
-    {
-        if(error != NULL){
-            *error = [NSError errorMASIsNotStarted];
-        }
-        
-        return NO;
-        
-    }
-    
-    return [[MASNetworkingService sharedService] cancelRequest:task error:error];
-}
-
-+ (void)cancelAllRequests
-{
-    [[MASNetworkingService sharedService] cancelAllRequests];
 }
 
 
@@ -1394,53 +1314,6 @@ withParameters:(nullable NSDictionary *)parameterInfo
                                         timeoutInterval:blockTimeoutInterval
                                              completion:[MAS parseTargetAPIErrorForCompletionBlock:blockCompletion]];
         }
-    }];
-}
-
-
-+ (void)httpRouterMethod:(MASRequest*)request taskBlock:(_Nullable MASDataTaskBlock)taskBlock completion:(MASResponseInfoErrorBlock)completion
-{
-    //
-    // Check for endpoint
-    //
-    if (!request.endPoint)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorInvalidEndpoint]);
-            
-            return;
-        }
-    }
-    
-    //
-    // Check if MAS has been started.
-    //
-    if ([MAS MASState] != MASStateDidStart)
-    {
-        if (completion)
-        {
-            completion(nil, [NSError errorMASIsNotStarted]);
-            
-            return;
-        }
-    }
-    
-    //
-    //  Validate if new scope has been requested in header
-    //  Validation will be ignored if the request is being made as public
-    //
-    NSDictionary *blockHeaderInfo = request.header ? request.header : [NSDictionary dictionary];
-    
-    [MAS validateScopeForRequest:blockHeaderInfo isPublic:request.isPublic completion:^(BOOL completed, NSError *error) {
-        
-        if(!completed && error)
-        {
-            completion(nil,error);
-            return;
-        }
-        
-        [[MASNetworkingService sharedService] httpRequestWithCancel:request taskBlock:taskBlock completion:completion];
     }];
 }
 

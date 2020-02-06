@@ -1059,32 +1059,6 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
 + (void)invoke:(nonnull MASRequest *)request completion:(nullable MASResponseObjectErrorBlock)completion;
 
 
-/**
-*  Invoke the endpoint with the parameters defined in the MASRequest object and also cancel a pending request using the taskBlock
-*
-*  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
-*  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
-*  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
-*  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
-*
-*  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
-*
-*  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
-*  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
-*  with isPublic being YES.
-*
-*  @param request MASRequest An object containing all parameters to call the endpoint
-*      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
-*  @param dataTask MASDataTaskBlock A block which gives a MASDataTask object that can be used to cancel the request
-*  @param completion An MASResponseObjectErrorBlock (NSHTTPURLResponse *response, id responseObject, NSError *error) that will
-*      receive the NSHTTPURLResponse object, response object which needs to perform type casting based on the object type, and NSError object when error occurs.
- @see cancelRequest
-*/
-
-+ (void)invoke:(nonnull MASRequest *)request taskBlock:(nullable MASDataTaskBlock)taskBlock completion:(nullable MASResponseObjectErrorBlock)completion;
-
-
-
 
 # pragma mark - FILE Requests
 
@@ -1113,62 +1087,6 @@ withParameters:(NSDictionary *_Nullable)parameterInfo
  *      receive the NSHTTPURLResponse object, response object which needs to perform type casting based on the object type, and NSError object when error occurs.
  */
 + (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock completion:(nullable MASResponseObjectErrorBlock)completion;
-
-
-/**
-*  Post a multi-part form with the parameters defined in the MASRequest object
-*
-*  If endPointPath is full URL format (including port number and http protocol), SDK will validate the server from the client side through SSL pinning (authentication challenge) with
-*  provided subjectKeyHash (also known as public key hash) in configuration in mag.mobile_sdk.trusted_cert_pinned_public_key_hashes and mag.mobile_sdk.enable_public_key_pinning.
-*  ALL of servers' public key hashes in certificate chain must be defined in the list.  This means when it is configured to use public key hash pinning for SSL pinning,
-*  subjectKeyHash (public key hash) of the gateway must be also present within the list.  The list can contain multiple hash values in array for multiple servers.
-*
-*  When SDK fails to validate SSL with certificate or subjectKeyHash pinning for communication to HTTPs, SDK will cancel the request.
-*
-*  If endPointPath is full URL format, upon successful SSL pinning validation, SDK will also validate the user session against primary gateway regardless the request is being made
-*  to the primary gateway or not.  To ensure bypass the user session validation for public API, use [MAS deleteFrom:withParameters:requestType:responseType:isPublic:completion:] method
-*  with isPublic being YES.
-*
-*  The API appends the file data and any other parameters to the body and follows the standards defined for Content-Type = multipart/form-data
-*
-*  @param request MASRequest An object containing all parameters to call the endpoint
-*      When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
-*  @param formDataBlock This is a block that gets called while constructing the body of the multi-part form request. Typically files can be added to the body by calling various APIs available in MASMultiPartFormData
-*  @see MASMultiPartFormData
-*  @param progressBlock Block which gives back the NSProgress of the task that is going on. Different values can be read from the progress object to present a meaningful progress updates in the UI. Recommend to use progress.fractioncompleted for progress bar updates.
-* @param taskBlock Block which gives back handle to the underlying task object. This task can be cancelled by calling cancel on the object.
-*  @param completion An MASResponseObjectErrorBlock (NSHTTPURLResponse *response, id responseObject, NSError *error) that will
-*      receive the NSHTTPURLResponse object, response object which needs to perform type casting based on the object type, and NSError object when error occurs.
- @see cancelRequest
-*/
-+ (void)postMultiPartForm:(nonnull MASRequest *)request constructingBodyWithBlock:(nonnull MASMultiPartFormDataBlock)formDataBlock progress:( MASFileRequestProgressBlock _Nullable )progressBlock taskBlock:(MASDataTaskBlock _Nullable )taskBlock completion:(nullable MASResponseObjectErrorBlock)completion;
-
-
-///--------------------------------------
-/// @name Cancel HTTP Requests
-///--------------------------------------
-# pragma mark - Cancel APIs
-
-/**
-*  API to cancel a pending HTTP request that was invoked using the API  invoke:taksBlock:completion:
-*  This is a best effort cancel and uses the underlying cancel functionality of iOS.
-* This means there could be scenarios where the request has already been complete and the response is received. In such cases calling cancel has no real meaning.
-*  The completion handler returns with an error description that the task has been cancelled. But in some cases if the request has a dependent Task like a login to be completed, then calling cancel on the request may not return a response back as the task has not been started yet.
-* Cancelling an already finished task has no effect.
-*  @param task MASDataTask object that was obtained as a result of invoking a request using the API  invoke:taksBlock:completion:
-*/
-
-+ (BOOL)cancelRequest:(nonnull MASDataTask*)task error:(NSError*_Nullable*_Nullable)error;
-
-
-/**
-*  API to cancel all the pending requests in the queue.
-*  This is a best effort cancel and uses the underlying cancel functionality of iOS.
-* This means there could be scenarios where the request has already been complete and the response is received. In such cases calling cancel has no real meaning.
-* All the taks that are pending and not finished yet will be cancelled. There is no guarantee for a callback with error for all the requests.
- * Use this when you are sure to cancel all the existing requests and do not really care about the outcome. For example, User moved away from the flow and does not really need any response from earlier tasks.
-*/
-+ (void)cancelAllRequests;
 
 ///--------------------------------------
 /// @name JWT Signing

@@ -197,10 +197,7 @@
                     blockSelf.webLoginCallBack(nil, YES, nil);
                 }
             }
-        //return a nil request as we would have already cancelled the request
-        //return a nil as compiler expects a NSURLRequest object
-        NSURLRequest* nilRequest = nil;
-        return nilRequest;
+            return request;
     };
     
     return redirectionBlock;
