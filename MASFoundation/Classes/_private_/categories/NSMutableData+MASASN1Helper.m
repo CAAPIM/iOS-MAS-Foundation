@@ -18,7 +18,7 @@
 {
     NSMutableData *subjectItem = [[NSMutableData alloc] initWithCapacity:128];
     [subjectItem appendBytes:attribute length:size];
-    [subjectItem appendUTF8String:value];
+    [subjectItem appendUTF8StringASN1:value];
     [subjectItem encloseWith:0x30]; // Sequence tag
     [subjectItem encloseWith:0x31]; // Set tag
     
@@ -68,14 +68,14 @@
     [publicKeyASN encloseWith:0x30];    // Sequence tag
     [publicKeyASN prependByte:0x00];
     
-    [publicKeyData appendBITString:publicKeyASN];
+    [publicKeyData appendBITStringASN1:publicKeyASN];
     [publicKeyData encloseWith:0x30];   // Sequence tag
     
     return publicKeyData;
 }
 
 
-- (void)appendUTF8String:(NSString *)value
+- (void)appendUTF8StringASN1:(NSString *)value
 {
     //
     // UTF8STRING type
@@ -87,7 +87,7 @@
 }
 
 
-- (void)appendBITString:(NSData *)data
+- (void)appendBITStringASN1:(NSData *)data
 {
     //
     //  BIT string

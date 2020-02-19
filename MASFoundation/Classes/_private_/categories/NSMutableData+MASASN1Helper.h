@@ -58,7 +58,7 @@
 
  @param value NSString of UTF8 string
  */
-- (void)appendUTF8String:(NSString *)value;
+- (void)appendUTF8StringASN1:(NSString *)value;
 
 
 
@@ -67,6 +67,6 @@
 
  @param data NSData of Bit string
  */
-- (void)appendBITString:(NSData *)data;
+- (void)appendBITStringASN1:(NSData *)data;
 
 @end
