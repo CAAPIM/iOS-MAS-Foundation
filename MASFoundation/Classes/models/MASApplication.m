@@ -14,6 +14,10 @@
 #import "MASConstantsPrivate.h"
 #import "MASModelService.h"
 #import "MASAccessService.h"
+#import <WebKit/WebKit.h>
+#import "MASSecurityService.h"
+
+
 
 # pragma mark - Property Constants
 
@@ -38,12 +42,13 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 
 
 @interface MASApplication ()
-    <UIWebViewDelegate>
+<WKUIDelegate, WKNavigationDelegate>
 {
     id _originalDelegate;
+    NSMutableURLRequest *mutableRequest;
 }
 
-@property (nonatomic, strong, readonly) UIWebView *webView;
+@property (nonatomic, strong, readonly) WKWebView *webView;
 @property (nonatomic, copy) MASCompletionErrorBlock errorBlock;
 
 @end
@@ -247,7 +252,7 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 }
 
 
-- (void)loadWebApp:(UIWebView *)webView completion:(MASCompletionErrorBlock)completion
+- (void)loadWebApp:(WKWebView *)webView completion:(MASCompletionErrorBlock)completion
 {
     //
     // Validate URL
@@ -265,27 +270,32 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // Create the URL request
     //
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.authUrl]];
+    NSMutableURLRequest *request =
+        [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.authUrl]];
     
     //
-    // If the UIWebView already has a delegate we must store it
+    //  If user session is valid add the authorization header
     //
-    if(webView.delegate != nil)
+    if ([MASApplication currentApplication].isAuthenticated &&
+        [self.class isProtectedResource:request.URL])
     {
-        _originalDelegate = webView.delegate;
+        [self setAuthorization:request];
     }
     
-    webView.delegate = self;
+    
+    //
+    // If the WKWebView already has a delegate we must store it
+    //
+    if(webView.UIDelegate != nil)
+    {
+        _originalDelegate = webView.UIDelegate;
+    }
+    
+    webView.UIDelegate = self;
+    webView.navigationDelegate = self;
     _webView = webView;
     
     if (completion) completion(YES,nil);
-    
-    /*
-    [[NSNotificationCenter defaultCenter] addObserver:self
-        selector:@selector(didReceiveStatusUpdate:)
-        name:L7SDidReceiveStatusUpdateNotification
-        object:nil];
-    */
     
     [webView loadRequest:request];
 }
@@ -382,50 +392,205 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
 }
 
 
-# pragma mark - UIWebViewDelegate
+# pragma mark - WKNavigationDelegate
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error
 {
     DLog(@"didFailLoadWithError %@",error);
-    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)])
-    {
-        return [_originalDelegate webView:webView didFailLoadWithError:error];
-    }
-}
-
-
-- (void)webViewDidStartLoad:(UIWebView *)webView{
     
-    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webViewDidStartLoad:)])
+    if(_originalDelegate != nil &&
+       [_originalDelegate respondsToSelector:@selector(webView:didFailProvisionalNavigation:withError:)])
     {
-        return [_originalDelegate webViewDidStartLoad:webView];
+        return [_originalDelegate webView:webView didFailProvisionalNavigation:navigation withError:error];
     }
 }
 
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
+- (void) webView: (WKWebView *) webView didStartProvisionalNavigation: (WKNavigation *) navigation {
     
-    if(_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webViewDidFinishLoad:)])
+    if(_originalDelegate != nil &&
+       [_originalDelegate respondsToSelector:@selector(webView:didStartProvisionalNavigation:)])
     {
-        return [_originalDelegate webViewDidFinishLoad:webView];
+        return [_originalDelegate webView:webView didStartProvisionalNavigation:navigation];
     }
 }
 
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
-    DLog(@"shouldStartLoadWithRequest %@",request);
-    return (_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)] ?
+- (void) webView: (WKWebView *) webView didFinishNavigation: (WKNavigation *) navigation {
+    
+    if(_originalDelegate != nil
+       && [_originalDelegate respondsToSelector:@selector(webView:didFinishNavigation:)])
+    {
+        return [_originalDelegate webView:webView didFinishNavigation:navigation];
+    }
+}
+
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    
+    if ([MASApplication currentApplication].isAuthenticated &&
+        [self.class isProtectedResource:navigationAction.request.URL]) {
+        
+        NSString *endPoint = @"/connect/enterprise/browser/websso/login";
+        NSMutableURLRequest *request = [navigationAction.request mutableCopy];
         
         //
-        // Call the original delegate
+        //  If websso/login endpoint do not add the authorization header
+        //  Gets into a infinite loop as the server refreshes the page.
         //
-        [_originalDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType] :
+        if ([request.allHTTPHeaderFields valueForKey:@"Authorization"] == nil &&
+            ![request.URL.absoluteString hasSuffix:endPoint]) {
+            
+            [self setAuthorization:request];
+            [webView loadRequest:request];
+        }
+    }
+    
+    decisionHandler(WKNavigationActionPolicyAllow);
+    
+    return (_originalDelegate != nil && [_originalDelegate respondsToSelector:@selector(webView:decidePolicyForNavigationAction:decisionHandler:)] ?
+            
+            //
+            // Call the original delegate
+            //
+            [_originalDelegate webView:webView decidePolicyForNavigationAction:navigationAction decisionHandler:decisionHandler] :
+            
+            //
+            // Just return YES
+            //
+            YES);
+}
+
+
+-(void) setAuthorization: (NSMutableURLRequest *) request {
+    
+    NSString *authorization = [MASUser authorizationBearerWithAccessToken];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+}
+
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+completionHandler:
+(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+    
+    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+    
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         
-        //
-        // Just return YES
-        //
-        YES);
+        SecPolicyRef policy = SecPolicyCreateBasicX509();
+        CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
+        NSMutableArray *trustChain = [NSMutableArray arrayWithCapacity:certificateCount];
+        
+        for (CFIndex i = 0; i < certificateCount; i++) {
+            SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+            
+            [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
+        }
+        
+        CFRelease(policy);
+        
+        {
+            for (id serverCertificateData in trustChain) {
+                if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
+                
+                    completionHandler(NSURLSessionAuthChallengeUseCredential,
+                                      [NSURLCredential credentialForTrust:serverTrust]);
+                    
+                    return;
+                }
+            }
+            
+            SecTrustResultType result = 0;
+            SecTrustEvaluate(serverTrust, &result);
+            
+            if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
+                
+                completionHandler(NSURLSessionAuthChallengeUseCredential,
+                                  [NSURLCredential credentialForTrust:serverTrust]);
+                
+            } else {
+                
+                completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+            }
+        }
+    }
+    else {
+        
+        if ([challenge previousFailureCount] == 0) {
+            //client side authentication
+            NSURLCredential * credential = [[MASSecurityService sharedService] createUrlCredential];
+            if (credential) {
+                
+                completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+            } else {
+                completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+            }
+        } else {
+            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+        }
+    }
+}
+
++ (NSArray *)pinnedCertificates {
+    static NSMutableArray *_pinnedCertificates = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSArray *paths = [bundle pathsForResourcesOfType:@"cer" inDirectory:@"."];
+        
+        NSMutableArray *certificates = [NSMutableArray arrayWithCapacity:[paths count]];
+        for (NSString *path in paths) {
+            NSData *certificateData = [NSData dataWithContentsOfFile:path];
+            [certificates addObject:certificateData];
+        }
+        
+        _pinnedCertificates = [[NSMutableArray alloc] initWithArray:certificates];
+        //adding the certificates from Json configuration
+        [_pinnedCertificates addObjectsFromArray:[[MASConfiguration currentConfiguration] gatewayCertificatesAsDERData]];
+        
+    });
+    return _pinnedCertificates;
+}
+
+
++ (NSArray *)pinnedPublicKeys {
+    static NSArray *_pinnedPublicKeys = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSArray *pinnedCertificates = [self pinnedCertificates];
+        NSMutableArray *publicKeys = [NSMutableArray arrayWithCapacity:[pinnedCertificates count]];
+        
+        for (NSData *data in pinnedCertificates) {
+            SecCertificateRef allowedCertificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)data);
+            NSParameterAssert(allowedCertificate);
+            
+            SecCertificateRef allowedCertificates[] = {allowedCertificate};
+            CFArrayRef certificates = CFArrayCreate(NULL, (const void **)allowedCertificates, 1, NULL);
+            
+            SecPolicyRef policy = SecPolicyCreateBasicX509();
+            SecTrustRef allowedTrust = NULL;
+            OSStatus status = SecTrustCreateWithCertificates(certificates, policy, &allowedTrust);
+            NSAssert(status == errSecSuccess, @"SecTrustCreateWithCertificates error: %ld", (long int)status);
+            
+            SecTrustResultType result = 0;
+            status = SecTrustEvaluate(allowedTrust, &result);
+            NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
+            
+            SecKeyRef allowedPublicKey = SecTrustCopyPublicKey(allowedTrust);
+            NSParameterAssert(allowedPublicKey);
+            [publicKeys addObject:(__bridge_transfer id)allowedPublicKey];
+            
+            CFRelease(allowedTrust);
+            CFRelease(policy);
+            CFRelease(certificates);
+            CFRelease(allowedCertificate);
+        }
+        
+        _pinnedPublicKeys = [[NSArray alloc] initWithArray:publicKeys];
+    });
+    
+    return _pinnedPublicKeys;
 }
 
 

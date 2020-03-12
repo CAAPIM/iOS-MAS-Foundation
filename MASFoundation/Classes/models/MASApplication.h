@@ -11,7 +11,7 @@
 #import "MASObject.h"
 
 @class UIImageView;
-@class UIWebView;
+@class WKWebView;
 
 
 @protocol MASEnterpriseAppProtocol;
@@ -198,7 +198,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
 
 
 /**
- * Loads a web application representing this application into a UIWebView.
+ * Loads a web application representing this application into a WKWebView.
  *
  * @param webView a webView loading the web app.
  *
@@ -206,7 +206,7 @@ typedef NS_ENUM(NSInteger, MASAuthenticationStatus) {
  *      receive a YES or NO BOOL indicating the completion state and/or an NSError object if there
  *      is a failure.
  */
-- (void)loadWebApp:(UIWebView *_Nonnull)webView completion:(MASCompletionErrorBlock _Nullable)completion;
+- (void)loadWebApp:(WKWebView *_Nonnull)webView completion:(MASCompletionErrorBlock _Nullable)completion;
 
 @end
 
