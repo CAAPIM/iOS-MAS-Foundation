@@ -188,7 +188,7 @@ static MASSecurityService *_sharedService_ = nil;
     uint8_t zero = 0;
     [signdata appendBytes:&zero length:1];
     [signdata appendBytes:signature length:signature_len];
-    [certificateSigningRequest appendBITString:signdata];
+    [certificateSigningRequest appendBITStringASN1:signdata];
     
     [certificateSigningRequest encloseWith:0x30];
     

@@ -1,3 +1,15 @@
+# Version 2.1.00
+
+### Bug fixes
+- Replaced UIWebView with WKWebView.
+- Conflict with Dynatrace framework 'appendUTF8String' & 'appendBITString' api.
+
+### New features
+- The Cancel Request API allows any data task or HTTP request to be cancelled.
+
+### Deprecated methods
+- None
+
 # Version 2.0.00
 
 ### Bug fixes
