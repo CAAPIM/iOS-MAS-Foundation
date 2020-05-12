@@ -434,7 +434,9 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
     
     // ClientId
-    parameterInfo[MASClientKeyRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    if ([[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId]) {
+        parameterInfo[MASClientKeyRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+    }
     
     // RedirectUri
     parameterInfo[MASRedirectUriRequestResponseKey] = [[MASApplication currentApplication].redirectUri absoluteString];
