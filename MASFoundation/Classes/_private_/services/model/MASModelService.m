@@ -1967,7 +1967,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                      requestType:MASRequestResponseTypeWwwFormUrlEncoded
                                     responseType:MASRequestResponseTypeJson
                                       completion:^(NSDictionary *responseInfo, NSError *error) {
-                                          //
+        
+                                          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                          NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+                                          
+        //
                                           // Detect if error, if so stop here
                                           //
                                           if (error)
@@ -1975,9 +1979,24 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                               //
                                               // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
                                               //
-                                              [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
-                                              [[MASAccessService sharedService].currentAccessObj refresh];
-                                              [blockSelf validateCurrentUserSession:completion];
+                                              if (headerInfo[MASHeaderInfoErrorKey] && !bodayInfo[MASAccessTokenRequestResponseKey]) {
+                                                  
+                                                  [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
+                                                  [[MASAccessService sharedService].currentAccessObj refresh];
+                                                  
+                                                  [blockSelf validateCurrentUserSession:completion];
+                                                  
+                                                  return;
+                                              }
+                                              
+                                              //
+                                              // If not server error
+                                              // Do not invalidate refresh_token and re-validate.
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(NO, error);
+                                              }
                                               
                                               return;
                                           }
@@ -1991,8 +2010,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           //
                                           // Validate id_token when received from server.
                                           //
-                                          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
-                                          
                                           if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
                                               [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
                                               [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant] &&
