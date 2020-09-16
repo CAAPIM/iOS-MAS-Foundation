@@ -1444,19 +1444,16 @@ withParameters:(NSDictionary *)parameterInfo
     //
     // Default types
     //
-    NSInteger requestType;
        NSInteger responseType;
     if ([endPoint  isEqual: @"/connect/device/renew"]) {
-        requestType = MASRequestResponseTypeTextPlain;
         responseType = MASRequestResponseTypeTextPlain;
        } else {
-           requestType = MASRequestResponseTypeJson;
            responseType = MASRequestResponseTypeJson;
        }
     [self putTo:endPoint
  withParameters:parameterInfo
      andHeaders:headerInfo
-    requestType:requestType
+    requestType:MASRequestResponseTypeJson
    responseType:responseType
        isPublic:NO
 timeoutInterval:MASDefaultNetworkTimeoutConfiguration
