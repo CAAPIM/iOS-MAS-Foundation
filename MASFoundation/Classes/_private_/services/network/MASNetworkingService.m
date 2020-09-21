@@ -1454,7 +1454,7 @@ withParameters:(NSDictionary *)parameterInfo
  withParameters:parameterInfo
      andHeaders:headerInfo
     requestType:MASRequestResponseTypeJson
-   responseType:MASRequestResponseTypeJson
+   responseType:responseType
        isPublic:NO
 timeoutInterval:MASDefaultNetworkTimeoutConfiguration
      completion:completion];
