@@ -660,6 +660,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
             //
             // Renew the client certificate, if the renew endpoint fails,
             //
+            [_sessionManager.operationQueue setSuspended:YES];
             [[MASModelService sharedService] renewClientCertificateWithCompletion:^(BOOL completed, NSError *error) {
                 
                 //
