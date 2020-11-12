@@ -657,6 +657,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         //
         else if (magErrorCode && [magErrorCode hasSuffix:@"206"] && ![blockEndPoint isEqualToString:[MASConfiguration currentConfiguration].deviceRenewEndpointPath])
         {
+            [_sessionManager.operationQueue setSuspended:YES];
             //
             // Renew the client certificate, if the renew endpoint fails,
             //
@@ -1444,11 +1445,17 @@ withParameters:(NSDictionary *)parameterInfo
     //
     // Default types
     //
+    NSInteger responseType;
+    if ([endPoint  isEqual: @"/connect/device/renew"]) {
+        responseType = MASRequestResponseTypeTextPlain;
+    } else {
+        responseType = MASRequestResponseTypeJson;
+    }
     [self putTo:endPoint
  withParameters:parameterInfo
      andHeaders:headerInfo
     requestType:MASRequestResponseTypeJson
-   responseType:MASRequestResponseTypeJson
+   responseType:responseType
        isPublic:NO
 timeoutInterval:MASDefaultNetworkTimeoutConfiguration
      completion:completion];
