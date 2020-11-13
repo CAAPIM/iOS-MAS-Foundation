@@ -1097,9 +1097,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    [[MASNetworkingService sharedService] putTo:endPoint
-                                 withParameters:nil
-                                     andHeaders:headerInfo
+    [[MASNetworkingService sharedService] putTo:endPoint withParameters:nil andHeaders:headerInfo requestType:MASRequestResponseTypeJson responseType:MASRequestResponseTypeTextPlain
                                      completion:^(NSDictionary *responseInfo, NSError *error) {
                                         
                                          //
