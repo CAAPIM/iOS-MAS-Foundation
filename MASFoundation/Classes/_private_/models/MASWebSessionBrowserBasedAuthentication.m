@@ -16,8 +16,16 @@
 API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2))
 @interface MASWebSessionBrowserBasedAuthentication()
 
+///--------------------------------------
+/// @name Properties
+///-------------------------------------
+
+# pragma mark - Properties
+
 @property (nonatomic, strong) ASWebAuthenticationSession *session;
+
 @property (nonatomic, assign) MASAuthCredentialsBlock webLoginBlock;
+
 @property (nonatomic, weak) id window;
 
 @end
@@ -26,7 +34,15 @@ API_AVAILABLE(ios(13.0), macos(10.15))
 @interface MASWebSessionBrowserBasedAuthentication() <ASWebAuthenticationPresentationContextProviding>
 @end
 
+
 @implementation MASWebSessionBrowserBasedAuthentication
+
+///--------------------------------------
+/// @name Start & Stop
+///--------------------------------------
+
+# pragma mark - Start & Stop
+
 
 - (void)startWithURL:(NSURL *)url completion:(MASAuthCredentialsBlock)webLoginBlock
 {
@@ -53,7 +69,9 @@ API_AVAILABLE(ios(13.0), macos(10.15))
 #else
         blockSelf.window = [[NSApplication sharedApplication] keyWindow];
 #endif
-        [blockSelf.session start];
+        if ([blockSelf.session start]) {
+            DLog(@"Successfully displayed login template");
+        }
     });
 
 }
@@ -65,6 +83,10 @@ API_AVAILABLE(ios(13.0), macos(10.15))
 }
 
 
+
+///--------------------------------------
+/// @name ASWebAuthenticationPresentationContextProviding
+///--------------------------------------
 
 #pragma mark - ASWebAuthenticationPresentationContextProviding
 

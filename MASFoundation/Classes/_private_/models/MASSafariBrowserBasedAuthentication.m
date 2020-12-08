@@ -15,12 +15,26 @@
 
 @interface MASSafariBrowserBasedAuthentication() <SFSafariViewControllerDelegate>
 
+///--------------------------------------
+/// @name Properties
+///-------------------------------------
+
+# pragma mark - Properties
+
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
+
 @property (nonatomic, assign) MASAuthCredentialsBlock webLoginBlock;
 
 @end
 
+
 @implementation MASSafariBrowserBasedAuthentication
+
+///--------------------------------------
+/// @name Start & Stop
+///--------------------------------------
+
+# pragma mark - Start & Stop
 
 
 - (void)startWithURL:(NSURL *)url completion:(MASAuthCredentialsBlock)webLoginBlock
@@ -33,9 +47,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 
-        [[UIAlertController rootViewController] presentViewController:blockSelf.safariViewController
-                                                             animated:YES
-                                                           completion:^{
+        [[UIAlertController rootViewController] presentViewController:blockSelf.safariViewController animated:YES completion:^{
             DLog(@"Successfully displayed login template");
         }];
 
@@ -54,6 +66,9 @@
 }
 
 
+///--------------------------------------
+/// @name SFSafariViewControllerDelegate
+///--------------------------------------
 
 #pragma mark - SFSafariViewControllerDelegate
 
