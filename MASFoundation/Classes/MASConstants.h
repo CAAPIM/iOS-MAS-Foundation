@@ -309,6 +309,7 @@ typedef NS_ENUM(NSInteger, MASState) {
     MASStateIsBeingStopped
 };
 
+
 /**
  *  The enumerated MASBrowserBasedAuthenticationTypes that can be used to initiate a browser based login
  */
@@ -323,6 +324,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MASBrowserBasedAuthenticationType) {
      */
     MASBrowserBasedAuthenticationTypeWebSession API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2)) API_UNAVAILABLE(tvos)
 };
+
 
 /**
  *  Enumerated MASFileDirectoryType that indicates which directory to store MASFile into.
