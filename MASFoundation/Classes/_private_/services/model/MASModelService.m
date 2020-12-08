@@ -11,6 +11,7 @@
 #import "MASModelService.h"
 #import "MASAccessService.h"
 #import "MASConfigurationService.h"
+#import "MASConstants.h"
 #import "MASFileService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
@@ -40,6 +41,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
 static BOOL _isBrowserBasedAuthentication_ = NO;
+static MASBrowserBasedAuthenticationType _browserBasedAuthenticationType_ = MASBrowserBasedAuthenticationTypeSafari;
 
 # pragma mark - Properties
 
@@ -82,6 +84,18 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 + (BOOL)browserBasedAuthentication
 {
     return _isBrowserBasedAuthentication_;
+}
+
+
++ (void)setBrowserBasedAuthenticationType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType
+{
+    _browserBasedAuthenticationType_ = browserBasedAuthenticationType;
+}
+
+
++ (MASBrowserBasedAuthenticationType)browserBasedAuthenticationType
+{
+    return _browserBasedAuthenticationType_;
 }
 
 

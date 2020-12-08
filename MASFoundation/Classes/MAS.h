@@ -195,6 +195,14 @@
 + (void)enableBrowserBasedAuthentication:(BOOL)enable;
 
 
+/**
+ * Sets preferred type of browser used for Browser Based Authentication (templatized login).
+ * By default this is `MASBrowserBasedAuthenticationTypeSafari`.
+
+ @param browserBasedAuthenticationType MASBrowserBasedAuthenticationType value indicating which type of browser should be used for Browser Based Authentication.
+ */
++ (void)preferredBrowserBasedAuthenticationType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType;
+
 
 /**
  *  Returns current MASState enumeration value.  The value can be used to determine which state SDK is currently at.

@@ -101,6 +101,22 @@
 + (BOOL)browserBasedAuthentication;
 
 
+/**
+ * Sets the browser based authentication type property. Default is MASSafariBrowserBasedAuthenticationType.
+ *
+ * @param browserBasedAuthenticationType The type of browser used when invoking a browser based login.
+ */
++ (void)setBrowserBasedAuthenticationType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType;
+
+
+/**
+ * The current browser based authentication type.
+ *
+ * @return MASBrowserBasedAuthenticationType value is returned.
+ */
++ (MASBrowserBasedAuthenticationType)browserBasedAuthenticationType;
+
+
 ///--------------------------------------
 /// @name Application
 ///--------------------------------------

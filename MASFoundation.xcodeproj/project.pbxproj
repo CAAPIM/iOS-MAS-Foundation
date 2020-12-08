@@ -147,7 +147,6 @@
 		A898EF6B2182D3DF00CF291B /* NSURLSession+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A898EF692182D3DF00CF291B /* NSURLSession+MASPrivate.h */; };
 		A898EF6C2182D3DF00CF291B /* NSURLSession+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A898EF6A2182D3DF00CF291B /* NSURLSession+MASPrivate.m */; };
 		C81CC3CC1FC2EA190058718E /* MASBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CC3CA1FC2EA190058718E /* MASBrowserBasedAuthentication.h */; };
-		C81CC3CD1FC2EA190058718E /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */; };
 		C81CC3D01FC2EFBB0058718E /* UIAlertController+MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */; };
 		C81CC3D11FC2EFBB0058718E /* UIAlertController+MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */; };
 		C858D6B52398FC5400963763 /* MASDataTask+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = C858D6B32398FC5400963763 /* MASDataTask+MASPrivate.h */; };
@@ -327,6 +326,14 @@
 		CBD25B151E7A0A9200DFB47F /* MF_Base64Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = CBD25B131E7A0A9200DFB47F /* MF_Base64Additions.m */; };
 		CBFA70F41F1ED5D6006D025D /* MASSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = CBFA70F21F1ED5D6006D025D /* MASSecurityPolicy.h */; };
 		CBFA70F51F1ED5D6006D025D /* MASSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = CBFA70F31F1ED5D6006D025D /* MASSecurityPolicy.m */; };
+		E0BA784D257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = E0BA784B257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.m */; };
+		E0BA7861257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = E0BA785F257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.m */; };
+		E0BA7867257F62570003A9B8 /* MASSafariBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = E0BA784A257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.h */; };
+		E0BA7869257F62590003A9B8 /* MASWebSessionBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = E0BA785E257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.h */; };
+		E0BA786D257F62820003A9B8 /* MASTypedBrowserBasedAuthenticationInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = E0BA7849257E7FA60003A9B8 /* MASTypedBrowserBasedAuthenticationInterface.h */; };
+		E0BA7877257F708A0003A9B8 /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */; };
+		E0BA788A257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = E0BA7888257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.h */; };
+		E0BA788B257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E0BA7889257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.m */; };
 		E3662A3723DEE503007A76A1 /* MASIHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = E3662A3523DEE502007A76A1 /* MASIHTTPRequestOperation.h */; };
 		E3662A3823DEE503007A76A1 /* MASIHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = E3662A3623DEE502007A76A1 /* MASIHTTPRequestOperation.m */; };
 		E3662A3B23DEE52C007A76A1 /* MASIURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = E3662A3923DEE52B007A76A1 /* MASIURLResponseSerialization.m */; };
@@ -687,6 +694,13 @@
 		CBD25B131E7A0A9200DFB47F /* MF_Base64Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MF_Base64Additions.m; sourceTree = "<group>"; };
 		CBFA70F21F1ED5D6006D025D /* MASSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSecurityPolicy.h; sourceTree = "<group>"; };
 		CBFA70F31F1ED5D6006D025D /* MASSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSecurityPolicy.m; sourceTree = "<group>"; };
+		E0BA7849257E7FA60003A9B8 /* MASTypedBrowserBasedAuthenticationInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASTypedBrowserBasedAuthenticationInterface.h; sourceTree = "<group>"; };
+		E0BA784A257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASSafariBrowserBasedAuthentication.h; sourceTree = "<group>"; };
+		E0BA784B257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASSafariBrowserBasedAuthentication.m; sourceTree = "<group>"; };
+		E0BA785E257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASWebSessionBrowserBasedAuthentication.h; sourceTree = "<group>"; };
+		E0BA785F257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASWebSessionBrowserBasedAuthentication.m; sourceTree = "<group>"; };
+		E0BA7888257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASTypedBrowserBasedAuthenticationFactory.h; sourceTree = "<group>"; };
+		E0BA7889257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASTypedBrowserBasedAuthenticationFactory.m; sourceTree = "<group>"; };
 		E3662A3523DEE502007A76A1 /* MASIHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASIHTTPRequestOperation.h; sourceTree = "<group>"; };
 		E3662A3623DEE502007A76A1 /* MASIHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASIHTTPRequestOperation.m; sourceTree = "<group>"; };
 		E3662A3923DEE52B007A76A1 /* MASIURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASIURLResponseSerialization.m; sourceTree = "<group>"; };
@@ -1122,6 +1136,13 @@
 				A898EF662182D35700CF291B /* MASJWKSet.m */,
 				CBA3EB301E94634C00E64D9D /* MASClaims+MASPrivate.h */,
 				CBA3EB311E94634C00E64D9D /* MASClaims+MASPrivate.m */,
+				E0BA7849257E7FA60003A9B8 /* MASTypedBrowserBasedAuthenticationInterface.h */,
+				E0BA784A257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.h */,
+				E0BA784B257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.m */,
+				E0BA785E257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.h */,
+				E0BA785F257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.m */,
+				E0BA7888257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.h */,
+				E0BA7889257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.m */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1493,15 +1514,18 @@
 				CB9B1207210949D5008A2075 /* NSMutableData+MASASN1Helper.h in Headers */,
 				CBA3EB2E1E945F2400E64D9D /* MASClaims.h in Headers */,
 				CB0B58591E258C2A00BC0163 /* MASAuthorizationResponse.h in Headers */,
+				E0BA786D257F62820003A9B8 /* MASTypedBrowserBasedAuthenticationInterface.h in Headers */,
 				CBA3EB321E94634C00E64D9D /* MASClaims+MASPrivate.h in Headers */,
 				CBD25AFF1E78C47C00DFB47F /* JWTClaimsSetVerifier.h in Headers */,
 				CBD25AF21E78C47C00DFB47F /* JWTRSAlgorithm.h in Headers */,
 				CB6491F01FE9DAF300281288 /* MQTTPersistence.h in Headers */,
 				10E027A11F72B10100EAB103 /* RNCryptor+Private.h in Headers */,
 				CBD25B0C1E78C47C00DFB47F /* JWTBase64Coder.h in Headers */,
+				E0BA788A257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.h in Headers */,
 				A419B3A11C176259008DC88C /* NSData+MAS.h in Headers */,
 				A488CE751C0B97FD00B8B961 /* MASService.h in Headers */,
 				CB6491FB1FE9DAF300281288 /* MQTTSSLSecurityPolicy.h in Headers */,
+				E0BA7867257F62570003A9B8 /* MASSafariBrowserBasedAuthentication.h in Headers */,
 				CBD25B0B1E78C47C00DFB47F /* JWT.h in Headers */,
 				CBD25B091E78C47C00DFB47F /* JWTCoding.h in Headers */,
 				CB6491F71FE9DAF300281288 /* MQTTSessionManager.h in Headers */,
@@ -1523,6 +1547,7 @@
 				A4E340F91B9E9F2000883AD3 /* MAS.h in Headers */,
 				E3662A4223DEE5A4007A76A1 /* MASINetworking.h in Headers */,
 				CBD25AF31E78C47C00DFB47F /* JWTCryptoKey.h in Headers */,
+				E0BA7869257F62590003A9B8 /* MASWebSessionBrowserBasedAuthentication.h in Headers */,
 				CB6492031FE9DAF300281288 /* MQTTStrict.h in Headers */,
 				A4831AFD1BD1A917007B4AE6 /* MASUser+MASPrivate.h in Headers */,
 				CBD25AEC1E78C47C00DFB47F /* JWTAlgorithmDataHolderChain.h in Headers */,
@@ -1698,6 +1723,7 @@
 				TargetAttributes = {
 					1059D36F1B61AA3700223267 = {
 						CreatedOnToolsVersion = 6.4;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Manual;
 					};
 					1059D37A1B61AA3800223267 = {
@@ -1782,12 +1808,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0BA788B257F78820003A9B8 /* MASTypedBrowserBasedAuthenticationFactory.m in Sources */,
 				CB5E4C711C1D250D001B3B8A /* MASPutURLRequest.m in Sources */,
 				CB2A4056209B9DA600F988AA /* MASMultiFactorHandler+MASPrivate.m in Sources */,
 				A858C6661D0978A6001FB9AD /* MASOTPService.m in Sources */,
 				CBD25AE71E78C47C00DFB47F /* JWTAlgorithmNone.m in Sources */,
 				CB1C151F1E450109002B31A5 /* NSURL+MASPrivate.m in Sources */,
 				10D2D49F1C1686ED00DF8AC4 /* MASGroup+MASPrivate.m in Sources */,
+				E0BA7877257F708A0003A9B8 /* MASBrowserBasedAuthentication.m in Sources */,
 				CB99754F1EDF5837006CEBB1 /* MASAuthCredentialsAuthorizationCode.m in Sources */,
 				A488CE761C0B97FD00B8B961 /* MASService.m in Sources */,
 				A42A86A11BBDA27F00AE98AC /* NSError+MASPrivate.m in Sources */,
@@ -1799,6 +1827,7 @@
 				CB2357971F0EFDEA00D4C420 /* MASSessionTaskOperation.m in Sources */,
 				CB6491E91FE9DAF300281288 /* MQTTDecoder.m in Sources */,
 				CB64920A1FE9DAF300281288 /* ReconnectTimer.m in Sources */,
+				E0BA784D257E7FEF0003A9B8 /* MASSafariBrowserBasedAuthentication.m in Sources */,
 				10E027A01F72B10100EAB103 /* RNCryptor.m in Sources */,
 				CBAFD24D1F2BD46C0034DF02 /* MASSecurityConfiguration.m in Sources */,
 				CB6491E11FE9DAF300281288 /* MQTTCFSocketEncoder.m in Sources */,
@@ -1826,6 +1855,7 @@
 				10E027A71F72B10100EAB103 /* RNEncryptor.m in Sources */,
 				699570E72062FF1300017244 /* MASError.m in Sources */,
 				CB9975571EDF5986006CEBB1 /* MASAuthCredentialsClientCredentials.m in Sources */,
+				E0BA7861257EB8C00003A9B8 /* MASWebSessionBrowserBasedAuthentication.m in Sources */,
 				5BD3E7E420630FC900A151C7 /* MASConstants.m in Sources */,
 				A47332D01BBC61F50002A492 /* NSData+MASPrivate.m in Sources */,
 				CBAFD2511F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.m in Sources */,
@@ -1877,7 +1907,6 @@
 				CBD25AF61E78C47C00DFB47F /* JWTCryptoKeyExtractor.m in Sources */,
 				A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */,
 				A417BA521BF033C300EC9BCB /* CLLocation+MASPrivate.m in Sources */,
-				C81CC3CD1FC2EA190058718E /* MASBrowserBasedAuthentication.m in Sources */,
 				69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */,
 				A4831AB21BD1A551007B4AE6 /* MASFile.m in Sources */,
 				CB0B585A1E258C2A00BC0163 /* MASAuthorizationResponse.m in Sources */,
@@ -1992,7 +2021,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -2034,7 +2063,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2047,6 +2076,7 @@
 		1059D3871B61AA3800223267 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -2090,12 +2120,15 @@
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		1059D3881B61AA3800223267 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -2139,6 +2172,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

@@ -123,6 +123,12 @@
 }
 
 
++ (void)preferredBrowserBasedAuthenticationType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType
+{
+    [MASModelService setBrowserBasedAuthenticationType:browserBasedAuthenticationType];
+}
+
+
 + (void)setKeychainSynchronizable:(BOOL)enabled
 {
     [MASAccessService setKeychainSynchronizable:enabled];
