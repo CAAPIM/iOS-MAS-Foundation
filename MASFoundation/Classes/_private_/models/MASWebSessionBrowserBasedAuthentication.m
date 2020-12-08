@@ -71,7 +71,7 @@ API_AVAILABLE(ios(13.0), macos(10.15))
 #else
         weakSelf.window = [[NSApplication sharedApplication] keyWindow];
 #endif
-        if ([blockSelf.session start]) {
+        if ([weakSelf.session start]) {
             DLog(@"Successfully displayed login template");
         }
     });
