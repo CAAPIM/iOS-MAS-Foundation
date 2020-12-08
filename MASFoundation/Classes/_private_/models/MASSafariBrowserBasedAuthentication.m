@@ -23,6 +23,7 @@
 
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 
+
 @property (nonatomic, assign) MASAuthCredentialsBlock webLoginBlock;
 
 @end
@@ -43,11 +44,11 @@
     self.safariViewController.delegate = self;
     self.webLoginBlock = webLoginBlock;
 
-    __block MASSafariBrowserBasedAuthentication *blockSelf = self;
+    __weak MASSafariBrowserBasedAuthentication *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 
-        [[UIAlertController rootViewController] presentViewController:blockSelf.safariViewController animated:YES completion:^{
+        [[UIAlertController rootViewController] presentViewController:weakSelf.safariViewController animated:YES completion:^{
             DLog(@"Successfully displayed login template");
         }];
 
@@ -58,9 +59,9 @@
 
 - (void)dismiss
 {
-    __block MASSafariBrowserBasedAuthentication *blockSelf = self;
+    __weak MASSafariBrowserBasedAuthentication *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [blockSelf.safariViewController dismissViewControllerAnimated:true completion: nil];
+        [weakSelf.safariViewController dismissViewControllerAnimated:true completion: nil];
     });
 
 }

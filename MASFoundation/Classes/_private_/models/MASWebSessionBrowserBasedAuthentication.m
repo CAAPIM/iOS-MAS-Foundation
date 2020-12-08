@@ -24,7 +24,9 @@ API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2))
 
 @property (nonatomic, strong) ASWebAuthenticationSession *session;
 
+
 @property (nonatomic, assign) MASAuthCredentialsBlock webLoginBlock;
+
 
 @property (nonatomic, weak) id window;
 
@@ -62,12 +64,12 @@ API_AVAILABLE(ios(13.0), macos(10.15))
         self.session.presentationContextProvider = self;
     }
 
-    __block MASWebSessionBrowserBasedAuthentication* blockSelf = self;
+    __weak MASWebSessionBrowserBasedAuthentication* weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
 #if TARGET_OS_IOS
-        blockSelf.window = [[UIApplication sharedApplication] keyWindow];
+        weakSelf.window = [[UIApplication sharedApplication] keyWindow];
 #else
-        blockSelf.window = [[NSApplication sharedApplication] keyWindow];
+        weakSelf.window = [[NSApplication sharedApplication] keyWindow];
 #endif
         if ([blockSelf.session start]) {
             DLog(@"Successfully displayed login template");
