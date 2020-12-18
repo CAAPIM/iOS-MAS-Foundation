@@ -1760,7 +1760,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     }
     
     
-    MASURLRequest* urlRequest = [self getURLRequest:request.httpMethod endPoint:request.endPoint parameters:request.body headers:[NSDictionary dictionary] requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:request.timeoutInterval];
+    MASURLRequest* urlRequest = [self getURLRequest:request.httpMethod endPoint:request.endPoint parameters:request.body headers:mutableHeaderInfo requestType:request.requestType responseType:request.responseType isPublic:request.isPublic timeoutInterval:request.timeoutInterval];
     
     //
     //  if location was successfully retrieved
