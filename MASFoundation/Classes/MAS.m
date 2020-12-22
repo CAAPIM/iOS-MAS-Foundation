@@ -123,9 +123,9 @@
 }
 
 
-+ (void)preferredBrowserBasedAuthenticationType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType
++ (void)preferredBrowserBasedAuthenticationConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface> _Nonnull)configuration
 {
-    [MASModelService setBrowserBasedAuthenticationType:browserBasedAuthenticationType];
+    [MASModelService setBrowserBasedAuthenticationConfiguration:configuration];
 }
 
 

@@ -9,21 +9,29 @@
 //
 
 #import "MASTypedBrowserBasedAuthenticationFactory.h"
+#import "MASBrowserBasedAuthenticationConfiguration.h"
 #import "MASSafariBrowserBasedAuthentication.h"
 #import "MASWebSessionBrowserBasedAuthentication.h"
 
 @implementation MASTypedBrowserBasedAuthenticationFactory
 
-+ (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserForType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType {
-    if (@available(iOS 12.0, macOS 10.15, *)) {
-        switch (browserBasedAuthenticationType) {
-            case MASBrowserBasedAuthenticationTypeSafari:
-                return [[MASSafariBrowserBasedAuthentication alloc] init];
-            case MASBrowserBasedAuthenticationTypeWebSession:
-                return [[MASWebSessionBrowserBasedAuthentication alloc] init];
-        }
-    } else {
++ (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserWithConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration {
+
+    if ([configuration isKindOfClass: [MASSafariBrowserBasedAuthenticationConfiguration class]])
+    {
         return [[MASSafariBrowserBasedAuthentication alloc] init];
     }
+    if (@available(iOS 12.0, macOS 10.15, *))
+    {
+        if ([configuration isKindOfClass: [MASWebSessionBrowserBasedAuthenticationConfiguration class]])
+        {
+            MASWebSessionBrowserBasedAuthenticationConfiguration *castedConfiguration = configuration;
+            
+            return [[MASWebSessionBrowserBasedAuthentication alloc] initWithCallbackURLScheme:castedConfiguration.callbackURLScheme];
+        }
+    }
+
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot produce result with the provided configuration." userInfo:nil];
+    return nil;
 }
 @end

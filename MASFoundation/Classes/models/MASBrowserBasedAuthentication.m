@@ -232,8 +232,8 @@
 
 - (void)launchBrowserWithURL:(NSURL*)templatizedURL
 {
-    MASBrowserBasedAuthenticationType type = [MASModelService browserBasedAuthenticationType];
-    self.browser = [MASTypedBrowserBasedAuthenticationFactory buildBrowserForType:type];
+    id<MASBrowserBasedAuthenticationConfigurationInterface> configuration = [MASModelService browserBasedAuthenticationConfiguration];
+    self.browser = [MASTypedBrowserBasedAuthenticationFactory buildBrowserWithConfiguration:configuration];
     [self.browser startWithURL:templatizedURL completion: self.webLoginCallBack];
 }
 

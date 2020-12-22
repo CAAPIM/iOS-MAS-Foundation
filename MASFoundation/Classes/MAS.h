@@ -15,6 +15,7 @@
 #import "MASRequest.h"
 #import "MASMultiFactorAuthenticator.h"
 #import "MASMultiPartFormData.h"
+#import "MASBrowserBasedAuthenticationConfiguration.h"
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -196,12 +197,12 @@
 
 
 /**
- * Sets preferred type of browser used for Browser Based Authentication (templatized login).
- * By default this is `MASBrowserBasedAuthenticationTypeSafari`.
+ * Sets a configuration to use for Browser Based Authentication (templatized login).
+ * By default this is `MASSafariBrowserBasedAuthenticationConfiguration`.
 
- @param browserBasedAuthenticationType MASBrowserBasedAuthenticationType value indicating which type of browser should be used for Browser Based Authentication.
+ @param configuration MASBrowserBasedAuthenticationConfigurationInterface conforming object to configure the browser based authentication..
  */
-+ (void)preferredBrowserBasedAuthenticationType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType;
++ (void)preferredBrowserBasedAuthenticationConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface> _Nonnull)configuration;
 
 
 /**

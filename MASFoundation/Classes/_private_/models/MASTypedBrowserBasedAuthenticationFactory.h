@@ -12,6 +12,7 @@
 #import "MASConstants.h"
 
 @protocol MASTypedBrowserBasedAuthenticationInterface;
+@protocol MASBrowserBasedAuthenticationConfigurationInterface;
 
 /**
  * Utility factory class to build the correct browser type to use
@@ -21,9 +22,9 @@
 /**
  * Build a new browser used for Browser Based Authentication
  *
- * @param browserBasedAuthenticationType A MASBrowserBasedAuthenticationType object telling the factory what to build information.
+ * @param configuration MASBrowserBasedAuthenticationConfigurationInterface conforming object telling the factory what and how to build its product.
  * @return id<MASTypedBrowserBasedAuthenticationInterface> object which can be used to start Browser Based Authentication.
  */
-+ (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserForType:(MASBrowserBasedAuthenticationType)browserBasedAuthenticationType;
++ (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserWithConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration;
 
 @end
