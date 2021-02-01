@@ -9,7 +9,6 @@
 //
 
 #import "MASService.h"
-
 #import "MASConstantsPrivate.h"
 
 
@@ -99,6 +98,22 @@
  * @return BOOL value is returned.
  */
 + (BOOL)browserBasedAuthentication;
+
+
+/**
+ * Sets the browser based authentication browser type
+ *
+ * @param browserType MASBrowserBasedAuthenticationBrowserType object indicating which type of browser to use when browser based authentication is used.
+ */
++ (void)setBrowserBasedAuthenticationBrowserType:(MASBrowserBasedAuthenticationBrowserType)browserType;
+
+
+/**
+ * The current browser based authentication browser type.
+ *
+ * @return MASBrowserBasedAuthenticationBrowserType object is returned.
+ */
++ (MASBrowserBasedAuthenticationBrowserType)browserBasedAuthenticationBrowserType;
 
 
 ///--------------------------------------

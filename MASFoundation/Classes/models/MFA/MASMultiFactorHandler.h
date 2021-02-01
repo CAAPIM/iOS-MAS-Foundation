@@ -49,7 +49,7 @@
  
  @return nil will always be returned with this initialization method.
  */
-- (instancetype _Nullable)init NS_UNAVAILABLE;
+- (instancetype _Null_unspecified)init NS_UNAVAILABLE;
 
 
 
@@ -58,7 +58,7 @@
  
  @return nil will always be returned with this initialization method.
  */
-+ (instancetype _Nullable)new NS_UNAVAILABLE;
++ (instancetype _Null_unspecified)new NS_UNAVAILABLE;
 
 
 

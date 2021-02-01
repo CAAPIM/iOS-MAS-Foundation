@@ -222,6 +222,23 @@ typedef NS_ENUM(NSInteger, MASGrantFlow)
 
 
 /**
+ * The enumerated MASBrowserBasedAuthenticationBrowserType.
+ */
+typedef NS_ENUM(NSInteger, MASBrowserBasedAuthenticationBrowserType)
+{
+    /**
+     * Type used to launch browser based authentication in a `SafariViewController`
+     */
+    MASBrowserBasedAuthenticationBrowserTypeSafari,
+
+    /**
+     * Type used to launch browser based authentication in a `ASWebAuthenticationSession`
+     */
+    MASBrowserBasedAuthenticationBrowserTypeWebSession API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2)),
+};
+
+
+/**
  * The enumerated MASRequestResponseTypes that can indicate what data format is expected
  * in a request or a response.
  */
@@ -273,7 +290,7 @@ typedef NS_ENUM(NSInteger, MASRequestResponseType)
  *  The enumerated MASState that can indicate what state of SDK currently is at.
  */
 typedef NS_ENUM(NSInteger, MASState) {
-    
+
     /**
      *  State that SDK has not been initialized and does not have configuration file 
      *  either in local file system based on the default configuration file name, nor in the keychain storage.
