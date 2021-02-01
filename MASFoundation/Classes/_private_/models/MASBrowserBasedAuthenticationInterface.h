@@ -1,5 +1,5 @@
 //
-//  MASTypedBrowserBasedAuthenticationInterface.h
+//  MASBrowserBasedAuthenticationInterface.h
 //  MASFoundation
 //
 //  Copyright (c) 2020 CA. All rights reserved.
@@ -12,7 +12,7 @@
 /**
  * Interface used to abstract different type of browsers used for Browser Based Authentication
  */
-@protocol MASTypedBrowserBasedAuthenticationInterface <NSObject>
+@protocol MASBrowserBasedAuthenticationInterface <NSObject>
 
 /**
  Starts the Browser based authentication with the given url and completion block.

@@ -11,20 +11,19 @@
 #import <Foundation/Foundation.h>
 #import "MASConstants.h"
 
-@protocol MASTypedBrowserBasedAuthenticationInterface;
-@protocol MASBrowserBasedAuthenticationConfigurationInterface;
+@protocol MASBrowserBasedAuthenticationInterface;
 
 /**
  * Utility factory class to build the correct browser type to use
  */
-@interface MASTypedBrowserBasedAuthenticationFactory : NSObject
+@interface MASBrowserBasedAuthenticationFactory : NSObject
 
 /**
  * Build a new browser used for Browser Based Authentication
  *
- * @param configuration MASBrowserBasedAuthenticationConfigurationInterface conforming object telling the factory what and how to build its product.
+ * @param browserType MASBrowserBasedAuthenticationBrowserType object used to indicate type of browser built
  * @return id<MASTypedBrowserBasedAuthenticationInterface> object which can be used to start Browser Based Authentication.
  */
-+ (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserWithConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration;
++ (id<MASBrowserBasedAuthenticationInterface>)buildBrowserOfBrowserType:(MASBrowserBasedAuthenticationBrowserType)browserType;
 
 @end

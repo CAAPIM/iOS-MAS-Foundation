@@ -14,8 +14,8 @@
 #import "MASConfigurationService.h"
 #import "MASGetURLRequest.h"
 #import "MASModelService.h"
-#import "MASTypedBrowserBasedAuthenticationFactory.h"
-#import "MASTypedBrowserBasedAuthenticationInterface.h"
+#import "MASBrowserBasedAuthenticationFactory.h"
+#import "MASBrowserBasedAuthenticationInterface.h"
 #import "UIAlertController+MAS.h"
 #import <SafariServices/SafariServices.h>
 
@@ -24,7 +24,7 @@
     
 }
 
-@property (nonatomic, strong) id<MASTypedBrowserBasedAuthenticationInterface> browser;
+@property (nonatomic, strong) id<MASBrowserBasedAuthenticationInterface> browser;
 @property (nonatomic) MASAuthCredentialsBlock webLoginCallBack;
 
 @end
@@ -232,8 +232,8 @@
 
 - (void)launchBrowserWithURL:(NSURL*)templatizedURL
 {
-    id<MASBrowserBasedAuthenticationConfigurationInterface> configuration = [MASModelService browserBasedAuthenticationConfiguration];
-    self.browser = [MASTypedBrowserBasedAuthenticationFactory buildBrowserWithConfiguration:configuration];
+    MASBrowserBasedAuthenticationBrowserType browserType = [MASModelService browserBasedAuthenticationBrowserType];
+    self.browser = [MASBrowserBasedAuthenticationFactory buildBrowserOfBrowserType:browserType];
     [self.browser startWithURL:templatizedURL completion: self.webLoginCallBack];
 }
 

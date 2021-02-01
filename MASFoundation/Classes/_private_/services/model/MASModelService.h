@@ -9,7 +9,6 @@
 //
 
 #import "MASService.h"
-#import "MASBrowserBasedAuthenticationConfiguration.h"
 #import "MASConstantsPrivate.h"
 
 
@@ -102,19 +101,19 @@
 
 
 /**
- * Sets the browser based authentication type property. Default is MASSafariBrowserBasedAuthenticationType.
+ * Sets the browser based authentication browser type
  *
- * @param configuration MASBrowserBasedAuthenticationConfigurationInterface conforming object to configure the browser based authentication..
+ * @param browserType MASBrowserBasedAuthenticationBrowserType object indicating which type of browser to use when browser based authentication is used.
  */
-+ (void)setBrowserBasedAuthenticationConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration;
++ (void)setBrowserBasedAuthenticationBrowserType:(MASBrowserBasedAuthenticationBrowserType)browserType;
 
 
 /**
- * The current browser based authentication configuration.
+ * The current browser based authentication browser type.
  *
- * @return MASBrowserBasedAuthenticationConfigurationInterface conforming object is returned.
+ * @return MASBrowserBasedAuthenticationBrowserType object is returned.
  */
-+ (id<MASBrowserBasedAuthenticationConfigurationInterface>)browserBasedAuthenticationConfiguration;
++ (MASBrowserBasedAuthenticationBrowserType)browserBasedAuthenticationBrowserType;
 
 
 ///--------------------------------------

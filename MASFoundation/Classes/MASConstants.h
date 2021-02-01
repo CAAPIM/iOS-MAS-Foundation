@@ -222,6 +222,23 @@ typedef NS_ENUM(NSInteger, MASGrantFlow)
 
 
 /**
+ * The enumerated MASBrowserBasedAuthenticationBrowserType.
+ */
+typedef NS_ENUM(NSInteger, MASBrowserBasedAuthenticationBrowserType)
+{
+    /**
+     * Type used to launch browser based authentication in a `SafariViewController`
+     */
+    MASBrowserBasedAuthenticationBrowserTypeSafari,
+
+    /**
+     * Type used to launch browser based authentication in a `ASWebAuthenticationSession`
+     */
+    MASBrowserBasedAuthenticationBrowserTypeWebSession API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2)),
+};
+
+
+/**
  * The enumerated MASRequestResponseTypes that can indicate what data format is expected
  * in a request or a response.
  */

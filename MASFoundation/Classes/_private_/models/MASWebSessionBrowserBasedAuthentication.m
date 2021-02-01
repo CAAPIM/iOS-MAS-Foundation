@@ -10,8 +10,9 @@
 
 #import "MASWebSessionBrowserBasedAuthentication.h"
 #import <AuthenticationServices/AuthenticationServices.h>
-#import "MASTypedBrowserBasedAuthenticationInterface.h"
+#import "MASBrowserBasedAuthenticationInterface.h"
 #import "MASAuthorizationResponse.h"
+#import "MASApplication+MASPrivate.h"
 
 API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2))
 @interface MASWebSessionBrowserBasedAuthentication()
@@ -31,8 +32,6 @@ API_AVAILABLE(ios(12.0), macCatalyst(13.0), macos(10.15), watchos(6.2))
 @property (nonatomic, weak) id window;
 
 
-@property (nonatomic, strong) NSString *callbackURLScheme;
-
 @end
 
 API_AVAILABLE(ios(13.0), macos(10.15))
@@ -41,19 +40,6 @@ API_AVAILABLE(ios(13.0), macos(10.15))
 
 
 @implementation MASWebSessionBrowserBasedAuthentication
-
-///--------------------------------------
-/// @name Lifecycle
-///--------------------------------------
-
-# pragma mark - Lifecycle
-
-- (instancetype)initWithCallbackURLScheme:(NSString *)callbackURLScheme {
-    self = [super init];
-    self.callbackURLScheme = callbackURLScheme;
-
-    return self;
-}
 
 
 ///--------------------------------------
@@ -64,7 +50,9 @@ API_AVAILABLE(ios(13.0), macos(10.15))
 
 - (void)startWithURL:(NSURL *)url completion:(MASAuthCredentialsBlock)webLoginBlock
 {
-    self.session = [[ASWebAuthenticationSession alloc] initWithURL:url callbackURLScheme:self.callbackURLScheme completionHandler:^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
+    NSString *callbackURLScheme = [[MASApplication currentApplication].redirectUri absoluteString];
+
+    self.session = [[ASWebAuthenticationSession alloc] initWithURL:url callbackURLScheme:callbackURLScheme completionHandler:^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
         if (callbackURL != nil) {
             [MASAuthorizationResponse.sharedInstance handleAuthorizationResponseURL:callbackURL];
         } else {

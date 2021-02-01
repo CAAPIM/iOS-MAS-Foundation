@@ -10,11 +10,11 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol MASTypedBrowserBasedAuthenticationInterface;
+@protocol MASBrowserBasedAuthenticationInterface;
 
 /**
  * A Browser Based Authentication type utilising an SFSafarViewController
  */
-@interface MASSafariBrowserBasedAuthentication : NSObject <MASTypedBrowserBasedAuthenticationInterface>
+@interface MASSafariBrowserBasedAuthentication : NSObject <MASBrowserBasedAuthenticationInterface>
 
 @end

@@ -10,7 +10,7 @@
 
 #import <SafariServices/SafariServices.h>
 #import "MASSafariBrowserBasedAuthentication.h"
-#import "MASTypedBrowserBasedAuthenticationInterface.h"
+#import "MASBrowserBasedAuthenticationInterface.h"
 #import "UIAlertController+MAS.h"
 
 @interface MASSafariBrowserBasedAuthentication() <SFSafariViewControllerDelegate>
