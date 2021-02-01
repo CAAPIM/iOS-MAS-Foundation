@@ -40,6 +40,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
 static BOOL _isBrowserBasedAuthentication_ = NO;
+static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuthenticationConfiguration_;
 
 # pragma mark - Properties
 
@@ -82,6 +83,23 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 + (BOOL)browserBasedAuthentication
 {
     return _isBrowserBasedAuthentication_;
+}
+
+
++(void)setBrowserBasedAuthenticationConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration
+{
+    _browserBasedAuthenticationConfiguration_ = configuration;
+}
+
+
++ (id<MASBrowserBasedAuthenticationConfigurationInterface>)browserBasedAuthenticationConfiguration
+{
+    if (_browserBasedAuthenticationConfiguration_ == nil)
+    {
+        _browserBasedAuthenticationConfiguration_ =
+            [[MASSafariBrowserBasedAuthenticationConfiguration alloc] init];
+    }
+    return _browserBasedAuthenticationConfiguration_;
 }
 
 

@@ -14,6 +14,8 @@
 #import "MASConfigurationService.h"
 #import "MASGetURLRequest.h"
 #import "MASModelService.h"
+#import "MASTypedBrowserBasedAuthenticationFactory.h"
+#import "MASTypedBrowserBasedAuthenticationInterface.h"
 #import "UIAlertController+MAS.h"
 #import <SafariServices/SafariServices.h>
 
@@ -22,7 +24,7 @@
     
 }
 
-@property (nonatomic) SFSafariViewController *safariViewController;
+@property (nonatomic, strong) id<MASTypedBrowserBasedAuthenticationInterface> browser;
 @property (nonatomic) MASAuthCredentialsBlock webLoginCallBack;
 
 @end
@@ -230,35 +232,10 @@
 
 - (void)launchBrowserWithURL:(NSURL*)templatizedURL
 {
-    __block MASBrowserBasedAuthentication *blockSelf = self;
-    __weak __typeof__(self) weakSelf = self;
-    blockSelf.safariViewController = [[SFSafariViewController alloc] initWithURL:templatizedURL];
-    blockSelf.safariViewController.delegate = weakSelf;
-     
-     dispatch_async(dispatch_get_main_queue(), ^{
-         [UIAlertController rootViewController].modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-         
-         [[UIAlertController rootViewController] presentViewController:blockSelf.safariViewController animated:YES
-         completion:^{
-         
-             DLog(@"Successfully displayed login template");
-         }];
-         
-         return;
-     });
-}
-
-
-#pragma mark - SafariViewController Delegates
-
-- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller
-{
-    self.webLoginCallBack(nil, YES, ^(BOOL completed, NSError* error){
-        if(error)
-        {
-            DLog(@"Browser cancel clicked");
-        }
-    });
+    id<MASBrowserBasedAuthenticationConfigurationInterface> configuration =
+        [MASModelService browserBasedAuthenticationConfiguration];
+    self.browser = [MASTypedBrowserBasedAuthenticationFactory buildBrowserWithConfiguration:configuration];
+    [self.browser startWithURL:templatizedURL completion: self.webLoginCallBack];
 }
 
 
@@ -298,7 +275,7 @@
 - (void)dismissBrowser
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIAlertController rootViewController] dismissViewControllerAnimated:YES completion:nil];
+        [self.browser dismiss];
     });
 }
 
