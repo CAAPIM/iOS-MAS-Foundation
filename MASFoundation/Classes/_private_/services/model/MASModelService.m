@@ -420,9 +420,18 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
 {
     
     //
-    // If the user was already authenticated, we don't have to retrieve the authentication provider
+    // If the authentication providers have already been retrieved, we don't have to retrieve them
     //
-    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked || _isBrowserBasedAuthentication_)
+    if (_currentProviders)
+    {
+        if (completion)
+        {
+            completion(_currentProviders, nil);
+        }
+        return;
+    }
+    
+    if ([MASAccess currentAccess].isSessionLocked || _isBrowserBasedAuthentication_)
     {
         //
         // Notify
