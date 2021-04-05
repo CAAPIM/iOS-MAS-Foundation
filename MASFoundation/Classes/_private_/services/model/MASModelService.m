@@ -189,13 +189,9 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 - (void)serviceDidReset
 {
     //
-    // If the current providers exists
+    // Reset auth providers
     //
-    if (self.currentProviders)
-    {
-        [self.currentProviders reset];
-        _currentProviders = nil;
-    }
+    [self resetAuthProviders];
     
     //
     // If the current user exists
@@ -225,6 +221,15 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     }
     
     [super serviceDidReset];
+}
+
+- (void)resetAuthProviders
+{
+    if (self.currentProviders)
+    {
+        [self.currentProviders reset];
+        _currentProviders = nil;
+    }
 }
 
 
@@ -1249,6 +1254,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 - (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     
+    //
+    // Reset auth providers
+    //
+    [self resetAuthProviders];
+    
     MASAccessService *accessService = [MASAccessService sharedService];
     
     //
@@ -2068,6 +2078,11 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
  */
 - (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
+    //
+    // Reset auth providers
+    //
+    [self resetAuthProviders];
+    
     //
     // The application must be registered else stop here
     //
