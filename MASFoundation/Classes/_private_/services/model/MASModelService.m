@@ -207,13 +207,9 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
 - (void)serviceDidReset
 {
     //
-    // If the current providers exists
+    // Reset auth providers
     //
-    if (self.currentProviders)
-    {
-        [self.currentProviders reset];
-        _currentProviders = nil;
-    }
+    [self resetAuthProviders];
     
     //
     // If the current user exists
@@ -243,6 +239,15 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
     }
     
     [super serviceDidReset];
+}
+
+- (void)resetAuthProviders
+{
+    if (self.currentProviders)
+    {
+        [self.currentProviders reset];
+        _currentProviders = nil;
+    }
 }
 
 
@@ -1267,6 +1272,11 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
 - (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
     
+    //
+    // Reset auth providers
+    //
+    [self resetAuthProviders];
+    
     MASAccessService *accessService = [MASAccessService sharedService];
     
     //
@@ -2103,6 +2113,11 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
  */
 - (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
+    //
+    // Reset auth providers
+    //
+    [self resetAuthProviders];
+    
     //
     // The application must be registered else stop here
     //
