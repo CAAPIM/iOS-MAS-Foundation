@@ -51,7 +51,7 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     if (securityConfiguration == nil)
     {
-        return YES;
+        return NO;
     }
     
     NSMutableArray *policies = [NSMutableArray array];
@@ -72,14 +72,14 @@ static unsigned char rsa2048Asn1Header[] = {
     //
     if (securityConfiguration.trustPublicPKI && ![self validateServerTrust:serverTrust])
     {
-        return YES;
+        return NO;
     }
     //
     //  If trustPublicPKI is set to NO, and there is no pinning information defined, reject connection
     //
     else if (!securityConfiguration.trustPublicPKI && (((([securityConfiguration.certificates isKindOfClass:[NSArray class]] && [securityConfiguration.certificates count] == 0)  || securityConfiguration.certificates == nil) && (([securityConfiguration.publicKeyHashes isKindOfClass:[NSArray class]] && [securityConfiguration.publicKeyHashes count] == 0) || securityConfiguration.publicKeyHashes == nil))))
     {
-        return YES;
+        return NO;
     }
     
     //
@@ -138,7 +138,7 @@ static unsigned char rsa2048Asn1Header[] = {
         NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
         if(![self validateAnchorTrust:serverTrust pinnedCerts:pinnedCertificatesData])
         {
-            return YES;
+            return NO;
         }
         
         
@@ -163,14 +163,14 @@ static unsigned char rsa2048Asn1Header[] = {
             //
             if (matchingCertificatesCount != [certificateChain count])
             {
-                return YES;
+                return NO;
             }
             
             return YES;
         }
     }
     
-    return YES;
+    return NO;
 }
 
 
@@ -183,7 +183,7 @@ static unsigned char rsa2048Asn1Header[] = {
         NSMutableArray *pinnedCertificatesData = [[securityConfiguration convertCertificatesToData] mutableCopy];
         if(![self validateAnchorTrust:serverTrust pinnedCerts:pinnedCertificatesData])
         {
-            return YES;
+            return NO;
         }
         
         //
@@ -193,7 +193,7 @@ static unsigned char rsa2048Asn1Header[] = {
         {
             if (![certificateChain containsObject:pinnedCertData])
             {
-                return YES;
+                return NO;
             }
         }
         
@@ -201,7 +201,7 @@ static unsigned char rsa2048Asn1Header[] = {
         
     }
     
-    return YES;
+    return NO;
 }
 
 
@@ -313,11 +313,7 @@ static unsigned char rsa2048Asn1Header[] = {
     
     if ([NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){13,0,0}]) {
         
-        if (@available(iOS 12.0, *)) {
-            isValid = SecTrustEvaluateWithError(serverTrust, &trustErrorRef);
-        } else {
-            // Fallback on earlier versions
-        }
+        isValid = SecTrustEvaluateWithError(serverTrust, &trustErrorRef);
     }
     else {
         if (SecTrustEvaluate(serverTrust, &result) != errSecSuccess)
