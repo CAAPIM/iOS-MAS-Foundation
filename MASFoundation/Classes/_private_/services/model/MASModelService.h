@@ -149,6 +149,10 @@
  */
 - (void)retrieveEnterpriseApplications:(MASObjectsResponseErrorBlock)completion;
 
+/**
+ *  Clears the cached auth providers.
+ */
+- (void)resetAuthProviders;
 
 
 ///--------------------------------------

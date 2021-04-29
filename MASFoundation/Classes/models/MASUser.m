@@ -225,6 +225,10 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
 
 - (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
+    //
+    // Reset auth providers
+    //
+    [[MASModelService sharedService] resetAuthProviders];
     
     MASAccessService *accessService = [MASAccessService sharedService];
     

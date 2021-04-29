@@ -1271,12 +1271,6 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
 
 - (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
-    
-    //
-    // Reset auth providers
-    //
-    [self resetAuthProviders];
-    
     MASAccessService *accessService = [MASAccessService sharedService];
     
     //
@@ -2113,11 +2107,6 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
  */
 - (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
-    //
-    // Reset auth providers
-    //
-    [self resetAuthProviders];
-    
     //
     // The application must be registered else stop here
     //
