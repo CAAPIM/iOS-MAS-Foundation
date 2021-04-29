@@ -1253,12 +1253,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 
 - (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
-    
-    //
-    // Reset auth providers
-    //
-    [self resetAuthProviders];
-    
     MASAccessService *accessService = [MASAccessService sharedService];
     
     //
@@ -2078,11 +2072,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
  */
 - (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
-    //
-    // Reset auth providers
-    //
-    [self resetAuthProviders];
-    
     //
     // The application must be registered else stop here
     //
