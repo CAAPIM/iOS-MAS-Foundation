@@ -401,10 +401,18 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 - (void)retrieveAuthenticationProviders:(MASObjectResponseErrorBlock)completion
 {
     
+    // If the authentication providers have already been retrieved, we don't have to retrieve them
     //
-    // If the user was already authenticated, we don't have to retrieve the authentication provider
-    //
-    if (([MASApplication currentApplication].isAuthenticated && [MASApplication currentApplication].authenticationStatus == MASAuthenticationStatusLoginWithUser) || [MASAccess currentAccess].isSessionLocked || _isBrowserBasedAuthentication_)
+    if (_currentProviders)
+    {
+        if (completion)
+        {
+            completion(_currentProviders, nil);
+        }
+        return;
+    }
+    
+    if ([MASAccess currentAccess].isSessionLocked || _isBrowserBasedAuthentication_)
     {
         //
         // Notify
@@ -415,7 +423,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
         }
         return;
     }
-    
     //DLog(@"\n\nNO detected cached providers, retreiving from server\n\n");
 
     //
