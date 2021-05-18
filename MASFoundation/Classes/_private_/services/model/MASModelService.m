@@ -209,7 +209,12 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
     //
     // Reset auth providers
     //
-    [self resetAuthProviders];
+   // [self resetAuthProviders];
+    if (self.currentProviders)
+        {
+            [self.currentProviders reset];
+            _currentProviders = nil;
+        }
     
     //
     // If the current user exists
@@ -1271,7 +1276,12 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
 
 - (void)logoutDevice:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
-    MASAccessService *accessService = [MASAccessService sharedService];
+    //MASAccessService *accessService = [MASAccessService sharedService];
+    //
+    // Reset auth providers
+    //
+    [self resetAuthProviders];
+
     
     //
     // Detect if device is already logged out (which is basically checking if id_token exists), if so stop here
@@ -2107,6 +2117,11 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
  */
 - (void)logout:(BOOL)force completion:(MASCompletionErrorBlock)completion
 {
+    //
+    // Reset auth providers
+    //
+    [self resetAuthProviders];
+
     //
     // The application must be registered else stop here
     //

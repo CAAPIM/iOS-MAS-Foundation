@@ -228,7 +228,7 @@ static NSString *const MASUserAttributesPropertyKey = @"attributes";
     //
     // Reset auth providers
     //
-    [[MASModelService sharedService] resetAuthProviders];
+   // [[MASModelService sharedService] resetAuthProviders];
     
     MASAccessService *accessService = [MASAccessService sharedService];
     
