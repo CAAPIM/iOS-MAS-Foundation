@@ -70,10 +70,16 @@
                 BOOL didPassEvaluation = YES;
                 
                 //
-                //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
+                // Bypass SSL Pinning if its disabled.
                 //
-                didPassEvaluation = [blockSelf.securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust
-                                                                                       forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
+                if ([MAS isSSLPinningEnabled]) {
+                    
+                    //
+                    //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
+                    //
+                    didPassEvaluation = [blockSelf.securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust
+                                                                                           forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
+                }
                 
                 if (didPassEvaluation)
                 {
@@ -115,10 +121,16 @@
                 BOOL didPassEvaluation = YES;
                 
                 //
-                //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
+                // Bypass SSL Pinning if its disabled.
                 //
-                didPassEvaluation = [blockSelf.securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust
-                                                                                                 forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
+                if ([MAS isSSLPinningEnabled]) {
+                
+                    //
+                    //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
+                    //
+                    didPassEvaluation = [blockSelf.securityPolicy evaluateSecurityConfigurationsForServerTrust:challenge.protectionSpace.serverTrust
+                                                                                                     forDomain:[NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port]];
+                }
                 
                 if (didPassEvaluation)
                 {
