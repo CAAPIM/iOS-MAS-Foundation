@@ -99,6 +99,18 @@
 }
 
 
++ (void)enableSSLPinning:(BOOL)enable
+{
+    [MASAccessService enableSSLPinning:enable];
+}
+
+
++ (BOOL)isSSLPinningEnabled
+{
+    return [MASAccessService isSSLPinningEnabled];
+}
+
+
 + (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
 {
     [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];
@@ -615,6 +627,17 @@
         [urlSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential *__autoreleasing *credential) {
             
             NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+            
+            //
+            // Bypass SSL Pinning if its disabled.
+            //
+            if (![MAS isSSLPinningEnabled]) {
+            
+                disposition = NSURLSessionAuthChallengeUseCredential;
+                *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                
+                return disposition;
+            }
             
             //
             //  enrolmentURL can only successfully pin SSL with subjectKeyHash, otherwise, the request will be cancelled
