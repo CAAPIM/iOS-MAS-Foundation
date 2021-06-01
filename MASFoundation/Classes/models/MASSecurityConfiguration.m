@@ -38,6 +38,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
         self.host = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port]];
         self.isPublic = NO;
         self.trustPublicPKI = NO;
+        self.allowSSLPinning = YES;
         self.validateCertificateChain = NO;
         self.validateDomainName = YES;
         self.pinningMode = MASSecuritySSLPinningModeCertificate;
@@ -83,6 +84,11 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
     if ([configuration.allKeys containsObject:@"isPublic"])
     {
         self.isPublic = [[configuration objectForKey:@"isPublic"] boolValue];
+    }
+    
+    if ([configuration.allKeys containsObject:@"allowSSLPinning"])
+    {
+        self.allowSSLPinning = [[configuration objectForKey:@"allowSSLPinning"] boolValue];
     }
     
     if ([configuration.allKeys containsObject:@"validateCertificateChain"])
@@ -140,7 +146,7 @@ static NSString *const MASSecurityConfigurationPinningModeNone = @"none";
 
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"(%@) for %@\n\nisPublic: %@\nvalidateDomainName: %@\ntrustPublicPKI: %@\ncertificates: %@\npublicKeyHashes: %@\n", [self class], [[self host] absoluteString], self.isPublic ? @"YES":@"NO", self.validateDomainName ? @"YES":@"NO", self.trustPublicPKI ? @"YES":@"NO", self.certificates, self.publicKeyHashes];
+    return [NSString stringWithFormat:@"(%@) for %@\n\nisPublic: %@\nallowSSLPinning: %@\nvalidateDomainName: %@\ntrustPublicPKI: %@\ncertificates: %@\npublicKeyHashes: %@\n", [self class], [[self host] absoluteString], self.isPublic ? @"YES":@"NO", self.allowSSLPinning ? @"YES":@"NO", self.validateDomainName ? @"YES":@"NO", self.trustPublicPKI ? @"YES":@"NO", self.certificates, self.publicKeyHashes];
 }
 
 @end

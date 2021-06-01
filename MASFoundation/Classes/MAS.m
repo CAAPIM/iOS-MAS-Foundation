@@ -636,17 +636,6 @@
             NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
             
             //
-            // Bypass SSL Pinning if its disabled.
-            //
-            if (![MAS isSSLPinningEnabled]) {
-            
-                disposition = NSURLSessionAuthChallengeUseCredential;
-                *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                
-                return disposition;
-            }
-            
-            //
             //  enrolmentURL can only successfully pin SSL with subjectKeyHash, otherwise, the request will be cancelled
             //
             NSString *hostURL = [NSString stringWithFormat:@"https://%@:%ld",challenge.protectionSpace.host, (long)challenge.protectionSpace.port];

@@ -60,6 +60,8 @@ static NSString *const MASMobileLocationIsRequiredConfigurationKey = @"location_
 
 static NSString *const MASMobileSSOEnabledConfigurationKey = @"sso_enabled"; // bool
 
+static NSString *const MASMobileSSLPinningEnabledConfigurationKey = @"ssl_pinning_enabled"; // bool
+
 static NSString *const MASMobileEnbaledPublicKeyPinning = @"enable_public_key_pinning"; // bool
 
 static NSString *const MASMobileEnbaledTrustedPublicPKI = @"trusted_public_pki"; // bool
@@ -888,6 +890,22 @@ static float _systemVersionNumber_;
     
     return [mobileInfo[MASMobileEnbaledTrustedPublicPKI] boolValue];
 }
+
+
+- (BOOL)sslpinningEnabled
+{
+    NSDictionary *magInfo = _configurationInfo_[MASMAGConfigurationKey];
+    NSDictionary *mobileInfo = magInfo[MASMobileConfigurationKey];
+    
+    //return [mobileInfo[MASMobileSSLPinningEnabledConfigurationKey] boolValue];
+    
+    //
+    // TODO: Uncomment the above return statement.
+    // TODO: Returning YES as MAG doesn't provide the ssl_pinning_enabled attribute yet.
+    //
+    return YES;
+}
+
 
 # pragma mark - SSO Properties
 
