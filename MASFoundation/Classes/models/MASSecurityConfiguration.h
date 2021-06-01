@@ -56,6 +56,12 @@ typedef NS_ENUM(NSUInteger, MASSecuritySSLPinningMode) {
 
 
 /**
+ BOOL value that determines whether or not to allow to perform SSL Pinning i.e. Evaluate Server Trust with pinned Server Certificates.
+ */
+@property (assign) BOOL allowSSLPinning;
+
+
+/**
  BOOL value that determines whether or not to validate the domain name of the certificate on the server trust.
  */
 @property (assign) BOOL validateDomainName;
