@@ -70,6 +70,12 @@
 }
 
 
+- (BOOL)handleAuthorizationResponseURL:(NSURL *)url
+{
+    return [self validateURLForAuthorizationURL:url];
+}
+
+
 # pragma mark - Private
 
 - (BOOL)validateURLForAuthorizationURL:(NSURL *)url
