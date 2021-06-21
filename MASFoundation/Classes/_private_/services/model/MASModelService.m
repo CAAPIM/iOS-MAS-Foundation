@@ -1171,7 +1171,7 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
                                          //
                                          [[MASAccessService sharedService] setAccessValueData:nil storageKey:MASKeychainStorageKeyPublicCertificateData];
                                          [[MASAccessService sharedService] setAccessValueCertificate:nil storageKey:MASKeychainStorageKeySignedPublicCertificate];
-                                         [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
+                                         [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
                                          
                                          //
                                          // Updated with latest info
