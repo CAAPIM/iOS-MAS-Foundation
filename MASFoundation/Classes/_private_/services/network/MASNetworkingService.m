@@ -657,6 +657,8 @@ static NSMutableArray *_multiFactorAuthenticators_;
         //
         else if (magErrorCode && [magErrorCode hasSuffix:@"206"] && ![blockEndPoint isEqualToString:[MASConfiguration currentConfiguration].deviceRenewEndpointPath])
         {
+            [_sessionManager.operationQueue setSuspended:YES];
+            
             //
             // Renew the client certificate, if the renew endpoint fails,
             //
