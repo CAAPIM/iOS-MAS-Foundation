@@ -56,6 +56,17 @@
 		69B7DF6B1F9675600056DD3A /* MASRequestBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17931F9585BD008C1B11 /* MASRequestBuilder.m */; };
 		69B7DF6C1F96756B0056DD3A /* MASRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */; };
 		69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */; };
+		8120E4802682880400C2910E /* MASWebSessionBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 8120E4772682880400C2910E /* MASWebSessionBrowserBasedAuthentication.h */; };
+		8120E4812682880400C2910E /* MASWebSessionBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8120E4782682880400C2910E /* MASWebSessionBrowserBasedAuthentication.m */; };
+		8120E4822682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 8120E4792682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.m */; };
+		8120E4832682880400C2910E /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8120E47A2682880400C2910E /* MASBrowserBasedAuthentication.m */; };
+		8120E4842682880400C2910E /* MASBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 8120E47B2682880400C2910E /* MASBrowserBasedAuthentication.h */; };
+		8120E4852682880400C2910E /* MASTypedBrowserBasedAuthenticationInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 8120E47C2682880400C2910E /* MASTypedBrowserBasedAuthenticationInterface.h */; };
+		8120E4862682880400C2910E /* MASSafariBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8120E47D2682880400C2910E /* MASSafariBrowserBasedAuthentication.m */; };
+		8120E4872682880400C2910E /* MASSafariBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 8120E47E2682880400C2910E /* MASSafariBrowserBasedAuthentication.h */; };
+		8120E4882682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 8120E47F2682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.h */; };
+		8120E48C268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 8120E48A268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8120E48D268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 8120E48B268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.m */; };
 		A4150E6F1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */; };
 		A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */; };
 		A4150E711BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */; };
@@ -146,8 +157,6 @@
 		A898EF682182D35700CF291B /* MASJWKSet.m in Sources */ = {isa = PBXBuildFile; fileRef = A898EF662182D35700CF291B /* MASJWKSet.m */; };
 		A898EF6B2182D3DF00CF291B /* NSURLSession+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A898EF692182D3DF00CF291B /* NSURLSession+MASPrivate.h */; };
 		A898EF6C2182D3DF00CF291B /* NSURLSession+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = A898EF6A2182D3DF00CF291B /* NSURLSession+MASPrivate.m */; };
-		C81CC3CC1FC2EA190058718E /* MASBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CC3CA1FC2EA190058718E /* MASBrowserBasedAuthentication.h */; };
-		C81CC3CD1FC2EA190058718E /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */; };
 		C81CC3D01FC2EFBB0058718E /* UIAlertController+MAS.h in Headers */ = {isa = PBXBuildFile; fileRef = C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */; };
 		C81CC3D11FC2EFBB0058718E /* UIAlertController+MAS.m in Sources */ = {isa = PBXBuildFile; fileRef = C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */; };
 		C858D6B52398FC5400963763 /* MASDataTask+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = C858D6B32398FC5400963763 /* MASDataTask+MASPrivate.h */; };
@@ -408,6 +417,17 @@
 		699C17931F9585BD008C1B11 /* MASRequestBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequestBuilder.m; sourceTree = "<group>"; };
 		699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASRequest+MASPrivate.h"; sourceTree = "<group>"; };
 		699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASRequest+MASPrivate.m"; sourceTree = "<group>"; };
+		8120E4772682880400C2910E /* MASWebSessionBrowserBasedAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASWebSessionBrowserBasedAuthentication.h; sourceTree = "<group>"; };
+		8120E4782682880400C2910E /* MASWebSessionBrowserBasedAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASWebSessionBrowserBasedAuthentication.m; sourceTree = "<group>"; };
+		8120E4792682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASTypedBrowserBasedAuthenticationFactory.m; sourceTree = "<group>"; };
+		8120E47A2682880400C2910E /* MASBrowserBasedAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASBrowserBasedAuthentication.m; sourceTree = "<group>"; };
+		8120E47B2682880400C2910E /* MASBrowserBasedAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASBrowserBasedAuthentication.h; sourceTree = "<group>"; };
+		8120E47C2682880400C2910E /* MASTypedBrowserBasedAuthenticationInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASTypedBrowserBasedAuthenticationInterface.h; sourceTree = "<group>"; };
+		8120E47D2682880400C2910E /* MASSafariBrowserBasedAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSafariBrowserBasedAuthentication.m; sourceTree = "<group>"; };
+		8120E47E2682880400C2910E /* MASSafariBrowserBasedAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSafariBrowserBasedAuthentication.h; sourceTree = "<group>"; };
+		8120E47F2682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASTypedBrowserBasedAuthenticationFactory.h; sourceTree = "<group>"; };
+		8120E48A268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASBrowserBasedAuthenticationConfiguration.h; sourceTree = "<group>"; };
+		8120E48B268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASBrowserBasedAuthenticationConfiguration.m; sourceTree = "<group>"; };
 		A4150E691BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASIJSONResponseSerializer+MASPrivate.h"; sourceTree = "<group>"; };
 		A4150E6A1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MASIJSONResponseSerializer+MASPrivate.m"; sourceTree = "<group>"; };
 		A4150E6B1BF1643900037E27 /* NSMutableURLRequest+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+MASPrivate.h"; sourceTree = "<group>"; };
@@ -504,8 +524,6 @@
 		A898EF662182D35700CF291B /* MASJWKSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASJWKSet.m; sourceTree = "<group>"; };
 		A898EF692182D3DF00CF291B /* NSURLSession+MASPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLSession+MASPrivate.h"; sourceTree = "<group>"; };
 		A898EF6A2182D3DF00CF291B /* NSURLSession+MASPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLSession+MASPrivate.m"; sourceTree = "<group>"; };
-		C81CC3CA1FC2EA190058718E /* MASBrowserBasedAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASBrowserBasedAuthentication.h; sourceTree = "<group>"; };
-		C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASBrowserBasedAuthentication.m; sourceTree = "<group>"; };
 		C81CC3CE1FC2EFBB0058718E /* UIAlertController+MAS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertController+MAS.h"; sourceTree = "<group>"; };
 		C81CC3CF1FC2EFBB0058718E /* UIAlertController+MAS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertController+MAS.m"; sourceTree = "<group>"; };
 		C858D6B32398FC5400963763 /* MASDataTask+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASDataTask+MASPrivate.h"; sourceTree = "<group>"; };
@@ -796,6 +814,22 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		8120E476268287C000C2910E /* BrowserBasedAuthentication */ = {
+			isa = PBXGroup;
+			children = (
+				8120E47B2682880400C2910E /* MASBrowserBasedAuthentication.h */,
+				8120E47A2682880400C2910E /* MASBrowserBasedAuthentication.m */,
+				8120E47E2682880400C2910E /* MASSafariBrowserBasedAuthentication.h */,
+				8120E47D2682880400C2910E /* MASSafariBrowserBasedAuthentication.m */,
+				8120E47F2682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.h */,
+				8120E4792682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.m */,
+				8120E47C2682880400C2910E /* MASTypedBrowserBasedAuthenticationInterface.h */,
+				8120E4772682880400C2910E /* MASWebSessionBrowserBasedAuthentication.h */,
+				8120E4782682880400C2910E /* MASWebSessionBrowserBasedAuthentication.m */,
+			);
+			path = BrowserBasedAuthentication;
+			sourceTree = "<group>";
+		};
 		A4150EBD1BF16D9A00037E27 /* network */ = {
 			isa = PBXGroup;
 			children = (
@@ -999,8 +1033,8 @@
 				CBA3EB2D1E945F2400E64D9D /* MASClaims.m */,
 				CB1FD1491FB23701000AFA25 /* MASSharedStorage.h */,
 				CB1FD14A1FB23701000AFA25 /* MASSharedStorage.m */,
-				C81CC3CA1FC2EA190058718E /* MASBrowserBasedAuthentication.h */,
-				C81CC3CB1FC2EA190058718E /* MASBrowserBasedAuthentication.m */,
+				8120E48A268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.h */,
+				8120E48B268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.m */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1095,6 +1129,7 @@
 		A4FB99191BAF70580083B06C /* models */ = {
 			isa = PBXGroup;
 			children = (
+				8120E476268287C000C2910E /* BrowserBasedAuthentication */,
 				CB2A404D209A730500F988AA /* MFA */,
 				CB99752B1EDCA749006CEBB1 /* AuthCredentials */,
 				699C17941F958660008C1B11 /* Network */,
@@ -1500,6 +1535,7 @@
 				10E027A11F72B10100EAB103 /* RNCryptor+Private.h in Headers */,
 				CBD25B0C1E78C47C00DFB47F /* JWTBase64Coder.h in Headers */,
 				A419B3A11C176259008DC88C /* NSData+MAS.h in Headers */,
+				8120E4882682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.h in Headers */,
 				A488CE751C0B97FD00B8B961 /* MASService.h in Headers */,
 				CB6491FB1FE9DAF300281288 /* MQTTSSLSecurityPolicy.h in Headers */,
 				CBD25B0B1E78C47C00DFB47F /* JWT.h in Headers */,
@@ -1514,7 +1550,6 @@
 				A4831AAB1BD1A551007B4AE6 /* MASAuthenticationProvider.h in Headers */,
 				CB6492091FE9DAF300281288 /* ReconnectTimer.h in Headers */,
 				CB5E4C641C1D1B56001B3B8A /* MASGetURLRequest.h in Headers */,
-				C81CC3CC1FC2EA190058718E /* MASBrowserBasedAuthentication.h in Headers */,
 				C81CC3D01FC2EFBB0058718E /* UIAlertController+MAS.h in Headers */,
 				CBFA70F41F1ED5D6006D025D /* MASSecurityPolicy.h in Headers */,
 				CB6491F91FE9DAF300281288 /* MQTTSessionSynchron.h in Headers */,
@@ -1524,6 +1559,7 @@
 				E3662A4223DEE5A4007A76A1 /* MASINetworking.h in Headers */,
 				CBD25AF31E78C47C00DFB47F /* JWTCryptoKey.h in Headers */,
 				CB6492031FE9DAF300281288 /* MQTTStrict.h in Headers */,
+				8120E4842682880400C2910E /* MASBrowserBasedAuthentication.h in Headers */,
 				A4831AFD1BD1A917007B4AE6 /* MASUser+MASPrivate.h in Headers */,
 				CBD25AEC1E78C47C00DFB47F /* JWTAlgorithmDataHolderChain.h in Headers */,
 				CB9B1210210949E1008A2075 /* MASASN1Object.h in Headers */,
@@ -1549,6 +1585,7 @@
 				CB6491E21FE9DAF300281288 /* MQTTCFSocketTransport.h in Headers */,
 				CBD25AE41E78C47C00DFB47F /* JWTAlgorithmFactory.h in Headers */,
 				CB1C151E1E450109002B31A5 /* NSURL+MASPrivate.h in Headers */,
+				8120E48C268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.h in Headers */,
 				CB6491FD1FE9DAF300281288 /* MQTTSSLSecurityPolicyDecoder.h in Headers */,
 				CB1907EF1C1794F400A5EF16 /* MASIKeyChainStore+MASPrivate.h in Headers */,
 				A898EF642182D30A00CF291B /* MASJWTService.h in Headers */,
@@ -1587,6 +1624,7 @@
 				A4831AFA1BD1A8E8007B4AE6 /* MASFile+MASPrivate.h in Headers */,
 				CB9B1215210949E1008A2075 /* MASDERCertificate.h in Headers */,
 				A450BC0B1BE1570C0030491F /* NSNotificationCenter+MASPrivate.h in Headers */,
+				8120E4872682880400C2910E /* MASSafariBrowserBasedAuthentication.h in Headers */,
 				107389F91C7118F800B7E87E /* MASMQTTMessage.h in Headers */,
 				A458A9881C03897100440464 /* MASModelService.h in Headers */,
 				CBD25B071E78C47C00DFB47F /* JWTCoding+VersionTwo.h in Headers */,
@@ -1596,6 +1634,7 @@
 				A4150E6F1BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.h in Headers */,
 				CB6491E41FE9DAF300281288 /* MQTTClient-Prefix.pch in Headers */,
 				A4150EFD1BF16EE200037E27 /* MASSecurityService.h in Headers */,
+				8120E4852682880400C2910E /* MASTypedBrowserBasedAuthenticationInterface.h in Headers */,
 				107389F71C7118F800B7E87E /* MASMQTTClient.h in Headers */,
 				CB2A4051209A732500F988AA /* MASOTPMultiFactorAuthenticator.h in Headers */,
 				CB1907F31C1794FC00A5EF16 /* MASAccess.h in Headers */,
@@ -1625,6 +1664,7 @@
 				CB5E4C6C1C1D2467001B3B8A /* MASDeleteURLRequest.h in Headers */,
 				CB6491F31FE9DAF300281288 /* MQTTSession.h in Headers */,
 				CB273F001DF8C5BF00AF2BDB /* L7SBrowserURLProtocol.h in Headers */,
+				8120E4802682880400C2910E /* MASWebSessionBrowserBasedAuthentication.h in Headers */,
 				CBD25B031E78C47C00DFB47F /* JWTCoding+VersionOne.h in Headers */,
 				CBD25B051E78C47C00DFB47F /* JWTCoding+VersionThree.h in Headers */,
 				CB9975561EDF5986006CEBB1 /* MASAuthCredentialsClientCredentials.h in Headers */,
@@ -1810,6 +1850,7 @@
 				CB6492001FE9DAF300281288 /* MQTTSSLSecurityPolicyEncoder.m in Sources */,
 				CB6491DF1FE9DAF300281288 /* MQTTCFSocketDecoder.m in Sources */,
 				CB6491F81FE9DAF300281288 /* MQTTSessionManager.m in Sources */,
+				8120E4822682880400C2910E /* MASTypedBrowserBasedAuthenticationFactory.m in Sources */,
 				CBD25B021E78C47C00DFB47F /* JWTCoding+ResultTypes.m in Sources */,
 				CB6492041FE9DAF300281288 /* MQTTStrict.m in Sources */,
 				699570E32060650400017244 /* MASNotifications.m in Sources */,
@@ -1830,6 +1871,7 @@
 				A47332D01BBC61F50002A492 /* NSData+MASPrivate.m in Sources */,
 				CBAFD2511F2BD48B0034DF02 /* MASSecurityConfiguration+MASPrivate.m in Sources */,
 				CB6492061FE9DAF300281288 /* MQTTTransport.m in Sources */,
+				8120E48D268288A700C2910E /* MASBrowserBasedAuthenticationConfiguration.m in Sources */,
 				CB2A4049209A341A00F988AA /* MASMultiFactorHandler.m in Sources */,
 				CB6491E31FE9DAF300281288 /* MQTTCFSocketTransport.m in Sources */,
 				A419B3A21C176259008DC88C /* NSData+MAS.m in Sources */,
@@ -1877,7 +1919,6 @@
 				CBD25AF61E78C47C00DFB47F /* JWTCryptoKeyExtractor.m in Sources */,
 				A4150E701BF1643900037E27 /* MASIJSONResponseSerializer+MASPrivate.m in Sources */,
 				A417BA521BF033C300EC9BCB /* CLLocation+MASPrivate.m in Sources */,
-				C81CC3CD1FC2EA190058718E /* MASBrowserBasedAuthentication.m in Sources */,
 				69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */,
 				A4831AB21BD1A551007B4AE6 /* MASFile.m in Sources */,
 				CB0B585A1E258C2A00BC0163 /* MASAuthorizationResponse.m in Sources */,
@@ -1893,11 +1934,14 @@
 				A421571C1BF863480034BDC9 /* MASServiceRegistry.m in Sources */,
 				CBD25AEB1E78C47C00DFB47F /* JWTAlgorithmDataHolder.m in Sources */,
 				CB3173E11F1FFF2C00C85E47 /* MASNetworkMonitor.m in Sources */,
+				8120E4862682880400C2910E /* MASSafariBrowserBasedAuthentication.m in Sources */,
 				CB23579B1F100EC400D4C420 /* MASSessionDataTaskOperation.m in Sources */,
 				A898EF632182D30A00CF291B /* MASJWTService.m in Sources */,
 				CB6491EB1FE9DAF300281288 /* MQTTInMemoryPersistence.m in Sources */,
 				A458A9891C03897100440464 /* MASModelService.m in Sources */,
 				CBD25B0D1E78C47C00DFB47F /* JWTBase64Coder.m in Sources */,
+				8120E4812682880400C2910E /* MASWebSessionBrowserBasedAuthentication.m in Sources */,
+				8120E4832682880400C2910E /* MASBrowserBasedAuthentication.m in Sources */,
 				CB9B1214210949E1008A2075 /* MASASN1Decoder.m in Sources */,
 				CB6491F61FE9DAF300281288 /* MQTTSessionLegacy.m in Sources */,
 				A4831AF71BD1A8CA007B4AE6 /* MASDevice+MASPrivate.m in Sources */,
