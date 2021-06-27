@@ -97,7 +97,7 @@ static BOOL _enableJWKSetLoading_ = NO;
     // it to start fresh below ... just a safety precaution as it can get into
     // a weird state if this happens
     //
-    if(!self.currentJWKSet.isLoaded)
+    if(_enableJWKSetLoading_ || !self.currentJWKSet.isLoaded)
     {
         [self.currentJWKSet reset];
         _currentJWKSet = nil;
