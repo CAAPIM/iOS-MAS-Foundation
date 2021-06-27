@@ -163,15 +163,9 @@ static NSString *const MASApplicationStatusPropertyKey = @"status"; // string
     //
     // If there is an idToken and a current user
     //
-    if(idToken && currentUser)
+    if(idToken && ![MASAccessService isIdTokenExpired:idToken error:nil] && currentUser)
     {
-        //
-        // Check idToken expiration
-        //
-        if(![MASAccessService isIdTokenExpired:idToken error:nil])
-        {
-            currentStatus = MASAuthenticationStatusLoginWithUser;
-        }
+        currentStatus = MASAuthenticationStatusLoginWithUser;
     }
     else {
         //
