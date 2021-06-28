@@ -106,6 +106,24 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 /**
+ *  Static boolean property indicating SSL Pinning is enabled or not.
+ *
+ *  @return return BOOL value indicating SSL Pinning is enabled or not
+ */
++ (BOOL)isSSLPinningEnabled;
+
+
+
+/**
+ *  Setter of static boolean property indicating SSL Pinning is enabled or not.
+ *
+ *  @param enable BOOL value indicating SSL Pinning is enabled or not
+ */
++ (void)enableSSLPinning:(BOOL)enable;
+
+
+
+/**
  *  Static boolean property indicating Keychain sincronization is enabled or not.
  *
  *  @return return BOOL value indicating Keychain sincronization is enabled or not
