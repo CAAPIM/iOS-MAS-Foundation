@@ -159,7 +159,7 @@
 
 /**
 *  Sets BOOL indicator of  enforcing SSL Pinning i.e. Evaluate Server Trust with pinned Server Certificates.
-*  By default, SSL Pinning is disabled.
+*  By default, SSL Pinning is enabled.
 *
 *  @param enable BOOL value of indicating whether SSL Pinning should be enabled or not.
 */
@@ -169,7 +169,7 @@
 
 /**
 *  Gets BOOL indicator of SSL Pinning enabled or not for Server Trust evluation of pinned Server Certificates.
-*  By default, SSL Pinning is disabled.
+*  By default, SSL Pinning is enabled.
 *
 *  @return BOOL value of indicating whether SSL Pinning is enabled or not.
 */
