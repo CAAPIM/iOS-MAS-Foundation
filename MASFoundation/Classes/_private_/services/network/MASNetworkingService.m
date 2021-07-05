@@ -240,9 +240,9 @@ static NSMutableArray *_multiFactorAuthenticators_;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^
                   {
-        sharedInstance = [[MASNetworkingService alloc] initProtected];
+                      sharedInstance = [[MASNetworkingService alloc] initProtected];
         
-    });
+                  });
     
     
     return sharedInstance;
@@ -495,10 +495,10 @@ static NSMutableArray *_multiFactorAuthenticators_;
                 if(!parseError)
                 {
                     responseObject = json;
-                }
+                }                
             }
         }
-        
+
         __block NSMutableDictionary *responseInfo = [NSMutableDictionary new];
         
         //
@@ -635,7 +635,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
                 blockCompletion(responseInfo, nil);
             }
             else {
-                
+            
                 //
                 //  Proceed with original request
                 //
@@ -657,6 +657,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         //
         else if (magErrorCode && [magErrorCode hasSuffix:@"206"] && ![blockEndPoint isEqualToString:[MASConfiguration currentConfiguration].deviceRenewEndpointPath])
         {
+            [_sessionManager.operationQueue setSuspended:YES];
             //
             // Renew the client certificate, if the renew endpoint fails,
             //
@@ -1131,16 +1132,16 @@ static NSMutableArray *_multiFactorAuthenticators_;
      completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Just passthrough
-    //
-    [self getFrom:endPoint
-   withParameters:parameterInfo
-       andHeaders:headerInfo
-      requestType:requestType
-     responseType:responseType
-         isPublic:isPublic
-  timeoutInterval:MASDefaultNetworkTimeoutConfiguration
-       completion:completion];
+      // Just passthrough
+      //
+      [self getFrom:endPoint
+     withParameters:parameterInfo
+         andHeaders:headerInfo
+        requestType:requestType
+       responseType:responseType
+           isPublic:isPublic
+    timeoutInterval:MASDefaultNetworkTimeoutConfiguration
+         completion:completion];
 }
 
 - (void)getFrom:(NSString *)endPoint
@@ -1251,7 +1252,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
           requestType:requestType
          responseType:responseType
              isPublic:isPublic
-      timeoutInterval:MASDefaultNetworkTimeoutConfiguration
+     timeoutInterval:MASDefaultNetworkTimeoutConfiguration
            completion:completion];
 }
 
@@ -1273,7 +1274,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
           requestType:requestType
          responseType:responseType
              isPublic:isPublic
-      timeoutInterval:timeoutInterval
+     timeoutInterval:timeoutInterval
            completion:completion];
 }
 
@@ -1357,13 +1358,13 @@ withParameters:(NSDictionary *)parameterInfo
     // Just passthrough
     //
     [self postTo:endPoint
-  withParameters:parameterInfo
-      andHeaders:headerInfo
-     requestType:requestType
-    responseType:responseType
-        isPublic:isPublic
- timeoutInterval:MASDefaultNetworkTimeoutConfiguration
-      completion:completion];
+     withParameters:parameterInfo
+         andHeaders:headerInfo
+        requestType:requestType
+       responseType:responseType
+           isPublic:isPublic
+    timeoutInterval:MASDefaultNetworkTimeoutConfiguration
+         completion:completion];
 }
 
 - (void)postTo:(NSString *)endPoint
@@ -1490,16 +1491,16 @@ withParameters:(NSDictionary *)parameterInfo
    completion:(MASResponseInfoErrorBlock)completion
 {
     //
-    // Just passthrough
-    //
-    [self putTo:endPoint
- withParameters:parameterInfo
-     andHeaders:headerInfo
-    requestType:requestType
-   responseType:responseType
-       isPublic:isPublic
-timeoutInterval:MASDefaultNetworkTimeoutConfiguration
-     completion:completion];
+        // Just passthrough
+        //
+        [self putTo:endPoint
+     withParameters:parameterInfo
+         andHeaders:headerInfo
+        requestType:requestType
+       responseType:responseType
+           isPublic:isPublic
+    timeoutInterval:MASDefaultNetworkTimeoutConfiguration
+         completion:completion];
 }
 
 - (void)putTo:(NSString *)endPoint
@@ -1595,10 +1596,10 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     }
     
     MASSessionDataTaskOperation *operation = [self.sessionManager fileUploadOperation:request progress:progress completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint parameters:parameterInfo headers:headerInfo httpMethod:request.HTTPMethod requestType:requestType responseType:responseType isPublic:isPublic completionBlock:^(NSDictionary<NSString *,id> * _Nullable responseInfo, NSError * _Nullable error) {
-        if (completion)
-        {
-            completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], responseInfo[MASResponseInfoBodyInfoKey], error);
-        }
+            if (completion)
+            {
+                completion([responseInfo objectForKey:MASNSHTTPURLResponseObjectKey], responseInfo[MASResponseInfoBodyInfoKey], error);
+            }
     }]];
     
     MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
@@ -1789,7 +1790,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
                                                                                                                            responseType:request.responseType
                                                                                                                                isPublic:request.isPublic                                                                                                                        completionBlock:completion]];
     
-    
+
     MASDataTask* newDataTask = [[MASDataTask alloc] initWithTask:operation];
     DLog(@"MASNetworkingService : created Task with ID %@",newDataTask.taskID);
     [self cacheDataTask:newDataTask];
@@ -1902,7 +1903,7 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
 
 
 - (MASURLRequest*)getURLRequest:(NSString *)httpMethod endPoint:(NSString *)endPoint parameters:(NSDictionary *)parameterInfo headers:(NSDictionary *)headerInfo requestType:(MASRequestResponseType)requestType responseType:(MASRequestResponseType)responseType isPublic:(BOOL)isPublic
-                timeoutInterval:(NSTimeInterval)timeoutInterval
+timeoutInterval:(NSTimeInterval)timeoutInterval
 {
     //
     // Update the header
