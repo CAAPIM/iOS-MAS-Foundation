@@ -60,7 +60,7 @@ static NSString *const MASMobileLocationIsRequiredConfigurationKey = @"location_
 
 static NSString *const MASMobileSSOEnabledConfigurationKey = @"sso_enabled"; // bool
 
-static NSString *const MASMobileSSLPinningEnabledConfigurationKey = @"ssl_pinning_enabled"; // bool
+static NSString *const MASMobileAllowSSLPinningConfigurationKey = @"allow_ssl_pinning"; // bool
 
 static NSString *const MASMobileEnbaledPublicKeyPinning = @"enable_public_key_pinning"; // bool
 
@@ -892,12 +892,12 @@ static float _systemVersionNumber_;
 }
 
 
-- (BOOL)sslpinningEnabled
+- (BOOL)allowSSLPinning
 {
     NSDictionary *magInfo = _configurationInfo_[MASMAGConfigurationKey];
     NSDictionary *mobileInfo = magInfo[MASMobileConfigurationKey];
     
-    //return [mobileInfo[MASMobileSSLPinningEnabledConfigurationKey] boolValue];
+    //return [mobileInfo[MASMobileAllowSSLPinningConfigurationKey] boolValue];
     
     //
     // TODO: Uncomment the above return statement.
