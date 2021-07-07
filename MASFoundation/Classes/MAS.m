@@ -99,9 +99,9 @@
 }
 
 
-+ (void)enableSSLPinning:(BOOL)enable
++ (void)setSSLPinningEnabled:(BOOL)enable
 {
-    [MASAccessService enableSSLPinning:enable];
+    [MASAccessService setSSLPinningEnabled:enable];
 }
 
 

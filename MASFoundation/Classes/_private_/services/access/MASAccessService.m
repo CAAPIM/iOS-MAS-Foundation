@@ -118,7 +118,7 @@ static NSString *_keychainSharingGroupIdentifier_ = nil;
 }
 
 
-+ (void)enableSSLPinning:(BOOL)enable
++ (void)setSSLPinningEnabled:(BOOL)enable
 {
     _isSSLPinningEnabled_ = enable;
 }

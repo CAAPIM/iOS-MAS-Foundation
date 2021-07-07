@@ -154,7 +154,7 @@
  *  Determines SDK is enabled for ssl pinning for authentication challenge.  This read only value is within
  *  the JSON configuration file.
  */
-@property (nonatomic, assign, readonly) BOOL sslpinningEnabled;
+@property (nonatomic, assign, readonly) BOOL allowSSLPinning;
 
 
 

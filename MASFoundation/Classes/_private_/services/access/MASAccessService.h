@@ -119,7 +119,7 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  *
  *  @param enable BOOL value indicating SSL Pinning is enabled or not
  */
-+ (void)enableSSLPinning:(BOOL)enable;
++ (void)setSSLPinningEnabled:(BOOL)enable;
 
 
 

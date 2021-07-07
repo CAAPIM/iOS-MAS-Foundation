@@ -165,7 +165,7 @@
 *
 *  @param enable BOOL value of indicating whether SSL Pinning should be enabled or not.
 */
-+ (void)enableSSLPinning:(BOOL)enable;
++ (void)setSSLPinningEnabled:(BOOL)enable;
 
 
 

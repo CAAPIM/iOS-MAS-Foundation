@@ -331,7 +331,7 @@ static BOOL _enableIdTokenValidation_ = YES;
     //  Construct and set MASSecurityConfiguration for the primary gateway
     //
     MASSecurityConfiguration *defaultSecurityConfiguration = [[MASSecurityConfiguration alloc] initWithURL:currentURL];
-    defaultSecurityConfiguration.allowSSLPinning = _currentConfiguration.sslpinningEnabled;
+    defaultSecurityConfiguration.allowSSLPinning = _currentConfiguration.allowSSLPinning;
     defaultSecurityConfiguration.trustPublicPKI = _currentConfiguration.enabledTrustedPublicPKI;
     defaultSecurityConfiguration.publicKeyHashes = _currentConfiguration.trustedCertPinnedPublicKeyHashes;
     defaultSecurityConfiguration.certificates = _currentConfiguration.gatewayCertificates;
