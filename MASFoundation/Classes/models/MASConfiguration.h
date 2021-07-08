@@ -150,6 +150,13 @@
 @property (nonatomic, assign) BOOL ssoEnabled;
 
 
+/**
+ *  Determines SDK is enabled for ssl pinning for authentication challenge.  This read only value is within
+ *  the JSON configuration file.
+ */
+@property (nonatomic, assign, readonly) BOOL allowSSLPinning;
+
+
 
 ///--------------------------------------
 /// @name Current Configuration
@@ -209,10 +216,10 @@ Sets network timeout for specified host in MASNetworkConfiguration object
 
 
 /**
- Returns MASSecurityConfiguration object for a specific domain.
+ Returns MASNetworkConfiguration object for a specific domain.
 
- @param domain NSURL of the domain for the MASSecurityConfiguration object.
- @return Returns a MASSecurityConfiguration object for the domain.
+ @param domain NSURL of the domain for the MASNetworkConfiguration object.
+ @return Returns a MASNetworkConfiguration object for the domain.
  */
 + (MASNetworkConfiguration *_Nullable)networkConfigurationForDomain:(NSURL *_Nonnull)domain;
 
