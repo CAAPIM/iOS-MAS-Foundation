@@ -88,6 +88,7 @@ NSString * const MASKeychainStorageKeyBundleIdentifiers = @"kMASKeychainStorageK
 @implementation MASAccessService
 
 static BOOL _isPKCEEnabled_ = YES;
+static BOOL _isSSLPinningEnabled_ = YES;
 static BOOL _isKeychainSynchronizable_ = NO;
 static NSString *_keychainSharingGroupIdentifier_ = nil;
 
@@ -108,6 +109,18 @@ static NSString *_keychainSharingGroupIdentifier_ = nil;
 + (void)enablePKCE:(BOOL)enable
 {
     _isPKCEEnabled_ = enable;
+}
+
+
++ (BOOL)isSSLPinningEnabled
+{
+    return _isSSLPinningEnabled_;
+}
+
+
++ (void)setSSLPinningEnabled:(BOOL)enable
+{
+    _isSSLPinningEnabled_ = enable;
 }
 
 

@@ -99,6 +99,18 @@
 }
 
 
++ (void)setSSLPinningEnabled:(BOOL)enable
+{
+    [MASAccessService setSSLPinningEnabled:enable];
+}
+
+
++ (BOOL)isSSLPinningEnabled
+{
+    return [MASAccessService isSSLPinningEnabled];
+}
+
+
 + (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
 {
     [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];
