@@ -18,8 +18,8 @@
 
 @interface MASAccess ()
 
-@property (nonatomic, strong) NSString *codeVerifier;
-@property (nonatomic, strong) NSString *pkceState;
+//@property (nonatomic, strong) NSString *codeVerifier;
+//@property (nonatomic, strong) NSString *pkceState;
 
 @end
 
@@ -429,20 +429,25 @@
 {
     if ([MASAccessService isPKCEEnabled])
     {
-        _codeVerifier = [NSString randomStringWithLength:43];
+//        _codeVerifier = [NSString randomStringWithLength:43];
+        [[MASAccessService sharedService] setAccessValueString:
+         [NSString randomStringWithLength:43] storageKey:MASKeychainStorageKeyCodeVerifier];
     }
 }
 
 
 - (void)deleteCodeVerifier
 {
-    _codeVerifier = nil;
+//    _codeVerifier = nil;
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyCodeVerifier];
 }
 
 
 - (NSString *)retrieveCodeVerifier
 {
-    return [MASAccessService isPKCEEnabled] ? _codeVerifier : nil;
+//    return [MASAccessService isPKCEEnabled] ? _codeVerifier : nil;
+    return [MASAccessService isPKCEEnabled] ?
+    [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyCodeVerifier] : nil;
 }
 
 
@@ -456,20 +461,24 @@
 {
     if ([MASAccessService isPKCEEnabled])
     {
-        _pkceState = [NSString randomStringWithLength:32];
+        //_pkceState = [NSString randomStringWithLength:32];
+        [[MASAccessService sharedService] setAccessValueString:
+         [NSString randomStringWithLength:43] storageKey:MASKeychainStorageKeyPKCEState];
     }
 }
 
 
 - (void)deletePKCEState
 {
-    _pkceState = nil;
+//    _pkceState = nil;
+    [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyPKCEState];
 }
 
 
 - (NSString *)retrievePKCEState
 {
-    return [MASAccessService isPKCEEnabled] ? _pkceState : nil;
+//    return [MASAccessService isPKCEEnabled] ? _pkceState : nil;
+    return [MASAccessService isPKCEEnabled] ? [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyPKCEState] : nil;
 }
 
 
