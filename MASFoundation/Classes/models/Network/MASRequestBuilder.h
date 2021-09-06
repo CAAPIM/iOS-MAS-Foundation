@@ -76,9 +76,9 @@
 
 
 /**
- NSDictionary of type/value parameters to put into the body of a request.
+ Object to put into the body of a request.
  */
-@property (nonatomic, strong, nullable) NSDictionary *body;
+@property (nonatomic, strong, nullable) id body;
 
 
 /**
