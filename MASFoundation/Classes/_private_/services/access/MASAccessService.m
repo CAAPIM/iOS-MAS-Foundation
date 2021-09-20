@@ -61,6 +61,8 @@ NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType = @"kMASAc
 NSString * const MASKeychainStorageKeyMASUserObjectData = @"kMASAccessValueTypeMASUserObjectData";
 NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendorId";
 NSString * const MASKeychainStorageKeyBundleIdentifiers = @"kMASKeychainStorageKeyBundleIdentifiers";
+NSString * const MASKeychainStorageKeyCodeVerifier = @"kMASKeychainStorageKeyCodeVerifier";
+NSString * const MASKeychainStorageKeyPKCEState = @"kMASKeychainStorageKeyPKCEState";
 
 
 @interface MASAccessService ()
