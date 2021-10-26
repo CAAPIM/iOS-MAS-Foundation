@@ -123,6 +123,12 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 
++ (BOOL)isDonotLogoutRefreshtokenServerMaintainance;
+
+
++ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable;
+
+
 /**
  *  Static boolean property indicating Keychain sincronization is enabled or not.
  *

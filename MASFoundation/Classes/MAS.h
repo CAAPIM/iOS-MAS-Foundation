@@ -179,6 +179,14 @@
 
 
 
++ (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken;
+
+
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors;
+
+
+
+
 /**
  *  Set a user auth credential block to handle the case where SDK requires auth credentials.
  *  When MASGrantFlow is set to MASGrantFlowPassword, and auth credentials is required, SDK will invoke this block
