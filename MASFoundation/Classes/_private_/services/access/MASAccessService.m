@@ -91,6 +91,7 @@ static BOOL _isPKCEEnabled_ = YES;
 static BOOL _isSSLPinningEnabled_ = YES;
 static BOOL _isKeychainSynchronizable_ = NO;
 static NSString *_keychainSharingGroupIdentifier_ = nil;
+static BOOL _isDonotLogoutRefreshtokenServerMaintainance_ = NO;
 
 # pragma mark - Properties
 
@@ -121,6 +122,18 @@ static NSString *_keychainSharingGroupIdentifier_ = nil;
 + (void)setSSLPinningEnabled:(BOOL)enable
 {
     _isSSLPinningEnabled_ = enable;
+}
+
+
++ (BOOL)isDonotLogoutRefreshtokenServerMaintainance {
+    
+    return _isDonotLogoutRefreshtokenServerMaintainance_;
+}
+
+
++ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable {
+    
+    _isDonotLogoutRefreshtokenServerMaintainance_ = enable;
 }
 
 

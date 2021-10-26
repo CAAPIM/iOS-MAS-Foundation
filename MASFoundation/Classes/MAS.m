@@ -111,6 +111,18 @@
 }
 
 
++ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable {
+    
+    [MASAccessService setDonotLogoutRefreshtokenServerMaintainance:enable];
+}
+
+
++ (BOOL)isDonotLogoutRefreshtokenServerMaintainance {
+    
+    return [MASAccessService isDonotLogoutRefreshtokenServerMaintainance];
+}
+
+
 + (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
 {
     [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];

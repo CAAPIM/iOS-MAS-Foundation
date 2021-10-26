@@ -176,6 +176,13 @@
 + (BOOL)isSSLPinningEnabled;
 
 
++ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable;
+
+
++ (BOOL)isDonotLogoutRefreshtokenServerMaintainance;
+
+
+
 
 /**
  *  Set a user auth credential block to handle the case where SDK requires auth credentials.
