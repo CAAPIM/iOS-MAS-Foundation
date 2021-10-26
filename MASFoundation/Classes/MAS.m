@@ -111,13 +111,13 @@
 }
 
 
-+ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable {
++ (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken {
     
-    [MASAccessService setDonotLogoutRefreshtokenServerMaintainance:enable];
+    [MASAccessService setDonotLogoutRefreshtokenServerMaintainance:skipToken];
 }
 
 
-+ (BOOL)isDonotLogoutRefreshtokenServerMaintainance {
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors {
     
     return [MASAccessService isDonotLogoutRefreshtokenServerMaintainance];
 }

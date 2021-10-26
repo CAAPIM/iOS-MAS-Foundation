@@ -176,10 +176,10 @@
 + (BOOL)isSSLPinningEnabled;
 
 
-+ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable;
++ (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken;
 
 
-+ (BOOL)isDonotLogoutRefreshtokenServerMaintainance;
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors;
 
 
 
