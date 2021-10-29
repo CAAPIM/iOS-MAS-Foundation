@@ -1997,10 +1997,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                               // DE509848 - During server maintenance timeframe,
                                               // when token refresh calls returns 500, MAS library logout the user.
                                               //
-                                              if ([MAS isDonotLogoutRefreshtokenServerMaintainance] && httpResponse.statusCode == 500 &&
-                                                   [bodayInfo[@"error"]  isEqualToString:@"invalid_request"] &&
-                                                   [[error localizedDescription]
-                                                     isEqualToString:@"Request failed: internal server error (500)"])  {
+                                              if ([MAS isDonotLogoutTokenRenewalOnServerErrors] && httpResponse.statusCode == 500)  {
                                                   
                                                   NSError *idTokenValidationError = nil;
                                                   BOOL isIdTokenValid = [MASAccessService validateIdToken:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken]
