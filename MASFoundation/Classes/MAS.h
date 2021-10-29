@@ -179,11 +179,23 @@
 
 
 
+/**
+*  Sets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*  By default, skipping the reset of refresh_token is disabled.
+*
+*  @param skipToken BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
 + (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken;
 
 
-+ (BOOL)isDonotLogoutTokenRenewalOnServerErrors;
 
+/**
+*  Gets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*  By default, skipping the reset of refresh_token is disabled.
+*
+*  @return BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors;
 
 
 
