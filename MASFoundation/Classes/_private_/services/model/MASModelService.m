@@ -437,6 +437,20 @@ static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuth
     //DLog(@"\n\nNO detected cached providers, retreiving from server\n\n");
 
     //
+    // If authentication providers are already fetched just use them.
+    // DE490325/DE501977 - Extra calls to auth providers
+    //
+    if (_currentProviders) {
+
+        if (completion) {
+
+            completion(_currentProviders, nil);
+        }
+
+        return;
+    }
+    
+    //
     // Endpoint
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].authorizationEndpointPath;
