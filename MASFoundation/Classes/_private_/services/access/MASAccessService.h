@@ -48,6 +48,8 @@ extern NSString * const MASKeychainStorageKeyIsDeviceLocked;
 extern NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType;
 extern NSString * const MASKeychainStorageKeyMASUserObjectData;
 extern NSString * const MASKeychainStorageKeyDeviceVendorId;
+extern NSString * const MASKeychainStorageKeyCodeVerifier;
+extern NSString * const MASKeychainStorageKeyPKCEState;
 
 
 /**
