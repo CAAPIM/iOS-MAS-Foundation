@@ -2009,10 +2009,8 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                                   if (refreshToken && isIdTokenValid && !idTokenValidationError)
                                                   {
                                                       if (blockCompletion) {
-                                                      
                                                           blockCompletion(NO, error);
-                                                      }
-                                                  
+                                                      }                                                  
                                                       return;
                                                   }
                                               }
