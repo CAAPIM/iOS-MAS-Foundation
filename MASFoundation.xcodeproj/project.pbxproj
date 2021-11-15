@@ -56,6 +56,8 @@
 		69B7DF6B1F9675600056DD3A /* MASRequestBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17931F9585BD008C1B11 /* MASRequestBuilder.m */; };
 		69B7DF6C1F96756B0056DD3A /* MASRequest+MASPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */; };
 		69B7DF6D1F96756B0056DD3A /* MASRequest+MASPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */; };
+		811D857A273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 811D8578273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.h */; };
+		811D857B273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 811D8579273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.m */; };
 		818CCC8925C70AA500915603 /* MASBrowserBasedAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CCC8725C70AA500915603 /* MASBrowserBasedAuthentication.m */; };
 		818CCC8A25C70AA500915603 /* MASBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 818CCC8825C70AA500915603 /* MASBrowserBasedAuthentication.h */; };
 		818CCC8D25C70B2F00915603 /* MASSafariBrowserBasedAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 818CCC8B25C70B2F00915603 /* MASSafariBrowserBasedAuthentication.h */; };
@@ -417,6 +419,8 @@
 		699C17931F9585BD008C1B11 /* MASRequestBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASRequestBuilder.m; sourceTree = "<group>"; };
 		699C17951F958660008C1B11 /* MASRequest+MASPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MASRequest+MASPrivate.h"; sourceTree = "<group>"; };
 		699C17961F958660008C1B11 /* MASRequest+MASPrivate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MASRequest+MASPrivate.m"; sourceTree = "<group>"; };
+		811D8578273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MASSafariBrowserAppBasedAuthentication.h; sourceTree = "<group>"; };
+		811D8579273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MASSafariBrowserAppBasedAuthentication.m; sourceTree = "<group>"; };
 		818CCC8725C70AA500915603 /* MASBrowserBasedAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASBrowserBasedAuthentication.m; sourceTree = "<group>"; };
 		818CCC8825C70AA500915603 /* MASBrowserBasedAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASBrowserBasedAuthentication.h; sourceTree = "<group>"; };
 		818CCC8B25C70B2F00915603 /* MASSafariBrowserBasedAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSafariBrowserBasedAuthentication.h; sourceTree = "<group>"; };
@@ -826,6 +830,8 @@
 				818CCC8F25C70B9200915603 /* MASTypedBrowserBasedAuthenticationInterface.h */,
 				818CCC9125C70BE700915603 /* MASTypedBrowserBasedAuthenticationFactory.h */,
 				818CCC9225C70BE700915603 /* MASTypedBrowserBasedAuthenticationFactory.m */,
+				811D8578273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.h */,
+				811D8579273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.m */,
 			);
 			path = BrowserBasedAuthentication;
 			sourceTree = "<group>";
@@ -1605,6 +1611,7 @@
 				818CCC9C25C70D9C00915603 /* MASBrowserBasedAuthenticationConfiguration.h in Headers */,
 				CB58986B1F183E0A005C1E82 /* MASAuthValidationOperation.h in Headers */,
 				A4831AB51BD1A551007B4AE6 /* MASUser.h in Headers */,
+				811D857A273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.h in Headers */,
 				A46F49F31C2F5FC500A4C370 /* MASIOrderedDictionary.h in Headers */,
 				A42D02E41C0E240800AA1F11 /* MASAuthenticationProviders+MASPrivate.h in Headers */,
 				CB3173E01F1FFF2C00C85E47 /* MASNetworkMonitor.h in Headers */,
@@ -1834,6 +1841,7 @@
 				A450BC0C1BE1570C0030491F /* NSNotificationCenter+MASPrivate.m in Sources */,
 				A46F49F41C2F5FC500A4C370 /* MASIOrderedDictionary.m in Sources */,
 				CB1907F01C1794F400A5EF16 /* MASIKeyChainStore+MASPrivate.m in Sources */,
+				811D857B273E39B600B4CC0F /* MASSafariBrowserAppBasedAuthentication.m in Sources */,
 				CBFA70F51F1ED5D6006D025D /* MASSecurityPolicy.m in Sources */,
 				A42157271BF864590034BDC9 /* MASConfigurationService.m in Sources */,
 				CB2357971F0EFDEA00D4C420 /* MASSessionTaskOperation.m in Sources */,

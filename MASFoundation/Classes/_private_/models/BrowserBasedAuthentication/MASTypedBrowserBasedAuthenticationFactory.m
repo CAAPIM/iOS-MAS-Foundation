@@ -11,6 +11,7 @@
 #import "MASTypedBrowserBasedAuthenticationFactory.h"
 #import "MASBrowserBasedAuthenticationConfiguration.h"
 #import "MASSafariBrowserBasedAuthentication.h"
+#import "MASSafariBrowserAppBasedAuthentication.h"
 #import "MASWebSessionBrowserBasedAuthentication.h"
 
 @implementation MASTypedBrowserBasedAuthenticationFactory
@@ -20,6 +21,10 @@
     if ([configuration isKindOfClass: [MASSafariBrowserBasedAuthenticationConfiguration class]])
     {
         return [[MASSafariBrowserBasedAuthentication alloc] init];
+    }
+    if ([configuration isKindOfClass:[MASSafariBrowserAppBasedAuthenticationConfiguration class]]) {
+        
+        return [[MASSafariBrowserAppBasedAuthentication alloc] init];
     }
     if (@available(iOS 12.0, macOS 10.15, *))
     {
