@@ -111,6 +111,18 @@
 }
 
 
++ (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken {
+    
+    [MASAccessService setDonotLogoutRefreshtokenServerMaintainance:skipToken];
+}
+
+
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors {
+    
+    return [MASAccessService isDonotLogoutRefreshtokenServerMaintainance];
+}
+
+
 + (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
 {
     [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];

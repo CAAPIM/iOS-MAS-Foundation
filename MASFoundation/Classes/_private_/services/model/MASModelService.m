@@ -1983,6 +1983,8 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                     responseType:MASRequestResponseTypeJson
                                       completion:^(NSDictionary *responseInfo, NSError *error) {
         
+                                            NSHTTPURLResponse *httpResponse =
+                                                (NSHTTPURLResponse *)responseInfo[MASNSHTTPURLResponseObjectKey];
                                             NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
                                             NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
         
@@ -1991,6 +1993,28 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           //
                                           if (error)
                                           {
+                                              //
+                                              // DE509848 - During server maintenance timeframe,
+                                              // when token refresh calls returns 500, MAS library logout the user.
+                                              //
+                                              if ([MAS isDonotLogoutTokenRenewalOnServerErrors] && httpResponse.statusCode == 500)  {
+                                                  
+                                                  NSError *idTokenValidationError = nil;
+                                                  BOOL isIdTokenValid = [MASAccessService validateIdToken:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken]
+                                                                                            magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier]
+                                                                                                    error:&idTokenValidationError];
+                                                  
+                                                  NSString *refreshToken =
+                                                    [MASAccessService sharedService].currentAccessObj.refreshToken;
+                                                  if (refreshToken && isIdTokenValid && !idTokenValidationError)
+                                                  {
+                                                      if (blockCompletion) {
+                                                          blockCompletion(NO, error);
+                                                      }                                                  
+                                                      return;
+                                                  }
+                                              }
+                                              
                                               //
                                               // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
                                               //
