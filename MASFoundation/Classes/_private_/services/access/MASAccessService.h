@@ -48,6 +48,8 @@ extern NSString * const MASKeychainStorageKeyIsDeviceLocked;
 extern NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType;
 extern NSString * const MASKeychainStorageKeyMASUserObjectData;
 extern NSString * const MASKeychainStorageKeyDeviceVendorId;
+extern NSString * const MASKeychainStorageKeyCodeVerifier;
+extern NSString * const MASKeychainStorageKeyPKCEState;
 
 
 /**
@@ -123,10 +125,22 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
 
 
 
+/**
+*  Gets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*
+*  @return BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
 + (BOOL)isDonotLogoutRefreshtokenServerMaintainance;
 
 
+
+/**
+*  Sets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*
+*  @param skipToken BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
 + (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable;
+
 
 
 /**
