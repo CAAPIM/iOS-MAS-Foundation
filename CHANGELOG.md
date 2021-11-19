@@ -1,3 +1,18 @@
+# Version 2.2.00
+
+### Bug fixes
+-  Refresh token becomes null, when network is lost.
+-  Client certificate renewal response content type mismatch fixed.
+-  Skipped multiple calls to auth providers if auth providers are already fetched.
+-  Server maintainance (500 internal server error) handled without user logout.
+
+### New features
+- Support for ASWebAuthenticationSession for browser based authentication.
+- Support for disabling SSL Pinning. 
+
+### Deprecated methods
+- None
+
 # Version 2.1.00
 
 ### Bug fixes
