@@ -18,14 +18,6 @@
 
 
 
-/**
- MASSafariBrowserAppBasedAuthenticationConfiguration class is used to present a external safari browser app based login
- */
-@interface MASSafariBrowserAppBasedAuthenticationConfiguration : NSObject <MASBrowserBasedAuthenticationConfigurationInterface>
-
-@end
-
-
 
 /**
  MASSafariBrowserBasedAuthenticationConfiguration class is used to present a SFSafariViewController browser based login

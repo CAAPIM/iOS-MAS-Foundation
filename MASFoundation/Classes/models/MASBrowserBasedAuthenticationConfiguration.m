@@ -12,10 +12,6 @@
 #import "MASBrowserBasedAuthenticationConfiguration.h"
 
 
-@implementation MASSafariBrowserAppBasedAuthenticationConfiguration
-@end
-
-
 @implementation MASSafariBrowserBasedAuthenticationConfiguration
 @end
 

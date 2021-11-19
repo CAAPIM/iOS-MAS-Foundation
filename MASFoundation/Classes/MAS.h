@@ -190,10 +190,21 @@
 /**
  * Sets Bool indicator of Browser Based Authentication (templatized login) enabled or not for authorization process.
  * By default, it is disabled.
-
- @param enable BOOL value indicating whether Browser Based Authentication is enabled or not.
+ *
+ * @param enable BOOL value indicating whether Browser Based Authentication is enabled or not.
  */
 + (void)enableBrowserBasedAuthentication:(BOOL)enable;
+
+
+
+/**
+ * Sets Bool indicator of System Native Browser Based Authentication (templatized login) enabled or not for authorization process.
+ * By default, it is disabled.
+ *
+ * WARNING: if you call this method, you will be taken out of the app to safari browser for Browser Based Login.
+ * @param enable BOOL value indicating whether System Native Browser Based Authentication is enabled or not.
+ */
++ (void)enableSystemNativeBrowserBasedAuthentication:(BOOL)enable;
 
 
 
