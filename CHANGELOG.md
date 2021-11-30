@@ -1,14 +1,16 @@
 # Version 2.2.00
 
 ### Bug fixes
--  Refresh token becomes null, when network is lost.
--  Client certificate renewal response content type mismatch fixed.
--  Skipped multiple calls to auth providers if auth providers are already fetched.
--  Server maintainance (500 internal server error) handled without user logout.
+-  Refresh token becomes null, when network is lost. [DE469630]
+-  Client certificate renewal response content type mismatch fixed. [DE476218]
+-  Skipped multiple calls to auth providers if auth providers are already fetched. [DE490325]
+-  During token refresh, the user gets logged out if 500 error is returned from MAG Server. [DE509848]
+-  Cache is cleared , when using a third party app for authentication. [DE506139]
 
 ### New features
-- Support for ASWebAuthenticationSession for browser based authentication.
-- Support for disabling SSL Pinning. 
+- Support for ASWebAuthenticationSession for browser based authentication. [F108001]
+- Support for disabling SSL Pinning. [F109516]
+- Support for iOS 15. [F114299]
 
 ### Deprecated methods
 - None
