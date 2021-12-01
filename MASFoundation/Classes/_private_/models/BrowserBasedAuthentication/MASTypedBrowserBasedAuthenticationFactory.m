@@ -9,7 +9,9 @@
 //
 
 #import "MASTypedBrowserBasedAuthenticationFactory.h"
+
 #import "MASBrowserBasedAuthenticationConfiguration.h"
+#import "MASModelService.h"
 #import "MASSafariBrowserBasedAuthentication.h"
 #import "MASSafariBrowserAppBasedAuthentication.h"
 #import "MASWebSessionBrowserBasedAuthentication.h"
@@ -18,14 +20,16 @@
 
 + (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserWithConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration {
 
+    if ([MASModelService systemNativeBrowserBasedAuthentication]) {
+
+            return [[MASSafariBrowserAppBasedAuthentication alloc] init];
+    }
+    
     if ([configuration isKindOfClass: [MASSafariBrowserBasedAuthenticationConfiguration class]])
     {
         return [[MASSafariBrowserBasedAuthentication alloc] init];
     }
-    if ([configuration isKindOfClass:[MASSafariBrowserAppBasedAuthenticationConfiguration class]]) {
-        
-        return [[MASSafariBrowserAppBasedAuthentication alloc] init];
-    }
+    
     if (@available(iOS 12.0, macOS 10.15, *))
     {
         if ([configuration isKindOfClass: [MASWebSessionBrowserBasedAuthenticationConfiguration class]])
@@ -39,4 +43,5 @@
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot produce result with the provided configuration." userInfo:nil];
     return nil;
 }
+
 @end

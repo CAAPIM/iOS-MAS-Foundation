@@ -95,11 +95,30 @@
 
 
 /**
+ * Sets the system native browser based authentication property. Default is NO.
+ *
+ * @param systemBrowserBasedAuthentication The state of system native browser based authentication.
+ * If this is set to true, a URL which has a templatized login is launched in a system native browser and this would disable the Social Login, Proximity Login and also prevents the launch of MASUI.
+ */
++ (void)setSystemNativeBrowserBasedAuthentication:(BOOL)systemBrowserBasedAuthentication;
+
+
+
+/**
  * The current state of browser based login.
  *
  * @return BOOL value is returned.
  */
 + (BOOL)browserBasedAuthentication;
+
+
+
+/**
+ * The current state of system native browser based login.
+ *
+ * @return BOOL value is returned.
+ */
++ (BOOL)systemNativeBrowserBasedAuthentication;
 
 
 

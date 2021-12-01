@@ -13,10 +13,6 @@
 #import "MASBrowserBasedAuthenticationConfiguration.h"
 
 
-@implementation MASSafariBrowserAppBasedAuthenticationConfiguration
-@end
-
-
 @implementation MASSafariBrowserBasedAuthenticationConfiguration
 @end
 
@@ -30,5 +26,6 @@
     
     return self;
 }
+
 @end
 
