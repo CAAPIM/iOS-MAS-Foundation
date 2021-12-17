@@ -61,6 +61,8 @@ NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType = @"kMASAc
 NSString * const MASKeychainStorageKeyMASUserObjectData = @"kMASAccessValueTypeMASUserObjectData";
 NSString * const MASKeychainStorageKeyDeviceVendorId = @"kMASKeyChainDeviceVendorId";
 NSString * const MASKeychainStorageKeyBundleIdentifiers = @"kMASKeychainStorageKeyBundleIdentifiers";
+NSString * const MASKeychainStorageKeyCodeVerifier = @"kMASKeychainStorageKeyCodeVerifier";
+NSString * const MASKeychainStorageKeyPKCEState = @"kMASKeychainStorageKeyPKCEState";
 
 
 @interface MASAccessService ()
@@ -88,8 +90,10 @@ NSString * const MASKeychainStorageKeyBundleIdentifiers = @"kMASKeychainStorageK
 @implementation MASAccessService
 
 static BOOL _isPKCEEnabled_ = YES;
+static BOOL _isSSLPinningEnabled_ = YES;
 static BOOL _isKeychainSynchronizable_ = NO;
 static NSString *_keychainSharingGroupIdentifier_ = nil;
+static BOOL _isDonotLogoutRefreshtokenServerMaintainance_ = NO;
 
 # pragma mark - Properties
 
@@ -108,6 +112,30 @@ static NSString *_keychainSharingGroupIdentifier_ = nil;
 + (void)enablePKCE:(BOOL)enable
 {
     _isPKCEEnabled_ = enable;
+}
+
+
++ (BOOL)isSSLPinningEnabled
+{
+    return _isSSLPinningEnabled_;
+}
+
+
++ (void)setSSLPinningEnabled:(BOOL)enable
+{
+    _isSSLPinningEnabled_ = enable;
+}
+
+
++ (BOOL)isDonotLogoutRefreshtokenServerMaintainance {
+    
+    return _isDonotLogoutRefreshtokenServerMaintainance_;
+}
+
+
++ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable {
+    
+    _isDonotLogoutRefreshtokenServerMaintainance_ = enable;
 }
 
 

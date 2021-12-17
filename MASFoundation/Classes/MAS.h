@@ -15,6 +15,8 @@
 #import "MASRequest.h"
 #import "MASMultiFactorAuthenticator.h"
 #import "MASMultiPartFormData.h"
+#import "MASBrowserBasedAuthenticationConfiguration.h"
+
 
 /**
  * The top level MAS object represents the Mobile App Services SDK in it's entirety.  It
@@ -158,6 +160,46 @@
 
 
 /**
+*  Sets BOOL indicator of  enforcing SSL Pinning i.e. Evaluate Server Trust with pinned Server Certificates.
+*  By default, SSL Pinning is enabled.
+*
+*  @param enable BOOL value of indicating whether SSL Pinning should be enabled or not.
+*/
++ (void)setSSLPinningEnabled:(BOOL)enable;
+
+
+
+/**
+*  Gets BOOL indicator of SSL Pinning enabled or not for Server Trust evluation of pinned Server Certificates.
+*  By default, SSL Pinning is enabled.
+*
+*  @return BOOL value of indicating whether SSL Pinning is enabled or not.
+*/
++ (BOOL)isSSLPinningEnabled;
+
+
+
+/**
+*  Sets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*  By default, skipping the reset of refresh_token is disabled.
+*
+*  @param skipToken BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
++ (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken;
+
+
+
+/**
+*  Gets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*  By default, skipping the reset of refresh_token is disabled.
+*
+*  @return BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors;
+
+
+
+/**
  *  Set a user auth credential block to handle the case where SDK requires auth credentials.
  *  When MASGrantFlow is set to MASGrantFlowPassword, and auth credentials is required, SDK will invoke this block
  *  to obtain MASAuthCredentials to proceed authentication process.
@@ -193,6 +235,16 @@
  @param enable BOOL value indicating whether Browser Based Authentication is enabled or not.
  */
 + (void)enableBrowserBasedAuthentication:(BOOL)enable;
+
+
+
+/**
+ * Sets a configuration to use for Browser Based Authentication (templatized login).
+ * By default this is `MASSafariBrowserBasedAuthenticationConfiguration`.
+ @param configuration MASBrowserBasedAuthenticationConfigurationInterface conforming object to configure the browser based authentication..
+ */
++ (void)preferredBrowserBasedAuthenticationConfiguration:
+    (id<MASBrowserBasedAuthenticationConfigurationInterface> _Nonnull)configuration;
 
 
 

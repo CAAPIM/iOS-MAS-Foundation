@@ -40,6 +40,7 @@ static NSString *const MASEnterpriseAppKey = @"app";
 static MASGrantFlow _grantFlow_ = MASGrantFlowClientCredentials;
 static MASUserAuthCredentialsBlock _userAuthCredentialsBlock_ = nil;
 static BOOL _isBrowserBasedAuthentication_ = NO;
+static id<MASBrowserBasedAuthenticationConfigurationInterface> _browserBasedAuthenticationConfiguration_;
 
 # pragma mark - Properties
 
@@ -82,6 +83,23 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
 + (BOOL)browserBasedAuthentication
 {
     return _isBrowserBasedAuthentication_;
+}
+
+
++(void)setBrowserBasedAuthenticationConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration
+{
+    _browserBasedAuthenticationConfiguration_ = configuration;
+}
+
+
++ (id<MASBrowserBasedAuthenticationConfigurationInterface>)browserBasedAuthenticationConfiguration
+{
+    if (_browserBasedAuthenticationConfiguration_ == nil)
+    {
+        _browserBasedAuthenticationConfiguration_ =
+            [[MASSafariBrowserBasedAuthenticationConfiguration alloc] init];
+    }
+    return _browserBasedAuthenticationConfiguration_;
 }
 
 
@@ -419,6 +437,20 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //DLog(@"\n\nNO detected cached providers, retreiving from server\n\n");
 
     //
+    // If authentication providers are already fetched just use them.
+    // DE490325/DE501977 - Extra calls to auth providers
+    //
+    if (_currentProviders) {
+
+        if (completion) {
+
+            completion(_currentProviders, nil);
+        }
+
+        return;
+    }
+    
+    //
     // Endpoint
     //
     NSString *endPoint = [MASConfiguration currentConfiguration].authorizationEndpointPath;
@@ -434,7 +466,9 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     MASIMutableOrderedDictionary *parameterInfo = [MASIMutableOrderedDictionary new];
     
     // ClientId
-    parameterInfo[MASClientKeyRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+       if ([[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId]) {
+           parameterInfo[MASClientKeyRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyClientId];
+       }
     
     // RedirectUri
     parameterInfo[MASRedirectUriRequestResponseKey] = [[MASApplication currentApplication].redirectUri absoluteString];
@@ -1095,9 +1129,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
     //
     __block MASModelService *blockSelf = self;
     __block MASCompletionErrorBlock blockCompletion = completion;
-    [[MASNetworkingService sharedService] putTo:endPoint
-                                 withParameters:nil
-                                     andHeaders:headerInfo
+    [[MASNetworkingService sharedService] putTo:endPoint withParameters:nil andHeaders:headerInfo requestType:MASRequestResponseTypeJson responseType:MASRequestResponseTypeTextPlain
                                      completion:^(NSDictionary *responseInfo, NSError *error) {
                                         
                                          //
@@ -1148,7 +1180,7 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                          //
                                          [[MASAccessService sharedService] setAccessValueData:nil storageKey:MASKeychainStorageKeyPublicCertificateData];
                                          [[MASAccessService sharedService] setAccessValueCertificate:nil storageKey:MASKeychainStorageKeySignedPublicCertificate];
-                                         [[MASAccessService sharedService] setAccessValueNumber:[NSNumber numberWithInt:0] storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
+                                         [[MASAccessService sharedService] setAccessValueNumber:nil storageKey:MASKeychainStorageKeyPublicCertificateExpirationDate];
                                          
                                          //
                                          // Updated with latest info
@@ -1967,17 +1999,63 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                      requestType:MASRequestResponseTypeWwwFormUrlEncoded
                                     responseType:MASRequestResponseTypeJson
                                       completion:^(NSDictionary *responseInfo, NSError *error) {
+        
+                                        NSHTTPURLResponse *httpResponse =
+                                            (NSHTTPURLResponse *)responseInfo[MASNSHTTPURLResponseObjectKey];
+                                          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
+                                          NSDictionary *headerInfo = responseInfo[MASResponseInfoHeaderInfoKey];
+                                          
                                           //
                                           // Detect if error, if so stop here
                                           //
                                           if (error)
                                           {
+                                              
+                                              //
+                                              // DE509848 - During server maintenance timeframe,
+                                              // when token refresh calls returns 500, MAS library logout the user.
+                                              //
+                                              if ([MAS isDonotLogoutTokenRenewalOnServerErrors] && httpResponse.statusCode == 500)  {
+                                                  
+                                                  NSError *idTokenValidationError = nil;
+                                                  BOOL isIdTokenValid = [MASAccessService validateIdToken:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyIdToken]
+                                                                                            magIdentifier:[[MASAccessService sharedService] getAccessValueStringWithStorageKey:MASKeychainStorageKeyMAGIdentifier]
+                                                                                                    error:&idTokenValidationError];
+                                                  
+                                                  NSString *refreshToken =
+                                                    [MASAccessService sharedService].currentAccessObj.refreshToken;
+                                                  if (refreshToken && isIdTokenValid && !idTokenValidationError)
+                                                  {
+                                                      if (blockCompletion) {
+                                                      
+                                                          blockCompletion(NO, error);
+                                                      }
+                                                  
+                                                      return;
+                                                  }
+                                              }
+                                              
                                               //
                                               // If authenticate user with refresh_token, we should invalidate local refresh_token, and re-validate the user's session with alternative method.
                                               //
-                                              [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
-                                              [[MASAccessService sharedService].currentAccessObj refresh];
-                                              [blockSelf validateCurrentUserSession:completion];
+                                              if (headerInfo[MASHeaderInfoErrorKey] && !bodayInfo[MASAccessTokenRequestResponseKey]) {
+                                                  
+                                                  [[MASAccessService sharedService] setAccessValueString:nil storageKey:MASKeychainStorageKeyRefreshToken];
+                                                  [[MASAccessService sharedService].currentAccessObj refresh];
+                                                  
+                                                  [blockSelf validateCurrentUserSession:completion];
+                                                  
+                                                  return;
+                                              }
+                                              
+                                              //
+                                              // If not server error
+                                              // Do not invalidate refresh_token and re-validate.
+                                              //
+                                              if (blockCompletion)
+                                              {
+                                                  blockCompletion(NO, error);
+                                              }
                                               
                                               return;
                                           }
@@ -1991,8 +2069,6 @@ static BOOL _isBrowserBasedAuthentication_ = NO;
                                           //
                                           // Validate id_token when received from server.
                                           //
-                                          NSDictionary *bodayInfo = responseInfo[MASResponseInfoBodyInfoKey];
-                                          
                                           if ([bodayInfo objectForKey:MASIdTokenBodyRequestResponseKey] &&
                                               [bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] &&
                                               [[bodayInfo objectForKey:MASIdTokenTypeBodyRequestResponseKey] isEqualToString:MASIdTokenTypeToValidateConstant] &&

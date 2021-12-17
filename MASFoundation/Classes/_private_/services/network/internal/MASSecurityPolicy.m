@@ -47,11 +47,19 @@ static unsigned char rsa2048Asn1Header[] = {
     MASSecurityConfiguration *securityConfiguration = [MASConfiguration securityConfigurationForDomain:domainURL];
     
     //
-    //  If there is no security configuration define, cancel request
+    //  If there is no security configuration defined, cancel request
     //
     if (securityConfiguration == nil)
     {
         return NO;
+    }
+    
+    //
+    // Bypass the SSL Pinning if not enabled.
+    //
+    if (![MAS isSSLPinningEnabled] || !securityConfiguration.allowSSLPinning) {
+        
+        return YES;
     }
     
     NSMutableArray *policies = [NSMutableArray array];
