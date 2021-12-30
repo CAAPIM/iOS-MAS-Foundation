@@ -1,3 +1,8 @@
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://bitbucket.org/lbesson/ansi-colors)
+
+⚠️ | Please note that this repo will be archived in the near future. Please do not submit any new changes as they are no longer being accepted. Please contact Broadcom support https://support.broadcom.com/ to report any defects or make a request for an update. Broadcom is continuing support for the SDK but will no longer maintain the public GitHub community.
+:---: | :---
+
 MASFoundation is the core iOS framework of the iOS Mobile SDK, which is part of CA Mobile API Gateway. MASFoundation handles the communication and authentication layer of the iOS Mobile SDK, making it easy for developers to establish a secure connection (TLS, Mutual SSL) to any CA Mobile API Gateway (MAG).
 
 ## Features
