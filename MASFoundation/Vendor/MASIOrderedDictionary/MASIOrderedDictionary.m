@@ -325,7 +325,7 @@
     {
         _mutableValues[index] = object;
     }
-    else
+    else if (object)
     {
         [_mutableKeys addObject:key];
         [_mutableValues addObject:object];
