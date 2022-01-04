@@ -2,15 +2,19 @@
 //  MASBrowserBasedAuthenticationConfiguration.m
 //  MASFoundation
 //
-//  Created by sander saelmans on 21/12/2020.
-//  Copyright © 2020 CA Technologies. All rights reserved.
+//  Copyright (c) 2020 CA. All rights reserved.
+//
+//  This software may be modified and distributed under the terms
+//  of the MIT license. See the LICENSE file for details.
 //
 
 #import <Foundation/Foundation.h>
 #import "MASBrowserBasedAuthenticationConfiguration.h"
 
+
 @implementation MASSafariBrowserBasedAuthenticationConfiguration
 @end
+
 
 @implementation MASWebSessionBrowserBasedAuthenticationConfiguration
 
@@ -21,5 +25,6 @@
     
     return self;
 }
+
 @end
 

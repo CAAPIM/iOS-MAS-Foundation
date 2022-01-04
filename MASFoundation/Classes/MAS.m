@@ -123,6 +123,17 @@
 }
 
 
++ (void)enableSystemNativeBrowserBasedAuthentication:(BOOL)enable
+{
+    if (![MASModelService browserBasedAuthentication]) {
+        
+        [MASModelService setBrowserBasedAuthentication:enable];
+    }
+    
+    [MASModelService setSystemNativeBrowserBasedAuthentication:enable];
+}
+
+
 + (void)preferredBrowserBasedAuthenticationConfiguration:
     (id<MASBrowserBasedAuthenticationConfigurationInterface> _Nonnull)configuration
 {

@@ -11,16 +11,24 @@
 #import "MASTypedBrowserBasedAuthenticationFactory.h"
 #import "MASBrowserBasedAuthenticationConfiguration.h"
 #import "MASSafariBrowserBasedAuthentication.h"
+#import "MASSafariBrowserAppBasedAuthentication.h"
 #import "MASWebSessionBrowserBasedAuthentication.h"
+#import "MASModelService.h"
 
 @implementation MASTypedBrowserBasedAuthenticationFactory
 
 + (id<MASTypedBrowserBasedAuthenticationInterface>)buildBrowserWithConfiguration:(id<MASBrowserBasedAuthenticationConfigurationInterface>)configuration {
 
+    if ([MASModelService systemNativeBrowserBasedAuthentication]) {
+        
+        return [[MASSafariBrowserAppBasedAuthentication alloc] init];
+    }
+    
     if ([configuration isKindOfClass: [MASSafariBrowserBasedAuthenticationConfiguration class]])
     {
         return [[MASSafariBrowserBasedAuthentication alloc] init];
     }
+    
     if (@available(iOS 12.0, macOS 10.15, *))
     {
         if ([configuration isKindOfClass: [MASWebSessionBrowserBasedAuthenticationConfiguration class]])
