@@ -16,7 +16,7 @@
 @property (nonatomic, readwrite) NSString *httpMethod;
 @property (nonatomic, readwrite) NSData *privateKey;
 @property (nonatomic, readwrite) NSDictionary *header;
-@property (nonatomic, readwrite) NSDictionary *body;
+@property (nonatomic, readwrite) id body;
 @property (nonatomic, readwrite) NSDictionary *query;
 @property (assign, readwrite) BOOL isPublic;
 @property (assign, readwrite) BOOL sign;
