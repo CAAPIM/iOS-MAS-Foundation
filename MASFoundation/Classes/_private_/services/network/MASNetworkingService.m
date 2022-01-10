@@ -294,6 +294,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
     {
         [_sessionManager.operationQueue cancelAllOperations];
         [_gatewayReachabilityManager stopMonitoring];
+        [[_sessionManager operationQueue] removeObserver:self forKeyPath:@"operations" context:&kMASNetworkQueueOperationsChanged];
         _sessionManager = nil;
     }
     [self cleanUpFinishedTasks];
@@ -312,6 +313,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
     {
         [_sessionManager.operationQueue cancelAllOperations];
         [_gatewayReachabilityManager stopMonitoring];
+        [[_sessionManager operationQueue] removeObserver:self forKeyPath:@"operations" context:&kMASNetworkQueueOperationsChanged];
         _sessionManager = nil;
     }
     
@@ -657,6 +659,7 @@ static NSMutableArray *_multiFactorAuthenticators_;
         //
         else if (magErrorCode && [magErrorCode hasSuffix:@"206"] && ![blockEndPoint isEqualToString:[MASConfiguration currentConfiguration].deviceRenewEndpointPath])
         {
+            [_sessionManager.operationQueue setSuspended:YES];
             //
             // Renew the client certificate, if the renew endpoint fails,
             //
@@ -1891,6 +1894,8 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     NSLog(@"Cancel All Requests");
     [[_sessionManager operationQueue] cancelAllOperations];
     [[_sessionManager internalOperationQueue] cancelAllOperations];
+    [[_sessionManager operationQueue] removeObserver:self forKeyPath:@"operations" context:&kMASNetworkQueueOperationsChanged];
+
 }
 
 

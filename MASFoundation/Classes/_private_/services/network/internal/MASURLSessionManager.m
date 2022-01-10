@@ -68,7 +68,7 @@
             if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
             {
                 BOOL didPassEvaluation = YES;
-                
+                    
                 //
                 //  Evaluate the serverTrust with defined MASSecurityConfiguration object for the domain
                 //

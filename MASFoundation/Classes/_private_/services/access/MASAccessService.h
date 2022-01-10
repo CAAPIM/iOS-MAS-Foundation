@@ -48,6 +48,8 @@ extern NSString * const MASKeychainStorageKeyIsDeviceLocked;
 extern NSString * const MASKeychainStorageKeyCurrentAuthCredentialsGrantType;
 extern NSString * const MASKeychainStorageKeyMASUserObjectData;
 extern NSString * const MASKeychainStorageKeyDeviceVendorId;
+extern NSString * const MASKeychainStorageKeyCodeVerifier;
+extern NSString * const MASKeychainStorageKeyPKCEState;
 
 
 /**
@@ -102,6 +104,42 @@ extern NSString * const MASKeychainStorageKeyDeviceVendorId;
  *  @param enable BOOL value indicating PKCE is enabled or not
  */
 + (void)enablePKCE:(BOOL)enable;
+
+
+
+/**
+ *  Static boolean property indicating SSL Pinning is enabled or not.
+ *
+ *  @return return BOOL value indicating SSL Pinning is enabled or not
+ */
++ (BOOL)isSSLPinningEnabled;
+
+
+
+/**
+ *  Setter of static boolean property indicating SSL Pinning is enabled or not.
+ *
+ *  @param enable BOOL value indicating SSL Pinning is enabled or not
+ */
++ (void)setSSLPinningEnabled:(BOOL)enable;
+
+
+
+/**
+*  Gets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*
+*  @return BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
++ (BOOL)isDonotLogoutRefreshtokenServerMaintainance;
+
+
+
+/**
+*  Sets BOOL indicator for skipping the reset of refresh_token upon unknown errors during token renewal.
+*
+*  @param skipToken BOOL value of indicating whether  skipping the reset of refresh_token should be enabled or not.
+*/
++ (void)setDonotLogoutRefreshtokenServerMaintainance:(BOOL)enable;
 
 
 

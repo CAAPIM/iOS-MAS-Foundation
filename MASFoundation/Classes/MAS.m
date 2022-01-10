@@ -99,6 +99,30 @@
 }
 
 
++ (void)setSSLPinningEnabled:(BOOL)enable
+{
+    [MASAccessService setSSLPinningEnabled:enable];
+}
+
+
++ (BOOL)isSSLPinningEnabled
+{
+    return [MASAccessService isSSLPinningEnabled];
+}
+
+
++ (void)setDonotLogoutTokenRenewalOnServerErrors:(BOOL)skipToken {
+    
+    [MASAccessService setDonotLogoutRefreshtokenServerMaintainance:skipToken];
+}
+
+
++ (BOOL)isDonotLogoutTokenRenewalOnServerErrors {
+    
+    return [MASAccessService isDonotLogoutRefreshtokenServerMaintainance];
+}
+
+
 + (void)setUserAuthCredentials:(MASUserAuthCredentialsBlock _Nullable)userAuthCredentialsBlock
 {
     [MASModelService setAuthCredentialsBlock:userAuthCredentialsBlock];
@@ -120,6 +144,13 @@
 + (void)enableBrowserBasedAuthentication:(BOOL)enable
 {
     [MASModelService setBrowserBasedAuthentication:enable];
+}
+
+
++ (void)preferredBrowserBasedAuthenticationConfiguration:
+    (id<MASBrowserBasedAuthenticationConfigurationInterface> _Nonnull)configuration
+{
+    [MASModelService setBrowserBasedAuthenticationConfiguration:configuration];
 }
 
 
