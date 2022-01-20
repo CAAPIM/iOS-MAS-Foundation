@@ -1894,8 +1894,6 @@ timeoutInterval:(NSTimeInterval)timeoutInterval
     NSLog(@"Cancel All Requests");
     [[_sessionManager operationQueue] cancelAllOperations];
     [[_sessionManager internalOperationQueue] cancelAllOperations];
-    [[_sessionManager operationQueue] removeObserver:self forKeyPath:@"operations" context:&kMASNetworkQueueOperationsChanged];
-
 }
 
 
